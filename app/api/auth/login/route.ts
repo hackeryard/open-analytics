@@ -3,9 +3,19 @@ import { connectDB } from "@/lib/mongodb";
 import User from "@/models/User";
 import { ensureDefaultProject } from "@/lib/seed";
 import { comparePassword, signToken, SESSION_COOKIE_NAME } from "@/lib/auth";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 
 export async function POST(req: NextRequest) {
   try {
+    const clientIp = getClientIp(req);
+    const rateLimit = checkRateLimit(`login_${clientIp}`, { windowSeconds: 60, maxRequests: 10 });
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: `Too many login attempts. Please try again in ${rateLimit.resetSeconds} seconds.` },
+        { status: 429, headers: { "Retry-After": String(rateLimit.resetSeconds) } }
+      );
+    }
+
     await connectDB();
     await ensureDefaultProject(); // Guarantees super admin seed is initialized
 

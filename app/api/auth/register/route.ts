@@ -3,9 +3,19 @@ import { connectDB } from "@/lib/mongodb";
 import User from "@/models/User";
 import Project from "@/models/Project";
 import { hashPassword, signToken, SESSION_COOKIE_NAME, generateProjectId, generateApiKey } from "@/lib/auth";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 
 export async function POST(req: NextRequest) {
   try {
+    const clientIp = getClientIp(req);
+    const rateLimit = checkRateLimit(`register_${clientIp}`, { windowSeconds: 300, maxRequests: 8 });
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: `Too many registration attempts. Please try again in ${rateLimit.resetSeconds} seconds.` },
+        { status: 429, headers: { "Retry-After": String(rateLimit.resetSeconds) } }
+      );
+    }
+
     await connectDB();
     const body = await req.json();
     const { name, email, password, role } = body;

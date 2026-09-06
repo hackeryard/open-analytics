@@ -17,7 +17,23 @@ const UserSchema = new mongoose.Schema(
     },
     passwordHash: {
       type: String,
-      required: true,
+      required: false,
+      default: "",
+    },
+    authProvider: {
+      type: String,
+      enum: ["credentials", "google", "github"],
+      default: "credentials",
+      index: true,
+    },
+    authProviderId: {
+      type: String,
+      default: "",
+      index: true,
+    },
+    emailVerified: {
+      type: Boolean,
+      default: false,
     },
     role: {
       type: String,
@@ -34,5 +50,7 @@ const UserSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+UserSchema.index({ authProvider: 1, authProviderId: 1 });
 
 export default mongoose.models.User || mongoose.model("User", UserSchema);

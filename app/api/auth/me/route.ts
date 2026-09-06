@@ -4,6 +4,8 @@ import Project from "@/models/Project";
 import { getCurrentUser } from "@/lib/auth";
 import { ensureDefaultProject } from "@/lib/seed";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     await connectDB();

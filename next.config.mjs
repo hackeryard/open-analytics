@@ -6,9 +6,22 @@ try {
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
+  poweredByHeader: false,
+  compress: true,
   async headers() {
     return [
       {
+        // Global production security headers for all application routes
+        source: "/:path*",
+        headers: [
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+        ],
+      },
+      {
+        // Telemetry Ingestion CORS headers
         source: "/api/v1/:path*",
         headers: [
           { key: "Access-Control-Allow-Credentials", value: "true" },
@@ -18,6 +31,7 @@ const nextConfig = {
         ],
       },
       {
+        // Client Tracker SDK caching policy
         source: "/pulse.js",
         headers: [
           { key: "Access-Control-Allow-Origin", value: "*" },
@@ -27,4 +41,5 @@ const nextConfig = {
     ];
   },
 };
+
 export default nextConfig;
