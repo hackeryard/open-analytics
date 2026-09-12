@@ -51,17 +51,35 @@ export async function authenticateProjectRequest(req: Request, body?: any): Prom
   }
 
   // Domain check
-  const origin = req.headers.get("origin") || req.headers.get("referer") || "";
-  if (origin && Array.isArray(project.allowedDomains) && !project.allowedDomains.includes("*")) {
+  const originHeader = req.headers.get("origin") || req.headers.get("referer") || "";
+  if (originHeader && Array.isArray(project.allowedDomains) && project.allowedDomains.length > 0 && !project.allowedDomains.includes("*")) {
     try {
-      const url = new URL(origin);
-      const host = url.hostname.toLowerCase();
+      const url = new URL(originHeader.startsWith("http") ? originHeader : `https://${originHeader}`);
+      const hostname = url.hostname.toLowerCase();
+      const hostWithPort = url.host.toLowerCase();
+
       const isAllowed = project.allowedDomains.some((d: string) => {
-        const clean = d.toLowerCase().replace(/^https?:\/\//, "").replace(/\/.*$/, "");
-        return host === clean || host.endsWith(`.${clean}`);
+        if (!d) return false;
+        const raw = d.trim().toLowerCase();
+        if (raw === "*") return true;
+
+        const cleanNoProto = raw.replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+        const cleanNoPort = cleanNoProto.replace(/:\d+$/, "");
+
+        // Match exact hostname, subdomain, or host:port
+        return (
+          hostname === cleanNoPort ||
+          hostname.endsWith(`.${cleanNoPort}`) ||
+          hostWithPort === cleanNoProto
+        );
       });
+
       if (!isAllowed) {
-        return { authorized: false, error: `Domain '${host}' is not authorized for this project`, status: 403 };
+        return {
+          authorized: false,
+          error: `Domain '${hostname}' is not authorized for project '${project.projectId}'. Please add it to Allowed Domains in project settings.`,
+          status: 403,
+        };
       }
     } catch {}
   }

@@ -29,7 +29,31 @@ export function middleware(req: NextRequest) {
 
   // 2. Allow Edge Telemetry Ingestion (Client scripts authenticate via X-API-Key / projectId)
   if (pathname.startsWith("/api/v1/")) {
-    return NextResponse.next();
+    const origin = req.headers.get("origin") || "*";
+    if (req.method === "OPTIONS") {
+      return new NextResponse(null, {
+        status: 204,
+        headers: {
+          "Access-Control-Allow-Origin": origin,
+          "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+          "Access-Control-Allow-Headers":
+            "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, X-API-Key, X-Project-ID, Authorization",
+          "Access-Control-Max-Age": "86400",
+          Vary: "Origin",
+        },
+      });
+    }
+
+    const res = NextResponse.next();
+    res.headers.set("Access-Control-Allow-Origin", origin);
+    res.headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
+    res.headers.set(
+      "Access-Control-Allow-Headers",
+      "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, X-API-Key, X-Project-ID, Authorization"
+    );
+    res.headers.set("Access-Control-Max-Age", "86400");
+    res.headers.set("Vary", "Origin");
+    return res;
   }
 
   // 3. Allow public auth and assets

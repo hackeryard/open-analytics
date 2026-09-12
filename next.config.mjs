@@ -21,17 +21,21 @@ const nextConfig = {
         ],
       },
       {
-        // Telemetry Ingestion CORS headers
+        // Telemetry Ingestion CORS headers for cross-domain SDK / Beacon / Fetch tracking
         source: "/api/v1/:path*",
         headers: [
-          { key: "Access-Control-Allow-Credentials", value: "true" },
           { key: "Access-Control-Allow-Origin", value: "*" },
           { key: "Access-Control-Allow-Methods", value: "GET,OPTIONS,PATCH,DELETE,POST,PUT" },
-          { key: "Access-Control-Allow-Headers", value: "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, X-API-Key, Authorization" },
+          {
+            key: "Access-Control-Allow-Headers",
+            value:
+              "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, X-API-Key, X-Project-ID, Authorization",
+          },
+          { key: "Access-Control-Max-Age", value: "86400" },
         ],
       },
       {
-        // Client Tracker SDK caching policy
+        // Client Tracker SDK caching policy & cross-origin script access
         source: "/pulse.js",
         headers: [
           { key: "Access-Control-Allow-Origin", value: "*" },

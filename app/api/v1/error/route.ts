@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import ErrorLog from "@/models/ErrorLog";
 import { authenticateProjectRequest } from "@/lib/projectAuth";
+import { corsJsonResponse, handleCorsPreflight } from "@/lib/cors";
 
-export async function OPTIONS() {
-  return new NextResponse(null, { status: 204 });
+export async function OPTIONS(req: Request) {
+  return handleCorsPreflight(req);
 }
 
 export async function POST(req: Request) {
@@ -12,14 +12,14 @@ export async function POST(req: Request) {
     const body = await req.json().catch(() => ({}));
     const auth = await authenticateProjectRequest(req, body);
     if (!auth.authorized || !auth.project) {
-      return NextResponse.json({ ok: false, error: auth.error || "Unauthorized" }, { status: auth.status });
+      return corsJsonResponse({ ok: false, error: auth.error || "Unauthorized" }, { status: auth.status }, req);
     }
 
     const { projectId } = auth.project;
     const { message, stack, digest, componentStack, errorType, pathname, visitorId, sessionId, userId } = body;
 
     if (!message || !pathname) {
-      return NextResponse.json({ ok: false, error: "message and pathname required" }, { status: 400 });
+      return corsJsonResponse({ ok: false, error: "message and pathname required" }, { status: 400 }, req);
     }
 
     await connectDB();
@@ -58,7 +58,7 @@ export async function POST(req: Request) {
       if (stack && !existing.stack) existing.stack = stack;
       await existing.save();
 
-      return NextResponse.json({ ok: true, deduplicated: true, errorId: existing._id });
+      return corsJsonResponse({ ok: true, deduplicated: true, errorId: existing._id }, { status: 200 }, req);
     }
 
     const errorLog = await (ErrorLog as any).create({
@@ -81,9 +81,9 @@ export async function POST(req: Request) {
       lastOccurredAt: new Date(),
     });
 
-    return NextResponse.json({ ok: true, errorId: errorLog._id });
+    return corsJsonResponse({ ok: true, errorId: errorLog._id }, { status: 200 }, req);
   } catch (err: any) {
     console.error("Pulse error ingestion error:", err);
-    return NextResponse.json({ ok: false, error: err.message }, { status: 500 });
+    return corsJsonResponse({ ok: false, error: err.message }, { status: 500 }, req);
   }
 }

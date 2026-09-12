@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import PageView from "@/models/PageView";
 import AnalyticsEvent from "@/models/AnalyticsEvent";
@@ -6,9 +5,10 @@ import { authenticateProjectRequest } from "@/lib/projectAuth";
 import { extractGeoLocation } from "@/lib/geolocation";
 import { anonymizeIp, redactPii } from "@/lib/privacy";
 import { detectBotAndReferrer } from "@/lib/botDetector";
+import { corsJsonResponse, handleCorsPreflight } from "@/lib/cors";
 
-export async function OPTIONS() {
-  return new NextResponse(null, { status: 204 });
+export async function OPTIONS(req: Request) {
+  return handleCorsPreflight(req);
 }
 
 function extractDomain(ref?: string): string {
@@ -36,14 +36,14 @@ export async function POST(req: Request) {
     const body = await req.json().catch(() => ({}));
     const auth = await authenticateProjectRequest(req, body);
     if (!auth.authorized || !auth.project) {
-      return NextResponse.json({ ok: false, error: auth.error || "Unauthorized" }, { status: auth.status });
+      return corsJsonResponse({ ok: false, error: auth.error || "Unauthorized" }, { status: auth.status }, req);
     }
 
     const { projectId, settings } = auth.project;
     const { type, visitorId, sessionId, pathname } = body;
 
     if (!visitorId || !sessionId || !pathname) {
-      return NextResponse.json({ ok: false, error: "Missing visitorId, sessionId, or pathname" }, { status: 400 });
+      return corsJsonResponse({ ok: false, error: "Missing visitorId, sessionId, or pathname" }, { status: 400 }, req);
     }
 
     await connectDB();
@@ -131,7 +131,7 @@ export async function POST(req: Request) {
         visitCount,
       });
 
-      return NextResponse.json({ ok: true, projectId });
+      return corsJsonResponse({ ok: true, projectId }, { status: 200 }, req);
     }
 
     // B. Heartbeat Dwell & Vitals Update
@@ -168,14 +168,14 @@ export async function POST(req: Request) {
         { sort: { createdAt: -1 } }
       );
 
-      return NextResponse.json({ ok: true });
+      return corsJsonResponse({ ok: true }, { status: 200 }, req);
     }
 
     // C. Custom Event Ingestion
     if (type === "event") {
       const { eventName, category, labId, properties, value } = body;
       if (!eventName) {
-        return NextResponse.json({ ok: false, error: "eventName is required" }, { status: 400 });
+        return corsJsonResponse({ ok: false, error: "eventName is required" }, { status: 400 }, req);
       }
 
       const cleanProps = settings?.piiRedaction ? redactPii(properties || {}) : (properties || {});
@@ -193,12 +193,12 @@ export async function POST(req: Request) {
         value: typeof value === "number" ? value : null,
       });
 
-      return NextResponse.json({ ok: true });
+      return corsJsonResponse({ ok: true }, { status: 200 }, req);
     }
 
-    return NextResponse.json({ ok: true });
+    return corsJsonResponse({ ok: true }, { status: 200 }, req);
   } catch (err: any) {
     console.error("Pulse collect error:", err);
-    return NextResponse.json({ ok: false, error: err.message }, { status: 500 });
+    return corsJsonResponse({ ok: false, error: err.message }, { status: 500 }, req);
   }
 }
