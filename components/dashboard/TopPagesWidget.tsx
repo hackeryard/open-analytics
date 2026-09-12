@@ -25,6 +25,11 @@ export default function TopPagesWidget({
   const safePages = pages || [];
   const maxViews = safePages.length > 0 ? Math.max(...safePages.map((p) => p.views)) : 1;
 
+  const avgDwell =
+    safePages.length > 0
+      ? Math.round(safePages.reduce((acc, p) => acc + (p.avgDuration || 0), 0) / safePages.length)
+      : 0;
+
   return (
     <div className="glass-card rounded-3xl p-5 sm:p-6 space-y-4 flex flex-col justify-between">
       <div className="space-y-1">
@@ -95,7 +100,7 @@ export default function TopPagesWidget({
 
       <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-[10px] text-muted-foreground font-mono">
         <span>{safePages.length} active routes tracked</span>
-        <span>Average dwell: ~2m 14s</span>
+        <span>Average dwell: {avgDwell > 0 ? formatDuration(avgDwell) : "—"}</span>
       </div>
     </div>
   );

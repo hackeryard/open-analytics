@@ -63,7 +63,12 @@ function LoginFormContent() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showConfigModal, setShowConfigModal] = useState(urlError === "oauth_not_configured");
+
+  const displayError = error || (urlError ? (
+    urlError === "oauth_not_configured"
+      ? `${urlProvider === "google" ? "Google" : "GitHub"} sign-in is not enabled. Please sign in with email and password.`
+      : `Authentication error: ${urlError.replace(/_/g, " ")}`
+  ) : null);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -82,18 +87,13 @@ function LoginFormContent() {
         throw new Error(data.error || "Login failed");
       }
 
-      router.push("/");
-      router.refresh();
+      const redirectUrl = searchParams.get("redirect") || "/";
+      window.location.href = redirectUrl;
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred");
     } finally {
       setLoading(false);
     }
-  }
-
-  function handleQuickDemo() {
-    setEmail("admin@pulse.io");
-    setPassword("admin123");
   }
 
   return (
@@ -132,30 +132,10 @@ function LoginFormContent() {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
         <div className="bg-[#0e1424]/85 backdrop-blur-xl py-8 px-6 shadow-2xl rounded-3xl sm:px-10 border border-slate-800/80 space-y-6">
           {/* Top Error Alert */}
-          {(error || (urlError && urlError !== "oauth_not_configured")) && (
+          {displayError && (
             <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-sm flex items-center gap-2.5 animate-fadeIn">
               <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
-              <span>{error || `Authentication error: ${urlError?.replace(/_/g, " ")}`}</span>
-            </div>
-          )}
-
-          {/* OAuth Setup Pending Banner */}
-          {urlError === "oauth_not_configured" && (
-            <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-300 text-xs flex items-start gap-2.5 animate-fadeIn">
-              <Sparkles className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-              <div className="space-y-1">
-                <span className="font-bold block text-white">OAuth Keys Required in .env.local</span>
-                <p className="text-slate-300 leading-relaxed">
-                  {urlProvider === "google" ? "Google" : "GitHub"} OAuth credentials are not yet set. Click below for instructions or sign in via email.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setShowConfigModal(true)}
-                  className="font-bold underline text-amber-400 hover:text-amber-300 transition cursor-pointer"
-                >
-                  View setup instructions &rarr;
-                </button>
-              </div>
+              <span>{displayError}</span>
             </div>
           )}
 
@@ -243,92 +223,12 @@ function LoginFormContent() {
             </button>
           </form>
 
-          {/* Quick Demo Pre-fill Box */}
-          <div className="pt-2 border-t border-slate-800/80">
-            <button
-              type="button"
-              onClick={handleQuickDemo}
-              className="w-full flex items-center justify-between p-3 rounded-xl bg-slate-900/90 border border-cyan-500/30 hover:border-cyan-500/60 hover:bg-slate-850 transition-all group text-left cursor-pointer"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
-                  <Sparkles className="w-4 h-4" />
-                </div>
-                <div>
-                  <div className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
-                    Demo Super Admin
-                    <span className="px-1.5 py-0.2 text-[10px] rounded bg-cyan-500/20 text-cyan-300 font-mono">
-                      1-Click
-                    </span>
-                  </div>
-                  <div className="text-[11px] text-slate-400 font-mono">admin@pulse.io / admin123</div>
-                </div>
-              </div>
-              <CheckCircle2 className="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform" />
-            </button>
-          </div>
-
           <div className="flex items-center justify-center gap-2 text-xs text-slate-400">
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
             <span>Multi-tenant encrypted RBAC session</span>
           </div>
         </div>
       </div>
-
-      {/* OAuth Configuration Instructions Modal */}
-      {showConfigModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="fixed inset-0 bg-black/75 backdrop-blur-md" onClick={() => setShowConfigModal(false)} />
-          <div className="relative max-w-lg w-full bg-[#080d1a] border border-cyan-500/30 rounded-3xl p-6 sm:p-7 shadow-2xl space-y-4 z-10 animate-fadeIn">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
-                  <Code2 size={18} />
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-white">OAuth 2.0 Setup Guide</h3>
-                  <p className="text-xs text-muted-foreground">Add provider keys to .env.local</p>
-                </div>
-              </div>
-              <button onClick={() => setShowConfigModal(false)} className="p-1 rounded-lg text-slate-400 hover:text-white">
-                <X size={16} />
-              </button>
-            </div>
-
-            <div className="text-xs text-slate-300 space-y-3">
-              <p>To enable live Google & GitHub Single Sign-On, obtain OAuth client IDs and append them to your <code className="text-cyan-400 font-mono">.env.local</code> file:</p>
-
-              <div className="p-3.5 rounded-xl bg-black/60 border border-white/[0.08] font-mono text-[11px] text-slate-200 space-y-1 overflow-x-auto">
-                <span className="text-slate-500"># Google OAuth 2.0 (Google Cloud Console)</span>
-                <div>GOOGLE_CLIENT_ID=&quot;your_google_client_id.apps.googleusercontent.com&quot;</div>
-                <div>GOOGLE_CLIENT_SECRET=&quot;your_google_client_secret&quot;</div>
-                <div className="pt-2 text-slate-500"># GitHub OAuth (Developer Settings &gt; OAuth Apps)</div>
-                <div>GITHUB_CLIENT_ID=&quot;your_github_client_id&quot;</div>
-                <div>GITHUB_CLIENT_SECRET=&quot;your_github_client_secret&quot;</div>
-              </div>
-
-              <div className="text-[11px] text-muted-foreground space-y-1">
-                <div><strong>Redirect URIs:</strong></div>
-                <div className="font-mono text-cyan-300 bg-white/[0.02] p-1.5 rounded border border-white/[0.05]">
-                  http://localhost:3005/api/auth/oauth/google/callback
-                </div>
-                <div className="font-mono text-cyan-300 bg-white/[0.02] p-1.5 rounded border border-white/[0.05]">
-                  http://localhost:3005/api/auth/oauth/github/callback
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-end pt-2">
-              <button
-                onClick={() => setShowConfigModal(false)}
-                className="px-4 py-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.12] text-xs font-bold text-white transition cursor-pointer"
-              >
-                Got It
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

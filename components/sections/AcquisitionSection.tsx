@@ -27,24 +27,30 @@ export default function AcquisitionSection({ data: propData }: { data?: Analytic
               <h3 className="text-xs font-black uppercase tracking-wider text-muted-foreground">
                 Top Referring Domains & Sources
               </h3>
-              <div className="space-y-3">
-                {data.topReferrers.map((ref, idx) => (
-                  <div key={idx} className="space-y-1">
-                    <div className="flex items-center justify-between text-xs font-bold">
-                      <span className="font-mono text-foreground">{ref.domain}</span>
-                      <span className="text-muted-foreground">
-                        {ref.count} views ({ref.percentage}%)
-                      </span>
+              {data.topReferrers.length === 0 ? (
+                <p className="text-xs text-muted-foreground py-6 text-center">
+                  No referring domains recorded yet. Direct or referral traffic will appear here.
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {data.topReferrers.map((ref, idx) => (
+                    <div key={idx} className="space-y-1">
+                      <div className="flex items-center justify-between text-xs font-bold">
+                        <span className="font-mono text-foreground">{ref.domain}</span>
+                        <span className="text-muted-foreground">
+                          {ref.count} views ({ref.percentage}%)
+                        </span>
+                      </div>
+                      <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                        <div
+                          style={{ width: `${ref.percentage}%` }}
+                          className="h-full bg-primary rounded-full"
+                        />
+                      </div>
                     </div>
-                    <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
-                      <div
-                        style={{ width: `${ref.percentage}%` }}
-                        className="h-full bg-primary rounded-full"
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* UTM Campaigns Table */}

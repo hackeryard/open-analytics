@@ -29,8 +29,8 @@ export async function ensureDefaultProject() {
       name: "Acme Web Application",
       slug: "acme-web-app",
       ownerId: superAdmin._id,
-      publishableKey: "pk_live_pulse_demo_8821",
-      secretKey: "sk_live_pulse_secret_demo_9921",
+      publishableKey: "pk_live_pulse_prod_8821",
+      secretKey: "sk_live_pulse_secret_prod_9921",
       allowedDomains: ["*"],
       settings: {
         ipAnonymization: true,

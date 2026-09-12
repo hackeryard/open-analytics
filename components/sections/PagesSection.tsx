@@ -44,38 +44,46 @@ export default function PagesSection({ data: propData }: { data?: AnalyticsData 
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {data.topPages.map((page, idx) => (
-                  <tr key={idx} className="hover:bg-muted/20 transition">
-                    <td className="p-3.5">
-                      <a
-                        href={String(page.pathname)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-bold text-foreground hover:text-primary flex items-center gap-1.5 font-mono"
-                      >
-                        <span>{page.pathname}</span>
-                        <ExternalLink size={11} className="text-muted-foreground" />
-                      </a>
-                      {page.title && page.title !== page.pathname && (
-                        <span className="text-[11px] text-muted-foreground block truncate max-w-md">
-                          {page.title}
-                        </span>
-                      )}
-                    </td>
-                    <td className="p-3.5 text-right font-black font-mono text-foreground">
-                      {page.views.toLocaleString()}
-                    </td>
-                    <td className="p-3.5 text-right font-mono text-muted-foreground">
-                      {page.visitors.toLocaleString()}
-                    </td>
-                    <td className="p-3.5 text-right font-mono text-emerald-600 dark:text-emerald-400 font-bold">
-                      {formatDuration(page.avgDuration)}
-                    </td>
-                    <td className="p-3.5 text-right font-mono text-muted-foreground">
-                      {page.avgScrollDepth}%
+                {data.topPages.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="p-8 text-center text-muted-foreground text-xs font-sans">
+                      No page views recorded yet. Incoming route traffic will appear here.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  data.topPages.map((page, idx) => (
+                    <tr key={idx} className="hover:bg-muted/20 transition">
+                      <td className="p-3.5">
+                        <a
+                          href={String(page.pathname)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-bold text-foreground hover:text-primary flex items-center gap-1.5 font-mono"
+                        >
+                          <span>{page.pathname}</span>
+                          <ExternalLink size={11} className="text-muted-foreground" />
+                        </a>
+                        {page.title && page.title !== page.pathname && (
+                          <span className="text-[11px] text-muted-foreground block truncate max-w-md">
+                            {page.title}
+                          </span>
+                        )}
+                      </td>
+                      <td className="p-3.5 text-right font-black font-mono text-foreground">
+                        {page.views.toLocaleString()}
+                      </td>
+                      <td className="p-3.5 text-right font-mono text-muted-foreground">
+                        {page.visitors.toLocaleString()}
+                      </td>
+                      <td className="p-3.5 text-right font-mono text-emerald-600 dark:text-emerald-400 font-bold">
+                        {formatDuration(page.avgDuration)}
+                      </td>
+                      <td className="p-3.5 text-right font-mono text-muted-foreground">
+                        {page.avgScrollDepth}%
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

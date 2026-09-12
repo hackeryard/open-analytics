@@ -71,7 +71,7 @@ export default function AiVisibilityModule({ aiVisibility }: AiVisibilityModuleP
     totalAiCrawlerHits: aiVisibility?.overview?.totalAiCrawlerHits ?? 0,
     activeAiBotsCount: aiVisibility?.overview?.activeAiBotsCount ?? 0,
     aiReferralSessions: aiVisibility?.overview?.aiReferralSessions ?? 0,
-    citationReadinessScore: aiVisibility?.overview?.citationReadinessScore ?? 50,
+    citationReadinessScore: aiVisibility?.overview?.citationReadinessScore ?? 0,
   };
 
   const crawlers = aiVisibility?.aiCrawlers || [];
@@ -79,9 +79,9 @@ export default function AiVisibilityModule({ aiVisibility }: AiVisibilityModuleP
   const crawledRoutes = aiVisibility?.topCrawledRoutes || [];
   const factors = aiVisibility?.readinessFactors || {
     structuredDataCoverage: 0,
-    cleanUrlScore: 96,
-    crawlerAccessibility: 80,
-    ttfbSpeedScore: 80,
+    cleanUrlScore: 0,
+    crawlerAccessibility: 0,
+    ttfbSpeedScore: 0,
     avgTtfb: null,
   };
 

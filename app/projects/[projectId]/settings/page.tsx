@@ -39,12 +39,13 @@ interface OwnerItem {
 
 export default function SettingsPage() {
   const params = useParams();
-  const projectId = (params?.projectId as string) || "prj_demo";
+  const projectId = (params?.projectId as string) || "";
   const [project, setProject] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [copiedKey, setCopiedKey] = useState(false);
+  const [copiedProjectId, setCopiedProjectId] = useState(false);
   const [accessDenied, setAccessDenied] = useState(false);
 
   // Team & Permission state
@@ -448,13 +449,27 @@ export default function SettingsPage() {
 
           <div className="space-y-3">
             <div>
-              <label className="text-xs font-bold text-muted-foreground block mb-1">Project ID</label>
-              <input
-                type="text"
-                readOnly
-                value={project.projectId}
-                className="w-full bg-[#080d19] border border-white/[0.1] rounded-xl px-3.5 py-2.5 text-xs font-mono text-cyan-300 select-all"
-              />
+              <label className="text-xs font-bold text-muted-foreground block mb-1">Unique Project ID (Used in Tracker Script)</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  readOnly
+                  value={project.projectId}
+                  className="flex-1 bg-[#080d19] border border-cyan-500/30 rounded-xl px-3.5 py-2.5 text-xs font-mono text-cyan-300 font-bold select-all"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(project.projectId);
+                    setCopiedProjectId(true);
+                    setTimeout(() => setCopiedProjectId(false), 2000);
+                  }}
+                  className="p-2.5 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 rounded-xl text-cyan-400 hover:text-cyan-300 transition cursor-pointer"
+                  title="Copy Unique Project ID"
+                >
+                  {copiedProjectId ? <Check size={15} className="text-emerald-400" /> : <Copy size={15} />}
+                </button>
+              </div>
             </div>
 
             <div>

@@ -9,7 +9,7 @@ export default function VerificationDocsPage() {
   const [copied, setCopied] = useState(false);
   const projectId = activeProjectId || "pulse_prj_your_key";
 
-  const curlCommand = `curl -X POST http://localhost:3005/api/v1/collect \\\n  -H "Content-Type: application/json" \\\n  -d '{"projectId": "${projectId}", "pathname": "/test-page", "title": "Test Verification", "device": "desktop"}'`;
+  const curlCommand = `curl -X POST https://pulse-analytics-seven.vercel.app/api/v1/collect \\\n  -H "Content-Type: application/json" \\\n  -d '{"projectId": "${projectId}", "pathname": "/test-page", "title": "Test Verification", "device": "desktop"}'`;
 
   const onCopy = () => {
     navigator.clipboard.writeText(curlCommand);

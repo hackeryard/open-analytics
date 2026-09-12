@@ -57,7 +57,6 @@ export default function ExecutiveOverviewDashboard() {
     timeRange,
     paginatedPageviews,
     liveVisitorCount,
-    demoMode,
     setShowNewProjectModal,
   } = usePlatform();
 
@@ -101,7 +100,7 @@ export default function ExecutiveOverviewDashboard() {
     );
   }
 
-  if (projects.length === 0 && !loading && !demoMode) {
+  if (projects.length === 0 && !loading) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center p-6">
         <div className="max-w-md w-full glass-card border border-white/[0.1] rounded-3xl p-8 text-center space-y-6 shadow-2xl">
@@ -125,7 +124,7 @@ export default function ExecutiveOverviewDashboard() {
     );
   }
 
-  const scriptTag = `<script defer src="${typeof window !== "undefined" ? window.location.origin : "http://localhost:3005"}/pulse.js" data-project-id="${activeProjectId || "prj_openlabs"}"></script>`;
+  const scriptTag = `<script defer src="https://pulse-analytics-seven.vercel.app/pulse.js" data-project-id="${activeProjectId || "prj_openlabs"}"></script>`;
 
   const copyScript = () => {
     navigator.clipboard.writeText(scriptTag);
@@ -148,7 +147,7 @@ export default function ExecutiveOverviewDashboard() {
         subtitle="Real-time multi-project telemetry, Real User Monitoring (RUM), search attribution, and automated crash triage"
       />
 
-      {error && !demoMode && (
+      {error && (
         <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/25 text-rose-300 text-xs flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <AlertCircle size={16} className="text-rose-400 shrink-0" />
@@ -213,6 +212,7 @@ export default function ExecutiveOverviewDashboard() {
         </Link>
 
         {/* Returning Users Rate */}
+        {/* Returning Users Rate */}
         <Link
           href="/returning-users"
           className="p-4 glass-card glass-card-hover rounded-2xl space-y-2 group block relative overflow-hidden"
@@ -223,11 +223,11 @@ export default function ExecutiveOverviewDashboard() {
             </span>
             <span className="text-[10px] font-bold text-emerald-400 flex items-center gap-0.5 font-mono">
               <TrendingUp size={11} />
-              +6.3%
+              {(data?.retention?.returnRate ?? overview.returnRate ?? 0) > 0 ? "Active" : "New"}
             </span>
           </div>
           <div className="text-2xl font-black font-mono text-white tracking-tight">
-            {data?.retention?.returnRate ?? overview.returnRate ?? 42.8}%
+            {data?.retention?.returnRate ?? overview.returnRate ?? 0}%
           </div>
           <div className="text-[10px] text-muted-foreground font-mono flex items-center justify-between">
             <span>Loyalty cohort rate</span>
@@ -247,12 +247,12 @@ export default function ExecutiveOverviewDashboard() {
               Avg Dwell
             </span>
             <span className="text-[10px] font-bold text-emerald-400 flex items-center gap-0.5 font-mono">
-              <TrendingUp size={11} />
-              +18.5%
+              <Clock size={11} />
+              Session
             </span>
           </div>
           <div className="text-2xl font-black font-mono text-white tracking-tight">
-            {formatDuration(overview.avgDuration || 168)}
+            {formatDuration(overview.avgDuration || 0)}
           </div>
           <div className="text-[10px] text-muted-foreground font-mono flex items-center justify-between">
             <span>Active session read</span>
@@ -272,14 +272,14 @@ export default function ExecutiveOverviewDashboard() {
               Web Vitals
             </span>
             <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 font-mono">
-              96/100
+              RUM
             </span>
           </div>
           <div className="text-2xl font-black font-mono text-emerald-400 tracking-tight">
-            {data?.webVitals?.overall?.lcp ? `${(data.webVitals.overall.lcp / 1000).toFixed(2)}s` : "1.18s"}
+            {data?.webVitals?.overall?.lcp ? `${(data.webVitals.overall.lcp / 1000).toFixed(2)}s` : "—"}
           </div>
           <div className="text-[10px] text-muted-foreground font-mono flex items-center justify-between">
-            <span>Optimal LCP speed</span>
+            <span>{data?.webVitals?.overall?.lcp ? "Measured LCP speed" : "No vitals yet"}</span>
             <span className="text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity font-bold">
               Audit &rarr;
             </span>
@@ -296,14 +296,14 @@ export default function ExecutiveOverviewDashboard() {
               AI Radar
             </span>
             <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-pink-500/20 text-pink-300 font-mono">
-              5 LLMs
+              {data?.aiVisibility?.overview?.activeAiBotsCount ?? 0} LLMs
             </span>
           </div>
           <div className="text-2xl font-black font-mono text-pink-400 tracking-tight">
-            {data?.aiVisibility?.overview?.totalAiCrawlerHits || 378}
+            {(data?.aiVisibility?.overview?.totalAiCrawlerHits ?? 0).toLocaleString()}
           </div>
           <div className="text-[10px] text-muted-foreground font-mono flex items-center justify-between">
-            <span>GPTBot, ClaudeBot</span>
+            <span>LLM scraper visits</span>
             <span className="text-pink-400 opacity-0 group-hover:opacity-100 transition-opacity font-bold">
               Radar &rarr;
             </span>
@@ -319,12 +319,14 @@ export default function ExecutiveOverviewDashboard() {
             <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground group-hover:text-rose-400 transition-colors">
               Crash Free
             </span>
-            <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 font-mono">
-              Healthy
+            <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded-full font-mono ${(data?.errorStats?.totalErrors || 0) === 0 ? "bg-emerald-500/20 text-emerald-300" : "bg-rose-500/20 text-rose-300"}`}>
+              {(data?.errorStats?.totalErrors || 0) === 0 ? "100%" : "Alert"}
             </span>
           </div>
           <div className="text-2xl font-black font-mono text-white tracking-tight">
-            99.9%
+            {overview.totalViews > 0
+              ? `${Math.max(0, Math.min(100, Math.round(((overview.totalViews - (data?.errorStats?.totalErrors || 0)) / overview.totalViews) * 1000) / 10))}%`
+              : "100%"}
           </div>
           <div className="text-[10px] text-muted-foreground font-mono flex items-center justify-between">
             <span>{data?.errorStats?.totalErrors || 0} exceptions</span>

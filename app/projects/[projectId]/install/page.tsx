@@ -7,12 +7,12 @@ import { Copy, Check, Zap, ArrowLeft, BarChart3, CheckCircle2, AlertCircle, Code
 
 export default function InstallPage() {
   const params = useParams();
-  const projectId = (params?.projectId as string) || "prj_demo";
+  const projectId = (params?.projectId as string) || "";
   const [copiedScript, setCopiedScript] = useState(false);
   const [copiedReact, setCopiedReact] = useState(false);
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState<null | { ok: boolean; message: string }>(null);
-  const [hostUrl, setHostUrl] = useState("http://localhost:3005");
+  const [hostUrl, setHostUrl] = useState("https://pulse-analytics-seven.vercel.app");
   const [loadingAuth, setLoadingAuth] = useState(true);
   const [accessDenied, setAccessDenied] = useState(false);
 
@@ -26,7 +26,7 @@ export default function InstallPage() {
   }, [projectId]);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (typeof window !== "undefined" && !window.location.host.includes("localhost")) {
       setHostUrl(window.location.origin);
     }
   }, []);

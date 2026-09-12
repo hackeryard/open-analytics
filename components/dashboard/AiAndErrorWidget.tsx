@@ -14,12 +14,8 @@ export default function AiAndErrorWidget({
   errorStats?: any;
   recentErrors?: any[];
 }) {
-  const totalBotHits = aiVisibility?.overview?.totalAiCrawlerHits ?? 378;
-  const crawlers = aiVisibility?.crawlerBreakdown || [
-    { botName: "GPTBot (OpenAI)", hits: 162, percentage: 42.8 },
-    { botName: "ClaudeBot (Anthropic)", hits: 104, percentage: 27.5 },
-    { botName: "PerplexityBot", hits: 68, percentage: 18.0 },
-  ];
+  const totalBotHits = aiVisibility?.overview?.totalAiCrawlerHits ?? 0;
+  const crawlers = aiVisibility?.aiCrawlers || aiVisibility?.crawlerBreakdown || [];
 
   const totalErrors = errorStats?.totalErrors ?? 0;
   const safeErrors = recentErrors || [];
@@ -48,20 +44,26 @@ export default function AiAndErrorWidget({
         </div>
 
         <div className="space-y-2 flex-1 pt-1">
-          {crawlers.slice(0, 3).map((c: any, i: number) => (
-            <div key={c.botName || i} className="p-2 rounded-xl bg-white/[0.02] border border-white/[0.05] flex items-center justify-between text-xs">
-              <span className="font-bold text-slate-200 truncate">{c.botName}</span>
-              <div className="flex items-center gap-2 font-mono text-[11px]">
-                <span className="text-white font-bold">{c.hits} hits</span>
-                <span className="text-pink-400">({c.percentage}%)</span>
-              </div>
+          {crawlers.length === 0 ? (
+            <div className="py-6 text-center text-xs text-muted-foreground">
+              No AI/LLM crawlers detected in this period
             </div>
-          ))}
+          ) : (
+            crawlers.slice(0, 3).map((c: any, i: number) => (
+              <div key={c.botName || i} className="p-2 rounded-xl bg-white/[0.02] border border-white/[0.05] flex items-center justify-between text-xs">
+                <span className="font-bold text-slate-200 truncate">{c.botName}</span>
+                <div className="flex items-center gap-2 font-mono text-[11px]">
+                  <span className="text-white font-bold">{c.hits || c.count || 0} hits</span>
+                  {c.percentage !== undefined && <span className="text-pink-400">({c.percentage}%)</span>}
+                </div>
+              </div>
+            ))
+          )}
         </div>
 
         <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-[10px] text-muted-foreground font-mono">
           <span className="text-pink-400 font-bold">{totalBotHits} total LLM crawler hits</span>
-          <span>Citation Readiness: 94%</span>
+          <span>{aiVisibility?.overview?.citationReadinessScore ? `Citation Readiness: ${aiVisibility.overview.citationReadinessScore}%` : "AEO Monitoring Active"}</span>
         </div>
       </div>
 
@@ -112,8 +114,8 @@ export default function AiAndErrorWidget({
         </div>
 
         <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-[10px] text-muted-foreground font-mono">
-          <span className={totalErrors === 0 ? "text-emerald-400" : "text-rose-400"}>
-            {totalErrors === 0 ? "99.98% Crash Free" : `${totalErrors} logged incidents`}
+          <span className={totalErrors === 0 ? "text-emerald-400 font-bold" : "text-rose-400 font-bold"}>
+            {totalErrors === 0 ? "100% Crash Free" : `${totalErrors} logged incidents`}
           </span>
           <span className="text-cyan-400 font-bold">1-Click AI Fix Prompts Active</span>
         </div>

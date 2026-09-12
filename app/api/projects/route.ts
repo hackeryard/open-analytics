@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
       .replace(/-+/g, "-")
       .replace(/(^-|-$)/g, "");
 
-    const projectId = generateProjectId("pulse_prj_");
+    const projectId = generateProjectId("prj_");
     const publishableKey = generateApiKey("pk");
     const secretKey = generateApiKey("sk");
 

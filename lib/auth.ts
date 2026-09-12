@@ -35,15 +35,16 @@ export async function comparePassword(password: string, hash: string): Promise<b
   return bcrypt.compare(password, hash);
 }
 
-export function generateProjectId(prefix = "pulse_prj_"): string {
-  const rand = Math.random().toString(36).substring(2, 8);
-  const time = Date.now().toString(36);
-  return `${prefix}${rand}${time}`;
+import crypto from "crypto";
+
+export function generateProjectId(prefix = "prj_"): string {
+  const rand = crypto.randomBytes(8).toString("hex");
+  return `${prefix}${rand}`;
 }
 
 export function generateApiKey(type: "pk" | "sk" = "pk"): string {
-  const rand = Math.random().toString(16).substring(2, 10) + Math.random().toString(16).substring(2, 10);
-  return `${type}_live_pulse_${rand}`;
+  const rand = crypto.randomBytes(16).toString("hex");
+  return `${type}_live_${rand}`;
 }
 
 export const ROLE_HIERARCHY: Record<string, number> = {

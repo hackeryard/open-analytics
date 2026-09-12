@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
     });
 
     // Auto-create initial project with unique ID
-    const uniqueProjectId = generateProjectId("pulse_prj_");
+    const uniqueProjectId = generateProjectId("prj_");
     const projectSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") + "-app";
     const initialProject = await (Project as any).create({
       projectId: uniqueProjectId,

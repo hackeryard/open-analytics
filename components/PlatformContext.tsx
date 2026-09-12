@@ -2,7 +2,6 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import { AnalyticsData, PageViewItem } from "@/lib/analyticsTypes";
-import { generateDemoTelemetry } from "@/lib/demoTelemetry";
 
 interface User {
   _id: string;
@@ -34,10 +33,6 @@ interface PlatformContextType {
   loading: boolean;
   error: string | null;
   fetchData: (range?: string, projectId?: string) => Promise<void>;
-
-  // Demo telemetry mode
-  demoMode: boolean;
-  setDemoMode: (enabled: boolean) => void;
   liveVisitorCount: number;
 
   // Live Page Views pagination
@@ -80,6 +75,7 @@ interface PlatformContextType {
   ) => Promise<void>;
 
   // New Project Modal & Auth
+  checkAuth: () => Promise<boolean>;
   showNewProjectModal: boolean;
   setShowNewProjectModal: (s: boolean) => void;
   handleCreateProject: (name: string, domains: string) => Promise<boolean>;
@@ -97,24 +93,7 @@ export function PlatformProvider({ children }: { children: React.ReactNode }) {
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // Demo Telemetry Mode (Defaults to true if newly opened so user sees vibrant analytics)
-  const [demoMode, setDemoModeState] = useState<boolean>(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("pulse_demo_mode");
-      if (saved !== null) return saved === "true";
-    }
-    return true; // Default to vibrant demo mode on first visit
-  });
-
-  const setDemoMode = useCallback((enabled: boolean) => {
-    setDemoModeState(enabled);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("pulse_demo_mode", enabled ? "true" : "false");
-    }
-  }, []);
-
-  const [liveVisitorCount, setLiveVisitorCount] = useState<number>(14);
+  const [liveVisitorCount, setLiveVisitorCount] = useState<number>(0);
 
   // Live stream & pagination
   const [paginatedPageviews, setPaginatedPageviews] = useState<PageViewItem[]>([]);
@@ -168,73 +147,75 @@ export function PlatformProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Auth & Project Initialization
-  useEffect(() => {
+  // Auth & Project Resolution
+  const checkAuth = useCallback(async (): Promise<boolean> => {
     const isPublicPath = typeof window !== "undefined" && (
       window.location.pathname.startsWith("/login") ||
       window.location.pathname.startsWith("/register") ||
       window.location.pathname.startsWith("/docs")
     );
 
-    fetch("/api/auth/me")
-      .then((r) => r.json())
-      .then((d) => {
-        setAuthChecked(true);
-        if (d.authenticated && d.user) {
-          setCurrentUser(d.user);
-          if (Array.isArray(d.projects) && d.projects.length > 0) {
-            setProjects(d.projects);
+    try {
+      const r = await fetch("/api/auth/me");
+      const d = await r.json();
+      setAuthChecked(true);
 
-            // Determine initial active project
-            let selectedId = d.projects[0].projectId;
-            if (typeof window !== "undefined") {
-              const urlParams = new URLSearchParams(window.location.search);
-              const urlPrj = urlParams.get("project");
-              const savedPrj = localStorage.getItem("pulse_active_project");
-              if (urlPrj && d.projects.some((p: Project) => p.projectId === urlPrj)) {
-                selectedId = urlPrj;
-              } else if (savedPrj && d.projects.some((p: Project) => p.projectId === savedPrj)) {
-                selectedId = savedPrj;
-              }
-            }
-            setActiveProjectIdState(selectedId);
-          }
-        } else if (!isPublicPath) {
+      if (d.authenticated && d.user) {
+        setCurrentUser(d.user);
+        if (Array.isArray(d.projects) && d.projects.length > 0) {
+          setProjects(d.projects);
+
+          // Determine initial active project
+          let selectedId = d.projects[0].projectId;
           if (typeof window !== "undefined") {
-            const redirect = encodeURIComponent(window.location.pathname);
-            window.location.href = `/login?redirect=${redirect}`;
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlPrj = urlParams.get("project");
+            const savedPrj = localStorage.getItem("pulse_active_project");
+            if (urlPrj && d.projects.some((p: Project) => p.projectId === urlPrj)) {
+              selectedId = urlPrj;
+            } else if (savedPrj && d.projects.some((p: Project) => p.projectId === savedPrj)) {
+              selectedId = savedPrj;
+            }
           }
+          setActiveProjectIdState(selectedId);
         }
-      })
-      .catch((err) => {
-        console.error("Auth check failed:", err);
-        setAuthChecked(true);
+        return true;
+      } else {
+        setCurrentUser(null);
+        setProjects([]);
         if (!isPublicPath && typeof window !== "undefined") {
-          window.location.href = "/login";
+          const redirect = encodeURIComponent(window.location.pathname);
+          window.location.href = `/login?redirect=${redirect}`;
         }
-      });
+        return false;
+      }
+    } catch (err) {
+      console.error("Auth check failed:", err);
+      setAuthChecked(true);
+      setCurrentUser(null);
+      setProjects([]);
+      if (!isPublicPath && typeof window !== "undefined") {
+        window.location.href = "/login";
+      }
+      return false;
+    }
+  }, []);
+
+  useEffect(() => {
+    checkAuth();
 
     // Restore saved time range if exists
     if (typeof window !== "undefined") {
       const savedRange = localStorage.getItem("pulse_time_range");
       if (savedRange) setTimeRangeState(savedRange);
     }
-  }, []);
+  }, [checkAuth]);
 
   // Fetch project analytics
   const fetchData = useCallback(
     async (range?: string, projectId?: string) => {
       const prj = projectId || activeProjectId;
       const r = range || timeRange;
-
-      if (demoMode) {
-        setLoading(true);
-        const demo = generateDemoTelemetry(r);
-        setData(demo.analytics);
-        setLiveVisitorCount(demo.liveVisitorCount);
-        setLoading(false);
-        return;
-      }
 
       if (!prj) return;
       setLoading(true);
@@ -259,7 +240,7 @@ export function PlatformProvider({ children }: { children: React.ReactNode }) {
         setLoading(false);
       }
     },
-    [activeProjectId, timeRange, demoMode]
+    [activeProjectId, timeRange]
   );
 
   // Fetch paginated pageviews
@@ -273,22 +254,6 @@ export function PlatformProvider({ children }: { children: React.ReactNode }) {
       range = pvTimeRange,
       projectId = activeProjectId
     ) => {
-      if (demoMode) {
-        setPvLoading(true);
-        const demo = generateDemoTelemetry(range);
-        setPaginatedPageviews(demo.pageviews);
-        setPvPagination({
-          total: demo.pageviews.length,
-          page: 1,
-          limit: 50,
-          totalPages: 1,
-          hasPrevPage: false,
-          hasNextPage: false,
-        });
-        setPvLoading(false);
-        return;
-      }
-
       if (!projectId) return;
       setPvLoading(true);
       try {
@@ -322,14 +287,14 @@ export function PlatformProvider({ children }: { children: React.ReactNode }) {
         setPvLoading(false);
       }
     },
-    [activeProjectId, pvPage, pvLimit, pvUserType, pvQuery, pvSort, pvTimeRange, pvDevice, demoMode]
+    [activeProjectId, pvPage, pvLimit, pvUserType, pvQuery, pvSort, pvTimeRange, pvDevice]
   );
 
-  // Auto-fetch on project, demoMode or time range change
+  // Auto-fetch on project or time range change
   useEffect(() => {
     fetchData(timeRange, activeProjectId);
     fetchPaginatedPageviews(1, pvLimit, pvUserType, pvQuery, pvSort, timeRange, activeProjectId);
-  }, [activeProjectId, timeRange, demoMode, fetchData, fetchPaginatedPageviews, pvLimit, pvUserType, pvQuery, pvSort]);
+  }, [activeProjectId, timeRange, fetchData, fetchPaginatedPageviews, pvLimit, pvUserType, pvQuery, pvSort]);
 
   // Project creation
   const handleCreateProject = async (name: string, domains: string): Promise<boolean> => {
@@ -376,8 +341,6 @@ export function PlatformProvider({ children }: { children: React.ReactNode }) {
         loading,
         error,
         fetchData,
-        demoMode,
-        setDemoMode,
         liveVisitorCount,
         paginatedPageviews,
         pvPagination,
@@ -401,6 +364,7 @@ export function PlatformProvider({ children }: { children: React.ReactNode }) {
         jumpPageInput,
         setJumpPageInput,
         fetchPaginatedPageviews,
+        checkAuth,
         showNewProjectModal,
         setShowNewProjectModal,
         handleCreateProject,

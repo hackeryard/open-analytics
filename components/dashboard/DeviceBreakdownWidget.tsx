@@ -11,18 +11,8 @@ export default function DeviceBreakdownWidget({
   devices?: { device: string; count: number; percentage: number }[];
   browsers?: { browser: string; count: number; percentage: number }[];
 }) {
-  const safeDevices = devices || [
-    { device: "desktop", count: 65, percentage: 65 },
-    { device: "mobile", count: 30, percentage: 30 },
-    { device: "tablet", count: 5, percentage: 5 },
-  ];
-
-  const safeBrowsers = browsers || [
-    { browser: "Chrome", count: 64, percentage: 64 },
-    { browser: "Safari", count: 22, percentage: 22 },
-    { browser: "Edge", count: 8, percentage: 8 },
-    { browser: "Firefox", count: 6, percentage: 6 },
-  ];
+  const safeDevices = devices || [];
+  const safeBrowsers = browsers || [];
 
   const getDeviceIcon = (type: string) => {
     switch (type.toLowerCase()) {
@@ -58,51 +48,59 @@ export default function DeviceBreakdownWidget({
 
       {/* Segmented Device Ratio Bar */}
       <div className="space-y-2 flex-1 pt-1">
-        <div className="space-y-1.5">
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>Platform Form Factors</span>
-            <span className="font-mono text-white text-[11px]">
-              {safeDevices.map((d) => `${d.percentage}% ${d.device}`).join(" • ")}
-            </span>
+        {safeDevices.length === 0 ? (
+          <div className="py-6 text-center text-xs text-muted-foreground">
+            No client device fingerprints recorded yet
           </div>
+        ) : (
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>Platform Form Factors</span>
+              <span className="font-mono text-white text-[11px]">
+                {safeDevices.map((d) => `${d.percentage}% ${d.device}`).join(" • ")}
+              </span>
+            </div>
 
-          <div className="h-2.5 w-full bg-white/[0.05] rounded-full overflow-hidden flex">
-            {safeDevices.map((d) => {
-              const bg =
-                d.device === "mobile"
-                  ? "bg-cyan-500"
-                  : d.device === "tablet"
-                  ? "bg-purple-500"
-                  : "bg-blue-600";
-              return (
-                <div
-                  key={d.device}
-                  style={{ width: `${d.percentage}%` }}
-                  className={`h-full ${bg} transition-all`}
-                  title={`${d.device}: ${d.percentage}%`}
-                />
-              );
-            })}
+            <div className="h-2.5 w-full bg-white/[0.05] rounded-full overflow-hidden flex">
+              {safeDevices.map((d) => {
+                const bg =
+                  d.device === "mobile"
+                    ? "bg-cyan-500"
+                    : d.device === "tablet"
+                    ? "bg-purple-500"
+                    : "bg-blue-600";
+                return (
+                  <div
+                    key={d.device}
+                    style={{ width: `${d.percentage}%` }}
+                    className={`h-full ${bg} transition-all`}
+                    title={`${d.device}: ${d.percentage}%`}
+                  />
+                );
+              })}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Top Browsers list */}
-        <div className="pt-2 space-y-2">
-          <div className="text-[10px] font-extrabold uppercase text-muted-foreground tracking-wider">
-            Top Client Browsers
+        {safeBrowsers.length > 0 && (
+          <div className="pt-2 space-y-2">
+            <div className="text-[10px] font-extrabold uppercase text-muted-foreground tracking-wider">
+              Top Client Browsers
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {safeBrowsers.slice(0, 4).map((b) => (
+                <div
+                  key={b.browser}
+                  className="p-2 rounded-xl bg-white/[0.02] border border-white/[0.05] flex items-center justify-between text-xs"
+                >
+                  <span className="font-bold text-slate-300 truncate">{b.browser}</span>
+                  <span className="font-mono font-bold text-cyan-400 text-[11px]">{b.percentage}%</span>
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="grid grid-cols-2 gap-2">
-            {safeBrowsers.slice(0, 4).map((b) => (
-              <div
-                key={b.browser}
-                className="p-2 rounded-xl bg-white/[0.02] border border-white/[0.05] flex items-center justify-between text-xs"
-              >
-                <span className="font-bold text-slate-300 truncate">{b.browser}</span>
-                <span className="font-mono font-bold text-cyan-400 text-[11px]">{b.percentage}%</span>
-              </div>
-            ))}
-          </div>
-        </div>
+        )}
       </div>
 
       <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-[10px] text-muted-foreground font-mono">

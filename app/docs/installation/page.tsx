@@ -19,8 +19,8 @@ export default function InstallationDocsPage() {
   const [testResult, setTestResult] = useState<null | { ok: boolean; message: string }>(null);
   const [testing, setTesting] = useState(false);
 
-  const projectId = activeProjectId || "pulse_prj_demo_your_key";
-  const host = typeof window !== "undefined" ? window.location.origin : "http://localhost:3005";
+  const projectId = activeProjectId || "pulse_prj_your_key";
+  const host = typeof window !== "undefined" && !window.location.host.includes("localhost") ? window.location.origin : "https://pulse-analytics-seven.vercel.app";
 
   const handleCopy = (id: string, text: string) => {
     navigator.clipboard.writeText(text);

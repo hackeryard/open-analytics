@@ -28,7 +28,7 @@ It provides complete insight into user experience, performance bottlenecks, rage
 To start tracking any website, paste this single line inside your HTML `<head>`:
 
 ```html
-<script defer src="http://localhost:3005/pulse.js" data-project-id="prj_your_project_id"></script>
+<script defer src="https://pulse-analytics-seven.vercel.app/pulse.js" data-project-id="prj_your_project_id"></script>
 ```
 
 ### Optional Configuration Attributes
@@ -54,7 +54,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <PulseTracker 
           projectId="prj_production_app" 
-          endpoint="http://localhost:3005" 
+          endpoint="https://pulse-analytics-seven.vercel.app" 
         />
       </head>
       <body>{children}</body>
@@ -146,27 +146,25 @@ npm install
 Create a `.env.local` file in the root directory:
 ```env
 MONGO_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/pulse_analytics?retryWrites=true&w=majority
-NEXT_PUBLIC_APP_URL=http://localhost:3005
-NODE_ENV=development
+NEXT_PUBLIC_APP_URL=https://pulse-analytics-seven.vercel.app
+NODE_ENV=production
 ```
 
 ### 4. Run Development Server
 ```bash
 npm run dev
 ```
-Open [http://localhost:3005](http://localhost:3005) in your browser.
+Open your browser to test locally or view the deployed version at [https://pulse-analytics-seven.vercel.app](https://pulse-analytics-seven.vercel.app).
 
 ---
 
-## 🔄 OpenLabs Cutover & Migration
+## 🔄 Live Deployment & Integration
 
-1. Keep OpenLabs running as-is.
-2. In OpenLabs (`d:openlabsapplayout.tsx`), add the 1-line tracking script:
+1. In your client website (`app/layout.tsx` or `index.html`), add the 1-line tracking script:
    ```html
-   <script defer src="http://localhost:3005/pulse.js" data-project-id="prj_openlabs"></script>
+   <script defer src="https://pulse-analytics-seven.vercel.app/pulse.js" data-project-id="prj_your_project_id"></script>
    ```
-3. Verify that real-time student activity, Core Web Vitals, and lab completions stream into Pulse Analytics at [http://localhost:3005](http://localhost:3005).
-4. Once verified, the legacy embedded tracking component (`OpenLabsTracker.tsx`) and legacy admin analytics routes in OpenLabs can be retired.
+2. Verify that real-time visitor activity, Core Web Vitals, and errors stream into Pulse Analytics at [https://pulse-analytics-seven.vercel.app](https://pulse-analytics-seven.vercel.app).
 
 ---
 

@@ -60,8 +60,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     loading,
     pvLoading,
     fetchData,
-    demoMode,
-    setDemoMode,
     liveVisitorCount,
     showNewProjectModal,
     setShowNewProjectModal,
@@ -106,7 +104,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     setTimeout(() => setCopiedSnippet(false), 2500);
   };
 
-  const hostUrl = typeof window !== "undefined" ? window.location.origin : "http://localhost:3005";
+  const hostUrl = typeof window !== "undefined" && !window.location.host.includes("localhost") ? window.location.origin : "https://pulse-analytics-seven.vercel.app";
   const prjKey = activeProjectId || "prj_openlabs";
 
   const sendTestPing = async () => {
@@ -167,7 +165,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     {
       group: "Product & Audience",
       items: [
-        { href: "/returning-users", label: "Retention & Cohorts", icon: UserCheck, badge: `${data?.retention?.returnRate ?? data?.overview?.returnRate ?? 42}%` },
+        { href: "/returning-users", label: "Retention & Cohorts", icon: UserCheck, badge: (data?.retention?.returnRate !== undefined || data?.overview?.returnRate !== undefined) ? `${data?.retention?.returnRate ?? data?.overview?.returnRate ?? 0}%` : undefined },
         { href: "/journeys", label: "User Journeys", icon: Share2 },
         { href: "/pages", label: "Top Pages & Routes", icon: Layers, badge: data?.topPages?.length ? `${data.topPages.length}` : undefined },
         { href: "/events", label: "Custom Events", icon: Zap, badge: data?.recentEvents?.length ? `${data.recentEvents.length}` : undefined },
@@ -179,7 +177,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     {
       group: "Performance & Quality",
       items: [
-        { href: "/vitals", label: "Web Vitals (RUM)", icon: Activity, badge: data?.webVitals?.overall?.lcp ? `${(data.webVitals.overall.lcp / 1000).toFixed(2)}s` : "Optimal" },
+        { href: "/vitals", label: "Web Vitals (RUM)", icon: Activity, badge: data?.webVitals?.overall?.lcp ? `${(data.webVitals.overall.lcp / 1000).toFixed(2)}s` : undefined },
         { href: "/errors", label: "Crash & Errors", icon: Bug, badge: data?.errorStats?.totalErrors ? `${data.errorStats.totalErrors}` : "0", alert: (data?.errorStats?.totalErrors || 0) > 0 },
         { href: "/ux", label: "Behavioral UX", icon: Flame, badge: data?.behavioralSignals?.rageClicks?.length ? `${data.behavioralSignals.rageClicks.length} rage` : undefined },
         { href: "/tech", label: "Devices & Tech", icon: Laptop },
@@ -275,8 +273,8 @@ export default function App() {
   -d '{
     "type": "pageview",
     "projectId": "${prjKey}",
-    "pathname": "/api-demo",
-    "title": "API Ping Test",
+    "pathname": "/",
+    "title": "Production Landing",
     "country": "US"
   }'`,
     },
@@ -597,24 +595,10 @@ export default function App() {
             </div>
           </div>
 
-          {/* Right: Date Picker, Demo Toggle Pill, Quick Actions */}
+          {/* Right: Date Picker & Quick Actions */}
           <div className="flex items-center gap-2 shrink-0">
             {/* Compact Date Range Navigator */}
             <DateRangeNavigator value={timeRange} onChange={setTimeRange} />
-
-            {/* Compact Demo / Live Mode Switch */}
-            <button
-              onClick={() => setDemoMode(!demoMode)}
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-bold transition cursor-pointer ${
-                demoMode
-                  ? "bg-violet-500/15 border-violet-500/30 text-violet-300 hover:bg-violet-500/25 shadow-xs shadow-violet-500/20"
-                  : "bg-white/[0.04] border-white/[0.08] text-slate-400 hover:text-white"
-              }`}
-              title={demoMode ? "Demo Mode Active (28.4k simulated events). Click to switch to live DB." : "Live Database Mode. Click for Demo Telemetry."}
-            >
-              <span className={`w-1.5 h-1.5 rounded-full ${demoMode ? "bg-violet-400 animate-pulse" : "bg-slate-500"}`} />
-              <span>{demoMode ? "Demo Data" : "Live DB"}</span>
-            </button>
 
             {/* Quick Install Snippet Button */}
             <button

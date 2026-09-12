@@ -248,9 +248,9 @@ export default function LiveFeedSection() {
                                 {pv.userId.name || pv.userId.email}
                               </span>
                               {pv.isReturning || (pv.visitCount && pv.visitCount > 1) ? (
-                                <span className="px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 font-sans font-bold text-[9px] border border-blue-500/20 inline-flex items-center gap-1" title={`Returning visitor (${pv.visitCount || 2} total visits)`}>
+                                <span className="px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 font-sans font-bold text-[9px] border border-blue-500/20 inline-flex items-center gap-1" title={`Returning visitor (${pv.visitCount ? `${pv.visitCount} total visits` : "Multiple visits"})`}>
                                   <Repeat size={8} />
-                                  <span>Return #{pv.visitCount || 2}</span>
+                                  <span>{pv.visitCount ? `Return #${pv.visitCount}` : "Returning"}</span>
                                 </span>
                               ) : (
                                 <span className="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-sans font-bold text-[9px] border border-emerald-500/20 inline-flex items-center gap-1" title="First-time new visitor">
@@ -275,9 +275,9 @@ export default function LiveFeedSection() {
                                 Guest
                               </span>
                               {pv.isReturning || (pv.visitCount && pv.visitCount > 1) ? (
-                                <span className="px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 font-sans font-bold text-[9px] border border-blue-500/20 inline-flex items-center gap-1" title={`Returning guest (${pv.visitCount || 2} total visits)`}>
+                                <span className="px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 font-sans font-bold text-[9px] border border-blue-500/20 inline-flex items-center gap-1" title={`Returning guest (${pv.visitCount ? `${pv.visitCount} total visits` : "Multiple visits"})`}>
                                   <Repeat size={8} />
-                                  <span>Return #{pv.visitCount || 2}</span>
+                                  <span>{pv.visitCount ? `Return #${pv.visitCount}` : "Returning"}</span>
                                 </span>
                               ) : (
                                 <span className="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-sans font-bold text-[9px] border border-emerald-500/20 inline-flex items-center gap-1" title="First-time new guest">

@@ -21,7 +21,7 @@ export default function DocsOverviewPage() {
   const { activeProjectId } = usePlatform();
   const [copied, setCopied] = useState(false);
   const projectId = activeProjectId || "pulse_prj_your_key";
-  const snippet = `<script defer src="http://localhost:3005/pulse.js" data-project-id="${projectId}"></script>`;
+  const snippet = `<script defer src="https://pulse-analytics-seven.vercel.app/pulse.js" data-project-id="${projectId}"></script>`;
 
   const onCopy = () => {
     navigator.clipboard.writeText(snippet);

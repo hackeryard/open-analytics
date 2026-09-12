@@ -16,21 +16,21 @@ export default function WebVitalsRadarWidget({
   const ttfb = overall.ttfb;
 
   const getLcpStatus = (val?: number) => {
-    if (!val) return { label: "Good", color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" };
+    if (!val) return { label: "N/A", color: "text-muted-foreground bg-muted/20 border-white/[0.08]" };
     if (val <= 2500) return { label: "Good", color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" };
     if (val <= 4000) return { label: "Needs Imp", color: "text-amber-400 bg-amber-500/10 border-amber-500/20" };
     return { label: "Poor", color: "text-rose-400 bg-rose-500/10 border-rose-500/20" };
   };
 
   const getInpStatus = (val?: number) => {
-    if (!val) return { label: "Good", color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" };
+    if (!val) return { label: "N/A", color: "text-muted-foreground bg-muted/20 border-white/[0.08]" };
     if (val <= 200) return { label: "Good", color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" };
     if (val <= 500) return { label: "Needs Imp", color: "text-amber-400 bg-amber-500/10 border-amber-500/20" };
     return { label: "Poor", color: "text-rose-400 bg-rose-500/10 border-rose-500/20" };
   };
 
   const getClsStatus = (val?: number) => {
-    if (val === undefined || val === null) return { label: "Good", color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" };
+    if (val === undefined || val === null) return { label: "N/A", color: "text-muted-foreground bg-muted/20 border-white/[0.08]" };
     if (val <= 0.1) return { label: "Good", color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" };
     if (val <= 0.25) return { label: "Needs Imp", color: "text-amber-400 bg-amber-500/10 border-amber-500/20" };
     return { label: "Poor", color: "text-rose-400 bg-rose-500/10 border-rose-500/20" };
@@ -72,7 +72,7 @@ export default function WebVitalsRadarWidget({
           </div>
           <div>
             <div className="text-lg font-black font-mono text-white">
-              {lcp ? `${(lcp / 1000).toFixed(2)}s` : "1.18s"}
+              {lcp ? `${(lcp / 1000).toFixed(2)}s` : "—"}
             </div>
             <div className="text-[10px] text-muted-foreground">Largest Contentful</div>
           </div>
@@ -89,7 +89,7 @@ export default function WebVitalsRadarWidget({
           </div>
           <div>
             <div className="text-lg font-black font-mono text-white">
-              {inp ? `${inp}ms` : "42ms"}
+              {inp ? `${inp}ms` : "—"}
             </div>
             <div className="text-[10px] text-muted-foreground">Next Paint Responsiveness</div>
           </div>
@@ -106,7 +106,7 @@ export default function WebVitalsRadarWidget({
           </div>
           <div>
             <div className="text-lg font-black font-mono text-white">
-              {cls !== undefined ? cls : "0.015"}
+              {cls !== undefined && cls !== null ? cls : "—"}
             </div>
             <div className="text-[10px] text-muted-foreground">Layout Shift Stability</div>
           </div>
@@ -117,9 +117,9 @@ export default function WebVitalsRadarWidget({
       <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-[10px] text-muted-foreground font-mono">
         <span className="text-emerald-400 font-bold flex items-center gap-1">
           <ShieldCheck size={13} />
-          <span>SEO Ranking Boost Active</span>
+          <span>RUM Telemetry Engine</span>
         </span>
-        <span>TTFB: {ttfb ? `${ttfb}ms` : "142ms"}</span>
+        <span>TTFB: {ttfb ? `${ttfb}ms` : "—"}</span>
       </div>
     </div>
   );

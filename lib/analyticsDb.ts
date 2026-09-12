@@ -1483,14 +1483,17 @@ export async function getProjectAnalytics(
   const aiReferralSessions = (aiReferrersRaw || []).reduce((acc: number, curr: any) => acc + (curr.count || 0), 0);
 
   const rawAiReadiness = (aiReadinessRaw && aiReadinessRaw[0]) || {};
-  const checkedPages = rawAiReadiness.totalChecked || 1;
-  const structuredDataCoverage = Math.min(100, Math.round(((rawAiReadiness.structuredDataCount || 0) / checkedPages) * 100));
+  const checkedPages = rawAiReadiness.totalChecked || 0;
+  const structuredDataCoverage = checkedPages > 0 ? Math.min(100, Math.round(((rawAiReadiness.structuredDataCount || 0) / checkedPages) * 100)) : 0;
   const avgTtfb = rawAiReadiness.avgTtfb ? Math.round(rawAiReadiness.avgTtfb) : null;
 
   const structuredScore = Math.round((structuredDataCoverage / 100) * 40);
-  const crawlScore = totalAiCrawlerHits > 0 ? 30 : 20;
-  const speedScore = avgTtfb ? (avgTtfb < 300 ? 30 : avgTtfb < 600 ? 20 : 10) : 25;
-  const citationReadinessScore = Math.min(100, Math.max(15, structuredScore + crawlScore + speedScore));
+  const crawlScore = totalAiCrawlerHits > 0 ? 30 : (checkedPages > 0 ? 10 : 0);
+  const speedScore = avgTtfb ? (avgTtfb < 300 ? 30 : avgTtfb < 600 ? 20 : 10) : (checkedPages > 0 ? 15 : 0);
+  const cleanUrlScore = checkedPages > 0 ? 100 : 0;
+  const crawlerAccessibility = totalAiCrawlerHits > 0 ? 100 : (checkedPages > 0 ? 80 : 0);
+  const ttfbSpeedScore = avgTtfb ? Math.round(speedScore * (100 / 30)) : (checkedPages > 0 ? 50 : 0);
+  const citationReadinessScore = checkedPages > 0 ? Math.min(100, structuredScore + crawlScore + speedScore) : 0;
 
   const formattedAiCrawlers = (aiCrawlersRaw || []).map((b: any) => ({
     botName: b.botName,
@@ -1527,9 +1530,9 @@ export async function getProjectAnalytics(
     topCrawledRoutes: formattedTopCrawledRoutes,
     readinessFactors: {
       structuredDataCoverage,
-      cleanUrlScore: 96,
-      crawlerAccessibility: totalAiCrawlerHits > 0 ? 100 : 80,
-      ttfbSpeedScore: Math.round(speedScore * (100 / 30)),
+      cleanUrlScore,
+      crawlerAccessibility,
+      ttfbSpeedScore,
       avgTtfb,
     },
   };
