@@ -11,8 +11,8 @@ export default function DedicatedPage() {
   return (
     <div className="min-h-screen bg-background text-foreground p-4 sm:p-6 lg:p-8 space-y-6">
       <PlatformHeader
-        title="AI & AEO Visibility Intelligence"
-        subtitle="Autonomous LLM crawler radar (GPTBot, ClaudeBot, PerplexityBot), ChatGPT citations, and AI Citation Readiness"
+        title="GEO & AEO Visibility Radar"
+        subtitle="Generative Engine Optimization (GEO) & LLM crawler detection (GPTBot, ClaudeBot, Perplexity), AI citations, and structured data readiness"
       />
       {loading && !data ? (
         <div className="p-16 text-center text-xs font-semibold text-muted-foreground flex items-center justify-center gap-2">

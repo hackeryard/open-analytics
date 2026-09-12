@@ -56,9 +56,12 @@ export interface PageViewItem {
   };
   network?: {
     effectiveType?: string;
+    rawEffectiveType?: string;
+    type?: string;
     downlink?: number | null;
     rtt?: number | null;
     saveData?: boolean;
+    is5G?: boolean;
   };
   isBounce?: boolean;
   exitIntent?: boolean;

@@ -407,9 +407,15 @@ export default function LiveFeedSection() {
                         </div>
                         {pv.network?.effectiveType && (
                           <div className="flex items-center gap-1 text-[9px] font-mono text-muted-foreground mt-0.5">
-                            <span className="px-1 py-0.2 rounded bg-muted text-foreground uppercase font-bold border border-border/60">
-                              {pv.network.effectiveType}
+                            <span className={`px-1 py-0.2 rounded uppercase font-bold border ${pv.network.effectiveType === "5g" || pv.network.is5G
+                              ? "bg-cyan-500/20 text-cyan-400 border-cyan-500/30"
+                              : "bg-muted text-foreground border-border/60"
+                              }`}>
+                              {pv.network.is5G ? "⚡ 5G" : pv.network.effectiveType}
                             </span>
+                            {pv.network.downlink ? (
+                              <span className="text-[9px] text-muted-foreground">&bull; {pv.network.downlink}Mbps</span>
+                            ) : null}
                             {pv.hardware?.gpu && (
                               <span className="truncate max-w-[120px] text-[9px]" title={pv.hardware.gpu}>
                                 &bull; {pv.hardware.gpu}

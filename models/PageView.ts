@@ -185,9 +185,12 @@ const PageViewSchema = new mongoose.Schema(
     },
     network: {
       effectiveType: { type: String, default: "" },
+      rawEffectiveType: { type: String, default: "" },
+      type: { type: String, default: "" },
       downlink: { type: Number, default: null },
       rtt: { type: Number, default: null },
       saveData: { type: Boolean, default: false },
+      is5G: { type: Boolean, default: false },
     },
     isBounce: {
       type: Boolean,

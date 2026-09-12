@@ -89,7 +89,7 @@
 
     if (navigator.sendBeacon) {
       try {
-        const blob = new Blob([payload], { type: "application/json" });
+        const blob = new Blob([payload], { type: "text/plain;charset=UTF-8" });
         if (navigator.sendBeacon(fullUrl, blob)) return;
       } catch (e) {}
     }
@@ -97,9 +97,10 @@
     try {
       fetch(fullUrl, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "X-API-Key": apiKey },
+        headers: { "Content-Type": "text/plain;charset=UTF-8" },
         body: payload,
         keepalive: true,
+        mode: "cors",
       }).catch(function() {});
     } catch (e) {}
   }
@@ -153,6 +154,30 @@
     } catch (e) {}
 
     const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    const rawEffectiveType = conn ? conn.effectiveType || "" : "";
+    const connType = conn ? conn.type || "" : "";
+    const downlink = (conn && typeof conn.downlink === "number") ? conn.downlink : null;
+    const rtt = (conn && typeof conn.rtt === "number") ? conn.rtt : null;
+    const saveData = Boolean(conn && conn.saveData);
+
+    // 5G Detection Engine:
+    // W3C Network Information API historically caps effectiveType string at '4g'.
+    // 5G networks are identified via explicit '5g' indicators or high-speed cellular metrics (downlink >= 10 Mbps and RTT <= 50ms).
+    let effectiveType = rawEffectiveType;
+    let is5G = false;
+
+    if (rawEffectiveType === "5g" || connType === "5g" || connType === "cellular-5g") {
+      effectiveType = "5g";
+      is5G = true;
+    } else if (rawEffectiveType === "4g") {
+      if (connType === "cellular" && (downlink >= 10 || (rtt && rtt <= 50))) {
+        effectiveType = "5g";
+        is5G = true;
+      } else if (isMobile && downlink >= 10 && rtt && rtt <= 45 && connType !== "wifi") {
+        effectiveType = "5g";
+        is5G = true;
+      }
+    }
 
     return {
       device: device,
@@ -170,10 +195,13 @@
         touchPoints: navigator.maxTouchPoints || 0,
       },
       network: {
-        effectiveType: conn ? conn.effectiveType || "" : "",
-        downlink: (conn && typeof conn.downlink === "number") ? conn.downlink : null,
-        rtt: (conn && typeof conn.rtt === "number") ? conn.rtt : null,
-        saveData: Boolean(conn && conn.saveData),
+        effectiveType: effectiveType,
+        rawEffectiveType: rawEffectiveType,
+        type: connType,
+        downlink: downlink,
+        rtt: rtt,
+        saveData: saveData,
+        is5G: is5G,
       },
     };
   }

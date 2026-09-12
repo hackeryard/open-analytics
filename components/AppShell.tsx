@@ -186,10 +186,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     {
       group: "Growth & Radar",
       items: [
-        { href: "/geo", label: "GEO World Atlas", icon: Globe, badge: data?.countries?.length ? `${data.countries.length}` : undefined },
+        { href: "/geo", label: "Audience Geography", icon: Globe, badge: data?.countries?.length ? `${data.countries.length}` : undefined },
         { href: "/acquisition", label: "Acquisition & Sources", icon: Compass },
         { href: "/seo", label: "SEO & Search", icon: Search },
-        { href: "/ai-aeo", label: "AI & AEO Radar", icon: Bot, badge: data?.aiVisibility?.overview?.totalAiCrawlerHits ? `${data.aiVisibility.overview.totalAiCrawlerHits}` : undefined },
+        { href: "/ai-aeo", label: "GEO & AI Radar", icon: Bot, badge: data?.aiVisibility?.overview?.totalAiCrawlerHits ? `${data.aiVisibility.overview.totalAiCrawlerHits}` : undefined },
       ],
     },
     {

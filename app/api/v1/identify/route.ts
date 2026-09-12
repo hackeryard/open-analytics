@@ -10,7 +10,17 @@ export async function OPTIONS(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json().catch(() => ({}));
+    let body: any = {};
+    try {
+      body = await req.json();
+    } catch {
+      try {
+        const text = await req.text();
+        body = text ? JSON.parse(text) : {};
+      } catch {
+        body = {};
+      }
+    }
     const auth = await authenticateProjectRequest(req, body);
     if (!auth.authorized || !auth.project) {
       return corsJsonResponse({ ok: false, error: auth.error || "Unauthorized" }, { status: auth.status }, req);

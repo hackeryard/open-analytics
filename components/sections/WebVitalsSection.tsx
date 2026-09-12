@@ -332,15 +332,25 @@ export default function WebVitalsSection({ data: propData }: { data?: AnalyticsD
                 {(!data.hardwareDiagnostics?.networkTypes || data.hardwareDiagnostics.networkTypes.length === 0) ? (
                   <p className="text-xs text-muted-foreground">No network data recorded yet.</p>
                 ) : (
-                  data.hardwareDiagnostics.networkTypes.map((net, idx) => (
-                    <div key={idx} className="flex items-center justify-between text-xs font-mono">
-                      <span className="font-bold text-foreground uppercase">{net.type}</span>
-                      <div className="flex items-center gap-2">
-                        <span className="text-muted-foreground">{net.count}</span>
-                        <span className="text-primary font-bold">{net.percentage}%</span>
+                  data.hardwareDiagnostics.networkTypes.map((net, idx) => {
+                    const is5G = net.type?.toLowerCase() === "5g";
+                    return (
+                      <div key={idx} className="flex items-center justify-between text-xs font-mono">
+                        <span className={`font-bold uppercase flex items-center gap-1.5 ${is5G ? "text-cyan-400" : "text-foreground"}`}>
+                          {is5G && (
+                            <span className="px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-300 text-[9px] font-black border border-cyan-500/30">
+                              ⚡ 5G NR
+                            </span>
+                          )}
+                          <span>{net.type}</span>
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-muted-foreground">{net.count}</span>
+                          <span className={`${is5G ? "text-cyan-400" : "text-primary"} font-bold`}>{net.percentage}%</span>
+                        </div>
                       </div>
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </div>
             </div>
