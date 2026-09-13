@@ -5,23 +5,17 @@ import {
   Bug,
   AlertCircle,
   Search,
-  Filter,
   Download,
   Trash2,
-  CheckCircle2,
   Copy,
   Check,
   Clock,
-  Globe,
-  Laptop,
-  Smartphone,
-  Tablet,
   ExternalLink,
   Bot,
-  Sparkles,
   ChevronLeft,
   ChevronRight,
   ChevronDown,
+  ChevronUp,
   X,
   Plus,
   RefreshCw,
@@ -32,15 +26,39 @@ import {
   CheckCheck,
   Wrench,
   Code2,
-  ChevronUp,
   ChevronsLeft,
   ChevronsRight,
+  Ban,
+  ShieldAlert,
+  ShieldCheck,
+  ShieldOff,
+  ToggleLeft,
+  ToggleRight,
+  CheckSquare2,
+  Square,
+  MinusSquare,
+  Flame,
+  Globe,
+  Laptop,
+  Smartphone,
+  Tablet,
+  Layers,
+  Sparkles,
+  Info,
+  CheckCircle2,
 } from "lucide-react";
 import { usePlatform } from "@/components/PlatformContext";
-import { ErrorLogItem, AnalyticsData, timeAgo, formatExactTime, formatExactDate } from "@/lib/analyticsTypes";
+import {
+  ErrorLogItem,
+  ErrorRule,
+  AnalyticsData,
+  timeAgo,
+  formatExactTime,
+  formatExactDate,
+} from "@/lib/analyticsTypes";
 
 export default function ErrorsSection({ data: propData }: { data?: AnalyticsData }) {
-  const { activeProjectId, data: platformData, timeRange, fetchData } = usePlatform();
+  const { activeProjectId, data: platformData } = usePlatform();
   const [dataState, setDataState] = useState<AnalyticsData | null>(propData || platformData);
 
   useEffect(() => {
@@ -49,91 +67,275 @@ export default function ErrorsSection({ data: propData }: { data?: AnalyticsData
 
   const data = dataState;
 
+  // ── Filters & Search State ──
   const [errorStatusFilter, setErrorStatusFilter] = useState<string>("all");
   const [errorTypeFilter, setErrorTypeFilter] = useState<string>("all");
   const [errorSearchQuery, setErrorSearchQuery] = useState<string>("");
-  const [searchQuery, setSearchQuery] = useState<string>("");
   const [copiedErrorId, setCopiedErrorId] = useState<string | null>(null);
   const [copiedAllErrors, setCopiedAllErrors] = useState<boolean>(false);
+  const [copiedSelectionPrompt, setCopiedSelectionPrompt] = useState<boolean>(false);
+  const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
+
+  // ── Dropdowns & Navigation State ──
   const [showExportDropdown, setShowExportDropdown] = useState<boolean>(false);
   const [showBulkActionDropdown, setShowBulkActionDropdown] = useState<boolean>(false);
+  const [showSelectionExportDropdown, setShowSelectionExportDropdown] = useState<boolean>(false);
   const [errorBulkLoading, setErrorBulkLoading] = useState<boolean>(false);
   const [errorPage, setErrorPage] = useState<number>(1);
-  const [errorPageSize, setErrorPageSize] = useState<number>(20);
+  const [errorPageSize, setErrorPageSize] = useState<number>(15);
   const [errorJumpPageInput, setErrorJumpPageInput] = useState<string>("");
   const [expandedErrorId, setExpandedErrorId] = useState<string | null>(null);
 
+  // ── Multi-Selection State ──
+  const [selectedErrorIds, setSelectedErrorIds] = useState<string[]>([]);
+
+  // ── Blocked & Ignored Error Rules State ──
+  const [rulesList, setRulesList] = useState<ErrorRule[]>([]);
+  const [rulesLoading, setRulesLoading] = useState<boolean>(false);
+  const [showRulesModal, setShowRulesModal] = useState<boolean>(false);
+  const [muteMenuErrorId, setMuteMenuErrorId] = useState<string | null>(null);
+  const [ruleToast, setRuleToast] = useState<string | null>(null);
+  const [newRuleForm, setNewRuleForm] = useState<{
+    name: string;
+    matchField: "message" | "pathname" | "errorType" | "stack";
+    matchType: "contains" | "exact" | "regex" | "starts_with";
+    pattern: string;
+    enabled: boolean;
+  }>({
+    name: "",
+    matchField: "message",
+    matchType: "contains",
+    pattern: "",
+    enabled: true,
+  });
+
+  const showRuleNotification = (msg: string) => {
+    setRuleToast(msg);
+    setTimeout(() => setRuleToast(null), 3500);
+  };
+
+  const fetchRules = async () => {
+    if (!activeProjectId) return;
+    setRulesLoading(true);
+    try {
+      const res = await fetch(`/api/projects/${activeProjectId}/error-rules`);
+      const json = await res.json();
+      if (json.ok && Array.isArray(json.errorRules)) {
+        setRulesList(json.errorRules);
+      }
+    } catch (err) {
+      console.error("Failed to fetch error rules:", err);
+    } finally {
+      setRulesLoading(false);
+    }
+  };
+
   useEffect(() => {
-    setErrorPage(1);
-  }, [errorStatusFilter, errorTypeFilter, errorSearchQuery, timeRange]);
+    if (activeProjectId) {
+      fetchRules();
+    }
+  }, [activeProjectId]);
+
+  const handleToggleRule = async (ruleId: string, currentStatus: boolean) => {
+    if (!activeProjectId) return;
+    try {
+      const res = await fetch(`/api/projects/${activeProjectId}/error-rules`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ruleId, enabled: !currentStatus }),
+      });
+      const json = await res.json();
+      if (json.ok && Array.isArray(json.errorRules)) {
+        setRulesList(json.errorRules);
+        showRuleNotification(
+          !currentStatus
+            ? "Suppression rule activated! Matching errors will be muted."
+            : "Suppression rule paused. Tracking resumed."
+        );
+      }
+    } catch (err) {
+      console.error("Failed to toggle rule:", err);
+    }
+  };
+
+  const handleDeleteRule = async (ruleId: string) => {
+    if (!activeProjectId) return;
+    try {
+      const res = await fetch(`/api/projects/${activeProjectId}/error-rules?ruleId=${ruleId}`, {
+        method: "DELETE",
+      });
+      const json = await res.json();
+      if (json.ok && Array.isArray(json.errorRules)) {
+        setRulesList(json.errorRules);
+        showRuleNotification("Suppression rule deleted.");
+      }
+    } catch (err) {
+      console.error("Failed to delete rule:", err);
+    }
+  };
+
+  const handleCreateRule = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!activeProjectId || !newRuleForm.pattern.trim()) return;
+
+    try {
+      const res = await fetch(`/api/projects/${activeProjectId}/error-rules`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newRuleForm),
+      });
+      const json = await res.json();
+      if (json.ok && Array.isArray(json.errorRules)) {
+        setRulesList(json.errorRules);
+        setNewRuleForm({
+          name: "",
+          matchField: "message",
+          matchType: "contains",
+          pattern: "",
+          enabled: true,
+        });
+        showRuleNotification("New suppression rule created successfully!");
+      }
+    } catch (err) {
+      console.error("Failed to create rule:", err);
+    }
+  };
+
+  const handleQuickMute = async (
+    err: ErrorLogItem,
+    field: "message" | "pathname" | "errorType"
+  ) => {
+    if (!activeProjectId) return;
+    let pattern = "";
+    let name = "";
+    let matchType: "contains" | "exact" = "contains";
+
+    if (field === "message") {
+      pattern = err.message;
+      name = `Ignore: ${err.message.slice(0, 30)}...`;
+      matchType = "exact";
+    } else if (field === "pathname") {
+      pattern = err.pathname;
+      name = `Ignore Route: ${err.pathname}`;
+      matchType = "exact";
+    } else if (field === "errorType") {
+      pattern = err.errorType || "runtime";
+      name = `Ignore Type: ${err.errorType || "runtime"}`;
+      matchType = "exact";
+    }
+
+    try {
+      const res = await fetch(`/api/projects/${activeProjectId}/error-rules`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          matchField: field,
+          matchType,
+          pattern,
+          enabled: true,
+        }),
+      });
+      const json = await res.json();
+      if (json.ok && Array.isArray(json.errorRules)) {
+        setRulesList(json.errorRules);
+        setMuteMenuErrorId(null);
+        showRuleNotification(`Suppressed future errors matching ${field} "${pattern}"!`);
+      }
+    } catch (error) {
+      console.error("Failed to quick mute:", error);
+    }
+  };
 
   const generateAiFixPrompt = (err: ErrorLogItem) => {
-    return `# 🐛 Bug Diagnostic & Fix Report
-**Route / Pathname:** \`${err.pathname}\`
-**Error Type:** \`${err.errorType || "runtime"}\`
-**Occurrences:** ${err.occurrences}
-**Environment:** ${err.browser || "Unknown"} on ${err.os || "Unknown"} (${err.device || "Desktop"})
-**Digest / Error Code:** ${err.digest || "None"}
-**Last Seen:** ${new Date(err.lastOccurredAt).toLocaleString()}
-**Error ID:** \`${err._id}\`
-
-### 🚨 Error Message
+    return `### Fix Prompt for Frontend Exception
+**Error Message:** \`${err.message}\`
+**Route / Path:** \`${err.pathname}\`
+**Category:** \`${err.errorType || "runtime"}\`
+**Occurrences:** ${err.occurrences}x
+**Client Environment:** ${err.os || "Unknown OS"} | ${err.browser || "Unknown Browser"} (${err.device || "desktop"})
+**Timestamp:** ${new Date(err.lastOccurredAt).toLocaleString()}
+${err.digest ? `**Digest:** \`${err.digest}\`\n` : ""}
+${
+  err.stack
+    ? `**Stack Trace:**
 \`\`\`
-${err.message}
+${err.stack}
 \`\`\`
-
-### 📜 Stack Trace
-\`\`\`
-${err.stack || "No client stack trace available"}
-\`\`\`
-
----
-### 🛠️ AI Fix Instructions
-1. Inspect the route component or API handler at \`${err.pathname}\`.
-2. Locate the function throwing: \`${err.message}\`.
-3. Check for undefined/null property access, missing SSR guards (\`typeof window !== "undefined"\`), invalid JSON parsing, or missing API responses.
-4. Implement safe fallbacks or boundary checks to completely eliminate this error.`;
+`
+    : ""
+}
+**Instructions for AI Assistant:**
+1. Pinpoint the root cause of this error based on the message and stack trace.
+2. Provide a concrete, line-by-line code fix or safe fallback to prevent this crash.
+3. If this is a 404 route error, check for broken link references, redirect maps, or missing dynamic route segments.`;
   };
 
   const handleCopyAiPrompt = async (err: ErrorLogItem) => {
-    const promptText = generateAiFixPrompt(err);
+    const prompt = generateAiFixPrompt(err);
     try {
-      await navigator.clipboard.writeText(promptText);
+      await navigator.clipboard.writeText(prompt);
       setCopiedErrorId(err._id);
       setTimeout(() => setCopiedErrorId(null), 2500);
+      showRuleNotification("Copied AI Fix Prompt to clipboard.");
     } catch (e) {
-      console.error("Clipboard copy failed:", e);
+      console.error("Failed to copy:", e);
     }
   };
 
-  const handleCopyAllAiPrompts = async (errorsToCopy: ErrorLogItem[]) => {
-    if (errorsToCopy.length === 0) return;
-    const header = `# 🛠️ Open Analytics Automated Error Triage Report
-Generated on: ${new Date().toLocaleString()}
-Total Tracked Errors: ${errorsToCopy.length}
-
----
-`;
-    const body = errorsToCopy
-      .map(
-        (err, idx) =>
-          `## Bug #${idx + 1}: [${(err.errorType || "runtime").toUpperCase()}] on ${err.pathname}\n${generateAiFixPrompt(
-            err
-          )}`
-      )
-      .join("\n\n---\n\n");
+  const handleCopyMessage = async (err: ErrorLogItem) => {
     try {
-      await navigator.clipboard.writeText(header + body);
+      await navigator.clipboard.writeText(err.message || "");
+      setCopiedMessageId(err._id);
+      setTimeout(() => setCopiedMessageId(null), 2000);
+      showRuleNotification("Error message copied.");
+    } catch (e) {
+      console.error("Failed to copy:", e);
+    }
+  };
+
+  const handleCopyAllAiPrompts = async (errorsList: ErrorLogItem[]) => {
+    if (errorsList.length === 0) return;
+    const header = `# Bulk Open Analytics Crash Diagnostic & Triage Report\n\nTotal Issues: ${errorsList.length}\nGenerated: ${new Date().toLocaleString()}\n\n---\n\n`;
+    const promptBody = errorsList
+      .map((err, idx) => `## Issue #${idx + 1}\n` + generateAiFixPrompt(err))
+      .join("\n\n---\n\n");
+
+    try {
+      await navigator.clipboard.writeText(header + promptBody);
       setCopiedAllErrors(true);
       setTimeout(() => setCopiedAllErrors(false), 2500);
+      showRuleNotification(`Copied AI Fix Prompts for all ${errorsList.length} issues.`);
     } catch (e) {
-      console.error("Clipboard copy failed:", e);
+      console.error("Failed to copy all prompts:", e);
     }
   };
 
-  const handleExportErrors = (format: "markdown" | "json" | "csv", errorsToExport: ErrorLogItem[]) => {
+  const handleCopySelectedAiPrompts = async () => {
+    const selected = allErrors.filter((e) => selectedErrorIds.includes(e._id));
+    if (selected.length === 0) return;
+    const header = `# Open Analytics Multi-Issue AI Debug Report\n\nSelected Issues: ${selected.length}\nGenerated: ${new Date().toLocaleString()}\n\n---\n\n`;
+    const promptBody = selected
+      .map((err, idx) => `## Selected Issue #${idx + 1}\n` + generateAiFixPrompt(err))
+      .join("\n\n---\n\n");
+
+    try {
+      await navigator.clipboard.writeText(header + promptBody);
+      setCopiedSelectionPrompt(true);
+      setTimeout(() => setCopiedSelectionPrompt(false), 2500);
+      showRuleNotification(`Copied AI Fix Prompts for ${selected.length} selected issues.`);
+    } catch (e) {
+      console.error("Failed to copy selected prompts:", e);
+    }
+  };
+
+  const handleExportErrors = (
+    format: "markdown" | "json" | "csv",
+    errorsToExport: ErrorLogItem[]
+  ) => {
     if (errorsToExport.length === 0) return;
     setShowExportDropdown(false);
+    setShowSelectionExportDropdown(false);
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
     let content = "";
@@ -143,11 +345,10 @@ Total Tracked Errors: ${errorsToCopy.length}
     if (format === "markdown") {
       filename += ".md";
       mimeType = "text/markdown";
-      const header = `# 📋 Open Analytics Error Diagnostics & AI Fix Report
+      const header = `# Open Analytics Error Diagnostics & AI Fix Report
 - **Export Date:** ${new Date().toLocaleString()}
 - **Total Filtered Errors:** ${errorsToExport.length}
-- **Active Errors:** ${errorsToExport.filter((e) => e.status === "new" || e.status === "investigating").length
-        }
+- **Active Errors:** ${errorsToExport.filter((e) => e.status === "new" || e.status === "investigating").length}
 - **Resolved Errors:** ${errorsToExport.filter((e) => e.status === "resolved").length}
 
 ---
@@ -207,6 +408,7 @@ Total Tracked Errors: ${errorsToCopy.length}
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+    showRuleNotification(`Exported ${errorsToExport.length} errors as .${format}!`);
   };
 
   const handleBulkUpdateErrors = async (newStatus: string, errorIds: string[]) => {
@@ -218,7 +420,6 @@ Total Tracked Errors: ${errorsToCopy.length}
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          "x-admin-secret": '',
         },
         body: JSON.stringify({ errorIds, status: newStatus }),
       });
@@ -233,9 +434,45 @@ Total Tracked Errors: ${errorsToCopy.length}
             ),
           };
         });
+        showRuleNotification(`Updated ${errorIds.length} errors to "${newStatus}".`);
       }
     } catch (err) {
       console.error("Bulk update errors error:", err);
+    } finally {
+      setErrorBulkLoading(false);
+    }
+  };
+
+  const handleBulkDeleteSelected = async (errorIds: string[]) => {
+    if (errorIds.length === 0) return;
+    if (
+      !window.confirm(
+        `Permanently delete ${errorIds.length} selected error record${errorIds.length === 1 ? "" : "s"}?`
+      )
+    )
+      return;
+
+    setErrorBulkLoading(true);
+    try {
+      const res = await fetch(`/api/projects/${activeProjectId}/errors`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ errorIds }),
+      });
+      if (res.ok) {
+        const idSet = new Set(errorIds);
+        setDataState((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            recentErrors: prev.recentErrors.filter((e) => !idSet.has(e._id)),
+          };
+        });
+        setSelectedErrorIds((prev) => prev.filter((id) => !idSet.has(id)));
+        showRuleNotification(`Deleted ${errorIds.length} error record${errorIds.length === 1 ? "" : "s"}.`);
+      }
+    } catch (err) {
+      console.error("Bulk delete error:", err);
     } finally {
       setErrorBulkLoading(false);
     }
@@ -265,6 +502,8 @@ Total Tracked Errors: ${errorsToCopy.length}
           else if (purgeMode === "ignored") remaining = remaining.filter((e) => e.status !== "ignored");
           return { ...prev, recentErrors: remaining };
         });
+        setSelectedErrorIds([]);
+        showRuleNotification(`Purged ${label}.`);
       }
     } catch (err) {
       console.error("Purge errors error:", err);
@@ -303,7 +542,7 @@ Total Tracked Errors: ${errorsToCopy.length}
     if (!window.confirm("Permanently delete this error record?")) return;
 
     try {
-      const res = await fetch(`/api/admin/analytics/errors/${errorId}`, {
+      const res = await fetch(`/api/projects/${activeProjectId}/errors/${errorId}`, {
         method: "DELETE",
       });
 
@@ -315,28 +554,42 @@ Total Tracked Errors: ${errorsToCopy.length}
             recentErrors: prev.recentErrors.filter((err) => err._id !== errorId),
           };
         });
+        setSelectedErrorIds((prev) => prev.filter((id) => id !== errorId));
+        showRuleNotification("Error record deleted.");
       }
     } catch (err) {
       console.error("Error deleting record:", err);
     }
   };
 
-
   const allErrors = data?.recentErrors || [];
+  const totalOccurrences = allErrors.reduce((sum, e) => sum + (e.occurrences || 1), 0);
+  const activeCount = allErrors.filter((e) => e.status === "new" || e.status === "investigating").length;
+  const newCount = allErrors.filter((e) => e.status === "new").length;
+  const investigatingCount = allErrors.filter((e) => e.status === "investigating").length;
+  const resolvedCount = allErrors.filter((e) => e.status === "resolved").length;
+  const ignoredCount = allErrors.filter((e) => e.status === "ignored").length;
+  const notFoundCount = allErrors.filter((e) => e.errorType === "not_found").length;
+  const resolvedRate = allErrors.length > 0 ? Math.round((resolvedCount / allErrors.length) * 100) : 100;
+
   const errorCounts = {
     all: allErrors.length,
     total: allErrors.length,
-    active: allErrors.filter((e) => e.status === "new" || e.status === "investigating").length,
-    new: allErrors.filter((e) => e.status === "new").length,
-    investigating: allErrors.filter((e) => e.status === "investigating").length,
-    resolved: allErrors.filter((e) => e.status === "resolved").length,
-    ignored: allErrors.filter((e) => e.status === "ignored").length,
+    active: activeCount,
+    new: newCount,
+    investigating: investigatingCount,
+    resolved: resolvedCount,
+    ignored: ignoredCount,
   };
 
   const filteredErrors = allErrors.filter((err) => {
-    if (errorStatusFilter !== "all" && err.status !== errorStatusFilter) return false;
+    if (errorStatusFilter === "active") {
+      if (err.status !== "new" && err.status !== "investigating") return false;
+    } else if (errorStatusFilter !== "all" && err.status !== errorStatusFilter) {
+      return false;
+    }
     if (errorTypeFilter !== "all" && err.errorType !== errorTypeFilter) return false;
-    const q = (errorSearchQuery || searchQuery).toLowerCase().trim();
+    const q = errorSearchQuery.toLowerCase().trim();
     if (q) {
       const matchMsg = (err.message || "").toLowerCase().includes(q);
       const matchPath = (err.pathname || "").toLowerCase().includes(q);
@@ -352,6 +605,40 @@ Total Tracked Errors: ${errorsToCopy.length}
     (errorPage - 1) * errorPageSize,
     errorPage * errorPageSize
   );
+
+  // ── Multi-Selection Controls ──
+  const isAllPageSelected =
+    paginatedErrors.length > 0 &&
+    paginatedErrors.every((e) => selectedErrorIds.includes(e._id));
+  const isSomePageSelected =
+    paginatedErrors.some((e) => selectedErrorIds.includes(e._id)) && !isAllPageSelected;
+
+  const handleToggleSelectError = (id: string) => {
+    setSelectedErrorIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  const handleToggleSelectAllPage = () => {
+    if (isAllPageSelected) {
+      const pageIds = new Set(paginatedErrors.map((e) => e._id));
+      setSelectedErrorIds((prev) => prev.filter((id) => !pageIds.has(id)));
+    } else {
+      const pageIds = paginatedErrors.map((e) => e._id);
+      setSelectedErrorIds((prev) => Array.from(new Set([...prev, ...pageIds])));
+    }
+  };
+
+  const handleSelectAllFiltered = () => {
+    setSelectedErrorIds(filteredErrors.map((e) => e._id));
+    showRuleNotification(`Selected all ${filteredErrors.length} filtered errors.`);
+  };
+
+  const handleClearSelection = () => {
+    setSelectedErrorIds([]);
+  };
+
+  const selectedErrorsList = allErrors.filter((e) => selectedErrorIds.includes(e._id));
 
   const getErrorPageNumbers = () => {
     const total = totalErrorPages;
@@ -377,42 +664,220 @@ Total Tracked Errors: ${errorsToCopy.length}
     }
   };
 
+  const getCategoryBadgeClass = (type?: string) => {
+    switch (type) {
+      case "not_found":
+        return "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20";
+      case "http_4xx":
+        return "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20";
+      case "http_5xx":
+      case "boundary":
+        return "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20";
+      case "api":
+        return "bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-400 border-fuchsia-500/20";
+      case "resource":
+        return "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/20";
+      case "webgl":
+        return "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20";
+      case "hydration":
+      case "console":
+        return "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20";
+      case "unhandledrejection":
+        return "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-500/20";
+      case "network":
+        return "bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20";
+      default:
+        return "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20";
+    }
+  };
+
+  const getCategoryLabel = (type?: string) => {
+    switch (type) {
+      case "not_found":
+        return "404 Not Found";
+      case "http_4xx":
+        return "HTTP 4xx";
+      case "http_5xx":
+        return "Server 5xx";
+      case "boundary":
+        return "React Crash";
+      case "hydration":
+        return "SSR Hydration";
+      case "api":
+        return "API Failure";
+      case "console":
+        return "Console Error";
+      case "unhandledrejection":
+        return "Unhandled Promise";
+      case "network":
+        return "Network Failure";
+      case "resource":
+        return "Resource Load";
+      case "webgl":
+        return "WebGL / Shader";
+      default:
+        return type || "Runtime Error";
+    }
+  };
+
   if (!data) return null;
 
   return (
-        <div className="space-y-5">
-          {/* Header Strip & Export Toolbar */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-card border border-border rounded-3xl p-5 md:p-6 shadow-sm">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2.5 flex-wrap">
-                <h3 className="text-base sm:text-lg font-black text-foreground tracking-tight flex items-center gap-2">
-                  <Bug className="text-rose-500" size={20} />
-                  <span>Error Diagnostics & AI Triage Engine</span>
-                </h3>
-                <span className="px-2.5 py-0.5 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs font-mono font-bold">
-                  {errorCounts.active} Active / {errorCounts.total} Total
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Export error traces, copy AI fix prompts with stack traces, and triage anomalies across all lab routes.
-              </p>
+    <div className="space-y-6 pb-24 relative">
+      {/* ── Top Sleek KPI Gauges Grid (Aligned with WebVitals/Overview style) ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        {/* 1. Total Exceptions */}
+        <div className="p-4 bg-card border border-border rounded-2xl shadow-xs space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
+              Total Issues
+            </span>
+            <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+              {allErrors.length} Unique
+            </span>
+          </div>
+          <div>
+            <span className="text-2xl font-black font-mono text-foreground">
+              {allErrors.length}
+            </span>
+            <span className="block text-[10px] text-muted-foreground mt-0.5">
+              {totalOccurrences.toLocaleString()} total crash occurrences
+            </span>
+          </div>
+        </div>
+
+        {/* 2. Active / Unresolved Issues */}
+        <div className="p-4 bg-card border border-border rounded-2xl shadow-xs space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
+              Active &amp; Investigating
+            </span>
+            <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+              {newCount} New
+            </span>
+          </div>
+          <div>
+            <span className="text-2xl font-black font-mono text-amber-500">
+              {activeCount}
+            </span>
+            <span className="block text-[10px] text-muted-foreground mt-0.5">
+              {investigatingCount} currently marked investigating
+            </span>
+          </div>
+        </div>
+
+        {/* 3. 404 Route Anomalies */}
+        <div className="p-4 bg-card border border-border rounded-2xl shadow-xs space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
+              404 Broken Routes
+            </span>
+            <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20">
+              {allErrors.length > 0 ? Math.round((notFoundCount / allErrors.length) * 100) : 0}% of Total
+            </span>
+          </div>
+          <div>
+            <span className="text-2xl font-black font-mono text-orange-500">
+              {notFoundCount}
+            </span>
+            <span className="block text-[10px] text-muted-foreground mt-0.5">
+              Unmatched URLs &amp; missing pages
+            </span>
+          </div>
+        </div>
+
+        {/* 4. Resolved Rate & Active Block Rules */}
+        <div className="p-4 bg-card border border-border rounded-2xl shadow-xs space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
+              Resolution Rate
+            </span>
+            <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+              {resolvedCount} Solved
+            </span>
+          </div>
+          <div>
+            <span className="text-2xl font-black font-mono text-emerald-500">
+              {resolvedRate}%
+            </span>
+            <span className="block text-[10px] text-muted-foreground mt-0.5">
+              {rulesList.filter((r) => r.enabled).length} active edge suppression rules
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Main Unified Analytics Card (Matches LiveFeedSection layout) ── */}
+      <div className="bg-card border border-border rounded-3xl shadow-sm overflow-hidden space-y-0">
+        {/* Top Header & Filter Controls */}
+        <div className="p-4 sm:p-5 border-b border-border bg-muted/10 space-y-3.5">
+          {/* Status Tab Pills + Quick Counter */}
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 lg:pb-0">
+              {[
+                { id: "all", label: "All Issues", count: errorCounts.total },
+                { id: "active", label: "Active", count: errorCounts.active, color: "text-rose-500" },
+                { id: "investigating", label: "Investigating", count: errorCounts.investigating, color: "text-amber-500" },
+                { id: "resolved", label: "Resolved", count: errorCounts.resolved, color: "text-emerald-500" },
+                { id: "ignored", label: "Ignored", count: errorCounts.ignored, color: "text-muted-foreground" },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => {
+                    setErrorStatusFilter(tab.id);
+                    setErrorPage(1);
+                  }}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
+                    errorStatusFilter === tab.id
+                      ? "bg-primary text-primary-foreground shadow-xs"
+                      : "bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <span>{tab.label}</span>
+                  <span
+                    className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold ${
+                      errorStatusFilter === tab.id
+                        ? "bg-primary-foreground/20 text-primary-foreground"
+                        : "bg-background text-foreground"
+                    }`}
+                  >
+                    {tab.count}
+                  </span>
+                </button>
+              ))}
             </div>
 
-            {/* Action Buttons: Copy All, Export Menu, Bulk Actions */}
-            <div className="flex items-center gap-2 flex-wrap">
-              {/* Copy All AI Prompts Button */}
+            {/* Top Right Action Tools */}
+            <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap shrink-0">
+              {/* Blocked Rules Button */}
+              <button
+                type="button"
+                onClick={() => setShowRulesModal(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-background hover:bg-muted border border-border text-foreground transition cursor-pointer shadow-2xs"
+                title="Manage blocked & ignored error rules"
+              >
+                <ShieldAlert size={13} className="text-amber-500" />
+                <span>Blocked Rules</span>
+                <span className="px-1.5 py-0.2 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 text-[10px] font-mono font-bold">
+                  {rulesList.filter((r) => r.enabled).length}
+                </span>
+              </button>
+
+              {/* Copy AI Prompts for Filtered */}
               <button
                 type="button"
                 onClick={() => handleCopyAllAiPrompts(filteredErrors)}
                 disabled={filteredErrors.length === 0}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition shadow-xs cursor-pointer disabled:opacity-50 ${copiedAllErrors
-                  ? "bg-emerald-600 text-white border-emerald-600 shadow-sm"
-                  : "bg-primary text-primary-foreground hover:bg-primary/90"
-                  }`}
-                title="Copy all currently filtered errors as an actionable prompt for AI agents (Antigravity, Cursor, Claude Code)"
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-xs cursor-pointer disabled:opacity-50 ${
+                  copiedAllErrors
+                    ? "bg-emerald-600 text-white"
+                    : "bg-primary text-primary-foreground hover:bg-primary/90"
+                }`}
+                title="Copy AI fix prompts for all filtered errors"
               >
-                {copiedAllErrors ? <Check size={14} /> : <Bot size={14} />}
-                <span>{copiedAllErrors ? "Copied All AI Prompts! 📋" : `Copy AI Fix Prompts (${filteredErrors.length})`}</span>
+                {copiedAllErrors ? <Check size={13} /> : <Bot size={13} />}
+                <span>{copiedAllErrors ? "Copied!" : `Copy AI Prompts (${filteredErrors.length})`}</span>
               </button>
 
               {/* Export Dropdown */}
@@ -424,65 +889,54 @@ Total Tracked Errors: ${errorsToCopy.length}
                     setShowBulkActionDropdown(false);
                   }}
                   disabled={filteredErrors.length === 0}
-                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-card border border-border text-xs font-bold text-foreground hover:bg-muted transition shadow-xs cursor-pointer disabled:opacity-50"
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-background hover:bg-muted border border-border text-xs font-bold text-foreground transition cursor-pointer shadow-2xs disabled:opacity-50"
                   title="Export error diagnostics"
                 >
-                  <Download size={14} />
-                  <span>Export ({filteredErrors.length})</span>
-                  <ChevronDown size={12} className={showExportDropdown ? "rotate-180 transition" : "transition"} />
+                  <Download size={13} />
+                  <span>Export</span>
+                  <ChevronDown
+                    size={11}
+                    className={showExportDropdown ? "rotate-180 transition" : "transition"}
+                  />
                 </button>
 
                 {showExportDropdown && (
                   <>
-                    <div
-                      className="fixed inset-0 z-40"
-                      onClick={() => setShowExportDropdown(false)}
-                    />
-                    <div className="absolute right-0 top-full mt-2 z-50 p-2 bg-card border border-border rounded-2xl shadow-2xl w-64 max-w-[calc(100vw-2rem)] space-y-1 animate-in fade-in zoom-in-95 duration-150">
-                      <div className="px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-muted-foreground border-b border-border mb-1">
-                        Choose Export Format
+                    <div className="fixed inset-0 z-40" onClick={() => setShowExportDropdown(false)} />
+                    <div className="absolute right-0 top-full mt-2 z-50 p-2 bg-card border border-border rounded-2xl shadow-2xl w-56 space-y-1 animate-in fade-in zoom-in-95 duration-150">
+                      <div className="px-3 py-1 text-[9px] font-black uppercase tracking-wider text-muted-foreground border-b border-border mb-1">
+                        Export Filtered ({filteredErrors.length})
                       </div>
                       <button
                         type="button"
                         onClick={() => handleExportErrors("markdown", filteredErrors)}
-                        className="w-full flex items-center gap-2 px-3 py-2 text-xs font-bold text-foreground hover:bg-muted rounded-xl transition text-left cursor-pointer"
+                        className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-foreground hover:bg-muted rounded-xl transition text-left cursor-pointer"
                       >
-                        <FileText size={14} className="text-primary shrink-0" />
-                        <div>
-                          <div className="font-black">AI Debug Report (.md)</div>
-                          <div className="text-[10px] text-muted-foreground font-normal">Formatted markdown with AI fix prompts</div>
-                        </div>
+                        <FileText size={13} className="text-primary" />
+                        <span>AI Debug Report (.md)</span>
                       </button>
-
                       <button
                         type="button"
                         onClick={() => handleExportErrors("json", filteredErrors)}
-                        className="w-full flex items-center gap-2 px-3 py-2 text-xs font-bold text-foreground hover:bg-muted rounded-xl transition text-left cursor-pointer"
+                        className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-foreground hover:bg-muted rounded-xl transition text-left cursor-pointer"
                       >
-                        <FileJson size={14} className="text-amber-500 shrink-0" />
-                        <div>
-                          <div className="font-black">Raw JSON Dump (.json)</div>
-                          <div className="text-[10px] text-muted-foreground font-normal">Complete telemetry dataset</div>
-                        </div>
+                        <FileJson size={13} className="text-amber-500" />
+                        <span>Raw JSON Dump (.json)</span>
                       </button>
-
                       <button
                         type="button"
                         onClick={() => handleExportErrors("csv", filteredErrors)}
-                        className="w-full flex items-center gap-2 px-3 py-2 text-xs font-bold text-foreground hover:bg-muted rounded-xl transition text-left cursor-pointer"
+                        className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-foreground hover:bg-muted rounded-xl transition text-left cursor-pointer"
                       >
-                        <FileSpreadsheet size={14} className="text-emerald-500 shrink-0" />
-                        <div>
-                          <div className="font-black">Spreadsheet Table (.csv)</div>
-                          <div className="text-[10px] text-muted-foreground font-normal">Excel and Google Sheets compatible</div>
-                        </div>
+                        <FileSpreadsheet size={13} className="text-emerald-500" />
+                        <span>Spreadsheet (.csv)</span>
                       </button>
                     </div>
                   </>
                 )}
               </div>
 
-              {/* Bulk Actions Dropdown */}
+              {/* Bulk Mass Tools */}
               <div className="relative">
                 <button
                   type="button"
@@ -491,25 +945,19 @@ Total Tracked Errors: ${errorsToCopy.length}
                     setShowExportDropdown(false);
                   }}
                   disabled={errorBulkLoading}
-                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-card border border-border text-xs font-bold text-foreground hover:bg-muted transition shadow-xs cursor-pointer disabled:opacity-50"
-                  title="Bulk error actions"
+                  className="p-1.5 rounded-xl bg-background hover:bg-muted border border-border text-foreground transition cursor-pointer shadow-2xs disabled:opacity-50"
+                  title="Mass status & purge tools"
                 >
                   <SlidersHorizontal size={14} />
-                  <span>Bulk Actions</span>
-                  <ChevronDown size={12} className={showBulkActionDropdown ? "rotate-180 transition" : "transition"} />
                 </button>
 
                 {showBulkActionDropdown && (
                   <>
-                    <div
-                      className="fixed inset-0 z-40"
-                      onClick={() => setShowBulkActionDropdown(false)}
-                    />
-                    <div className="absolute left-0 sm:left-auto sm:right-0 top-full mt-2 z-50 p-2 bg-card border border-border rounded-2xl shadow-2xl w-60 max-w-[calc(100vw-2rem)] space-y-1 animate-in fade-in zoom-in-95 duration-150">
-                      <div className="px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-muted-foreground border-b border-border mb-1">
-                        Status Management
+                    <div className="fixed inset-0 z-40" onClick={() => setShowBulkActionDropdown(false)} />
+                    <div className="absolute right-0 top-full mt-2 z-50 p-2 bg-card border border-border rounded-2xl shadow-2xl w-60 space-y-1 animate-in fade-in zoom-in-95 duration-150">
+                      <div className="px-3 py-1 text-[9px] font-black uppercase tracking-wider text-muted-foreground border-b border-border mb-1">
+                        Mass Status Update
                       </div>
-
                       <button
                         type="button"
                         onClick={() =>
@@ -519,12 +967,11 @@ Total Tracked Errors: ${errorsToCopy.length}
                           )
                         }
                         disabled={filteredErrors.length === 0}
-                        className="w-full flex items-center gap-2 px-3 py-2 text-xs font-bold text-foreground hover:bg-muted rounded-xl transition text-left cursor-pointer disabled:opacity-50"
+                        className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-foreground hover:bg-muted rounded-xl transition text-left cursor-pointer disabled:opacity-50"
                       >
-                        <CheckCheck size={14} className="text-emerald-500 shrink-0" />
-                        <span>Mark Filtered ({filteredErrors.length}) as Resolved</span>
+                        <CheckCheck size={13} className="text-emerald-500" />
+                        <span>Mark Filtered ({filteredErrors.length}) Resolved</span>
                       </button>
-
                       <button
                         type="button"
                         onClick={() =>
@@ -534,468 +981,1053 @@ Total Tracked Errors: ${errorsToCopy.length}
                           )
                         }
                         disabled={filteredErrors.length === 0}
-                        className="w-full flex items-center gap-2 px-3 py-2 text-xs font-bold text-foreground hover:bg-muted rounded-xl transition text-left cursor-pointer disabled:opacity-50"
+                        className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-foreground hover:bg-muted rounded-xl transition text-left cursor-pointer disabled:opacity-50"
                       >
-                        <Wrench size={14} className="text-amber-500 shrink-0" />
-                        <span>Mark Filtered as Investigating</span>
+                        <Wrench size={13} className="text-amber-500" />
+                        <span>Mark Filtered Investigating</span>
                       </button>
 
-                      {true && (
-                        <>
-                          <div className="px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-rose-500 border-t border-border mt-1 pt-1.5">
-                            Admin Purge Tools
-                          </div>
-
-                          <button
-                            type="button"
-                            onClick={() => handleBulkPurgeErrors("resolved")}
-                            className="w-full flex items-center gap-2 px-3 py-2 text-xs font-bold text-rose-600 hover:bg-rose-500/10 rounded-xl transition text-left cursor-pointer"
-                          >
-                            <Trash2 size={14} className="shrink-0" />
-                            <span>Purge Resolved ({errorCounts.resolved})</span>
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => handleBulkPurgeErrors("all")}
-                            className="w-full flex items-center gap-2 px-3 py-2 text-xs font-bold text-rose-600 hover:bg-rose-500/10 rounded-xl transition text-left cursor-pointer"
-                          >
-                            <Trash2 size={14} className="shrink-0" />
-                            <span>Purge All ({errorCounts.total}) Records</span>
-                          </button>
-                        </>
-                      )}
+                      <div className="px-3 py-1 text-[9px] font-black uppercase tracking-wider text-rose-500 border-t border-border mt-1 pt-1">
+                        Purge Tools
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleBulkPurgeErrors("resolved")}
+                        className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-rose-600 hover:bg-rose-500/10 rounded-xl transition text-left cursor-pointer"
+                      >
+                        <Trash2 size={13} className="shrink-0" />
+                        <span>Purge Resolved ({resolvedCount})</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleBulkPurgeErrors("ignored")}
+                        className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-rose-600 hover:bg-rose-500/10 rounded-xl transition text-left cursor-pointer"
+                      >
+                        <Trash2 size={13} className="shrink-0" />
+                        <span>Purge Ignored ({ignoredCount})</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleBulkPurgeErrors("all")}
+                        className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-rose-600 hover:bg-rose-500/10 rounded-xl transition text-left cursor-pointer"
+                      >
+                        <Trash2 size={13} className="shrink-0" />
+                        <span>Purge All ({allErrors.length}) Records</span>
+                      </button>
                     </div>
                   </>
                 )}
               </div>
-
             </div>
           </div>
 
-          {/* Filter Bar: Status Pills, Type Select & Search */}
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-card/60 border border-border/80 rounded-2xl p-3.5 shadow-2xs">
-            {/* Status Filter Tabs */}
-            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 lg:pb-0">
-              {[
-                { id: "all", label: "All", count: errorCounts.total },
-                { id: "active", label: "Active", count: errorCounts.active },
-                { id: "new", label: "New", count: errorCounts.new },
-                { id: "investigating", label: "Investigating", count: errorCounts.investigating },
-                { id: "resolved", label: "Resolved", count: errorCounts.resolved },
-                { id: "ignored", label: "Ignored", count: errorCounts.ignored },
-              ].map((tab) => (
+          {/* Search Input & Category Dropdown Bar */}
+          <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
+            {/* Search Input */}
+            <div className="sm:col-span-8 relative">
+              <Search
+                size={13}
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+              />
+              <input
+                type="text"
+                value={errorSearchQuery}
+                onChange={(e) => {
+                  setErrorSearchQuery(e.target.value);
+                  setErrorPage(1);
+                }}
+                placeholder="Search error message, URL path, digest, or type..."
+                className="w-full pl-9 pr-8 py-2 bg-background border border-border rounded-xl text-xs font-mono text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary shadow-2xs transition"
+              />
+              {errorSearchQuery && (
                 <button
-                  key={tab.id}
                   type="button"
-                  onClick={() => setErrorStatusFilter(tab.id)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${errorStatusFilter === tab.id
-                    ? "bg-primary text-primary-foreground shadow-xs"
-                    : "bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted"
-                    }`}
+                  onClick={() => {
+                    setErrorSearchQuery("");
+                    setErrorPage(1);
+                  }}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1 cursor-pointer"
+                  title="Clear search"
                 >
-                  <span>{tab.label}</span>
-                  <span
-                    className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${errorStatusFilter === tab.id
-                      ? "bg-primary-foreground/20 text-primary-foreground"
-                      : "bg-card text-muted-foreground"
-                      }`}
-                  >
-                    {tab.count}
-                  </span>
+                  <X size={12} />
                 </button>
-              ))}
+              )}
             </div>
 
-            {/* Error Type Selector & Search Input */}
-            <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
-              {/* Type Select */}
+            {/* Category Select */}
+            <div className="sm:col-span-4">
               <select
                 value={errorTypeFilter}
-                onChange={(e) => setErrorTypeFilter(e.target.value)}
+                onChange={(e) => {
+                  setErrorTypeFilter(e.target.value);
+                  setErrorPage(1);
+                }}
                 aria-label="Filter error logs by type"
-                className="px-3 py-1.5 bg-card border border-border rounded-xl text-xs font-bold text-foreground focus:outline-none focus:border-primary shadow-2xs cursor-pointer [&>option]:bg-card [&>option]:text-foreground [&>option]:dark:bg-slate-900 [&>option]:dark:text-slate-100"
+                className="w-full px-3 py-2 bg-background border border-border rounded-xl text-xs font-bold text-foreground focus:outline-none focus:border-primary shadow-2xs cursor-pointer [&>option]:bg-card [&>option]:text-foreground [&>option]:dark:bg-slate-900 [&>option]:dark:text-slate-100"
               >
-                <option value="all">All Error Types</option>
-                <option value="not_found">404 Not Found</option>
-                <option value="runtime">Runtime Exception</option>
-                <option value="boundary">React Boundary</option>
-                <option value="http_5xx">Server 5xx</option>
-                <option value="http_4xx">Client 4xx</option>
-                <option value="api">API Endpoint</option>
-                <option value="hydration">Hydration Mismatch</option>
-                <option value="console">Console Error</option>
-                <option value="unhandledrejection">Unhandled Promise</option>
-                <option value="network">Network Failure</option>
-                <option value="resource">Resource Load</option>
-                <option value="webgl">WebGL / Shader</option>
+                <option value="all">All Error Categories</option>
+                <option value="not_found">404 Not Found (Missing Routes)</option>
+                <option value="runtime">Runtime Exceptions</option>
+                <option value="boundary">React Boundary Crashes</option>
+                <option value="hydration">SSR Hydration Mismatches</option>
+                <option value="http_5xx">Server 5xx Responses</option>
+                <option value="http_4xx">Client 4xx Responses</option>
+                <option value="api">API Endpoint Failures</option>
+                <option value="console">Console Errors</option>
+                <option value="unhandledrejection">Unhandled Promise Rejections</option>
+                <option value="network">Network Failures</option>
+                <option value="resource">Resource Load Failures</option>
+                <option value="webgl">WebGL Context Lost</option>
               </select>
-
-              {/* Search Box */}
-              <div className="relative flex-grow sm:w-64">
-                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <input
-                  type="text"
-                  value={errorSearchQuery}
-                  onChange={(e) => setErrorSearchQuery(e.target.value)}
-                  placeholder="Search error, path, stack..."
-                  className="w-full pl-8 pr-8 py-1.5 bg-card border border-border rounded-xl text-xs font-mono text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary shadow-2xs"
-                />
-                {errorSearchQuery && (
-                  <button
-                    type="button"
-                    onClick={() => setErrorSearchQuery("")}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground text-xs"
-                  >
-                    ✕
-                  </button>
-                )}
-              </div>
             </div>
           </div>
+        </div>
 
-          {/* List of Error Cards */}
-          <div className="space-y-3.5">
-            {filteredErrors.length === 0 ? (
-              <div className="p-12 text-center bg-card border border-border rounded-3xl space-y-2 shadow-sm">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center mx-auto text-xl">
-                  🎉
-                </div>
-                <h4 className="text-sm font-bold text-foreground">No Runtime Errors Found</h4>
-                <p className="text-xs text-muted-foreground">
-                  {errorSearchQuery || errorStatusFilter !== "all" || errorTypeFilter !== "all"
-                    ? "No error traces matched your current filter criteria."
-                    : "Your application is running smoothly with zero tracked exceptions!"}
-                </p>
-              </div>
-            ) : (
-              paginatedErrors.map((err) => (
-                <div
-                  key={err._id}
-                  className={`p-4 sm:p-5 bg-card border rounded-3xl space-y-3.5 shadow-sm transition-all ${err.status === "new"
-                    ? "border-rose-500/40 bg-rose-500/[0.02]"
-                    : err.status === "investigating"
-                      ? "border-amber-500/30 bg-amber-500/[0.01]"
-                      : "border-border"
-                    }`}
+        {/* ── Master Multi-Selection Info Bar (When Items Selected) ── */}
+        {selectedErrorIds.length > 0 && (
+          <div className="px-4 py-2.5 bg-primary/5 border-b border-border flex items-center justify-between gap-3 text-xs font-medium">
+            <div className="flex items-center gap-3">
+              <span className="font-bold text-foreground flex items-center gap-1.5">
+                <CheckSquare2 size={15} className="text-primary" />
+                <span>{selectedErrorIds.length} errors selected</span>
+              </span>
+              {selectedErrorIds.length < filteredErrors.length && (
+                <button
+                  type="button"
+                  onClick={handleSelectAllFiltered}
+                  className="text-primary hover:underline font-bold"
                 >
-                  {/* Top: Error Message & Action Buttons */}
-                  <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-3 border-b border-border pb-3.5">
-                    <div className="space-y-1.5 flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span
-                          className={`px-2 py-0.5 rounded font-black font-mono text-[10px] uppercase border ${err.errorType === "not_found"
-                            ? "bg-orange-500/15 text-orange-600 dark:text-orange-400 border-orange-500/20"
-                            : err.errorType === "http_4xx"
-                              ? "bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/20"
-                              : err.errorType === "http_5xx" || err.errorType === "boundary"
-                                ? "bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-500/20"
-                                : err.errorType === "api"
-                                  ? "bg-fuchsia-500/15 text-fuchsia-600 dark:text-fuchsia-400 border-fuchsia-500/20"
-                                  : err.errorType === "resource"
-                                    ? "bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 border-cyan-500/20"
-                                    : err.errorType === "webgl"
-                                      ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
-                                      : err.errorType === "hydration" || err.errorType === "console"
-                                        ? "bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border-indigo-500/20"
-                                        : err.errorType === "unhandledrejection"
-                                          ? "bg-yellow-500/15 text-yellow-600 dark:text-yellow-400 border-yellow-500/20"
-                                          : err.errorType === "network"
-                                            ? "bg-sky-500/15 text-sky-600 dark:text-sky-400 border-sky-500/20"
-                                            : "bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-500/20"
-                            }`}
-                        >
-                          {err.errorType === "not_found"
-                            ? "404 Not Found"
-                            : err.errorType === "http_4xx"
-                              ? "HTTP 4xx (Client)"
-                              : err.errorType === "http_5xx"
-                                ? "HTTP 5xx (Server)"
-                                : err.errorType || "runtime"}
-                        </span>
+                  Select all {filteredErrors.length} matching
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={handleClearSelection}
+                className="text-muted-foreground hover:text-foreground ml-1"
+              >
+                Clear selection
+              </button>
+            </div>
+            <span className="text-[11px] font-mono text-muted-foreground">
+              Use floating action dock at bottom to execute mass actions
+            </span>
+          </div>
+        )}
 
-                        <span className="px-2 py-0.5 bg-muted rounded font-mono text-[10px] text-muted-foreground font-bold">
-                          {err.occurrences} {err.occurrences === 1 ? "occurrence" : "occurrences"}
-                        </span>
-
-                        <a
-                          href={String(err.pathname)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs font-mono font-bold text-foreground hover:text-primary flex items-center gap-1 transition"
-                        >
-                          <span>{err.pathname}</span>
-                          <ExternalLink size={11} />
-                        </a>
-                      </div>
-
-                      <h4 className="font-bold text-foreground text-sm leading-snug font-mono break-words">
-                        {err.message}
-                      </h4>
+        {/* ── High-Density Exception Table ── */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs">
+            <thead className="bg-muted/40 border-b border-border text-[10px] font-black uppercase tracking-wider text-muted-foreground select-none">
+              <tr>
+                {/* Select All Checkbox */}
+                <th className="p-3.5 w-10 text-center">
+                  <button
+                    type="button"
+                    onClick={handleToggleSelectAllPage}
+                    className="text-muted-foreground hover:text-primary transition cursor-pointer"
+                    title={isAllPageSelected ? "Deselect Page" : "Select All On Page"}
+                  >
+                    {isAllPageSelected ? (
+                      <CheckSquare2 size={16} className="text-primary" />
+                    ) : isSomePageSelected ? (
+                      <MinusSquare size={16} className="text-primary" />
+                    ) : (
+                      <Square size={16} className="text-muted-foreground/60" />
+                    )}
+                  </button>
+                </th>
+                <th className="p-3.5">Status</th>
+                <th className="p-3.5">Error &amp; Affected Route</th>
+                <th className="p-3.5">Category</th>
+                <th className="p-3.5 text-center">Events</th>
+                <th className="p-3.5">Last Seen</th>
+                <th className="p-3.5 text-right">Actions &amp; AI Fix</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {filteredErrors.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="p-16 text-center text-muted-foreground">
+                    <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center mx-auto mb-2">
+                      <CheckCircle2 size={24} />
                     </div>
+                    <h4 className="text-sm font-bold text-foreground">Zero Exceptions Found</h4>
+                    <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
+                      {errorSearchQuery || errorStatusFilter !== "all" || errorTypeFilter !== "all"
+                        ? "No error traces matched your filter criteria."
+                        : "Your application is running smoothly with no tracked errors!"}
+                    </p>
+                  </td>
+                </tr>
+              ) : (
+                paginatedErrors.map((err) => {
+                  const isSelected = selectedErrorIds.includes(err._id);
+                  const isExpanded = expandedErrorId === err._id;
 
-                    {/* Action Tools: Copy AI Fix Prompt & Status Switcher */}
-                    <div className="flex items-center gap-2 shrink-0 flex-wrap">
-                      {/* One-Click Copy AI Fix Prompt */}
-                      <button
-                        type="button"
-                        onClick={() => handleCopyAiPrompt(err)}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition shadow-2xs cursor-pointer ${copiedErrorId === err._id
-                          ? "bg-emerald-600 text-white border-emerald-600 shadow-sm"
-                          : "bg-card border-border hover:border-primary text-foreground hover:bg-muted"
-                          }`}
-                        title="Copy diagnostic prompt to fix this error with AI"
+                  return (
+                    <React.Fragment key={err._id}>
+                      <tr
+                        onClick={() => setExpandedErrorId(isExpanded ? null : err._id)}
+                        className={`transition group cursor-pointer ${
+                          isSelected
+                            ? "bg-primary/[0.04]"
+                            : isExpanded
+                              ? "bg-muted/30"
+                              : "hover:bg-muted/20"
+                        }`}
                       >
-                        {copiedErrorId === err._id ? <Check size={13} /> : <Bot size={13} className="text-primary" />}
-                        <span>{copiedErrorId === err._id ? "Copied Prompt! 📋" : "Copy AI Fix Prompt"}</span>
-                      </button>
-
-                      {/* Status Toggle Buttons */}
-                      <div className="flex items-center gap-1 p-1 bg-muted/60 rounded-xl border border-border">
-                        <button
-                          type="button"
-                          onClick={() => handleUpdateErrorStatus(err._id, "new")}
-                          className={`px-2 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${err.status === "new"
-                            ? "bg-rose-600 text-white shadow-xs"
-                            : "text-muted-foreground hover:text-foreground"
-                            }`}
+                        {/* 1. Selection Checkbox */}
+                        <td
+                          className="p-3.5 text-center whitespace-nowrap"
+                          onClick={(e) => e.stopPropagation()}
                         >
-                          New
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleUpdateErrorStatus(err._id, "investigating")}
-                          className={`px-2 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${err.status === "investigating"
-                            ? "bg-amber-500 text-white shadow-xs"
-                            : "text-muted-foreground hover:text-foreground"
-                            }`}
-                        >
-                          Investigating
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleUpdateErrorStatus(err._id, "resolved")}
-                          className={`px-2 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${err.status === "resolved"
-                            ? "bg-emerald-600 text-white shadow-xs"
-                            : "text-muted-foreground hover:text-foreground"
-                            }`}
-                        >
-                          Resolved
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleUpdateErrorStatus(err._id, "ignored")}
-                          className={`px-2 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${err.status === "ignored"
-                            ? "bg-slate-700 text-white shadow-xs"
-                            : "text-muted-foreground hover:text-foreground"
-                            }`}
-                        >
-                          Ignore
-                        </button>
-                      </div>
-
-                      {true && (
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteError(err._id)}
-                          className="p-2 rounded-xl border border-border text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 transition cursor-pointer"
-                          title="Delete Error Record"
-                        >
-                          <Trash2 size={13} />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Device, Environment & Timestamp Bar */}
-                  <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-muted-foreground font-mono">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span>
-                        {err.os || "Unknown OS"} &bull; {err.browser || "Unknown Browser"} ({err.device || "desktop"})
-                      </span>
-                      {err.digest && (
-                        <span className="bg-muted px-1.5 py-0.2 rounded text-[10px]">
-                          Digest: {err.digest}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <Clock size={11} className="text-rose-500" />
-                      <span>{formatExactTime(err.lastOccurredAt)}</span>
-                      <span>({timeAgo(err.lastOccurredAt)})</span>
-                      <span>&bull;</span>
-                      <span>{formatExactDate(err.lastOccurredAt)}</span>
-                    </div>
-                  </div>
-
-                  {/* Stack Trace Collapsible View */}
-                  {err.stack && (
-                    <div className="space-y-1.5">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setExpandedErrorId(expandedErrorId === err._id ? null : err._id)
-                        }
-                        className="text-[11px] font-bold text-primary hover:underline flex items-center gap-1 cursor-pointer"
-                      >
-                        <Code2 size={12} />
-                        <span>
-                          {expandedErrorId === err._id ? "Hide Stack Trace" : "View Full Stack Trace"}
-                        </span>
-                        {expandedErrorId === err._id ? (
-                          <ChevronUp size={12} />
-                        ) : (
-                          <ChevronDown size={12} />
-                        )}
-                      </button>
-
-                      {expandedErrorId === err._id && (
-                        <div className="relative">
-                          <pre className="p-3.5 bg-black/95 text-rose-400 text-[10px] font-mono rounded-2xl overflow-x-auto border border-rose-500/20 leading-relaxed whitespace-pre-wrap">
-                            {err.stack}
-                          </pre>
                           <button
                             type="button"
-                            onClick={async () => {
-                              try {
-                                await navigator.clipboard.writeText(err.stack || "");
-                              } catch { }
-                            }}
-                            className="absolute top-2.5 right-2.5 px-2 py-1 bg-white/10 hover:bg-white/20 text-white rounded-lg text-[9px] font-bold font-mono transition"
-                            title="Copy stack trace only"
+                            onClick={() => handleToggleSelectError(err._id)}
+                            className="text-muted-foreground hover:text-primary transition cursor-pointer"
+                            title={isSelected ? "Deselect" : "Select"}
                           >
-                            Copy Trace
+                            {isSelected ? (
+                              <CheckSquare2 size={16} className="text-primary" />
+                            ) : (
+                              <Square size={16} className="text-muted-foreground/60" />
+                            )}
                           </button>
-                        </div>
+                        </td>
+
+                        {/* 2. Status Badge / Switcher */}
+                        <td
+                          className="p-3.5 whitespace-nowrap"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <select
+                            value={err.status}
+                            onChange={(e) => handleUpdateErrorStatus(err._id, e.target.value)}
+                            aria-label="Change error status"
+                            className={`px-2 py-1 rounded-lg text-[11px] font-bold border transition cursor-pointer focus:outline-none ${
+                              err.status === "new"
+                                ? "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/30"
+                                : err.status === "investigating"
+                                  ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30"
+                                  : err.status === "resolved"
+                                    ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
+                                    : "bg-muted text-muted-foreground border-border"
+                            } [&>option]:bg-card [&>option]:text-foreground [&>option]:dark:bg-slate-900 [&>option]:dark:text-slate-100`}
+                          >
+                            <option value="new">New</option>
+                            <option value="investigating">Investigating</option>
+                            <option value="resolved">Resolved</option>
+                            <option value="ignored">Ignored</option>
+                          </select>
+                        </td>
+
+                        {/* 3. Error Description & Route Link */}
+                        <td className="p-3.5 max-w-md">
+                          <div className="space-y-1">
+                            {/* Message Header with Quick Copy */}
+                            <div className="flex items-start gap-1.5">
+                              <span
+                                className="font-bold text-foreground font-mono text-xs leading-snug line-clamp-2 hover:line-clamp-none transition"
+                                title="Click row to expand details & stack trace"
+                              >
+                                {err.message}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleCopyMessage(err);
+                                }}
+                                className="p-0.5 text-muted-foreground hover:text-foreground transition shrink-0 opacity-0 group-hover:opacity-100"
+                                title="Copy error message"
+                              >
+                                {copiedMessageId === err._id ? (
+                                  <Check size={11} className="text-emerald-500" />
+                                ) : (
+                                  <Copy size={11} />
+                                )}
+                              </button>
+                            </div>
+
+                            {/* Pathname Link */}
+                            <div className="flex items-center gap-2 flex-wrap text-[11px] font-mono text-muted-foreground">
+                              <a
+                                href={String(err.pathname)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="hover:text-primary flex items-center gap-1 transition max-w-xs truncate"
+                                title={`Open ${err.pathname}`}
+                              >
+                                <span className="truncate">{err.pathname}</span>
+                                <ExternalLink size={10} className="shrink-0" />
+                              </a>
+                              {err.digest && (
+                                <span className="bg-muted px-1.5 py-0.2 rounded text-[10px]">
+                                  digest: {err.digest}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* 4. Category Badge */}
+                        <td className="p-3.5 whitespace-nowrap">
+                          <span
+                            className={`px-2 py-0.8 rounded-md font-bold font-mono text-[10px] uppercase border inline-flex items-center gap-1 ${getCategoryBadgeClass(
+                              err.errorType
+                            )}`}
+                          >
+                            <span>{getCategoryLabel(err.errorType)}</span>
+                          </span>
+                        </td>
+
+                        {/* 5. Occurrences count */}
+                        <td className="p-3.5 text-center whitespace-nowrap">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-muted/80 rounded-md font-mono text-xs font-bold text-foreground">
+                            <Flame size={11} className="text-amber-500 shrink-0" />
+                            <span>{err.occurrences}x</span>
+                          </span>
+                        </td>
+
+                        {/* 6. Last Seen Timestamp & Device */}
+                        <td className="p-3.5 whitespace-nowrap">
+                          <div className="font-mono text-xs text-foreground font-bold flex items-center gap-1">
+                            <Clock size={11} className="text-primary shrink-0" />
+                            <span>{timeAgo(err.lastOccurredAt)}</span>
+                          </div>
+                          <div className="text-[10px] font-mono text-muted-foreground mt-0.5">
+                            <span>
+                              {err.browser || "Unknown"} &bull; {err.os || "Desktop"}
+                            </span>
+                          </div>
+                        </td>
+
+                        {/* 7. Action Tools: AI Fix Prompt, Mute, Delete */}
+                        <td
+                          className="p-3.5 text-right whitespace-nowrap"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <div className="flex items-center justify-end gap-1.5">
+                            {/* AI Fix Prompt */}
+                            <button
+                              type="button"
+                              onClick={() => handleCopyAiPrompt(err)}
+                              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold border transition cursor-pointer shadow-2xs ${
+                                copiedErrorId === err._id
+                                  ? "bg-emerald-600 text-white border-emerald-600"
+                                  : "bg-background hover:bg-muted border-border text-foreground hover:border-primary"
+                              }`}
+                              title="Copy AI fix prompt for this crash"
+                            >
+                              {copiedErrorId === err._id ? (
+                                <Check size={12} />
+                              ) : (
+                                <Bot size={12} className="text-primary" />
+                              )}
+                              <span>
+                                {copiedErrorId === err._id ? "Copied!" : "AI Fix"}
+                              </span>
+                            </button>
+
+                            {/* Mute Rule Menu */}
+                            <div className="relative">
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setMuteMenuErrorId(
+                                    muteMenuErrorId === err._id ? null : err._id
+                                  )
+                                }
+                                className="p-1 rounded-lg bg-background hover:bg-muted border border-border text-foreground transition cursor-pointer shadow-2xs"
+                                title="Mute future occurrences"
+                              >
+                                <Ban size={13} className="text-amber-500" />
+                              </button>
+
+                              {muteMenuErrorId === err._id && (
+                                <>
+                                  <div
+                                    className="fixed inset-0 z-40"
+                                    onClick={() => setMuteMenuErrorId(null)}
+                                  />
+                                  <div className="absolute right-0 top-full mt-2 z-50 p-2 bg-card border border-border rounded-2xl shadow-2xl w-60 space-y-1 text-left animate-in fade-in zoom-in-95 duration-150">
+                                    <div className="px-3 py-1 text-[9px] font-black uppercase tracking-wider text-muted-foreground border-b border-border mb-1">
+                                      Mute Future Tracking
+                                    </div>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleQuickMute(err, "message")}
+                                      className="w-full flex items-start gap-2 px-2.5 py-1.5 text-xs font-bold text-foreground hover:bg-muted rounded-xl transition text-left cursor-pointer"
+                                    >
+                                      <ShieldOff size={13} className="text-rose-500 shrink-0 mt-0.5" />
+                                      <div className="min-w-0 flex-1">
+                                        <div className="font-bold truncate">Mute Exact Message</div>
+                                        <div className="text-[10px] text-muted-foreground font-normal truncate">
+                                          {err.message}
+                                        </div>
+                                      </div>
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleQuickMute(err, "pathname")}
+                                      className="w-full flex items-start gap-2 px-2.5 py-1.5 text-xs font-bold text-foreground hover:bg-muted rounded-xl transition text-left cursor-pointer"
+                                    >
+                                      <ShieldOff size={13} className="text-amber-500 shrink-0 mt-0.5" />
+                                      <div className="min-w-0 flex-1">
+                                        <div className="font-bold truncate">Mute Route</div>
+                                        <div className="text-[10px] text-muted-foreground font-normal truncate">
+                                          {err.pathname}
+                                        </div>
+                                      </div>
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleQuickMute(err, "errorType")}
+                                      className="w-full flex items-start gap-2 px-2.5 py-1.5 text-xs font-bold text-foreground hover:bg-muted rounded-xl transition text-left cursor-pointer"
+                                    >
+                                      <ShieldOff size={13} className="text-sky-500 shrink-0 mt-0.5" />
+                                      <div className="min-w-0 flex-1">
+                                        <div className="font-bold truncate">
+                                          Mute Category: {(err.errorType || "runtime").toUpperCase()}
+                                        </div>
+                                        <div className="text-[10px] text-muted-foreground font-normal">
+                                          Ignore this category
+                                        </div>
+                                      </div>
+                                    </button>
+                                  </div>
+                                </>
+                              )}
+                            </div>
+
+                            {/* Delete Button */}
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteError(err._id)}
+                              className="p-1 rounded-lg bg-background hover:bg-rose-500/10 hover:text-rose-500 border border-border text-muted-foreground transition cursor-pointer shadow-2xs"
+                              title="Delete error record"
+                            >
+                              <Trash2 size={13} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+
+                      {/* Expanded Accordion Row (Stack Trace & AI Fix) */}
+                      {isExpanded && (
+                        <tr className="bg-muted/15 border-b border-border">
+                          <td colSpan={7} className="p-4 sm:p-5 space-y-4">
+                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                              {/* Left: Stack Trace Code Box */}
+                              <div className="lg:col-span-8 space-y-2">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                                    <Code2 size={13} className="text-rose-500" />
+                                    <span>Diagnostic Stack Trace</span>
+                                  </span>
+                                  {err.stack && (
+                                    <button
+                                      type="button"
+                                      onClick={async () => {
+                                        try {
+                                          await navigator.clipboard.writeText(err.stack || "");
+                                          showRuleNotification("Stack trace copied to clipboard.");
+                                        } catch {}
+                                      }}
+                                      className="px-2 py-0.8 bg-muted hover:bg-accent border border-border text-foreground rounded-lg text-[10px] font-bold font-mono transition cursor-pointer"
+                                    >
+                                      Copy Trace
+                                    </button>
+                                  )}
+                                </div>
+                                <pre className="p-3.5 bg-black/95 text-rose-300 font-mono text-[11px] rounded-2xl overflow-x-auto border border-rose-500/20 leading-relaxed whitespace-pre-wrap max-h-72">
+                                  {err.stack || "No JavaScript stack trace captured for this error event."}
+                                </pre>
+                              </div>
+
+                              {/* Right: AI Fix Prompt Snippet & Environment Info */}
+                              <div className="lg:col-span-4 space-y-3">
+                                <div className="space-y-2">
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                                      <Bot size={13} className="text-primary" />
+                                      <span>AI Prompt Preview</span>
+                                    </span>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleCopyAiPrompt(err)}
+                                      className="px-2 py-0.8 bg-primary text-primary-foreground rounded-lg text-[10px] font-bold transition cursor-pointer"
+                                    >
+                                      Copy Prompt
+                                    </button>
+                                  </div>
+                                  <div className="p-3 bg-muted/50 border border-border rounded-2xl text-[11px] font-mono text-muted-foreground space-y-1.5 leading-snug">
+                                    <div>
+                                      <strong className="text-foreground">Route:</strong>{" "}
+                                      {err.pathname}
+                                    </div>
+                                    <div>
+                                      <strong className="text-foreground">Type:</strong>{" "}
+                                      {err.errorType || "runtime"}
+                                    </div>
+                                    <div>
+                                      <strong className="text-foreground">Client:</strong>{" "}
+                                      {err.browser || "Unknown"} on {err.os || "Desktop"} ({err.device || "desktop"})
+                                    </div>
+                                    <div>
+                                      <strong className="text-foreground">Exact Time:</strong>{" "}
+                                      {formatExactTime(err.lastOccurredAt)} ({formatExactDate(err.lastOccurredAt)})
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center gap-2 pt-1">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleUpdateErrorStatus(err._id, "resolved")}
+                                    className="flex-1 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition text-center cursor-pointer"
+                                  >
+                                    Mark Resolved
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleQuickMute(err, "message")}
+                                    className="px-3 py-1.5 bg-background hover:bg-muted border border-border text-foreground rounded-xl text-xs font-bold transition cursor-pointer"
+                                  >
+                                    Mute Rule
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
                       )}
-                    </div>
-                  )}
+                    </React.Fragment>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* ── Table Footer Navigation & Pagination ── */}
+        {filteredErrors.length > 0 && (
+          <div className="p-4 border-t border-border bg-muted/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3 flex-wrap text-xs text-muted-foreground">
+              <span className="font-mono">
+                Showing{" "}
+                <strong className="text-foreground font-bold">
+                  {(errorPage - 1) * errorPageSize + 1}–
+                  {Math.min(errorPage * errorPageSize, filteredErrors.length)}
+                </strong>{" "}
+                of <strong className="text-foreground font-bold">{filteredErrors.length}</strong>{" "}
+                errors
+              </span>
+
+              <div className="flex items-center gap-1.5 pl-3 border-l border-border">
+                <span className="text-[11px]">Per page:</span>
+                <select
+                  value={errorPageSize}
+                  onChange={(e) => {
+                    setErrorPageSize(Number(e.target.value));
+                    setErrorPage(1);
+                  }}
+                  aria-label="Errors per page"
+                  className="px-2 py-1 bg-background border border-border rounded-lg text-xs font-bold text-foreground focus:outline-none focus:border-primary cursor-pointer [&>option]:bg-card [&>option]:text-foreground [&>option]:dark:bg-slate-900 [&>option]:dark:text-slate-100"
+                >
+                  <option value={10}>10</option>
+                  <option value={15}>15</option>
+                  <option value={30}>30</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Pagination Controls */}
+            <div className="flex items-center gap-1 flex-wrap">
+              <button
+                type="button"
+                onClick={() => setErrorPage(1)}
+                disabled={errorPage <= 1}
+                className="p-1 rounded-lg bg-background border border-border text-foreground hover:bg-muted disabled:opacity-40 disabled:pointer-events-none transition cursor-pointer"
+                title="First Page"
+              >
+                <ChevronsLeft size={13} />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setErrorPage((p) => Math.max(1, p - 1))}
+                disabled={errorPage <= 1}
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-background border border-border text-xs font-bold text-foreground hover:bg-muted disabled:opacity-40 disabled:pointer-events-none transition cursor-pointer"
+              >
+                <ChevronLeft size={13} />
+                <span>Prev</span>
+              </button>
+
+              {/* Page Number Pills */}
+              <div className="hidden sm:flex items-center gap-1">
+                {getErrorPageNumbers().map((num, idx) =>
+                  typeof num === "number" ? (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setErrorPage(num)}
+                      className={`w-6 h-6 rounded-lg text-xs font-bold transition cursor-pointer ${
+                        errorPage === num
+                          ? "bg-primary text-primary-foreground shadow-xs"
+                          : "bg-background border border-border hover:bg-muted text-foreground"
+                      }`}
+                    >
+                      {num}
+                    </button>
+                  ) : (
+                    <span key={idx} className="px-1 text-muted-foreground text-xs">
+                      {num}
+                    </span>
+                  )
+                )}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setErrorPage((p) => Math.min(totalErrorPages, p + 1))}
+                disabled={errorPage >= totalErrorPages}
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-background border border-border text-xs font-bold text-foreground hover:bg-muted disabled:opacity-40 disabled:pointer-events-none transition cursor-pointer"
+              >
+                <span>Next</span>
+                <ChevronRight size={13} />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setErrorPage(totalErrorPages)}
+                disabled={errorPage >= totalErrorPages}
+                className="p-1 rounded-lg bg-background border border-border text-foreground hover:bg-muted disabled:opacity-40 disabled:pointer-events-none transition cursor-pointer"
+                title="Last Page"
+              >
+                <ChevronsRight size={13} />
+              </button>
+
+              {totalErrorPages > 1 && (
+                <form
+                  onSubmit={handleJumpErrorPage}
+                  className="hidden md:flex items-center gap-1 pl-2 border-l border-border"
+                >
+                  <input
+                    type="number"
+                    min={1}
+                    max={totalErrorPages}
+                    value={errorJumpPageInput}
+                    onChange={(e) => setErrorJumpPageInput(e.target.value)}
+                    placeholder="#"
+                    className="w-10 px-1.5 py-1 bg-background border border-border rounded-lg text-xs text-center font-mono text-foreground focus:outline-none focus:border-primary"
+                  />
+                  <button
+                    type="submit"
+                    disabled={!errorJumpPageInput}
+                    className="px-2 py-1 bg-muted hover:bg-accent border border-border text-foreground rounded-lg text-xs font-bold disabled:opacity-40 transition cursor-pointer"
+                  >
+                    Go
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ── Interactive Floating Multi-Selection Dock (HUD) ── */}
+      {selectedErrorIds.length > 0 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 p-2 bg-slate-900/95 text-white backdrop-blur-md rounded-2xl shadow-2xl border border-slate-700/80 animate-in slide-in-from-bottom-5 fade-in duration-200 max-w-[95vw] overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white/10 rounded-xl text-xs font-bold font-mono">
+            <CheckSquare2 size={14} className="text-primary" />
+            <span>{selectedErrorIds.length} Selected</span>
+          </div>
+
+          <div className="h-4 w-px bg-slate-700" />
+
+          {/* Quick Mark Resolved */}
+          <button
+            type="button"
+            onClick={() => handleBulkUpdateErrors("resolved", selectedErrorIds)}
+            disabled={errorBulkLoading}
+            className="flex items-center gap-1.5 px-2.5 py-1.2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer disabled:opacity-50"
+            title="Mark all selected errors as Resolved"
+          >
+            <CheckCheck size={12} />
+            <span className="hidden sm:inline">Resolve</span>
+          </button>
+
+          {/* Quick Mark Investigating */}
+          <button
+            type="button"
+            onClick={() => handleBulkUpdateErrors("investigating", selectedErrorIds)}
+            disabled={errorBulkLoading}
+            className="flex items-center gap-1.5 px-2.5 py-1.2 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer disabled:opacity-50"
+            title="Mark all selected errors as Investigating"
+          >
+            <Wrench size={12} />
+            <span className="hidden sm:inline">Investigate</span>
+          </button>
+
+          {/* Quick Mark Ignored */}
+          <button
+            type="button"
+            onClick={() => handleBulkUpdateErrors("ignored", selectedErrorIds)}
+            disabled={errorBulkLoading}
+            className="flex items-center gap-1.5 px-2.5 py-1.2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold transition border border-slate-700 cursor-pointer disabled:opacity-50"
+            title="Mark all selected errors as Ignored"
+          >
+            <Ban size={12} />
+            <span className="hidden sm:inline">Ignore</span>
+          </button>
+
+          {/* Quick Mark New */}
+          <button
+            type="button"
+            onClick={() => handleBulkUpdateErrors("new", selectedErrorIds)}
+            disabled={errorBulkLoading}
+            className="flex items-center gap-1.5 px-2.5 py-1.2 bg-rose-600/80 hover:bg-rose-600 text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer disabled:opacity-50"
+            title="Re-open all selected errors as New"
+          >
+            <AlertCircle size={12} />
+            <span className="hidden sm:inline">Mark New</span>
+          </button>
+
+          {/* Copy AI Fix Prompt for Selected */}
+          <button
+            type="button"
+            onClick={handleCopySelectedAiPrompts}
+            className={`flex items-center gap-1.5 px-2.5 py-1.2 rounded-xl text-xs font-bold transition shadow-xs cursor-pointer ${
+              copiedSelectionPrompt
+                ? "bg-emerald-600 text-white"
+                : "bg-white/10 hover:bg-white/20 text-white"
+            }`}
+            title="Copy bundled AI diagnostics for selected errors"
+          >
+            {copiedSelectionPrompt ? <Check size={12} /> : <Bot size={12} className="text-primary" />}
+            <span className="hidden md:inline">
+              {copiedSelectionPrompt ? "Copied!" : "AI Prompt"}
+            </span>
+          </button>
+
+          {/* Export Selected Dropdown */}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setShowSelectionExportDropdown(!showSelectionExportDropdown)}
+              className="flex items-center gap-1 px-2.5 py-1.2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold transition cursor-pointer"
+              title="Export selected errors"
+            >
+              <Download size={12} />
+              <span className="hidden md:inline">Export</span>
+              <ChevronDown size={10} />
+            </button>
+
+            {showSelectionExportDropdown && (
+              <>
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setShowSelectionExportDropdown(false)}
+                />
+                <div className="absolute right-0 bottom-full mb-2 z-50 p-2 bg-slate-900 border border-slate-700 text-white rounded-2xl shadow-2xl w-48 space-y-1 animate-in fade-in zoom-in-95 duration-150">
+                  <div className="px-3 py-1 text-[9px] font-black uppercase text-slate-400 border-b border-slate-800">
+                    Export {selectedErrorIds.length} Selected
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleExportErrors("markdown", selectedErrorsList)}
+                    className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-bold hover:bg-white/10 rounded-xl transition text-left cursor-pointer"
+                  >
+                    <FileText size={13} className="text-primary" />
+                    <span>Markdown Report (.md)</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleExportErrors("json", selectedErrorsList)}
+                    className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-bold hover:bg-white/10 rounded-xl transition text-left cursor-pointer"
+                  >
+                    <FileJson size={13} className="text-amber-400" />
+                    <span>JSON Dump (.json)</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleExportErrors("csv", selectedErrorsList)}
+                    className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-bold hover:bg-white/10 rounded-xl transition text-left cursor-pointer"
+                  >
+                    <FileSpreadsheet size={13} className="text-emerald-400" />
+                    <span>CSV Table (.csv)</span>
+                  </button>
                 </div>
-              ))
+              </>
             )}
           </div>
 
-          {/* ── Error Diagnostics Pagination Navigation Bar ── */}
-          {filteredErrors.length > 0 && (
-            <div className="p-4 bg-card border border-border rounded-3xl shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-3 flex-wrap text-xs text-muted-foreground">
-                <span>
-                  Showing <strong className="text-foreground">{Math.min((errorPage - 1) * errorPageSize + 1, filteredErrors.length)}</strong>–<strong className="text-foreground">{Math.min(errorPage * errorPageSize, filteredErrors.length)}</strong> of <strong className="text-foreground">{filteredErrors.length}</strong> {filteredErrors.length === 1 ? "error" : "errors"} (Page <strong className="text-foreground">{errorPage}</strong> of <strong className="text-foreground">{totalErrorPages}</strong>)
-                </span>
+          {/* Delete Selected */}
+          <button
+            type="button"
+            onClick={() => handleBulkDeleteSelected(selectedErrorIds)}
+            disabled={errorBulkLoading}
+            className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-rose-500/20 rounded-xl transition cursor-pointer"
+            title="Permanently delete selected errors"
+          >
+            <Trash2 size={13} />
+          </button>
 
-                <div className="flex items-center gap-1.5 pl-2 border-l border-border">
-                  <span className="text-[11px]">Per page:</span>
-                  <select
-                    value={errorPageSize}
-                    onChange={(e) => {
-                      setErrorPageSize(Number(e.target.value));
-                      setErrorPage(1);
-                    }}
-                    aria-label="Errors per page"
-                    className="px-2 py-1 bg-muted border border-border rounded-lg text-xs font-bold text-foreground focus:outline-none focus:border-primary cursor-pointer [&>option]:bg-card [&>option]:text-foreground [&>option]:dark:bg-slate-900 [&>option]:dark:text-slate-100"
-                  >
-                    <option value={10}>10</option>
-                    <option value={20}>20</option>
-                    <option value={50}>50</option>
-                    <option value={100}>100</option>
-                  </select>
+          {/* Deselect / Close */}
+          <button
+            type="button"
+            onClick={handleClearSelection}
+            className="p-1.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-xl transition cursor-pointer"
+            title="Deselect all"
+          >
+            <X size={13} />
+          </button>
+        </div>
+      )}
+
+      {/* ── Toast Notification Banner ── */}
+      {ruleToast && (
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 bg-slate-900 text-white rounded-2xl shadow-2xl border border-slate-700 animate-in fade-in slide-in-from-bottom-4 duration-200">
+          <ShieldCheck size={16} className="text-emerald-400 shrink-0" />
+          <span className="text-xs font-semibold">{ruleToast}</span>
+          <button
+            type="button"
+            onClick={() => setRuleToast(null)}
+            className="ml-2 text-slate-400 hover:text-white text-xs cursor-pointer"
+          >
+            <X size={13} />
+          </button>
+        </div>
+      )}
+
+      {/* ── Blocked Error Rules Manager Modal ── */}
+      {showRulesModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="fixed inset-0" onClick={() => setShowRulesModal(false)} />
+          <div className="relative z-10 w-full max-w-2xl bg-card border border-border rounded-3xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-200">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-5 border-b border-border bg-card">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-amber-500/10 text-amber-500 border border-amber-500/20">
+                  <ShieldAlert size={18} />
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-foreground">
+                    Blocked &amp; Ignored Error Rules
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    Errors matching active rules are automatically suppressed at ingestion.
+                  </p>
                 </div>
               </div>
+              <button
+                type="button"
+                onClick={() => setShowRulesModal(false)}
+                className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl transition cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
 
-              {/* Pagination Controls */}
-              <div className="flex items-center gap-1.5 flex-wrap">
-                {/* First Page */}
-                <button
-                  type="button"
-                  onClick={() => setErrorPage(1)}
-                  disabled={errorPage <= 1}
-                  className="p-1.5 rounded-lg bg-card border border-border text-foreground hover:bg-muted disabled:opacity-40 disabled:pointer-events-none transition cursor-pointer"
-                  title="First Page"
-                >
-                  <ChevronsLeft size={14} />
-                </button>
+            {/* Modal Scrollable Body */}
+            <div className="p-5 overflow-y-auto space-y-5 flex-1">
+              {/* Create New Block Rule Form */}
+              <form
+                onSubmit={handleCreateRule}
+                className="p-4 bg-muted/30 border border-border rounded-2xl space-y-3"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-black uppercase tracking-wider text-foreground flex items-center gap-1.5">
+                    <Plus size={14} className="text-primary" />
+                    <span>Add New Suppression Rule</span>
+                  </span>
+                  <span className="text-[11px] text-muted-foreground">
+                    Applies immediately
+                  </span>
+                </div>
 
-                {/* Prev Page */}
-                <button
-                  type="button"
-                  onClick={() => setErrorPage((p) => Math.max(1, p - 1))}
-                  disabled={errorPage <= 1}
-                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-card border border-border text-xs font-bold text-foreground hover:bg-muted disabled:opacity-40 disabled:pointer-events-none transition cursor-pointer"
-                >
-                  <ChevronLeft size={14} />
-                  <span>Prev</span>
-                </button>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                  <div>
+                    <label className="text-[10px] font-bold uppercase text-muted-foreground block mb-1">
+                      Rule Name (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={newRuleForm.name}
+                      onChange={(e) => setNewRuleForm({ ...newRuleForm, name: e.target.value })}
+                      placeholder="e.g. Ignore ResizeObserver"
+                      className="w-full px-3 py-1.5 bg-background border border-border rounded-xl text-xs text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary"
+                    />
+                  </div>
 
-                {/* Numbered Pills */}
-                <div className="hidden sm:flex items-center gap-1">
-                  {getErrorPageNumbers().map((num, idx) =>
-                    typeof num === "number" ? (
-                      <button
-                        key={idx}
-                        type="button"
-                        onClick={() => setErrorPage(num)}
-                        className={`w-7 h-7 rounded-lg text-xs font-bold transition cursor-pointer ${errorPage === num
-                          ? "bg-primary text-primary-foreground shadow-xs"
-                          : "bg-card border border-border hover:bg-muted text-foreground"
-                          }`}
-                      >
-                        {num}
-                      </button>
-                    ) : (
-                      <span key={idx} className="px-1 text-muted-foreground text-xs">
-                        {num}
-                      </span>
-                    )
+                  <div>
+                    <label className="text-[10px] font-bold uppercase text-muted-foreground block mb-1">
+                      Match Field
+                    </label>
+                    <select
+                      value={newRuleForm.matchField}
+                      onChange={(e) =>
+                        setNewRuleForm({ ...newRuleForm, matchField: e.target.value as any })
+                      }
+                      aria-label="Match Target Field"
+                      className="w-full px-3 py-1.5 bg-background border border-border rounded-xl text-xs font-bold text-foreground focus:outline-none focus:border-primary cursor-pointer [&>option]:bg-card [&>option]:text-foreground [&>option]:dark:bg-slate-900 [&>option]:dark:text-slate-100"
+                    >
+                      <option value="message">Error Message</option>
+                      <option value="pathname">Route / Pathname</option>
+                      <option value="errorType">Error Type / Category</option>
+                      <option value="stack">Stack Trace Content</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-bold uppercase text-muted-foreground block mb-1">
+                      Operator
+                    </label>
+                    <select
+                      value={newRuleForm.matchType}
+                      onChange={(e) =>
+                        setNewRuleForm({ ...newRuleForm, matchType: e.target.value as any })
+                      }
+                      aria-label="Match Operator"
+                      className="w-full px-3 py-1.5 bg-background border border-border rounded-xl text-xs font-bold text-foreground focus:outline-none focus:border-primary cursor-pointer [&>option]:bg-card [&>option]:text-foreground [&>option]:dark:bg-slate-900 [&>option]:dark:text-slate-100"
+                    >
+                      <option value="contains">Contains Substring</option>
+                      <option value="exact">Exact Match</option>
+                      <option value="starts_with">Starts With</option>
+                      <option value="regex">Regular Expression</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <label className="text-[10px] font-bold uppercase text-muted-foreground block mb-1">
+                      Pattern to Match
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={newRuleForm.pattern}
+                      onChange={(e) => setNewRuleForm({ ...newRuleForm, pattern: e.target.value })}
+                      placeholder="e.g. ResizeObserver loop limit exceeded"
+                      className="w-full px-3 py-1.5 bg-background border border-border rounded-xl text-xs font-mono text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary"
+                    />
+                  </div>
+                  <div className="self-end">
+                    <button
+                      type="submit"
+                      className="px-4 py-1.5 bg-primary text-primary-foreground font-bold text-xs rounded-xl shadow-xs hover:bg-primary/90 transition cursor-pointer"
+                    >
+                      Save Rule
+                    </button>
+                  </div>
+                </div>
+              </form>
+
+              {/* Existing Rules List */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-black uppercase tracking-wider text-muted-foreground">
+                    Configured Rules ({rulesList.length})
+                  </span>
+                  {rulesLoading && (
+                    <RefreshCw size={13} className="animate-spin text-primary" />
                   )}
                 </div>
 
-                {/* Next Page */}
-                <button
-                  type="button"
-                  onClick={() => setErrorPage((p) => Math.min(totalErrorPages, p + 1))}
-                  disabled={errorPage >= totalErrorPages}
-                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-card border border-border text-xs font-bold text-foreground hover:bg-muted disabled:opacity-40 disabled:pointer-events-none transition cursor-pointer"
-                >
-                  <span>Next</span>
-                  <ChevronRight size={14} />
-                </button>
+                {rulesList.length === 0 ? (
+                  <div className="p-8 text-center bg-muted/20 border border-border rounded-2xl">
+                    <ShieldCheck size={28} className="text-emerald-500 mx-auto mb-1.5" />
+                    <h5 className="text-xs font-bold text-foreground">No Active Block Rules</h5>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                      All runtime exceptions and HTTP errors will be ingested. Use the form above to mute specific errors.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {rulesList.map((rule) => (
+                      <div
+                        key={rule.id}
+                        className={`p-3.5 border rounded-2xl flex items-center justify-between gap-3 transition ${
+                          rule.enabled
+                            ? "bg-muted/30 border-border"
+                            : "bg-muted/10 border-border/50 opacity-60"
+                        }`}
+                      >
+                        <div className="min-w-0 flex-1 space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span
+                              className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase font-mono border ${
+                                rule.enabled
+                                  ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
+                                  : "bg-muted text-muted-foreground border-border"
+                              }`}
+                            >
+                              {rule.enabled ? "Active / Suppressed" : "Paused"}
+                            </span>
+                            <span className="text-xs font-bold text-foreground truncate">
+                              {rule.name || rule.pattern}
+                            </span>
+                          </div>
 
-                {/* Last Page */}
-                <button
-                  type="button"
-                  onClick={() => setErrorPage(totalErrorPages)}
-                  disabled={errorPage >= totalErrorPages}
-                  className="p-1.5 rounded-lg bg-card border border-border text-foreground hover:bg-muted disabled:opacity-40 disabled:pointer-events-none transition cursor-pointer"
-                  title="Last Page"
-                >
-                  <ChevronsRight size={14} />
-                </button>
+                          <div className="flex items-center gap-2 text-[11px] font-mono text-muted-foreground flex-wrap">
+                            <span>Field: <strong className="text-foreground">{rule.matchField}</strong></span>
+                            <span>&bull;</span>
+                            <span>Op: <strong className="text-foreground">{rule.matchType}</strong></span>
+                            <span>&bull;</span>
+                            <span className="truncate max-w-xs">
+                              Pattern: <strong className="text-foreground">&ldquo;{rule.pattern}&rdquo;</strong>
+                            </span>
+                          </div>
+                        </div>
 
-                {/* Jump to Page form */}
-                {totalErrorPages > 1 && (
-                  <form onSubmit={handleJumpErrorPage} className="hidden md:flex items-center gap-1 pl-2 border-l border-border">
-                    <input
-                      type="number"
-                      min={1}
-                      max={totalErrorPages}
-                      value={errorJumpPageInput}
-                      onChange={(e) => setErrorJumpPageInput(e.target.value)}
-                      placeholder="#"
-                      className="w-12 px-2 py-1 bg-card border border-border rounded-lg text-xs text-center font-mono text-foreground focus:outline-none focus:border-primary"
-                    />
-                    <button
-                      type="submit"
-                      disabled={!errorJumpPageInput}
-                      className="px-2 py-1 bg-muted hover:bg-accent border border-border text-foreground rounded-lg text-xs font-bold disabled:opacity-40 transition cursor-pointer"
-                    >
-                      Go
-                    </button>
-                  </form>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => handleToggleRule(rule.id, rule.enabled)}
+                            className="p-1 text-muted-foreground hover:text-foreground transition cursor-pointer"
+                            title={rule.enabled ? "Pause this rule" : "Activate this rule"}
+                          >
+                            {rule.enabled ? (
+                              <ToggleRight size={26} className="text-primary" />
+                            ) : (
+                              <ToggleLeft size={26} className="text-muted-foreground" />
+                            )}
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteRule(rule.id)}
+                            className="p-1.5 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 rounded-lg transition cursor-pointer"
+                            title="Delete rule"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
             </div>
-          )}
-        </div>
 
+            {/* Modal Footer */}
+            <div className="p-4 border-t border-border bg-card flex justify-end">
+              <button
+                type="button"
+                onClick={() => setShowRulesModal(false)}
+                className="px-4 py-2 bg-muted hover:bg-accent text-foreground rounded-xl text-xs font-bold transition cursor-pointer"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

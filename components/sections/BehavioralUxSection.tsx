@@ -93,7 +93,7 @@ export default function BehavioralUxSection({ data: propData }: { data?: Analyti
                   {(!data.behavioralSignals?.rageClicks || data.behavioralSignals.rageClicks.length === 0) ? (
                     <tr>
                       <td colSpan={4} className="p-8 text-center text-muted-foreground font-sans text-xs">
-                        🎉 Zero rage clicks detected! Students are navigating and interacting without UI frustration.
+                        Zero rage clicks detected. Users are navigating and interacting without UI frustration.
                       </td>
                     </tr>
                   ) : (

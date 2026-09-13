@@ -12,14 +12,10 @@ export async function POST(req: Request) {
   try {
     let body: any = {};
     try {
-      body = await req.json();
+      const rawText = await req.text();
+      body = rawText ? JSON.parse(rawText) : {};
     } catch {
-      try {
-        const text = await req.text();
-        body = text ? JSON.parse(text) : {};
-      } catch {
-        body = {};
-      }
+      body = {};
     }
     const auth = await authenticateProjectRequest(req, body);
     if (!auth.authorized || !auth.project) {

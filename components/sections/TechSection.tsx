@@ -276,7 +276,7 @@ export default function TechSection({ data: propData }: { data?: AnalyticsData }
                     <span className="font-bold uppercase flex items-center gap-1.5">
                       {is5G && (
                         <span className="px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-300 text-[9px] font-black border border-cyan-500/30">
-                          ⚡ 5G NR
+                          5G NR
                         </span>
                       )}
                       <span>{net.type}</span>

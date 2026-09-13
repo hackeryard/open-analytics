@@ -11,14 +11,10 @@ export async function POST(req: Request) {
   try {
     let body: any = {};
     try {
-      body = await req.json();
+      const rawText = await req.text();
+      body = rawText ? JSON.parse(rawText) : {};
     } catch {
-      try {
-        const text = await req.text();
-        body = text ? JSON.parse(text) : {};
-      } catch {
-        body = {};
-      }
+      body = {};
     }
     const auth = await authenticateProjectRequest(req, body);
     if (!auth.authorized || !auth.project) {
@@ -28,8 +24,94 @@ export async function POST(req: Request) {
     const { projectId } = auth.project;
     const { message, stack, digest, componentStack, errorType, pathname, visitorId, sessionId, userId } = body;
 
-    if (!message || !pathname) {
-      return corsJsonResponse({ ok: false, error: "message and pathname required" }, { status: 400 }, req);
+    const resolvedMessage = (
+      message ||
+      body.error?.message ||
+      body.error ||
+      body.msg ||
+      (stack ? String(stack).split("\n")[0] : "Uncaught Runtime Exception")
+    ).toString().trim();
+
+    let resolvedPathname = pathname;
+    if (!resolvedPathname) {
+      try {
+        const referer = req.headers.get("referer");
+        if (referer) {
+          resolvedPathname = new URL(referer).pathname;
+        }
+      } catch (e) {}
+    }
+    if (!resolvedPathname) {
+      resolvedPathname = "/";
+    }
+
+    const validErrorTypes = [
+      "runtime",
+      "unhandledrejection",
+      "boundary",
+      "network",
+      "api",
+      "resource",
+      "webgl",
+      "console",
+      "hydration",
+      "not_found",
+      "http_4xx",
+      "http_5xx",
+      "csp",
+    ];
+    const resolvedErrorType = validErrorTypes.includes(errorType) ? errorType : "runtime";
+
+    // 1. Evaluate Project-level Error Block / Ignore Rules
+    const errorRules = Array.isArray(auth.project.settings?.errorRules)
+      ? auth.project.settings.errorRules
+      : [];
+
+    const isRuleMatch = (fieldValue: string, matchType: string, pattern: string): boolean => {
+      if (!fieldValue || !pattern) return false;
+      const target = fieldValue.trim();
+      const pat = pattern.trim();
+      if (matchType === "exact") {
+        return target.toLowerCase() === pat.toLowerCase();
+      }
+      if (matchType === "starts_with") {
+        return target.toLowerCase().startsWith(pat.toLowerCase());
+      }
+      if (matchType === "regex") {
+        try {
+          const regex = new RegExp(pat, "i");
+          return regex.test(target);
+        } catch {
+          return false;
+        }
+      }
+      // default: "contains"
+      return target.toLowerCase().includes(pat.toLowerCase());
+    };
+
+    const matchingRule = errorRules.find((rule: any) => {
+      if (!rule.enabled || !rule.pattern) return false;
+      let valToTest = "";
+      if (rule.matchField === "pathname") valToTest = resolvedPathname;
+      else if (rule.matchField === "errorType") valToTest = resolvedErrorType;
+      else if (rule.matchField === "stack") valToTest = stack ? String(stack) : "";
+      else valToTest = resolvedMessage;
+
+      return isRuleMatch(valToTest, rule.matchType || "contains", rule.pattern);
+    });
+
+    if (matchingRule) {
+      return corsJsonResponse(
+        {
+          ok: true,
+          ignored: true,
+          ruleId: matchingRule.id,
+          ruleName: matchingRule.name,
+          message: `Error matching ignore rule '${matchingRule.name}' was suppressed.`,
+        },
+        { status: 200 },
+        req
+      );
     }
 
     await connectDB();
@@ -55,8 +137,8 @@ export async function POST(req: Request) {
     const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
     const existing = await (ErrorLog as any).findOne({
       projectId,
-      message: message.trim(),
-      pathname,
+      message: resolvedMessage,
+      pathname: resolvedPathname,
       lastOccurredAt: { $gte: twentyFourHoursAgo },
     });
 
@@ -73,12 +155,12 @@ export async function POST(req: Request) {
 
     const errorLog = await (ErrorLog as any).create({
       projectId,
-      message: message.trim().slice(0, 1000),
+      message: resolvedMessage.slice(0, 1000),
       stack: stack ? String(stack).slice(0, 5000) : "",
       digest: digest || null,
       componentStack: componentStack ? String(componentStack).slice(0, 3000) : null,
-      errorType: errorType || "runtime",
-      pathname,
+      errorType: resolvedErrorType,
+      pathname: resolvedPathname,
       visitorId: visitorId || null,
       sessionId: sessionId || null,
       userId: userId || null,

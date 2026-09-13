@@ -296,7 +296,7 @@ export async function getProjectAnalytics(
     },
   ]);
 
-  // 3c. Detailed Returning Visitors Profiles & Directory (Who are the returning users)
+  // 3c. Detailed Visitors & User Profiles Directory (All users, new, returning, loyal champions)
   const returningUsersPromise = (PageView as any).aggregate([
     { $match: matchStage },
     {
@@ -316,15 +316,6 @@ export async function getProjectAnalytics(
         browser: { $last: "$browser" },
         os: { $last: "$os" },
         hasReturningFlag: { $max: { $cond: ["$isReturning", 1, 0] } },
-      },
-    },
-    {
-      $match: {
-        $or: [
-          { hasReturningFlag: 1 },
-          { maxVisitCount: { $gt: 1 } },
-          { $expr: { $gt: [{ $size: "$sessions" }, 1] } },
-        ],
       },
     },
     {
@@ -348,16 +339,17 @@ export async function getProjectAnalytics(
         totalDuration: 1,
         visitCount: { $max: ["$maxVisitCount", { $size: "$sessions" }] },
         sessionCount: { $size: "$sessions" },
-        topPaths: { $slice: ["$paths", 5] },
+        topPaths: { $slice: ["$paths", 8] },
         country: 1,
         city: 1,
         device: 1,
         browser: 1,
         os: 1,
+        hasReturningFlag: 1,
       },
     },
     { $sort: { lastSeen: -1 } },
-    { $limit: 100 },
+    { $limit: 250 },
   ]);
 
   // 4. Top Pages / Labs
@@ -375,7 +367,7 @@ export async function getProjectAnalytics(
       },
     },
     { $sort: { views: -1 } },
-    { $limit: 25 },
+    { $limit: 100 },
   ]);
 
   // 5. Referrers & Acquisition (Excluding OAuth auth redirectors & internal app subdomains)
@@ -560,8 +552,17 @@ export async function getProjectAnalytics(
     .limit(60)
     .lean();
 
-  // 13. Error Logs in Timeframe
-  const errorsPromise = (ErrorLog as any).find(matchStage)
+  // 13. Error Logs in Timeframe (matches either lastOccurredAt or createdAt within range)
+  const errorMatchStage: Record<string, any> = { projectId };
+  if (matchStage.createdAt) {
+    errorMatchStage.$or = [
+      { lastOccurredAt: matchStage.createdAt },
+      { createdAt: matchStage.createdAt },
+      { updatedAt: matchStage.createdAt },
+    ];
+  }
+
+  const errorsPromise = (ErrorLog as any).find(errorMatchStage)
     .populate({
       path: "userId",
       select: "name email username avatar",
@@ -571,7 +572,7 @@ export async function getProjectAnalytics(
     .lean();
 
   const errorStatsPromise = (ErrorLog as any).aggregate([
-    { $match: matchStage },
+    { $match: errorMatchStage },
     {
       $group: {
         _id: null,
@@ -776,7 +777,7 @@ export async function getProjectAnalytics(
     },
   ]);
 
-  // 18. User Journeys (Entry pages & Exit pages)
+  // 18. User Journeys (Entry pages, Exit pages, Multi-step Flows & Transitions)
   const sessionPathsPromise = (PageView as any).aggregate([
     { $match: matchStage },
     { $sort: { createdAt: 1 } },
@@ -785,20 +786,34 @@ export async function getProjectAnalytics(
         _id: "$sessionId",
         entryPage: { $first: "$pathname" },
         exitPage: { $last: "$pathname" },
+        pathSequence: { $push: "$pathname" },
         pathCount: { $sum: 1 },
       },
     },
     {
       $facet: {
+        rawSessions: [
+          { $limit: 300 },
+        ],
         entryPages: [
-          { $group: { _id: "$entryPage", count: { $sum: 1 } } },
+          {
+            $group: {
+              _id: "$entryPage",
+              count: { $sum: 1 },
+              bouncedCount: {
+                $sum: {
+                  $cond: [{ $eq: ["$pathCount", 1] }, 1, 0],
+                },
+              },
+            },
+          },
           { $sort: { count: -1 } },
-          { $limit: 10 },
+          { $limit: 15 },
         ],
         exitPages: [
           { $group: { _id: "$exitPage", count: { $sum: 1 } } },
           { $sort: { count: -1 } },
-          { $limit: 10 },
+          { $limit: 15 },
         ],
       },
     },
@@ -1075,23 +1090,57 @@ export async function getProjectAnalytics(
     frequency: retentionFrequency,
   };
 
-  // Populate Returning Users Profiles
-  const returningUsers = (returningUsersRaw || []).map((ru: any) => ({
-    visitorId: ru._id,
-    user: ru.userId && typeof ru.userId === "object" ? ru.userId : null,
-    visitCount: ru.visitCount || 1,
-    sessionCount: ru.sessionCount || 1,
-    totalViews: ru.totalViews || 0,
-    totalDuration: ru.totalDuration ? Math.round(ru.totalDuration) : 0,
-    topPaths: (ru.topPaths || []).filter(Boolean),
-    country: getFullCountryName(ru.country),
-    city: ru.city || "Unknown",
-    device: ru.device || "desktop",
-    browser: ru.browser || "Unknown",
-    os: ru.os || "Unknown",
-    firstSeen: ru.firstSeen ? new Date(ru.firstSeen).toISOString() : new Date().toISOString(),
-    lastSeen: ru.lastSeen ? new Date(ru.lastSeen).toISOString() : new Date().toISOString(),
-  }));
+  // Populate Audience & Visitors Profiles with Loyalty Metrics
+  const returningUsers = (returningUsersRaw || []).map((ru: any) => {
+    const visitCount = ru.visitCount || 1;
+    const sessionCount = ru.sessionCount || 1;
+    const totalViews = ru.totalViews || 0;
+    const totalDuration = ru.totalDuration ? Math.round(ru.totalDuration) : 0;
+
+    // Calculate Loyalty Score (0-100) based on repeat visits, sessions, dwell time, and views
+    const visitScore = Math.min(40, visitCount * 8);
+    const sessionScore = Math.min(25, sessionCount * 5);
+    const durationScore = Math.min(20, Math.round(totalDuration / 30));
+    const viewsScore = Math.min(15, totalViews * 2);
+    const loyaltyScore = Math.min(100, Math.max(10, visitScore + sessionScore + durationScore + viewsScore));
+
+    let userType: "new" | "returning" | "loyal" | "champion" = "new";
+    let loyaltyTier: "Newcomer" | "Returning" | "Loyal Advocate" | "Brand Champion" = "Newcomer";
+
+    if (visitCount >= 10 || sessionCount >= 8) {
+      userType = "champion";
+      loyaltyTier = "Brand Champion";
+    } else if (visitCount >= 4 || sessionCount >= 4) {
+      userType = "loyal";
+      loyaltyTier = "Loyal Advocate";
+    } else if (visitCount > 1 || sessionCount > 1 || ru.hasReturningFlag) {
+      userType = "returning";
+      loyaltyTier = "Returning";
+    } else {
+      userType = "new";
+      loyaltyTier = "Newcomer";
+    }
+
+    return {
+      visitorId: ru._id,
+      user: ru.userId && typeof ru.userId === "object" ? ru.userId : null,
+      visitCount,
+      sessionCount,
+      totalViews,
+      totalDuration,
+      topPaths: (ru.topPaths || []).filter(Boolean),
+      country: getFullCountryName(ru.country),
+      city: ru.city || "Unknown",
+      device: ru.device || "desktop",
+      browser: ru.browser || "Unknown",
+      os: ru.os || "Unknown",
+      firstSeen: ru.firstSeen ? new Date(ru.firstSeen).toISOString() : new Date().toISOString(),
+      lastSeen: ru.lastSeen ? new Date(ru.lastSeen).toISOString() : new Date().toISOString(),
+      userType,
+      loyaltyScore,
+      loyaltyTier,
+    };
+  });
 
   // Realtime
   let totalActiveUsers = 0;
@@ -1420,19 +1469,126 @@ export async function getProjectAnalytics(
     })),
   };
 
-  // User Journeys (Entry & Exit Paths)
-  const sessionPathsResult = sessionPathsRaw[0] || { entryPages: [], exitPages: [] };
+  // User Journeys (Entry & Exit Paths, Multi-step Flows, Transitions)
+  const sessionPathsResult = sessionPathsRaw[0] || { entryPages: [], exitPages: [], rawSessions: [] };
+  const rawSessionsList = sessionPathsResult.rawSessions || [];
+
+  // Compute Top Sequential Flows (e.g. "/" -> "/docs" -> "/install")
+  const flowMap = new Map<string, { path: string[]; count: number }>();
+  const transitionMap = new Map<string, { from: string; to: string; count: number }>();
+  let singlePageSessionsCount = 0;
+  let twoPageSessionsCount = 0;
+  let threeToFiveSessionsCount = 0;
+  let sixPlusSessionsCount = 0;
+  let totalPathsSum = 0;
+
+  rawSessionsList.forEach((s: any) => {
+    const seq = (s.pathSequence || []).filter(Boolean);
+    const len = seq.length;
+    totalPathsSum += len;
+
+    if (len === 1) singlePageSessionsCount++;
+    else if (len === 2) twoPageSessionsCount++;
+    else if (len <= 5) threeToFiveSessionsCount++;
+    else sixPlusSessionsCount++;
+
+    // Multi-step flow key (limit to first 4 steps)
+    if (len > 0) {
+      const flowSteps = seq.slice(0, 4);
+      const flowKey = flowSteps.join(" -> ");
+      const existing = flowMap.get(flowKey);
+      if (existing) {
+        existing.count++;
+      } else {
+        flowMap.set(flowKey, { path: flowSteps, count: 1 });
+      }
+    }
+
+    // Step-by-step Transitions
+    for (let i = 0; i < len - 1; i++) {
+      const from = seq[i];
+      const to = seq[i + 1];
+      if (from && to && from !== to) {
+        const transKey = `${from} -> ${to}`;
+        const existingTrans = transitionMap.get(transKey);
+        if (existingTrans) {
+          existingTrans.count++;
+        } else {
+          transitionMap.set(transKey, { from, to, count: 1 });
+        }
+      }
+    }
+  });
+
+  const totalSessionsSampled = rawSessionsList.length || uniqueSessions || 1;
+  const topFlows = Array.from(flowMap.entries())
+    .map(([pathString, item]) => ({
+      path: item.path,
+      pathString,
+      count: item.count,
+      percentage: parseFloat(((item.count / totalSessionsSampled) * 100).toFixed(1)),
+      depth: item.path.length,
+    }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10);
+
+  const topTransitions = Array.from(transitionMap.values())
+    .map((t) => ({
+      from: t.from,
+      to: t.to,
+      count: t.count,
+      percentage: parseFloat(((t.count / totalSessionsSampled) * 100).toFixed(1)),
+    }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 12);
+
+  const depthDistribution = [
+    {
+      depthLabel: "1 Page (Direct Bounce)",
+      count: singlePageSessionsCount,
+      percentage: parseFloat(((singlePageSessionsCount / totalSessionsSampled) * 100).toFixed(1)),
+    },
+    {
+      depthLabel: "2 Pages",
+      count: twoPageSessionsCount,
+      percentage: parseFloat(((twoPageSessionsCount / totalSessionsSampled) * 100).toFixed(1)),
+    },
+    {
+      depthLabel: "3–5 Pages",
+      count: threeToFiveSessionsCount,
+      percentage: parseFloat(((threeToFiveSessionsCount / totalSessionsSampled) * 100).toFixed(1)),
+    },
+    {
+      depthLabel: "6+ Pages (Deep Flow)",
+      count: sixPlusSessionsCount,
+      percentage: parseFloat(((sixPlusSessionsCount / totalSessionsSampled) * 100).toFixed(1)),
+    },
+  ];
+
+  const avgPathDepth = rawSessionsList.length > 0 ? parseFloat((totalPathsSum / rawSessionsList.length).toFixed(1)) : 1.0;
+  const journeyBounceRate = parseFloat(((singlePageSessionsCount / totalSessionsSampled) * 100).toFixed(1));
+
   const userJourneys = {
+    overview: {
+      totalSessions: uniqueSessions,
+      avgPathDepth,
+      bounceRate: journeyBounceRate,
+      multiPageRate: parseFloat((100 - journeyBounceRate).toFixed(1)),
+    },
     entryPages: (sessionPathsResult.entryPages || []).map((p: any) => ({
       pathname: p._id || "/",
       count: p.count,
       percentage: uniqueSessions > 0 ? parseFloat(((p.count / uniqueSessions) * 100).toFixed(1)) : 0,
+      bounceRate: p.count > 0 ? Math.round(((p.bouncedCount || 0) / p.count) * 100) : 0,
     })),
     exitPages: (sessionPathsResult.exitPages || []).map((p: any) => ({
       pathname: p._id || "/",
       count: p.count,
       percentage: uniqueSessions > 0 ? parseFloat(((p.count / uniqueSessions) * 100).toFixed(1)) : 0,
     })),
+    topFlows,
+    transitions: topTransitions,
+    depthDistribution,
   };
 
 

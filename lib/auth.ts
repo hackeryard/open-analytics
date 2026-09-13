@@ -11,7 +11,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "open_analytics_super_secret_jwt_ke
 export interface TokenPayload {
   userId: string;
   email: string;
-  role: "super_admin" | "admin" | "member";
+  role: "super_admin" | "admin" | "editor" | "member";
   name: string;
 }
 
@@ -48,12 +48,13 @@ export function generateApiKey(type: "pk" | "sk" = "pk"): string {
 }
 
 export const ROLE_HIERARCHY: Record<string, number> = {
-  super_admin: 3,
-  admin: 2,
+  super_admin: 4,
+  admin: 3,
+  editor: 2,
   member: 1,
 };
 
-export function hasRole(userRole: string, minRole: "super_admin" | "admin" | "member"): boolean {
+export function hasRole(userRole: string, minRole: "super_admin" | "admin" | "editor" | "member"): boolean {
   const userLevel = ROLE_HIERARCHY[userRole] || 0;
   const minLevel = ROLE_HIERARCHY[minRole] || 0;
   return userLevel >= minLevel;
@@ -85,7 +86,29 @@ export function canAccessProject(user: any, project: any): boolean {
 }
 
 /**
- * Checks if a user has permission to manage/edit a project.
+ * Checks if a user has permission to edit project operational features (error triage, error rules, custom events).
+ * Allowed: super_admin, workspace owner, admin, or editor.
+ */
+export function canEditProject(user: any, project: any): boolean {
+  if (!user || !project) return false;
+  if (user.role === "super_admin") return true;
+
+  const userIdStr = user._id?.toString() || user.userId || user.id;
+  if (project.ownerId && project.ownerId.toString() === userIdStr) {
+    return true;
+  }
+  if (Array.isArray(project.members)) {
+    const memberObj = project.members.find(
+      (m: any) => (m.userId?.toString() || m.userId) === userIdStr
+    );
+    if (memberObj && (memberObj.role === "admin" || memberObj.role === "editor")) return true;
+  }
+  return false;
+}
+
+/**
+ * Checks if a user has permission to manage project administrative settings and members.
+ * Allowed: super_admin, workspace owner, or admin.
  */
 export function canManageProject(user: any, project: any): boolean {
   if (!user || !project) return false;
@@ -191,6 +214,38 @@ export async function verifyProjectAccess(req: Request, projectId: string): Prom
 }
 
 /**
+ * Route authorization guard: verifies user is authenticated and has editor/admin permission for projectId.
+ */
+export async function verifyProjectEdit(req: Request, projectId: string): Promise<{
+  ok: boolean;
+  status?: number;
+  error?: string;
+  user?: any;
+  project?: any;
+}> {
+  await connectDB();
+  const user = await getCurrentUser(req);
+  if (!user) {
+    return { ok: false, status: 401, error: "Authentication required. Please log in." };
+  }
+
+  const project = await (Project as any).findOne({ projectId }).lean();
+  if (!project) {
+    return { ok: false, status: 404, error: "Project not found" };
+  }
+
+  if (!canEditProject(user, project)) {
+    return {
+      ok: false,
+      status: 403,
+      error: "Access denied: You do not have editor or admin permissions for this project.",
+    };
+  }
+
+  return { ok: true, user, project };
+}
+
+/**
  * Route authorization guard: verifies user is authenticated and has manage permission for projectId.
  */
 export async function verifyProjectManage(req: Request, projectId: string): Promise<{
@@ -216,6 +271,48 @@ export async function verifyProjectManage(req: Request, projectId: string): Prom
       ok: false,
       status: 403,
       error: "Access denied: You do not have administrative permission to modify this project.",
+    };
+  }
+
+  return { ok: true, user, project };
+}
+
+/**
+ * Checks if a user is the owner of the project (or super_admin).
+ */
+export function isProjectOwner(user: any, project: any): boolean {
+  if (!user || !project) return false;
+  if (user.role === "super_admin") return true;
+  const userIdStr = user._id?.toString() || user.userId || user.id;
+  return project.ownerId && project.ownerId.toString() === userIdStr;
+}
+
+/**
+ * Route authorization guard: verifies user is authenticated and is the project owner.
+ */
+export async function verifyProjectOwner(req: Request, projectId: string): Promise<{
+  ok: boolean;
+  status?: number;
+  error?: string;
+  user?: any;
+  project?: any;
+}> {
+  await connectDB();
+  const user = await getCurrentUser(req);
+  if (!user) {
+    return { ok: false, status: 401, error: "Authentication required. Please log in." };
+  }
+
+  const project = await (Project as any).findOne({ projectId }).lean();
+  if (!project) {
+    return { ok: false, status: 404, error: "Project not found" };
+  }
+
+  if (!isProjectOwner(user, project)) {
+    return {
+      ok: false,
+      status: 403,
+      error: "Access denied: Only the workspace owner can transfer ownership or delete this project.",
     };
   }
 

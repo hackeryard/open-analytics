@@ -3,29 +3,55 @@
   if (typeof window === "undefined") return;
 
   // Locate the current script tag and configuration
-  const currentScript = document.currentScript || (function() {
+  let cachedScript = null;
+  function getScriptElement() {
+    if (cachedScript && document.contains(cachedScript)) return cachedScript;
+    if (document.currentScript) {
+      cachedScript = document.currentScript;
+      return cachedScript;
+    }
+    const queryMatch = document.querySelector('script[data-project-id], script[src*="open.js"], script#open-analytics-script');
+    if (queryMatch) {
+      cachedScript = queryMatch;
+      return cachedScript;
+    }
     const scripts = document.getElementsByTagName("script");
     for (let i = scripts.length - 1; i >= 0; i--) {
-      if (scripts[i].src && (scripts[i].src.includes("open.js") || scripts[i].hasAttribute("data-project-id"))) return scripts[i];
+      if (scripts[i].src && (scripts[i].src.includes("open.js") || scripts[i].hasAttribute("data-project-id"))) {
+        cachedScript = scripts[i];
+        return cachedScript;
+      }
     }
     return null;
-  })();
+  }
 
-  const projectId = currentScript ? (currentScript.getAttribute("data-project-id") || currentScript.getAttribute("data-id") || "prj_openlabs") : "prj_openlabs";
-  const apiKey = currentScript ? (currentScript.getAttribute("data-api-key") || currentScript.getAttribute("data-key") || "") : "";
-  let endpoint = currentScript ? (currentScript.getAttribute("data-endpoint") || "") : "";
+  let configOverrides = {};
 
-  if (!endpoint) {
-    if (currentScript && currentScript.src) {
-      try {
-        const scriptUrl = new URL(currentScript.src);
-        endpoint = scriptUrl.origin;
-      } catch (e) {
-        endpoint = window.location.origin;
+  function getConfig() {
+    const el = getScriptElement();
+    const pid = configOverrides.projectId || (el && (el.getAttribute("data-project-id") || el.getAttribute("data-id"))) || (window.__OPEN_ANALYTICS_PROJECT_ID__) || "prj_openlabs";
+    const key = configOverrides.apiKey || (el && (el.getAttribute("data-api-key") || el.getAttribute("data-key"))) || "";
+    let ep = configOverrides.endpoint || (el && el.getAttribute("data-endpoint")) || "";
+
+    if (!ep) {
+      if (el && el.src) {
+        try {
+          const scriptUrl = new URL(el.src);
+          ep = scriptUrl.origin;
+        } catch (e) {
+          ep = window.location.origin;
+        }
+      } else {
+        ep = window.location.origin;
       }
-    } else {
-      endpoint = window.location.origin;
     }
+
+    return {
+      projectId: pid,
+      apiKey: key,
+      endpoint: ep,
+      element: el,
+    };
   }
 
   // 1. Visitor & Session IDs
@@ -74,14 +100,16 @@
 
   // 2. Beacon Dispatcher
   function sendBeacon(urlPath, data) {
-    const fullUrl = endpoint.replace(/\/$/, "") + urlPath;
+    const cfg = getConfig();
+    const fullUrl = cfg.endpoint.replace(/\/$/, "") + urlPath;
     const visitorMeta = getVisitorMetadata();
 
     const payload = JSON.stringify(Object.assign({}, data, {
-      projectId: projectId,
-      apiKey: apiKey,
+      projectId: cfg.projectId,
+      apiKey: cfg.apiKey,
       visitorId: getOrCreateVisitorId(),
       sessionId: getOrCreateSessionId(),
+      pathname: (data && data.pathname) || currentPath || (typeof window !== "undefined" ? window.location.pathname : "/"),
       isReturning: data.isReturning !== undefined ? data.isReturning : visitorMeta.isReturning,
       visitCount: data.visitCount !== undefined ? data.visitCount : visitorMeta.visitCount,
       timestamp: Date.now(),
@@ -263,39 +291,235 @@
       if (pct >= m && !scrollMilestones.has(m)) {
         scrollMilestones.add(m);
         addBreadcrumb("scroll", { depth: m });
+        evaluateEventRules("scroll_depth", { depth: m });
+        sendBeacon("/api/v1/collect", {
+          type: "event",
+          eventName: "autotrack_scroll_" + m + "pct",
+          category: "autotrack",
+          pathname: currentPath,
+          properties: { depth: m },
+        });
       }
     }
   }, { passive: true });
 
-  // Rage Clicks
+  // ── No-Code Custom Event Rules Engine ──
+  let customEventRules = [];
+  function fetchCustomEventRules() {
+    const cfg = getConfig();
+    if (!cfg.projectId) return;
+
+    const cacheKey = "open_rules_" + cfg.projectId;
+    const cacheTimeKey = "open_rules_t_" + cfg.projectId;
+    const cached = sessionStorage.getItem(cacheKey);
+    const cachedTime = parseInt(sessionStorage.getItem(cacheTimeKey) || "0", 10);
+
+    if (cached && Date.now() - cachedTime < 180000) {
+      try {
+        customEventRules = JSON.parse(cached);
+        return;
+      } catch (e) {}
+    }
+
+    const url = cfg.endpoint.replace(/\/$/, "") + "/api/v1/event-rules?projectId=" + encodeURIComponent(cfg.projectId);
+    fetch(url, { mode: "cors" })
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (data && data.ok && Array.isArray(data.rules)) {
+          customEventRules = data.rules;
+          try {
+            sessionStorage.setItem(cacheKey, JSON.stringify(customEventRules));
+            sessionStorage.setItem(cacheTimeKey, String(Date.now()));
+          } catch (e) {}
+          evaluateEventRules("pageview", { pathname: currentPath });
+        }
+      })
+      .catch(function() {});
+  }
+
+  function pathMatchesPattern(pattern, pathMatchType, path) {
+    if (!pattern || pattern === "*" || pathMatchType === "any") return true;
+    const cur = path || window.location.pathname;
+    if (pathMatchType === "exact") return cur === pattern;
+    if (pathMatchType === "starts_with") return cur.startsWith(pattern);
+    if (pathMatchType === "contains") return cur.includes(pattern);
+    return cur === pattern || cur.includes(pattern);
+  }
+
+  function textMatches(pattern, textMatchType, text) {
+    if (!pattern) return true;
+    const t = (text || "").toLowerCase().trim();
+    const p = pattern.toLowerCase().trim();
+    if (textMatchType === "exact") return t === p;
+    if (textMatchType === "starts_with") return t.startsWith(p);
+    return t.includes(p);
+  }
+
+  function evaluateEventRules(triggerType, eventData, targetElement) {
+    if (!customEventRules || !customEventRules.length) return;
+
+    for (let i = 0; i < customEventRules.length; i++) {
+      const rule = customEventRules[i];
+      if (!rule || rule.enabled === false) continue;
+      if (rule.triggerType !== triggerType) continue;
+
+      // Check path match
+      if (!pathMatchesPattern(rule.pathPattern, rule.pathMatchType, currentPath)) continue;
+
+      let matched = false;
+
+      if (triggerType === "click") {
+        if (!targetElement) continue;
+
+        // Check CSS selector match
+        if (rule.selector && rule.selector.trim()) {
+          try {
+            if (targetElement.matches(rule.selector) || (targetElement.closest && targetElement.closest(rule.selector))) {
+              matched = true;
+            }
+          } catch (e) {}
+        }
+
+        // Check text match
+        if (rule.textMatch && rule.textMatch.trim()) {
+          const elText = targetElement.textContent || targetElement.value || targetElement.getAttribute("aria-label") || "";
+          if (textMatches(rule.textMatch, rule.textMatchType, elText)) {
+            matched = true;
+          }
+        }
+
+        // If neither selector nor text was specified, match all clicks on the path
+        if (!rule.selector && !rule.textMatch) {
+          matched = true;
+        }
+      } else if (triggerType === "form_submit") {
+        if (targetElement) {
+          if (rule.selector && rule.selector.trim()) {
+            try {
+              if (targetElement.matches(rule.selector) || (targetElement.closest && targetElement.closest(rule.selector))) {
+                matched = true;
+              }
+            } catch (e) {}
+          } else {
+            matched = true;
+          }
+        } else {
+          matched = true;
+        }
+      } else if (triggerType === "pageview" || triggerType === "scroll_depth" || triggerType === "file_download" || triggerType === "outbound_link") {
+        matched = true;
+      }
+
+      if (matched) {
+        sendBeacon("/api/v1/collect", {
+          type: "event",
+          eventName: rule.name,
+          category: "no_code_rule",
+          pathname: currentPath,
+          value: typeof rule.value === "number" ? rule.value : null,
+          properties: Object.assign({}, rule.properties, eventData, {
+            ruleId: rule.id,
+            triggerType: triggerType,
+            triggerSource: "no_code_dashboard_rule",
+          }),
+        });
+      }
+    }
+  }
+
+  // ── Comprehensive Interaction & Autotrack Engine ──
+  const DOWNLOAD_EXTS = /\.(pdf|zip|tar\.gz|tgz|rar|7z|exe|dmg|pkg|deb|rpm|csv|xlsx?|docx?|pptx?|mp3|mp4|mov|avi|json|txt|apk|ipa)$/i;
+
   let recentClicks = [];
+  let lastAutotrackClickTime = 0;
+
   window.addEventListener("click", function(e) {
     const now = Date.now();
     const target = e.target;
     if (!target) return;
 
     const tag = (target.tagName || "").toLowerCase();
-    const sampleText = (target.textContent || "").trim().slice(0, 30);
+    const sampleText = (target.textContent || target.value || target.getAttribute("aria-label") || "").trim().slice(0, 60);
     addBreadcrumb("click", { tag: tag, text: sampleText });
 
-    // Outbound link
+    // Find nearest interactive element (button, anchor, role=button, input[button|submit], or data-track/data-oa-event)
+    const interactive = target.closest ? target.closest("button, a, [role='button'], input[type='button'], input[type='submit'], [data-oa-event], [data-track], [id]") : target;
+
+    // 1. Evaluate No-Code Event Rules
+    evaluateEventRules("click", {
+      tag: tag,
+      text: sampleText,
+      elementId: target.id || (interactive && interactive.id) || "",
+    }, target);
+
+    // 2. Outbound link & File Download Autotrack
     const anchor = target.closest ? target.closest("a") : null;
     if (anchor && anchor.href && !anchor.href.startsWith("javascript:")) {
       try {
         const u = new URL(anchor.href);
-        if (u.origin !== window.location.origin) {
+        const pathname = u.pathname || "";
+        const filename = pathname.split("/").pop() || "";
+
+        // File download detection
+        if (DOWNLOAD_EXTS.test(pathname) || anchor.hasAttribute("download")) {
+          const extMatch = pathname.match(DOWNLOAD_EXTS);
+          const ext = extMatch ? extMatch[1].toLowerCase() : "file";
           sendBeacon("/api/v1/collect", {
             type: "event",
-            eventName: "ux_outbound_click",
-            category: "ux",
+            eventName: "autotrack_file_download",
+            category: "autotrack",
             pathname: currentPath,
-            properties: { href: anchor.href, text: sampleText },
+            properties: {
+              filename: filename,
+              fileExtension: ext,
+              href: anchor.href,
+              linkText: sampleText,
+            },
           });
+          evaluateEventRules("file_download", { filename: filename, fileExtension: ext, href: anchor.href }, anchor);
+        } else if (u.origin !== window.location.origin) {
+          // Outbound link
+          sendBeacon("/api/v1/collect", {
+            type: "event",
+            eventName: "autotrack_outbound_click",
+            category: "autotrack",
+            pathname: currentPath,
+            properties: {
+              href: anchor.href,
+              hostname: u.hostname,
+              linkText: sampleText,
+            },
+          });
+          evaluateEventRules("outbound_link", { href: anchor.href, hostname: u.hostname }, anchor);
         }
       } catch (err) {}
     }
 
-    // Rage click check: 3 clicks in 500ms within 40px
+    // 3. Button & CTA Autotrack (Debounced per 200ms)
+    if (interactive && (now - lastAutotrackClickTime > 200)) {
+      const itag = (interactive.tagName || "").toLowerCase();
+      const isButton = itag === "button" || interactive.getAttribute("role") === "button" || (itag === "input" && ["button", "submit"].includes(interactive.type));
+      const hasTrackAttr = interactive.hasAttribute("data-oa-event") || interactive.hasAttribute("data-track");
+
+      if (isButton || hasTrackAttr) {
+        lastAutotrackClickTime = now;
+        const btnText = (interactive.textContent || interactive.value || interactive.getAttribute("aria-label") || sampleText).trim().slice(0, 60);
+        sendBeacon("/api/v1/collect", {
+          type: "event",
+          eventName: hasTrackAttr ? (interactive.getAttribute("data-oa-event") || interactive.getAttribute("data-track") || "cta_click") : "autotrack_button_click",
+          category: "autotrack",
+          pathname: currentPath,
+          properties: {
+            elementTag: itag,
+            buttonText: btnText,
+            elementId: interactive.id || "",
+            className: String(interactive.className || "").slice(0, 100),
+          },
+        });
+      }
+    }
+
+    // 4. Rage Click Detection: 3 clicks in 500ms within 40px
     recentClicks.push({ x: e.clientX, y: e.clientY, time: now });
     recentClicks = recentClicks.filter(function(c) { return now - c.time < 1000; });
 
@@ -318,6 +542,110 @@
     }
   }, { capture: true, passive: true });
 
+  // ── Form Interactions Autotrack ──
+  document.addEventListener("submit", function(e) {
+    try {
+      const form = e.target;
+      if (!form || (form.tagName || "").toLowerCase() !== "form") return;
+
+      const formId = form.id || "";
+      const formName = form.name || "";
+      const formAction = form.action || "";
+      const fieldCount = form.elements ? form.elements.length : 0;
+
+      addBreadcrumb("form:submit", { formId: formId, action: formAction });
+
+      // Evaluate No-Code Event Rules for form submissions
+      evaluateEventRules("form_submit", {
+        formId: formId,
+        formName: formName,
+        action: formAction,
+        fieldCount: fieldCount,
+      }, form);
+
+      // Autotrack form submission
+      sendBeacon("/api/v1/collect", {
+        type: "event",
+        eventName: "autotrack_form_submit",
+        category: "autotrack",
+        pathname: currentPath,
+        properties: {
+          formId: formId,
+          formName: formName,
+          formAction: formAction ? new URL(formAction, window.location.origin).pathname : "",
+          fieldCount: fieldCount,
+        },
+      });
+    } catch (err) {}
+  }, { capture: true, passive: true });
+
+  // Form Start Autotrack (First input focus)
+  const activeFormsStarted = new Set();
+  document.addEventListener("focusin", function(e) {
+    try {
+      const el = e.target;
+      if (!el) return;
+      const tag = (el.tagName || "").toLowerCase();
+      if (!["input", "textarea", "select"].includes(tag)) return;
+      if (["hidden", "submit", "button", "image"].includes(el.type)) return;
+
+      const form = el.closest ? el.closest("form") : null;
+      const formIdentifier = (form && (form.id || form.name || form.action)) || "form_inline";
+
+      if (!activeFormsStarted.has(formIdentifier)) {
+        activeFormsStarted.add(formIdentifier);
+        sendBeacon("/api/v1/collect", {
+          type: "event",
+          eventName: "autotrack_form_start",
+          category: "autotrack",
+          pathname: currentPath,
+          properties: {
+            formId: form ? form.id : "",
+            firstField: el.name || el.id || el.type,
+          },
+        });
+      }
+    } catch (err) {}
+  }, { capture: true, passive: true });
+
+  // ── HTML5 Media Autotrack (Video & Audio) ──
+  document.addEventListener("play", function(e) {
+    try {
+      const el = e.target;
+      if (!el || !["video", "audio"].includes((el.tagName || "").toLowerCase())) return;
+      const src = el.currentSrc || el.src || "";
+      sendBeacon("/api/v1/collect", {
+        type: "event",
+        eventName: "autotrack_media_play",
+        category: "autotrack",
+        pathname: currentPath,
+        properties: {
+          mediaType: (el.tagName || "").toLowerCase(),
+          mediaSource: src.split("/").pop() || "",
+          duration: Math.round(el.duration || 0),
+        },
+      });
+    } catch (err) {}
+  }, { capture: true, passive: true });
+
+  document.addEventListener("ended", function(e) {
+    try {
+      const el = e.target;
+      if (!el || !["video", "audio"].includes((el.tagName || "").toLowerCase())) return;
+      const src = el.currentSrc || el.src || "";
+      sendBeacon("/api/v1/collect", {
+        type: "event",
+        eventName: "autotrack_media_complete",
+        category: "autotrack",
+        pathname: currentPath,
+        properties: {
+          mediaType: (el.tagName || "").toLowerCase(),
+          mediaSource: src.split("/").pop() || "",
+        },
+      });
+    } catch (err) {}
+  }, { capture: true, passive: true });
+
   // Desktop Exit Intent
   document.addEventListener("mouseleave", function(e) {
     if (e.clientY <= 0 && !exitIntentFired) {
@@ -331,15 +659,15 @@
     }
   });
 
-  // Text Copy
+  // Text Copy Autotrack
   document.addEventListener("copy", function() {
     try {
       const sel = window.getSelection ? window.getSelection().toString() : "";
       if (sel && sel.length > 0) {
         sendBeacon("/api/v1/collect", {
           type: "event",
-          eventName: "ux_text_copy",
-          category: "ux",
+          eventName: "autotrack_text_copy",
+          category: "autotrack",
           pathname: currentPath,
           properties: { length: sel.length },
         });
@@ -400,42 +728,288 @@
     } catch (e) {}
   }
 
-  // 360° Error Tracking
+  // 360° Error Tracking Engine
+  function formatStack(err, fallbackStack) {
+    if (err && err.stack) return String(err.stack);
+    if (fallbackStack) return String(fallbackStack);
+    try {
+      throw new Error();
+    } catch (e) {
+      return e.stack || "";
+    }
+  }
+
+  function reportError(errorPayload) {
+    const defaultPayload = {
+      message: "Uncaught runtime error",
+      stack: "",
+      errorType: "runtime",
+      pathname: currentPath || (typeof window !== "undefined" ? window.location.pathname : "/"),
+    };
+    const finalData = Object.assign(defaultPayload, errorPayload);
+    if (!finalData.stack.includes("[Diagnostic Breadcrumbs]")) {
+      finalData.stack = (finalData.stack ? finalData.stack + "\n\n" : "") + "[Diagnostic Breadcrumbs]\n" + JSON.stringify(breadcrumbs, null, 2);
+    }
+    sendBeacon("/api/v1/error", finalData);
+  }
+
+  // 1. Global Event Listener for Runtime & Resource Errors
   window.addEventListener("error", function(e) {
-    // Resource load error
+    // Resource load error (e.g. <img>, <script>, <link> failed to load)
     if (e.target && e.target !== window && e.target.tagName) {
       const tag = e.target.tagName.toLowerCase();
       const src = e.target.src || e.target.href || "";
       if (src && !src.includes("open.js")) {
-        sendBeacon("/api/v1/error", {
+        reportError({
           message: "Resource Load Failed: <" + tag + "> " + src,
           errorType: "resource",
           pathname: currentPath,
-          stack: JSON.stringify({ breadcrumbs: breadcrumbs }),
+          stack: "Failed URL: " + src + "\nTag: <" + tag + ">",
         });
       }
       return;
     }
 
-    const msg = e.message || "Uncaught runtime error";
-    sendBeacon("/api/v1/error", {
+    const errorObj = e.error || null;
+    const msg = (errorObj && errorObj.message) || e.message || "Uncaught runtime error";
+    const stack = (errorObj && errorObj.stack) || (e.filename ? e.filename + ":" + e.lineno + ":" + e.colno : "");
+
+    reportError({
       message: msg,
-      stack: (e.error && e.error.stack ? e.error.stack : "") + "\n\n[Diagnostic Breadcrumbs]\n" + JSON.stringify(breadcrumbs, null, 2),
+      stack: stack,
       errorType: "runtime",
       pathname: currentPath,
     });
   }, { capture: true });
 
+  // 2. Unhandled Promise Rejections (Async / Network / Fetch throws)
   window.addEventListener("unhandledrejection", function(e) {
     const reason = e.reason;
-    const msg = typeof reason === "string" ? reason : reason && reason.message ? reason.message : "Unhandled Promise Rejection";
-    sendBeacon("/api/v1/error", {
+    const msg = typeof reason === "string" ? reason : (reason && reason.message ? reason.message : "Unhandled Promise Rejection");
+    const stack = (reason && reason.stack) ? reason.stack : "";
+
+    reportError({
       message: msg,
-      stack: (reason && reason.stack ? reason.stack : "") + "\n\n[Diagnostic Breadcrumbs]\n" + JSON.stringify(breadcrumbs, null, 2),
+      stack: stack,
       errorType: "unhandledrejection",
       pathname: currentPath,
     });
   });
+
+  // 3. Fallback window.onerror
+  const existingOnError = window.onerror;
+  window.onerror = function(message, source, lineno, colno, error) {
+    if (error) {
+      reportError({
+        message: error.message || String(message),
+        stack: error.stack || (source + ":" + lineno + ":" + colno),
+        errorType: "runtime",
+        pathname: currentPath,
+      });
+    }
+    if (typeof existingOnError === "function") {
+      return existingOnError.apply(this, arguments);
+    }
+    return false;
+  };
+
+  // 4. Safe console.error Interceptor (Captures React component exceptions & hydration errors)
+  const originalConsoleError = console.error;
+  console.error = function() {
+    try {
+      const args = Array.prototype.slice.call(arguments);
+      addBreadcrumb("console.error", {
+        message: args.map(function(a) {
+          return typeof a === "object" ? (a && a.message) || "[Object]" : String(a);
+        }).join(" ").slice(0, 300),
+      });
+
+      let foundError = null;
+      let reactErrorMsg = null;
+      for (let i = 0; i < args.length; i++) {
+        if (args[i] instanceof Error) {
+          foundError = args[i];
+          break;
+        } else if (typeof args[i] === "string") {
+          if (args[i].includes("The above error occurred in the") || args[i].includes("Hydration failed") || args[i].includes("Minified React error")) {
+            reactErrorMsg = args[i];
+          }
+        }
+      }
+
+      if (foundError) {
+        reportError({
+          message: foundError.message || "React Component Error",
+          stack: foundError.stack || "",
+          errorType: "boundary",
+          pathname: currentPath,
+        });
+      } else if (reactErrorMsg) {
+        reportError({
+          message: reactErrorMsg.slice(0, 300),
+          stack: args.join("\n"),
+          errorType: reactErrorMsg.includes("Hydration") ? "hydration" : "boundary",
+          pathname: currentPath,
+        });
+      }
+    } catch (err) {}
+
+    if (typeof originalConsoleError === "function") {
+      originalConsoleError.apply(console, arguments);
+    }
+  };
+
+  // 5. Automatic 404 Route & Page Not Found Engine
+  const reported404Paths = new Set();
+
+  function checkAndReport404(explicitPath) {
+    try {
+      const pathToCheck = explicitPath || currentPath || (typeof window !== "undefined" ? window.location.pathname : "/");
+      if (reported404Paths.has(pathToCheck)) return;
+
+      const title = (document.title || "").toLowerCase();
+      const is404Title = title.includes("404") || title.includes("page not found") || title.includes("not found");
+
+      let is404Dom = false;
+      const h1 = document.querySelector("h1, h2, [data-next-error], #__next-error, .next-error-h1");
+      if (h1) {
+        const text = (h1.textContent || "").toLowerCase();
+        if (text.includes("404") || text.includes("this page could not be found") || text.includes("page not found")) {
+          is404Dom = true;
+        }
+      }
+
+      const meta404 = document.querySelector('meta[name="prerender-status-code"][content="404"], meta[name="status"][content="404"]');
+
+      if (is404Title || is404Dom || !!meta404) {
+        reported404Paths.add(pathToCheck);
+        addBreadcrumb("navigation:404", { path: pathToCheck, title: document.title });
+        reportError({
+          message: "404 Not Found: " + pathToCheck,
+          stack: "URL: " + (typeof window !== "undefined" ? window.location.href : pathToCheck) + "\nReferrer: " + (document.referrer || "Direct") + "\nTitle: " + document.title,
+          errorType: "not_found",
+          pathname: pathToCheck,
+        });
+      }
+    } catch (e) {}
+  }
+
+  // 6. Network Fetch & XHR Interceptor (Captures API 4xx/5xx and Network Failures)
+  if (typeof window !== "undefined") {
+    if (window.fetch) {
+      const originalFetch = window.fetch;
+      window.fetch = function(input, init) {
+        return originalFetch.apply(this, arguments).then(function(res) {
+          try {
+            const urlStr = typeof input === "string" ? input : (input && input.url ? input.url : "");
+            if (urlStr && !urlStr.includes("/api/v1/collect") && !urlStr.includes("/api/v1/error") && !urlStr.includes("/api/v1/identify")) {
+              if (res.status === 404) {
+                addBreadcrumb("fetch:404", { url: urlStr.slice(0, 150) });
+                reportError({
+                  message: "HTTP 404 Not Found: " + urlStr,
+                  stack: "Status: 404 Not Found\nRequest URL: " + urlStr + "\nCaller Path: " + (currentPath || window.location.pathname),
+                  errorType: "not_found",
+                  pathname: currentPath || window.location.pathname,
+                });
+              } else if (res.status >= 400 && res.status < 500) {
+                addBreadcrumb("fetch:4xx", { url: urlStr.slice(0, 150), status: res.status });
+                reportError({
+                  message: "HTTP " + res.status + " Client Error: " + urlStr,
+                  stack: "Status: " + res.status + "\nRequest URL: " + urlStr + "\nCaller Path: " + (currentPath || window.location.pathname),
+                  errorType: "http_4xx",
+                  pathname: currentPath || window.location.pathname,
+                });
+              } else if (res.status >= 500) {
+                addBreadcrumb("fetch:5xx", { url: urlStr.slice(0, 150), status: res.status });
+                reportError({
+                  message: "HTTP " + res.status + " Server Error: " + urlStr,
+                  stack: "Status: " + res.status + "\nRequest URL: " + urlStr + "\nCaller Path: " + (currentPath || window.location.pathname),
+                  errorType: "http_5xx",
+                  pathname: currentPath || window.location.pathname,
+                });
+              }
+            }
+          } catch (e) {}
+          return res;
+        }).catch(function(err) {
+          try {
+            const urlStr = typeof input === "string" ? input : (input && input.url ? input.url : "");
+            if (urlStr && !urlStr.includes("/api/v1/collect") && !urlStr.includes("/api/v1/error") && !urlStr.includes("/api/v1/identify")) {
+              addBreadcrumb("fetch:failed", { url: urlStr.slice(0, 150), error: (err && err.message) || String(err) });
+              reportError({
+                message: "Network Fetch Failed: " + urlStr,
+                stack: (err && err.stack) || ("Fetch error: " + ((err && err.message) || String(err))),
+                errorType: "network",
+                pathname: currentPath || window.location.pathname,
+              });
+            }
+          } catch (e) {}
+          throw err;
+        });
+      };
+    }
+
+    // XHR Interception
+    if (window.XMLHttpRequest) {
+      const originalXhrOpen = XMLHttpRequest.prototype.open;
+      const originalXhrSend = XMLHttpRequest.prototype.send;
+      XMLHttpRequest.prototype.open = function(method, url) {
+        this._openMethod = method;
+        this._openUrl = url;
+        return originalXhrOpen.apply(this, arguments);
+      };
+      XMLHttpRequest.prototype.send = function() {
+        const xhr = this;
+        xhr.addEventListener("loadend", function() {
+          try {
+            const url = String(xhr._openUrl || "");
+            if (url && !url.includes("/api/v1/collect") && !url.includes("/api/v1/error") && !url.includes("/api/v1/identify")) {
+              if (xhr.status === 404) {
+                addBreadcrumb("xhr:404", { url: url.slice(0, 150) });
+                reportError({
+                  message: "XHR 404 Not Found: " + url,
+                  stack: "Method: " + (xhr._openMethod || "GET") + "\nStatus: 404\nURL: " + url,
+                  errorType: "not_found",
+                  pathname: currentPath || window.location.pathname,
+                });
+              } else if (xhr.status >= 500) {
+                addBreadcrumb("xhr:5xx", { url: url.slice(0, 150), status: xhr.status });
+                reportError({
+                  message: "XHR " + xhr.status + " Server Error: " + url,
+                  stack: "Method: " + (xhr._openMethod || "GET") + "\nStatus: " + xhr.status + "\nURL: " + url,
+                  errorType: "http_5xx",
+                  pathname: currentPath || window.location.pathname,
+                });
+              }
+            }
+          } catch (e) {}
+        });
+        return originalXhrSend.apply(this, arguments);
+      };
+    }
+
+    // 7. WebGL Context Loss Tracking
+    window.addEventListener("webglcontextlost", function(e) {
+      addBreadcrumb("webgl:lost", {});
+      reportError({
+        message: "WebGL Context Lost: GPU rendering crash",
+        stack: "Canvas WebGL context was lost by GPU/driver.",
+        errorType: "webgl",
+        pathname: currentPath,
+      });
+    }, { capture: true });
+
+    // 8. Content Security Policy (CSP) Violations
+    document.addEventListener("securitypolicyviolation", function(e) {
+      addBreadcrumb("csp:violation", { directive: e.violatedDirective, uri: e.blockedURI });
+      reportError({
+        message: "CSP Violation: " + e.violatedDirective + " blocked " + e.blockedURI,
+        stack: "Directive: " + e.violatedDirective + "\nBlocked URI: " + e.blockedURI + "\nOriginal Policy: " + e.originalPolicy,
+        errorType: "csp",
+        pathname: currentPath,
+      });
+    });
+  }
 
   // Pageview Trigger
   function triggerPageview(path) {
@@ -447,6 +1021,16 @@
     focusCount = 1;
     exitIntentFired = false;
     scrollMilestones.clear();
+
+    // Fetch and evaluate active No-Code Event Rules
+    fetchCustomEventRules();
+    evaluateEventRules("pageview", { pathname: currentPath });
+
+    // Check for 404 routes immediately & asynchronously as Next.js updates DOM
+    checkAndReport404(currentPath);
+    setTimeout(function() { checkAndReport404(currentPath); }, 150);
+    setTimeout(function() { checkAndReport404(currentPath); }, 600);
+    setTimeout(function() { checkAndReport404(currentPath); }, 1500);
 
     // Detect structured data (Schema.org / JSON-LD / Microdata) for AEO citation readiness
     let structuredDataDetected = false;
@@ -534,8 +1118,11 @@
   // Global Public API
   const publicApi = {
     init: function(opts) {
-      if (opts && opts.projectId) currentScript.setAttribute("data-project-id", opts.projectId);
-      if (opts && opts.apiKey) currentScript.setAttribute("data-api-key", opts.apiKey);
+      if (opts) {
+        if (opts.projectId) configOverrides.projectId = opts.projectId;
+        if (opts.apiKey) configOverrides.apiKey = opts.apiKey;
+        if (opts.endpoint) configOverrides.endpoint = opts.endpoint;
+      }
     },
     track: function(eventName, properties, value) {
       sendBeacon("/api/v1/collect", {
@@ -557,9 +1144,41 @@
         traits: traits || {},
       });
     },
+    captureError: function(err, context) {
+      const msg = typeof err === "string" ? err : (err && err.message) || "Captured Application Error";
+      const stack = formatStack(err, (context && context.stack) || "");
+      reportError({
+        message: msg,
+        stack: stack + (context ? "\n\n[Context]\n" + JSON.stringify(context, null, 2) : ""),
+        errorType: (context && context.errorType) || "boundary",
+        pathname: (context && context.pathname) || currentPath,
+        componentStack: (context && context.componentStack) || null,
+        digest: (err && err.digest) || (context && context.digest) || null,
+      });
+    },
+    captureException: function(err, context) {
+      this.captureError(err, context);
+    },
+    error: function(err, context) {
+      this.captureError(err, context);
+    },
+    track404: function(pathname, referrer) {
+      const targetPath = pathname || currentPath || window.location.pathname;
+      reported404Paths.add(targetPath);
+      reportError({
+        message: "404 Not Found: " + targetPath,
+        stack: "URL: " + (typeof window !== "undefined" ? window.location.origin + targetPath : targetPath) + "\nReferrer: " + (referrer || document.referrer || "Direct"),
+        errorType: "not_found",
+        pathname: targetPath,
+      });
+    },
+    capture404: function(pathname, referrer) {
+      this.track404(pathname, referrer);
+    },
   };
 
   window.OpenAnalytics = publicApi;
 
-  console.log("⚡ Open Analytics tracking active [Project: " + projectId + "]");
+  const initialCfg = getConfig();
+  console.log("[Open Analytics] Tracking active [Project: " + initialCfg.projectId + "]");
 })();
