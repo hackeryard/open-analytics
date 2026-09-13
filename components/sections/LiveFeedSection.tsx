@@ -113,7 +113,7 @@ export default function LiveFeedSection() {
           <div className="p-4 sm:p-5 border-b border-border bg-muted/20 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
-                <span className={`w-2.5 h-2.5 rounded-full ${liveStreamActive ? "bg-emerald-500 animate-pulse shadow-sm shadow-emerald-500/50" : "bg-muted-foreground"}`} />
+                <span className={`w-2.5 h-2.5 rounded-full ${liveStreamActive ? "bg-emerald-500 animate-glow shadow-sm shadow-emerald-500/50" : "bg-muted-foreground"}`} />
                 <h3 className="text-sm font-black tracking-tight text-foreground">All Pageview Events &amp; Live Stream</h3>
               </div>
               <button onClick={() => setLiveStreamActive((v) => !v)} className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border transition ${liveStreamActive ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30" : "bg-muted text-muted-foreground border-border hover:text-foreground"}`}>

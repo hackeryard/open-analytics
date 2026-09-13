@@ -12,7 +12,7 @@ export default function InstallPage() {
   const [copiedReact, setCopiedReact] = useState(false);
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState<null | { ok: boolean; message: string }>(null);
-  const [hostUrl, setHostUrl] = useState("https://pulse-analytics-seven.vercel.app");
+  const [hostUrl, setHostUrl] = useState("https://open-analytics.vercel.app");
   const [loadingAuth, setLoadingAuth] = useState(true);
   const [accessDenied, setAccessDenied] = useState(false);
 
@@ -31,14 +31,14 @@ export default function InstallPage() {
     }
   }, []);
 
-  const scriptTagCode = `<script defer src="${hostUrl}/pulse.js" data-project-id="${projectId}"></script>`;
-  const reactCode = `import PulseTracker from "@/lib/sdk/PulseTracker";
+  const scriptTagCode = `<script defer src="${hostUrl}/open.js" data-project-id="${projectId}"></script>`;
+  const reactCode = `import OpenAnalyticsTracker from "@/lib/sdk/OpenAnalyticsTracker";
 
 export default function RootLayout({ children }) {
   return (
     <html>
       <head>
-        <PulseTracker projectId="${projectId}" endpoint="${hostUrl}" />
+        <OpenAnalyticsTracker projectId="${projectId}" endpoint="${hostUrl}" />
       </head>
       <body>{children}</body>
     </html>
@@ -79,7 +79,7 @@ export default function RootLayout({ children }) {
       });
       const data = await res.json();
       if (data.ok) {
-        setTestResult({ ok: true, message: "Connection verified! Pulse Analytics is actively recording data for " + projectId });
+        setTestResult({ ok: true, message: "Connection verified! Open Analytics is actively recording data for " + projectId });
       } else {
         setTestResult({ ok: false, message: data.error || "Failed to verify connection." });
       }
@@ -138,7 +138,7 @@ export default function RootLayout({ children }) {
           <div>
             <h1 className="text-xl font-black text-foreground flex items-center gap-2">
               <Zap size={20} className="text-primary" />
-              Install Pulse Analytics
+              Install Open Analytics
             </h1>
             <p className="text-xs text-muted-foreground mt-0.5">
               Project Identifier: <span className="font-mono text-primary font-bold">{projectId}</span>
@@ -241,7 +241,7 @@ export default function RootLayout({ children }) {
           Test & Verify Ingestion
         </h2>
         <p className="text-xs text-muted-foreground">
-          Send a live test payload from this browser to verify that the Pulse ingestion API is accepting events for <span className="font-mono text-primary font-bold">{projectId}</span>.
+          Send a live test payload from this browser to verify that the Open Analytics ingestion API is accepting events for <span className="font-mono text-primary font-bold">{projectId}</span>.
         </p>
 
         <div className="flex items-center gap-4 pt-1">
@@ -280,7 +280,7 @@ export default function RootLayout({ children }) {
         </div>
 
         <p className="text-xs text-muted-foreground">
-          If your project is built in Next.js or React, you can also embed the <code className="bg-muted px-1.5 py-0.5 rounded text-purple-300 font-mono">&lt;PulseTracker /&gt;</code> component directly in your root layout:
+          If your project is built in Next.js or React, you can also embed the <code className="bg-muted px-1.5 py-0.5 rounded text-purple-300 font-mono">&lt;OpenAnalyticsTracker /&gt;</code> component directly in your root layout:
         </p>
 
         <div className="relative group bg-muted/70 border border-border rounded-2xl p-4 font-mono text-xs text-foreground overflow-x-auto">

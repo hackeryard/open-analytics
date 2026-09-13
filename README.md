@@ -1,8 +1,8 @@
-# ⚡ Pulse Analytics & Observability Platform
+# ⚡ Open Analytics & Observability Platform
 
 > **Next-Generation Standalone Web Analytics, Real User Monitoring (RUM), Behavioral UX Signals & AI-Powered Error Triage.**
 
-Pulse Analytics is a production-grade, multi-tenant analytics and observability platform designed to connect to any website, mobile application, or SaaS product. 
+Open Analytics is a production-grade, multi-tenant analytics and observability platform designed to connect to any website, mobile application, or SaaS product. 
 
 It provides complete insight into user experience, performance bottlenecks, rage clicks, user journeys, and runtime crashes—**with zero custom code required on client websites**.
 
@@ -13,7 +13,7 @@ It provides complete insight into user experience, performance bottlenecks, rage
 - **Zero-Code 1-Line Script Installation**: Just paste a single `<script>` tag into any HTML `<head>`—everything (pageviews, dwell times, Web Vitals, hardware diagnostics, rage clicks, errors) is tracked automatically.
 - **True Multi-Tenant Isolation**: Supports multiple organizations and unlimited projects. Each project gets its own Project ID, publishable API key, secret key, allowed domain whitelist, and isolated database indexes.
 - **Real User Monitoring (RUM)**: Live browser performance tracking for Core Web Vitals (LCP, INP, CLS, FCP, TTFB) with "Good / Needs Improvement / Poor" rating distributions.
-- **Hardware & Network Diagnostics**: Detects unmasked WebGL GPU renderers, device RAM (GB), logical CPU cores, DPR, viewport dimensions, and network speeds (4G/3G, downlink, RTT).
+- **Hardware & Network Diagnostics**: Detects unmasked WebGL GPU renderers, device RAM (GB), logical CPU cores, DPR, viewport dimensions, and network speeds (5G/4G/3G, downlink, RTT).
 - **Behavioral UX Signals**: Measures active vs. idle dwell time, scroll depth milestones (25%, 50%, 75%, 90%, 100%), rage click detection (≥3 rapid clicks in 500ms within 40px), desktop exit intent, outbound links, and text copy.
 - **360° Error & Crash Monitoring**: Automatically captures uncaught JS runtime errors, failed resource loading (`<script>`, `<img>`), unhandled promise rejections, WebGL context lost, fetch/API 4xx/5xx failures, and console errors, attaching circular user action breadcrumbs.
 - **AI-Powered Bug Triage**: Generates comprehensive, copyable bug diagnostic prompts formatted for AI coding assistants (Claude, Gemini, ChatGPT) with stack traces, affected routes, client environment, and step-by-step fix recommendations.
@@ -28,7 +28,7 @@ It provides complete insight into user experience, performance bottlenecks, rage
 To start tracking any website, paste this single line inside your HTML `<head>`:
 
 ```html
-<script defer src="https://pulse-analytics-seven.vercel.app/pulse.js" data-project-id="prj_your_project_id"></script>
+<script defer src="https://open-analytics.vercel.app/open.js" data-project-id="prj_your_project_id"></script>
 ```
 
 ### Optional Configuration Attributes
@@ -37,7 +37,7 @@ To start tracking any website, paste this single line inside your HTML `<head>`:
 | :--- | :--- | :--- |
 | `data-project-id` | Your unique Project ID (e.g. `prj_production_app`) | Required |
 | `data-api-key` | Optional publishable client API key (`pk_live_...`) | Optional |
-| `data-endpoint` | Hosted Pulse server URL | Origin of the script |
+| `data-endpoint` | Hosted Open Analytics server URL | Origin of the script |
 
 ---
 
@@ -46,15 +46,15 @@ To start tracking any website, paste this single line inside your HTML `<head>`:
 For modern React, Next.js, or Remix applications, you can also use the plug-and-play component:
 
 ```tsx
-import PulseTracker from "@/lib/sdk/PulseTracker";
+import OpenAnalyticsTracker from "@/lib/sdk/OpenAnalyticsTracker";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
-        <PulseTracker 
+        <OpenAnalyticsTracker 
           projectId="prj_production_app" 
-          endpoint="https://pulse-analytics-seven.vercel.app" 
+          endpoint="https://open-analytics.vercel.app" 
         />
       </head>
       <body>{children}</body>
@@ -67,24 +67,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 ## 🌐 JavaScript SDK (Optional Manual Tracking)
 
-While all core events, vitals, and errors are captured automatically, the global `window.Pulse` object allows custom telemetry:
+While all core events, vitals, and errors are captured automatically, the global `window.OpenAnalytics` object allows custom telemetry:
 
 ```js
 // Track a custom business event
-window.Pulse.track("checkout_completed", {
+window.OpenAnalytics.track("checkout_completed", {
   plan: "pro_annual",
   value: 299.00
 });
 
 // Identify an authenticated user
-window.Pulse.identify("usr_98124", {
-  name: "Jane Doe",
-  email: "jane@example.com",
-  role: "admin"
+window.OpenAnalytics.identify("usr_98124", {
+  email: "sarah@acme.com",
+  role: "enterprise_admin"
 });
 
 // Programmatic pageview trigger (for custom SPA routers)
-window.Pulse.page("/dashboard/billing");
+window.OpenAnalytics.page("/dashboard/billing");
 ```
 
 ---
@@ -100,7 +99,7 @@ The standalone dashboard running on `http://localhost:3005/` provides 12+ specia
 5. **User Journeys**: Most common entry pages, exit pages, bounce rates, and navigation flow lengths.
 6. **Top Pages & Routes**: Pageviews, unique visitor count, average dwell time, and average vertical scroll depth per route.
 7. **Traffic & Campaigns**: Referrer domains (with percentage share) and UTM campaign breakdown (source, medium, campaign).
-8. **Geo & Systems**: Device breakdown (Desktop, Mobile, Tablet), browser versions, operating systems, screen resolutions, GPU profiles, CPU core counts, and network types (4G/3G, downlink, RTT).
+8. **Geo & Systems**: Device breakdown (Desktop, Mobile, Tablet), browser versions, operating systems, screen resolutions, GPU profiles, CPU core counts, and network types (5G/4G/3G, downlink, RTT).
 9. **Dwell & Scroll**: Engagement distribution across dwell durations (<10s, 10s–30s, 30s–1m, 1m–3m, 3m–10m, >10m) and scroll milestones (0–25%, 25–50%, 50–75%, 75–100%).
 10. **Custom Events**: Real-time stream of custom business events with expandable JSON property payloads and category filters.
 11. **Crash & Error Monitoring**: Deduplicated runtime errors, stack trace viewer, user diagnostic breadcrumbs, status management (`new`, `investigating`, `resolved`, `ignored`), CSV/JSON export, and one-click AI Bug Triage prompt generation.
@@ -138,15 +137,14 @@ All ingestion endpoints accept cross-origin requests (CORS enabled) and support 
 
 ### 2. Install Dependencies
 ```bash
-cd d:pulse-analytics
 npm install
 ```
 
 ### 3. Configure Environment Variables
 Create a `.env.local` file in the root directory:
 ```env
-MONGO_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/pulse_analytics?retryWrites=true&w=majority
-NEXT_PUBLIC_APP_URL=https://pulse-analytics-seven.vercel.app
+MONGO_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/open_analytics?retryWrites=true&w=majority
+NEXT_PUBLIC_APP_URL=https://open-analytics.vercel.app
 NODE_ENV=production
 ```
 
@@ -154,7 +152,7 @@ NODE_ENV=production
 ```bash
 npm run dev
 ```
-Open your browser to test locally or view the deployed version at [https://pulse-analytics-seven.vercel.app](https://pulse-analytics-seven.vercel.app).
+Open your browser to test locally or view the deployed version at [https://open-analytics.vercel.app](https://open-analytics.vercel.app).
 
 ---
 
@@ -162,9 +160,9 @@ Open your browser to test locally or view the deployed version at [https://pulse
 
 1. In your client website (`app/layout.tsx` or `index.html`), add the 1-line tracking script:
    ```html
-   <script defer src="https://pulse-analytics-seven.vercel.app/pulse.js" data-project-id="prj_your_project_id"></script>
+   <script defer src="https://open-analytics.vercel.app/open.js" data-project-id="prj_your_project_id"></script>
    ```
-2. Verify that real-time visitor activity, Core Web Vitals, and errors stream into Pulse Analytics at [https://pulse-analytics-seven.vercel.app](https://pulse-analytics-seven.vercel.app).
+2. Verify that real-time visitor activity, Core Web Vitals, and errors stream into Open Analytics at [https://open-analytics.vercel.app](https://open-analytics.vercel.app).
 
 ---
 

@@ -7,9 +7,9 @@ import { usePlatform } from "@/components/PlatformContext";
 export default function VerificationDocsPage() {
   const { activeProjectId } = usePlatform();
   const [copied, setCopied] = useState(false);
-  const projectId = activeProjectId || "pulse_prj_your_key";
+  const projectId = activeProjectId || "open_prj_your_key";
 
-  const curlCommand = `curl -X POST https://pulse-analytics-seven.vercel.app/api/v1/collect \\\n  -H "Content-Type: application/json" \\\n  -d '{"projectId": "${projectId}", "pathname": "/test-page", "title": "Test Verification", "device": "desktop"}'`;
+  const curlCommand = `curl -X POST https://open-analytics.vercel.app/api/v1/collect \\\n  -H "Content-Type: application/json" \\\n  -d '{"projectId": "${projectId}", "pathname": "/test-page", "title": "Test Verification", "device": "desktop"}'`;
 
   const onCopy = () => {
     navigator.clipboard.writeText(curlCommand);
@@ -28,7 +28,7 @@ export default function VerificationDocsPage() {
           Testing & Verification Guide
         </h1>
         <p className="text-sm text-muted-foreground">
-          Confirm your Pulse installation is actively recording events and diagnosing telemetry with these verification steps.
+          Confirm your Open Analytics installation is actively recording events and diagnosing telemetry with these verification steps.
         </p>
       </div>
 
@@ -37,8 +37,8 @@ export default function VerificationDocsPage() {
         <ol className="space-y-3 text-xs text-muted-foreground list-decimal list-inside leading-relaxed">
           <li>Open your website in Google Chrome, Edge, or Safari.</li>
           <li>Open Developer Tools by pressing <kbd className="font-mono bg-muted px-1.5 py-0.5 rounded">F12</kbd> or <kbd className="font-mono bg-muted px-1.5 py-0.5 rounded">Cmd + Option + I</kbd>.</li>
-          <li>Switch to the <strong>Network</strong> tab and filter by <code className="text-cyan-400 font-mono">pulse</code>.</li>
-          <li>Reload your page. You should see an HTTP 200 request to <code className="text-cyan-400 font-mono">/pulse.js</code> followed by periodic beacon calls to <code className="text-cyan-400 font-mono">/api/v1/collect</code>.</li>
+          <li>Switch to the <strong>Network</strong> tab and filter by <code className="text-cyan-400 font-mono">collect</code> or <code className="text-cyan-400 font-mono">open.js</code>.</li>
+          <li>Reload your page. You should see an HTTP 200 request to <code className="text-cyan-400 font-mono">/open.js</code> followed by periodic beacon calls to <code className="text-cyan-400 font-mono">/api/v1/collect</code>.</li>
         </ol>
       </div>
 

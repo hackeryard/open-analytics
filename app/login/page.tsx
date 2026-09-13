@@ -111,7 +111,7 @@ function LoginFormContent() {
           </div>
           <div>
             <span className="text-2xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
-              Pulse
+              Open
             </span>
             <span className="text-xs ml-1.5 px-2 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 font-semibold tracking-wide uppercase">
               Analytics

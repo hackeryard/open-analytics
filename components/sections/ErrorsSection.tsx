@@ -108,7 +108,7 @@ ${err.stack || "No client stack trace available"}
 
   const handleCopyAllAiPrompts = async (errorsToCopy: ErrorLogItem[]) => {
     if (errorsToCopy.length === 0) return;
-    const header = `# 🛠️ Pulse Automated Error Triage Report
+    const header = `# 🛠️ Open Analytics Automated Error Triage Report
 Generated on: ${new Date().toLocaleString()}
 Total Tracked Errors: ${errorsToCopy.length}
 
@@ -138,12 +138,12 @@ Total Tracked Errors: ${errorsToCopy.length}
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
     let content = "";
     let mimeType = "text/plain";
-    let filename = `pulse_errors_${timestamp}`;
+    let filename = `open_analytics_errors_${timestamp}`;
 
     if (format === "markdown") {
       filename += ".md";
       mimeType = "text/markdown";
-      const header = `# 📋 Pulse Error Diagnostics & AI Fix Report
+      const header = `# 📋 Open Analytics Error Diagnostics & AI Fix Report
 - **Export Date:** ${new Date().toLocaleString()}
 - **Total Filtered Errors:** ${errorsToExport.length}
 - **Active Errors:** ${errorsToExport.filter((e) => e.status === "new" || e.status === "investigating").length

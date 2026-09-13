@@ -473,7 +473,7 @@ export default function WorldMapAnalytics({
         <div className="flex items-center gap-3">
           <div className="relative w-9 h-9 rounded-2xl bg-gradient-to-br from-primary/20 via-sky-500/10 to-indigo-500/20 text-primary flex items-center justify-center border border-primary/30 shadow-inner shrink-0">
             <Globe size={20} />
-            <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-card animate-pulse" />
+            <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-card animate-glow" />
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
@@ -481,7 +481,7 @@ export default function WorldMapAnalytics({
                 Global Visitor Distribution
               </h3>
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-[10px] font-black uppercase tracking-wider">
-                <Radio size={10} className="animate-pulse" /> Live Radar
+                <Radio size={10} className="animate-glow" /> Live Radar
               </span>
             </div>
             <p className="text-[11px] text-muted-foreground truncate sm:whitespace-normal">
@@ -614,7 +614,7 @@ export default function WorldMapAnalytics({
         {/* Floating Top-Left Status Badge (Desktop) */}
         <div className="absolute top-3 left-3 z-20 pointer-events-none hidden sm:flex items-center gap-2">
           <div className="px-2.5 py-1 rounded-xl bg-black/65 border border-white/10 backdrop-blur-md flex items-center gap-2 text-[10px] font-mono font-semibold text-slate-300 shadow-md">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-glow" />
             <span>GEO-RADAR ONLINE</span>
             <span className="text-slate-500">|</span>
             <span className="text-white font-bold">{countries.length} REGIONS DETECTED</span>
@@ -743,7 +743,7 @@ export default function WorldMapAnalytics({
                     <span className="font-bold flex items-center gap-1 text-sky-300">
                       {hoveredCountry.rank === 1 ? (
                         <>
-                          <Flame size={11} className="text-amber-400 animate-pulse" /> Primary Hub
+                          <Flame size={11} className="text-amber-400 animate-glow" /> Primary Hub
                         </>
                       ) : hoveredCountry.data.percentage > 15 ? (
                         <>
@@ -939,7 +939,7 @@ export default function WorldMapAnalytics({
         {/* Global Live Summary Indicators */}
         <div className="flex items-center justify-between sm:justify-end gap-2.5 sm:gap-3 font-mono text-[10px] sm:text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-glow" />
             <strong className="text-foreground font-bold">{countries.length}</strong> Nations
           </span>
           <span className="text-muted-foreground/50">&bull;</span>

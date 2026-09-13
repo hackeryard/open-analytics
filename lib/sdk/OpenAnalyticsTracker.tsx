@@ -1,23 +1,22 @@
 "use client";
 
-import { useEffect } from "react";
 import Script from "next/script";
 
-interface PulseTrackerProps {
+export interface OpenAnalyticsTrackerProps {
   projectId: string;
   apiKey?: string;
   endpoint?: string;
 }
 
-export default function PulseTracker({
+export default function OpenAnalyticsTracker({
   projectId,
   apiKey = "",
   endpoint = "",
-}: PulseTrackerProps) {
+}: OpenAnalyticsTrackerProps) {
   return (
     <Script
-      id="pulse-analytics-script"
-      src={endpoint ? `${endpoint.replace(/\/$/, "")}/pulse.js` : "/pulse.js"}
+      id="open-analytics-script"
+      src={endpoint ? `${endpoint.replace(/\/$/, "")}/open.js` : "/open.js"}
       strategy="afterInteractive"
       data-project-id={projectId}
       data-api-key={apiKey}

@@ -12,7 +12,7 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error("Pulse Analytics Global Root Error:", error);
+    console.error("Open Analytics Global Root Error:", error);
   }, [error]);
 
   return (

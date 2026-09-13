@@ -104,7 +104,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     setTimeout(() => setCopiedSnippet(false), 2500);
   };
 
-  const hostUrl = typeof window !== "undefined" && !window.location.host.includes("localhost") ? window.location.origin : "https://pulse-analytics-seven.vercel.app";
+  const hostUrl = typeof window !== "undefined" && !window.location.host.includes("localhost") ? window.location.origin : "https://open-analytics.vercel.app";
   const prjKey = activeProjectId || "prj_openlabs";
 
   const sendTestPing = async () => {
@@ -159,7 +159,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       group: "Analytics",
       items: [
         { href: "/", label: "Overview", icon: LayoutDashboard, exact: true },
-        { href: "/live-feed", label: "Live Telemetry", icon: Radio, pulse: true, badge: data?.overview?.totalViews ? `${data.overview.totalViews.toLocaleString()}` : undefined },
+        { href: "/live-feed", label: "Live Telemetry", icon: Radio, live: true, badge: data?.overview?.totalViews ? `${data.overview.totalViews.toLocaleString()}` : undefined },
       ],
     },
     {
@@ -219,7 +219,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       targetFile: "index.html",
       badge: "Fastest • Zero-Config",
       description: "Paste into the <head> or right before the closing </body> tag of your website.",
-      code: `<script defer src="${hostUrl}/pulse.js" data-project-id="${prjKey}"></script>`,
+      code: `<script defer src="${hostUrl}/open.js" data-project-id="${prjKey}"></script>`,
     },
     nextjs: {
       title: "Next.js (App Router)",
@@ -233,7 +233,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <head>
         <Script
-          src="${hostUrl}/pulse.js"
+          src="${hostUrl}/open.js"
           data-project-id="${prjKey}"
           strategy="afterInteractive"
         />
@@ -254,7 +254,7 @@ export default function App() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const script = document.createElement("script");
-    script.src = "${hostUrl}/pulse.js";
+    script.src = "${hostUrl}/open.js";
     script.setAttribute("data-project-id", "${prjKey}");
     script.defer = true;
     document.head.appendChild(script);
@@ -267,7 +267,7 @@ export default function App() {
       title: "cURL / REST API",
       targetFile: "Terminal / CI Pipeline",
       badge: "HTTP Ingestion",
-      description: "Transmit custom telemetry payloads directly via HTTP POST into Pulse.",
+      description: "Transmit custom telemetry payloads directly via HTTP POST into Open Analytics.",
       code: `curl -X POST "${hostUrl}/api/v1/collect" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -295,13 +295,13 @@ export default function App() {
           <Link href="/" className="flex items-center gap-3 overflow-hidden group">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 p-[1.5px] shadow-lg shadow-cyan-500/20 shrink-0 group-hover:scale-105 transition">
               <div className="w-full h-full bg-[#080d19] rounded-[10px] flex items-center justify-center">
-                <Activity className="w-4 h-4 text-cyan-400 animate-pulse" />
+                <Activity className="w-4 h-4 text-cyan-400 animate-glow" />
               </div>
             </div>
             {!sidebarCollapsed && (
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5">
-                  <span className="font-extrabold text-sm tracking-tight text-white group-hover:text-cyan-400 transition">Pulse</span>
+                  <span className="font-extrabold text-sm tracking-tight text-white group-hover:text-cyan-400 transition">Open Analytics</span>
                   <span className="text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 uppercase font-bold tracking-wider">
                     PRO
                   </span>
@@ -431,8 +431,8 @@ export default function App() {
                     >
                       <div className="relative shrink-0">
                         <Icon size={16} className={isActive ? "text-cyan-400" : "text-slate-400 group-hover:text-slate-200"} />
-                        {item.pulse && (
-                          <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                        {item.live && (
+                          <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 animate-glow" />
                         )}
                       </div>
 
@@ -512,7 +512,7 @@ export default function App() {
                 <div className="w-8 h-8 rounded-xl bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
                   <Activity size={18} />
                 </div>
-                <span className="font-black text-white text-base">Pulse Analytics</span>
+                <span className="font-black text-white text-base">Open Analytics</span>
               </div>
               <button onClick={() => setMobileMenuOpen(false)} className="p-1.5 rounded-lg text-slate-400 hover:text-white">
                 <X size={18} />
@@ -580,7 +580,7 @@ export default function App() {
             {/* Breadcrumb path */}
             <div className="flex items-center gap-2 text-xs font-bold min-w-0">
               <span className="text-white truncate max-w-[140px]">
-                {activeProject?.name || activeProjectId || "Pulse"}
+                {activeProject?.name || activeProjectId || "Open Analytics"}
               </span>
               <span className="text-slate-600 font-normal">/</span>
               <span className="text-cyan-400 capitalize truncate">
@@ -588,9 +588,9 @@ export default function App() {
               </span>
             </div>
 
-            {/* Live Telemetry Pulse Beacon */}
+            {/* Live Telemetry Beacon */}
             <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-bold shadow-xs shrink-0">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-glow" />
               <span>{liveVisitorCount} Live</span>
             </div>
           </div>
@@ -761,7 +761,7 @@ export default function App() {
             {/* Live Ingestion Verification Bar */}
             <div className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.07] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div className="flex items-center gap-2.5 text-xs">
-                <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                <div className="w-2 h-2 rounded-full bg-emerald-400 animate-glow shrink-0" />
                 <div>
                   <span className="font-bold text-white">Live Inbound Ingestion: </span>
                   <span className="text-muted-foreground">Ready for telemetry beacons</span>

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export const SESSION_COOKIE_NAME = "pulse_session";
+export const SESSION_COOKIE_NAME = "open_session";
 
 // Paths that NEVER require authentication
 const PUBLIC_PATHS = [
@@ -10,7 +10,7 @@ const PUBLIC_PATHS = [
   "/api/auth/register",
   "/api/auth/logout",
   "/api/auth/oauth",
-  "/pulse.js",
+  "/open.js",
   "/favicon.ico",
   "/docs",
 ];

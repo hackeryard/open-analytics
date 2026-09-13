@@ -7,16 +7,18 @@ export async function ensureDefaultProject() {
   await connectDB();
 
   // 1. Ensure Super Admin user exists
-  let superAdmin = await (User as any).findOne({ email: "admin@pulse.io" });
+  let superAdmin = await (User as any).findOne({
+    email: "admin@openanalytics.io"
+  });
   if (!superAdmin) {
     const defaultCount = await (User as any).countDocuments();
     const passwordHash = await bcrypt.hash("admin123", 10);
     superAdmin = await (User as any).create({
-      name: "Pulse Super Admin",
-      email: "admin@pulse.io",
+      name: "Open Analytics Super Admin",
+      email: "admin@openanalytics.io",
       passwordHash,
       role: defaultCount === 0 ? "super_admin" : "admin",
-      avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=pulseadmin",
+      avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=openanalytics",
     });
     console.log("Seeded Super Admin user:", superAdmin.email);
   }
@@ -29,8 +31,8 @@ export async function ensureDefaultProject() {
       name: "Acme Web Application",
       slug: "acme-web-app",
       ownerId: superAdmin._id,
-      publishableKey: "pk_live_pulse_prod_8821",
-      secretKey: "sk_live_pulse_secret_prod_9921",
+      publishableKey: "pk_live_open_prod_8821",
+      secretKey: "sk_live_open_secret_prod_9921",
       allowedDomains: ["*"],
       settings: {
         ipAnonymization: true,
@@ -65,16 +67,18 @@ export async function ensureDefaultProject() {
     });
   }
 
-  // 4. Ensure a pulse_prj_* formatted project exists
-  const uniqueProject = await (Project as any).findOne({ projectId: "pulse_prj_enterprise_suite" }).lean();
+  // 4. Ensure an open_prj_* formatted project exists
+  const uniqueProject = await (Project as any).findOne({
+    projectId: "open_prj_enterprise_suite"
+  }).lean();
   if (!uniqueProject) {
     await (Project as any).create({
-      projectId: "pulse_prj_enterprise_suite",
+      projectId: "open_prj_enterprise_suite",
       name: "Global Cloud Platform",
       slug: "global-cloud-platform",
       ownerId: superAdmin._id,
-      publishableKey: "pk_live_pulse_enterprise_9022",
-      secretKey: "sk_live_pulse_enterprise_sec_103",
+      publishableKey: "pk_live_open_enterprise_9022",
+      secretKey: "sk_live_open_enterprise_sec_103",
       allowedDomains: ["*"],
       settings: {
         ipAnonymization: true,

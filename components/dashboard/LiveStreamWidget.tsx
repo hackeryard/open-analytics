@@ -22,7 +22,7 @@ export default function LiveStreamWidget({
           <div className="flex items-center gap-2">
             <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 relative">
               <Radio size={15} />
-              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 animate-glow" />
             </div>
             <h3 className="text-sm font-black text-white">Live Telemetry Stream</h3>
           </div>
@@ -81,7 +81,7 @@ export default function LiveStreamWidget({
 
       <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-[10px] text-muted-foreground font-mono">
         <span className="flex items-center gap-1 text-emerald-400">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-glow" />
           <span>Stream Healthy</span>
         </span>
         <span>{liveVisitors} active in last 5m</span>

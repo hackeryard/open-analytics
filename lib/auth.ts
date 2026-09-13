@@ -5,8 +5,8 @@ import User from "@/models/User";
 import Project from "@/models/Project";
 import { connectDB } from "@/lib/mongodb";
 
-export const SESSION_COOKIE_NAME = "pulse_session";
-const JWT_SECRET = process.env.JWT_SECRET || "pulse_analytics_super_secret_jwt_key_2026_x89!";
+export const SESSION_COOKIE_NAME = "open_session";
+const JWT_SECRET = process.env.JWT_SECRET || "open_analytics_super_secret_jwt_key_2026_x89!";
 
 export interface TokenPayload {
   userId: string;

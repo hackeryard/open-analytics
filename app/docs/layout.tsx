@@ -60,7 +60,7 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
               </div>
             </div>
             <div>
-              <span className="font-extrabold text-base tracking-tight text-foreground">Pulse</span>
+              <span className="font-extrabold text-base tracking-tight text-foreground">Open Analytics</span>
               <span className="text-[10px] ml-1.5 px-1.5 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 font-semibold uppercase">
                 Docs
               </span>
@@ -143,7 +143,7 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
                 Zero-Cookie Policy
               </div>
               <p className="text-[11px] text-muted-foreground leading-relaxed">
-                Pulse operates without persistent tracking cookies. Fully compliant with GDPR, CCPA, and PECR.
+                Open Analytics operates without persistent tracking cookies. Fully compliant with GDPR, CCPA, and PECR.
               </p>
             </div>
           </div>

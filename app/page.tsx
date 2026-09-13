@@ -65,7 +65,7 @@ export default function ExecutiveOverviewDashboard() {
   if (!authChecked) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center space-y-4">
-        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 via-blue-600 to-violet-600 p-[1.5px] shadow-lg shadow-cyan-500/20 animate-pulse">
+        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 via-blue-600 to-violet-600 p-[1.5px] shadow-lg shadow-cyan-500/20 animate-glow">
           <div className="w-full h-full bg-[#0d121f] rounded-[14px] flex items-center justify-center">
             <Activity className="w-6 h-6 text-cyan-400" />
           </div>
@@ -92,7 +92,7 @@ export default function ExecutiveOverviewDashboard() {
               href="/login"
               className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-xs font-bold shadow-md hover:from-cyan-400 hover:to-blue-500 transition"
             >
-              Sign In to Pulse
+              Sign In to Open Analytics
             </Link>
           </div>
         </div>
@@ -124,7 +124,7 @@ export default function ExecutiveOverviewDashboard() {
     );
   }
 
-  const scriptTag = `<script defer src="https://pulse-analytics-seven.vercel.app/pulse.js" data-project-id="${activeProjectId || "prj_openlabs"}"></script>`;
+  const scriptTag = `<script defer src="https://open-analytics.vercel.app/open.js" data-project-id="${activeProjectId || "prj_openlabs"}"></script>`;
 
   const copyScript = () => {
     navigator.clipboard.writeText(scriptTag);

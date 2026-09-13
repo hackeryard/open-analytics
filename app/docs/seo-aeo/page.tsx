@@ -32,7 +32,7 @@ export default function SeoAeoDocsPage() {
       <div className="p-6 bg-card border border-border rounded-3xl space-y-4 shadow-sm">
         <h2 className="text-base font-bold text-foreground">Autonomous AI Crawlers Detected</h2>
         <p className="text-xs text-muted-foreground leading-relaxed">
-          Pulse inspects incoming User-Agent signatures and referrer headers at the edge to categorize requests from the world's leading generative AI platforms:
+          Open Analytics inspects incoming User-Agent signatures and referrer headers at the edge to categorize requests from the world's leading generative AI platforms:
         </p>
 
         <div className="space-y-2">

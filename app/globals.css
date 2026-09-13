@@ -69,10 +69,10 @@ body {
 }
 
 /* Modern Micro-Beacons & Glowing Badges */
-.pulse-beacon {
+.live-beacon {
   position: relative;
 }
-.pulse-beacon::after {
+.live-beacon::after {
   content: "";
   position: absolute;
   inset: -3px;
@@ -87,6 +87,21 @@ body {
     transform: scale(2.2);
     opacity: 0;
   }
+}
+
+@keyframes glow-fade {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.96);
+  }
+}
+
+.animate-glow {
+  animation: glow-fade 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 /* Shimmer skeleton for loading states */

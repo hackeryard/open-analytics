@@ -122,7 +122,7 @@ export function PlatformProvider({ children }: { children: React.ReactNode }) {
   const setActiveProjectId = useCallback((id: string) => {
     setActiveProjectIdState(id);
     if (typeof window !== "undefined") {
-      localStorage.setItem("pulse_active_project", id);
+      localStorage.setItem("open_active_project", id);
     }
   }, []);
 
@@ -130,7 +130,7 @@ export function PlatformProvider({ children }: { children: React.ReactNode }) {
   const setTimeRange = useCallback((range: string) => {
     setTimeRangeState(range);
     if (typeof window !== "undefined") {
-      localStorage.setItem("pulse_time_range", range);
+      localStorage.setItem("open_time_range", range);
     }
   }, []);
 
@@ -139,7 +139,7 @@ export function PlatformProvider({ children }: { children: React.ReactNode }) {
     try {
       await fetch("/api/auth/logout", { method: "POST" });
       if (typeof window !== "undefined") {
-        localStorage.removeItem("pulse_active_project");
+        localStorage.removeItem("open_active_project");
         window.location.href = "/login";
       }
     } catch (err) {
@@ -170,7 +170,7 @@ export function PlatformProvider({ children }: { children: React.ReactNode }) {
           if (typeof window !== "undefined") {
             const urlParams = new URLSearchParams(window.location.search);
             const urlPrj = urlParams.get("project");
-            const savedPrj = localStorage.getItem("pulse_active_project");
+            const savedPrj = localStorage.getItem("open_active_project");
             if (urlPrj && d.projects.some((p: Project) => p.projectId === urlPrj)) {
               selectedId = urlPrj;
             } else if (savedPrj && d.projects.some((p: Project) => p.projectId === savedPrj)) {
@@ -206,7 +206,7 @@ export function PlatformProvider({ children }: { children: React.ReactNode }) {
 
     // Restore saved time range if exists
     if (typeof window !== "undefined") {
-      const savedRange = localStorage.getItem("pulse_time_range");
+      const savedRange = localStorage.getItem("open_time_range");
       if (savedRange) setTimeRangeState(savedRange);
     }
   }, [checkAuth]);

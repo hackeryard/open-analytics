@@ -69,7 +69,7 @@ export default function BehavioralUxSection({ data: propData }: { data?: Analyti
           <div className="bg-card border border-border rounded-3xl shadow-sm overflow-hidden">
             <div className="p-4 border-b border-border bg-muted/20 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse" />
+                <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-glow" />
                 <h3 className="text-xs font-black uppercase tracking-wider text-muted-foreground">
                   Rage Click Radar (Rapid Frustrated Clicks on Frozen / Confusing Elements)
                 </h3>

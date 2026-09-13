@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
 
   // Store state in an HTTP-only, secure short-lived cookie
   response.cookies.set({
-    name: "pulse_oauth_state",
+    name: "open_oauth_state",
     value: state,
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",

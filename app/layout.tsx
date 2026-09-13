@@ -4,7 +4,7 @@ import { PlatformProvider } from "@/components/PlatformContext";
 import AppShell from "@/components/AppShell";
 
 export const metadata: Metadata = {
-  title: "Pulse Analytics | Standalone Multi-Tenant Web Observability",
+  title: "Open Analytics | Standalone Multi-Tenant Web Observability",
   description: "Next-generation web analytics, Real User Monitoring, behavioral UX signals, and AI-powered crash triage.",
 };
 

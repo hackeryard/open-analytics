@@ -36,7 +36,7 @@ const nextConfig = {
       },
       {
         // Client Tracker SDK caching policy & cross-origin script access
-        source: "/pulse.js",
+        source: "/open.js",
         headers: [
           { key: "Access-Control-Allow-Origin", value: "*" },
           { key: "Cache-Control", value: "public, max-age=3600, stale-while-revalidate=86400" },

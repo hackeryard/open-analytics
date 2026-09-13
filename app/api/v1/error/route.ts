@@ -93,7 +93,7 @@ export async function POST(req: Request) {
 
     return corsJsonResponse({ ok: true, errorId: errorLog._id }, { status: 200 }, req);
   } catch (err: any) {
-    console.error("Pulse error ingestion error:", err);
+    console.error("Open Analytics error ingestion error:", err);
     return corsJsonResponse({ ok: false, error: err.message }, { status: 500 }, req);
   }
 }

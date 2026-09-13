@@ -19,8 +19,8 @@ export default function InstallationDocsPage() {
   const [testResult, setTestResult] = useState<null | { ok: boolean; message: string }>(null);
   const [testing, setTesting] = useState(false);
 
-  const projectId = activeProjectId || "pulse_prj_your_key";
-  const host = typeof window !== "undefined" && !window.location.host.includes("localhost") ? window.location.origin : "https://pulse-analytics-seven.vercel.app";
+  const projectId = activeProjectId || "open_prj_your_key";
+  const host = typeof window !== "undefined" && !window.location.host.includes("localhost") ? window.location.origin : "https://open-analytics.vercel.app";
 
   const handleCopy = (id: string, text: string) => {
     navigator.clipboard.writeText(text);
@@ -33,70 +33,70 @@ export default function InstallationDocsPage() {
       id: "html",
       label: "HTML / Vanilla JS",
       ext: ".html",
-      code: `<!-- Add to <head> -->\n<script defer src="${host}/pulse.js" data-project-id="${projectId}"></script>`,
+      code: `<!-- Add to <head> -->\n<script defer src="${host}/open.js" data-project-id="${projectId}"></script>`,
       instructions: "Add this script tag inside the <head> section of your HTML template before closing </head>.",
     },
     {
       id: "nextjs_app",
       label: "Next.js (App Router)",
       ext: "app/layout.tsx",
-      code: `import Script from "next/script";\n\nexport default function RootLayout({ children }: { children: React.ReactNode }) {\n  return (\n    <html lang="en">\n      <head>\n        <Script\n          src="${host}/pulse.js"\n          data-project-id="${projectId}"\n          strategy="afterInteractive"\n        />\n      </head>\n      <body>{children}</body>\n    </html>\n  );\n}`,
+      code: `import Script from "next/script";\n\nexport default function RootLayout({ children }: { children: React.ReactNode }) {\n  return (\n    <html lang="en">\n      <head>\n        <Script\n          src="${host}/open.js"\n          data-project-id="${projectId}"\n          strategy="afterInteractive"\n        />\n      </head>\n      <body>{children}</body>\n    </html>\n  );\n}`,
       instructions: "In Next.js 13/14/15 App Router, place the Script component inside app/layout.tsx using strategy='afterInteractive'.",
     },
     {
       id: "nextjs_pages",
       label: "Next.js (Pages Router)",
       ext: "pages/_app.tsx",
-      code: `import Script from "next/script";\nimport type { AppProps } from "next/app";\n\nexport default function MyApp({ Component, pageProps }: AppProps) {\n  return (\n    <>\n      <Script\n        src="${host}/pulse.js"\n        data-project-id="${projectId}"\n        strategy="afterInteractive"\n      />\n      <Component {...pageProps} />\n    </>\n  );\n}`,
+      code: `import Script from "next/script";\nimport type { AppProps } from "next/app";\n\nexport default function MyApp({ Component, pageProps }: AppProps) {\n  return (\n    <>\n      <Script\n        src="${host}/open.js"\n        data-project-id="${projectId}"\n        strategy="afterInteractive"\n      />\n      <Component {...pageProps} />\n    </>\n  );\n}`,
       instructions: "In Next.js Pages Router, add the Script tag to your custom pages/_app.tsx wrapper.",
     },
     {
       id: "react_vite",
       label: "React (Vite / CRA)",
       ext: "index.html",
-      code: `<!-- In your root index.html <head> -->\n<script defer src="${host}/pulse.js" data-project-id="${projectId}"></script>`,
+      code: `<!-- In your root index.html <head> -->\n<script defer src="${host}/open.js" data-project-id="${projectId}"></script>`,
       instructions: "In Vite or Create React App, simply place the script inside public/index.html or root index.html.",
     },
     {
       id: "vue",
       label: "Vue 3 / Nuxt 3",
       ext: "nuxt.config.ts",
-      code: `// Nuxt 3 Configuration\nexport default defineNuxtConfig({\n  app: {\n    head: {\n      script: [\n        {\n          src: "${host}/pulse.js",\n          "data-project-id": "${projectId}",\n          defer: true\n        }\n      ]\n    }\n  }\n})`,
+      code: `// Nuxt 3 Configuration\nexport default defineNuxtConfig({\n  app: {\n    head: {\n      script: [\n        {\n          src: "${host}/open.js",\n          "data-project-id": "${projectId}",\n          defer: true\n        }\n      ]\n    }\n  }\n})`,
       instructions: "For Nuxt 3, inject into nuxt.config.ts under app.head.script. For Vite + Vue 3, paste into index.html.",
     },
     {
       id: "svelte",
       label: "SvelteKit",
       ext: "src/app.html",
-      code: `<!-- src/app.html -->\n<head>\n  <!-- Pulse Analytics -->\n  <script defer src="${host}/pulse.js" data-project-id="${projectId}"></script>\n  %sveltekit.head%\n</head>`,
+      code: `<!-- src/app.html -->\n<head>\n  <!-- Open Analytics -->\n  <script defer src="${host}/open.js" data-project-id="${projectId}"></script>\n  %sveltekit.head%\n</head>`,
       instructions: "In SvelteKit, paste directly inside src/app.html inside the <head> block.",
     },
     {
       id: "django",
       label: "Python (Django / Flask)",
       ext: "templates/base.html",
-      code: `<!-- templates/base.html -->\n<head>\n  <!-- Pulse Universal Observability -->\n  <script defer src="${host}/pulse.js" data-project-id="${projectId}"></script>\n</head>`,
+      code: `<!-- templates/base.html -->\n<head>\n  <!-- Open Analytics Observability -->\n  <script defer src="${host}/open.js" data-project-id="${projectId}"></script>\n</head>`,
       instructions: "In Django or Flask, add the script to your base HTML layout template that other templates extend.",
     },
     {
       id: "laravel",
       label: "PHP / Laravel Blade",
       ext: "resources/views/layouts/app.blade.php",
-      code: `<!-- resources/views/layouts/app.blade.php -->\n<head>\n  <!-- Pulse Analytics -->\n  <script defer src="${host}/pulse.js" data-project-id="${projectId}"></script>\n</head>`,
+      code: `<!-- resources/views/layouts/app.blade.php -->\n<head>\n  <!-- Open Analytics -->\n  <script defer src="${host}/open.js" data-project-id="${projectId}"></script>\n</head>`,
       instructions: "In Laravel, paste into your layout Blade view (e.g. layouts/app.blade.php) in the <head> tag.",
     },
     {
       id: "wordpress",
       label: "WordPress",
       ext: "functions.php",
-      code: `// Add to your active theme's functions.php:\nfunction add_pulse_analytics() {\n    echo '<script defer src="${host}/pulse.js" data-project-id="${projectId}"></script>';\n}\nadd_action('wp_head', 'add_pulse_analytics');`,
+      code: `// Add to your active theme's functions.php:\nfunction add_open_analytics() {\n    echo '<script defer src="${host}/open.js" data-project-id="${projectId}"></script>';\n}\nadd_action('wp_head', 'add_open_analytics');`,
       instructions: "Add this hook to your theme's functions.php file, or insert via an 'Insert Headers and Footers' plugin.",
     },
     {
       id: "shopify",
       label: "Shopify",
       ext: "layout/theme.liquid",
-      code: `<!-- Inside layout/theme.liquid before </head> -->\n<script defer src="${host}/pulse.js" data-project-id="${projectId}"></script>`,
+      code: `<!-- Inside layout/theme.liquid before </head> -->\n<script defer src="${host}/open.js" data-project-id="${projectId}"></script>`,
       instructions: "In Shopify Admin, go to Online Store > Themes > Edit Code > layout/theme.liquid and paste before </head>.",
     },
   ];
@@ -141,10 +141,10 @@ export default function InstallationDocsPage() {
           <span>Multi-Stack Installation Guide</span>
         </div>
         <h1 className="text-3xl font-black text-foreground tracking-tight">
-          Install Pulse Tracking Code
+          Install Open Analytics Tracking Code
         </h1>
         <p className="text-sm text-muted-foreground">
-          Pulse works across any modern web framework, static site, or backend stack with a single non-blocking script tag.
+          Open Analytics works across any modern web framework, static site, or backend stack with a single non-blocking script tag.
         </p>
       </div>
 

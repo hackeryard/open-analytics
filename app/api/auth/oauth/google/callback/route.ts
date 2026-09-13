@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
   }
 
   // 1. Verify CSRF state against cookie
-  const savedState = req.cookies.get("pulse_oauth_state")?.value;
+  const savedState = req.cookies.get("open_oauth_state")?.value;
   if (!savedState || !state || savedState !== state) {
     return NextResponse.redirect(new URL("/login?error=invalid_oauth_state", req.url));
   }
@@ -93,7 +93,7 @@ export async function GET(req: NextRequest) {
       });
 
       // Automatically provision initial project workspace
-      const uniqueProjectId = generateProjectId("pulse_prj_");
+      const uniqueProjectId = generateProjectId("open_prj_");
       const projectSlug = userName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") + "-app";
       await (Project as any).create({
         projectId: uniqueProjectId,
@@ -134,8 +134,8 @@ export async function GET(req: NextRequest) {
       path: "/",
     });
 
-    // Clear the one-time state cookie
-    response.cookies.delete("pulse_oauth_state");
+    // Clear the one-time state cookies
+    response.cookies.delete("open_oauth_state");
 
     return response;
   } catch (err: any) {

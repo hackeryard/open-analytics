@@ -12,7 +12,7 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error("Pulse Analytics Runtime Error:", error);
+    console.error("Open Analytics Runtime Error:", error);
   }, [error]);
 
   return (
@@ -28,7 +28,7 @@ export default function Error({
         <div className="space-y-2">
           <h2 className="text-2xl font-black tracking-tight text-white">Something went wrong</h2>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Pulse encountered an unexpected runtime error while rendering this observability module.
+            Open Analytics encountered an unexpected runtime error while rendering this observability module.
           </p>
         </div>
 

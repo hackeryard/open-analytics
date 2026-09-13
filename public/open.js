@@ -6,7 +6,7 @@
   const currentScript = document.currentScript || (function() {
     const scripts = document.getElementsByTagName("script");
     for (let i = scripts.length - 1; i >= 0; i--) {
-      if (scripts[i].src && scripts[i].src.includes("pulse.js")) return scripts[i];
+      if (scripts[i].src && (scripts[i].src.includes("open.js") || scripts[i].hasAttribute("data-project-id"))) return scripts[i];
     }
     return null;
   })();
@@ -30,7 +30,7 @@
 
   // 1. Visitor & Session IDs
   function getOrCreateVisitorId() {
-    const key = "pulse_vid";
+    const key = "open_vid";
     let vid = localStorage.getItem(key);
     if (!vid) {
       vid = (window.crypto && window.crypto.randomUUID) ? window.crypto.randomUUID() : "v_" + Date.now() + "_" + Math.random().toString(36).slice(2, 9);
@@ -40,7 +40,7 @@
   }
 
   function getOrCreateSessionId() {
-    const key = "pulse_sid";
+    const key = "open_sid";
     let sid = sessionStorage.getItem(key);
     if (!sid) {
       sid = (window.crypto && window.crypto.randomUUID) ? window.crypto.randomUUID() : "s_" + Date.now() + "_" + Math.random().toString(36).slice(2, 9);
@@ -50,9 +50,9 @@
   }
 
   function getVisitorMetadata() {
-    const countKey = "pulse_vc";
-    const lastSeenKey = "pulse_ls";
-    const activeKey = "pulse_active_s";
+    const countKey = "open_vc";
+    const lastSeenKey = "open_ls";
+    const activeKey = "open_active_s";
 
     const rawCount = parseInt(localStorage.getItem(countKey) || "0", 10);
     const lastSeen = parseInt(localStorage.getItem(lastSeenKey) || "0", 10);
@@ -406,7 +406,7 @@
     if (e.target && e.target !== window && e.target.tagName) {
       const tag = e.target.tagName.toLowerCase();
       const src = e.target.src || e.target.href || "";
-      if (src && !src.includes("pulse.js")) {
+      if (src && !src.includes("open.js")) {
         sendBeacon("/api/v1/error", {
           message: "Resource Load Failed: <" + tag + "> " + src,
           errorType: "resource",
@@ -532,7 +532,7 @@
   });
 
   // Global Public API
-  window.Pulse = {
+  const publicApi = {
     init: function(opts) {
       if (opts && opts.projectId) currentScript.setAttribute("data-project-id", opts.projectId);
       if (opts && opts.apiKey) currentScript.setAttribute("data-api-key", opts.apiKey);
@@ -559,5 +559,7 @@
     },
   };
 
-  console.log("⚡ Pulse Analytics tracking active [Project: " + projectId + "]");
+  window.OpenAnalytics = publicApi;
+
+  console.log("⚡ Open Analytics tracking active [Project: " + projectId + "]");
 })();

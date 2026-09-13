@@ -74,7 +74,7 @@ export async function POST(req: Request, { params }: { params: { projectId: stri
 
     // If user doesn't exist yet, create an invited user account with temporary password
     if (!targetUser) {
-      const defaultPassword = await hashPassword("PulseWelcome2026!");
+      const defaultPassword = await hashPassword("OpenAnalyticsWelcome2026!");
       targetUser = await (User as any).create({
         name: name?.trim() || normalizedEmail.split("@")[0],
         email: normalizedEmail,

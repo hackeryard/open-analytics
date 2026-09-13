@@ -1,4 +1,4 @@
-// Pulse Analytics Bot, Search Engine & AI Crawler Detector
+// Open Analytics Bot, Search Engine & AI Crawler Detector
 
 export interface BotDetectionResult {
   isBot: boolean;

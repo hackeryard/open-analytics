@@ -20,8 +20,8 @@ import { usePlatform } from "@/components/PlatformContext";
 export default function DocsOverviewPage() {
   const { activeProjectId } = usePlatform();
   const [copied, setCopied] = useState(false);
-  const projectId = activeProjectId || "pulse_prj_your_key";
-  const snippet = `<script defer src="https://pulse-analytics-seven.vercel.app/pulse.js" data-project-id="${projectId}"></script>`;
+  const projectId = activeProjectId || "open_prj_your_key";
+  const snippet = `<script defer src="https://open-analytics.vercel.app/open.js" data-project-id="${projectId}"></script>`;
 
   const onCopy = () => {
     navigator.clipboard.writeText(snippet);
@@ -37,10 +37,10 @@ export default function DocsOverviewPage() {
           <span>Universal 1-Line Web Observability</span>
         </div>
         <h1 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight">
-          Pulse Analytics Documentation
+          Open Analytics Documentation
         </h1>
         <p className="text-base text-muted-foreground leading-relaxed">
-          Pulse is a standalone, enterprise-grade web analytics and observability engine built to capture Real User Monitoring (Core Web Vitals), hardware diagnostics, behavioral UX signals, autonomous AI crawler traffic, and 360° automated error triage with zero framework lock-in.
+          Open Analytics is a standalone, enterprise-grade web analytics and observability engine built to capture Real User Monitoring (Core Web Vitals), hardware diagnostics, behavioral UX signals, autonomous AI crawler traffic, and 360° automated error triage with zero framework lock-in.
         </p>
       </div>
 

@@ -58,7 +58,7 @@ export default function WebVitalsDocsPage() {
           Core Web Vitals & Diagnostics
         </h1>
         <p className="text-sm text-muted-foreground">
-          Pulse automatically instruments Google Core Web Vitals using the native PerformanceObserver API without slowing down your user experience.
+          Open Analytics automatically instruments Google Core Web Vitals using the native PerformanceObserver API without slowing down your user experience.
         </p>
       </div>
 

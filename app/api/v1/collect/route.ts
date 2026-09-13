@@ -208,7 +208,7 @@ export async function POST(req: Request) {
 
     return corsJsonResponse({ ok: true }, { status: 200 }, req);
   } catch (err: any) {
-    console.error("Pulse collect error:", err);
+    console.error("Open Analytics collect error:", err);
     return corsJsonResponse({ ok: false, error: err.message }, { status: 500 }, req);
   }
 }
