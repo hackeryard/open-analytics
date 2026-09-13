@@ -43,6 +43,7 @@ import {
   Terminal,
   CheckCircle2,
   AlertCircle,
+  FolderGit2,
 } from "lucide-react";
 import { usePlatform } from "@/components/PlatformContext";
 import DateRangeNavigator from "@/components/DateRangeNavigator";
@@ -111,7 +112,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     setTestingPing(true);
     setTestPingResult(null);
     try {
-      const res = await fetch(`${hostUrl}/api/v1/collect`, {
+      const res = await fetch("/api/v1/collect", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -124,7 +125,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           device: "desktop",
           browser: "Verification Inspector",
           os: "Windows",
-          country: "Localhost",
+          country: "United States",
         }),
       });
       const result = await res.json();
@@ -165,7 +166,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     {
       group: "Product & Audience",
       items: [
-        { href: "/returning-users", label: "Retention & Cohorts", icon: UserCheck, badge: (data?.retention?.returnRate !== undefined || data?.overview?.returnRate !== undefined) ? `${data?.retention?.returnRate ?? data?.overview?.returnRate ?? 0}%` : undefined },
+        { href: "/audience", label: "Audience & Loyalty", icon: Users, badge: (data?.retention?.returnRate !== undefined || data?.overview?.returnRate !== undefined) ? `${data?.retention?.returnRate ?? data?.overview?.returnRate ?? 0}% return` : undefined },
         { href: "/journeys", label: "User Journeys", icon: Share2 },
         { href: "/pages", label: "Top Pages & Routes", icon: Layers, badge: data?.topPages?.length ? `${data.topPages.length}` : undefined },
         { href: "/events", label: "Custom Events", icon: Zap, badge: data?.recentEvents?.length ? `${data.recentEvents.length}` : undefined },
@@ -195,6 +196,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     {
       group: "Setup & Integration",
       items: [
+        { href: "/projects", label: "Manage Projects", icon: FolderGit2, badge: projects?.length ? `${projects.length}` : undefined },
         ...(activeProjectId
           ? [
               { href: `/projects/${activeProjectId}/install`, label: "Install Tracking Script", icon: Code2 },
@@ -876,7 +878,7 @@ export default function App() {
                 <label className="text-xs font-bold text-slate-300">Allowed Domains</label>
                 <input
                   type="text"
-                  placeholder="e.g. acme.com, localhost:3000 or *"
+                  placeholder="e.g. acme.com, app.acme.com or *"
                   value={newPrjDomains}
                   onChange={(e) => setNewPrjDomains(e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-xl bg-[#080d1a] border border-white/[0.1] text-xs text-white focus:outline-none focus:border-cyan-500/60 placeholder:text-muted-foreground"

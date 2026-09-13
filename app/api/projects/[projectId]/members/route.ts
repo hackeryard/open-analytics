@@ -28,16 +28,26 @@ export async function GET(req: Request, { params }: { params: { projectId: strin
     const users = await (User as any).find({ _id: { $in: memberIds } }).select("name email role avatar").lean();
     const userMap = new Map(users.map((u: any) => [u._id.toString(), u]));
 
-    const populatedMembers = (project.members || []).map((m: any) => {
-      const u: any = userMap.get(m.userId?.toString());
-      return {
-        userId: m.userId?.toString(),
-        name: u?.name || "Invited User",
-        email: u?.email || "",
-        avatar: u?.avatar || "",
-        role: m.role || "member",
-      };
-    });
+    const populatedMembers = (project.members || [])
+      .filter((m: any) => {
+        // Exclude the owner from the standard members array so they are cleanly separated
+        return !project.ownerId || m.userId?.toString() !== project.ownerId.toString();
+      })
+      .map((m: any) => {
+        const u: any = userMap.get(m.userId?.toString());
+        return {
+          userId: m.userId?.toString(),
+          name: u?.name || "Invited User",
+          email: u?.email || "",
+          avatar: u?.avatar || "",
+          role: m.role || "member",
+        };
+      });
+
+    const userIdStr = auth.user._id.toString();
+    const isCurrentUserOwner =
+      auth.user.role === "super_admin" ||
+      (project.ownerId && project.ownerId.toString() === userIdStr);
 
     return NextResponse.json({
       owner: owner
@@ -50,6 +60,7 @@ export async function GET(req: Request, { params }: { params: { projectId: strin
           }
         : null,
       members: populatedMembers,
+      isCurrentUserOwner,
     });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
@@ -97,18 +108,20 @@ export async function POST(req: Request, { params }: { params: { projectId: stri
 
     // Check if target is already a member
     const existingIndex = (project.members || []).findIndex(
-      (m: any) => m.userId.toString() === targetUserIdStr
+      (m: any) => (m.userId?.toString() || m.userId) === targetUserIdStr
     );
+
+    const validRole = ["admin", "editor", "member"].includes(role) ? role : "member";
 
     if (existingIndex >= 0) {
       // Update role
-      project.members[existingIndex].role = role;
+      project.members[existingIndex].role = validRole;
     } else {
       // Add member
       if (!Array.isArray(project.members)) project.members = [];
       project.members.push({
         userId: targetUser._id,
-        role: role === "admin" ? "admin" : "member",
+        role: validRole,
       });
     }
 
@@ -120,7 +133,7 @@ export async function POST(req: Request, { params }: { params: { projectId: stri
         userId: targetUser._id.toString(),
         name: targetUser.name,
         email: targetUser.email,
-        role,
+        role: validRole,
       },
     });
   } catch (err: any) {
@@ -137,7 +150,7 @@ export async function PATCH(req: Request, { params }: { params: { projectId: str
     }
 
     const { userId, role } = await req.json();
-    if (!userId || !["admin", "member"].includes(role)) {
+    if (!userId || !["admin", "editor", "member"].includes(role)) {
       return NextResponse.json({ error: "Invalid userId or role" }, { status: 400 });
     }
 
@@ -146,7 +159,15 @@ export async function PATCH(req: Request, { params }: { params: { projectId: str
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
 
-    const member = (project.members || []).find((m: any) => m.userId.toString() === userId);
+    // Prevent changing the role of the owner here (owner transfer must use transfer-ownership)
+    if (project.ownerId && project.ownerId.toString() === userId) {
+      return NextResponse.json(
+        { error: "Cannot change the workspace owner's role directly. Please use Transfer Ownership." },
+        { status: 400 }
+      );
+    }
+
+    const member = (project.members || []).find((m: any) => (m.userId?.toString() || m.userId) === userId);
     if (!member) {
       return NextResponse.json({ error: "Member not found in this project" }, { status: 404 });
     }
@@ -179,7 +200,14 @@ export async function DELETE(req: Request, { params }: { params: { projectId: st
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
 
-    project.members = (project.members || []).filter((m: any) => m.userId.toString() !== userId);
+    if (project.ownerId && project.ownerId.toString() === userId) {
+      return NextResponse.json(
+        { error: "Cannot remove the workspace owner from the project. Please transfer ownership first." },
+        { status: 400 }
+      );
+    }
+
+    project.members = (project.members || []).filter((m: any) => (m.userId?.toString() || m.userId) !== userId);
     await project.save();
 
     return NextResponse.json({ success: true, removedUserId: userId });

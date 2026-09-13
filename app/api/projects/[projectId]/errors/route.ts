@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import ErrorLog from "@/models/ErrorLog";
-import { verifyProjectAccess, verifyProjectManage } from "@/lib/auth";
+import { verifyProjectAccess, verifyProjectEdit } from "@/lib/auth";
 
 export async function GET(req: Request, { params }: { params: { projectId: string } }) {
   try {
@@ -35,7 +35,7 @@ export async function GET(req: Request, { params }: { params: { projectId: strin
 export async function PATCH(req: Request, { params }: { params: { projectId: string } }) {
   try {
     await connectDB();
-    const auth = await verifyProjectManage(req, params.projectId);
+    const auth = await verifyProjectEdit(req, params.projectId);
     if (!auth.ok) {
       return NextResponse.json({ error: auth.error }, { status: auth.status || 403 });
     }
@@ -62,16 +62,39 @@ export async function PATCH(req: Request, { params }: { params: { projectId: str
 export async function DELETE(req: Request, { params }: { params: { projectId: string } }) {
   try {
     await connectDB();
-    const auth = await verifyProjectManage(req, params.projectId);
+    const auth = await verifyProjectEdit(req, params.projectId);
     if (!auth.ok) {
       return NextResponse.json({ error: auth.error }, { status: auth.status || 403 });
     }
 
+    let errorIds: string[] = [];
+    try {
+      const body = await req.json();
+      if (Array.isArray(body.errorIds)) {
+        errorIds = body.errorIds;
+      }
+    } catch {}
+
     const { searchParams } = new URL(req.url);
     const status = searchParams.get("status");
+    const purge = searchParams.get("purge");
+    const idsParam = searchParams.get("ids");
+    if (idsParam) {
+      errorIds = idsParam.split(",").filter(Boolean);
+    }
 
     const query: Record<string, any> = { projectId: params.projectId };
-    if (status && status !== "all") query.status = status;
+    if (errorIds.length > 0) {
+      query._id = { $in: errorIds };
+    } else if (purge === "resolved") {
+      query.status = "resolved";
+    } else if (purge === "ignored") {
+      query.status = "ignored";
+    } else if (purge === "all") {
+      // delete all for this project
+    } else if (status && status !== "all") {
+      query.status = status;
+    }
 
     const result = await (ErrorLog as any).deleteMany(query);
     return NextResponse.json({ success: true, deletedCount: result.deletedCount });

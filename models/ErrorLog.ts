@@ -41,6 +41,7 @@ const ErrorLogSchema = new mongoose.Schema(
         "not_found",
         "http_4xx",
         "http_5xx",
+        "csp",
       ],
       default: "runtime",
       index: true,
@@ -103,11 +104,16 @@ const ErrorLogSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    strict: false,
   }
 );
 
 ErrorLogSchema.index({ projectId: 1, lastOccurredAt: -1 });
 ErrorLogSchema.index({ projectId: 1, status: 1, lastOccurredAt: -1 });
 ErrorLogSchema.index({ projectId: 1, message: 1, pathname: 1 });
+
+if (process.env.NODE_ENV === "development" && mongoose.models.ErrorLog) {
+  delete mongoose.models.ErrorLog;
+}
 
 export default mongoose.models.ErrorLog || mongoose.model("ErrorLog", ErrorLogSchema);

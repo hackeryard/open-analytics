@@ -7,7 +7,7 @@ interface User {
   _id: string;
   name: string;
   email: string;
-  role: "super_admin" | "admin" | "member";
+  role: "super_admin" | "admin" | "editor" | "member";
 }
 
 interface Project {
@@ -56,6 +56,8 @@ interface PlatformContextType {
   setPvUserType: (u: string) => void;
   pvDevice: string;
   setPvDevice: (d: string) => void;
+  pvVitals: string;
+  setPvVitals: (v: string) => void;
   pvSort: string;
   setPvSort: (s: string) => void;
   pvTimeRange: string;
@@ -111,6 +113,7 @@ export function PlatformProvider({ children }: { children: React.ReactNode }) {
   const [pvQuery, setPvQuery] = useState("");
   const [pvUserType, setPvUserType] = useState("all");
   const [pvDevice, setPvDevice] = useState("all");
+  const [pvVitals, setPvVitals] = useState("all");
   const [pvSort, setPvSort] = useState("createdAt_desc");
   const [pvTimeRange, setPvTimeRange] = useState("7d");
   const [liveStreamActive, setLiveStreamActive] = useState(true);
@@ -266,6 +269,7 @@ export function PlatformProvider({ children }: { children: React.ReactNode }) {
           timeRange: range,
         });
         if (pvDevice !== "all") params.set("device", pvDevice);
+        if (pvVitals !== "all") params.set("vitals", pvVitals);
 
         const res = await fetch(`/api/projects/${projectId}/pageviews?${params.toString()}`);
         if (!res.ok) return;
@@ -287,14 +291,14 @@ export function PlatformProvider({ children }: { children: React.ReactNode }) {
         setPvLoading(false);
       }
     },
-    [activeProjectId, pvPage, pvLimit, pvUserType, pvQuery, pvSort, pvTimeRange, pvDevice]
+    [activeProjectId, pvPage, pvLimit, pvUserType, pvQuery, pvSort, pvTimeRange, pvDevice, pvVitals]
   );
 
   // Auto-fetch on project or time range change
   useEffect(() => {
     fetchData(timeRange, activeProjectId);
     fetchPaginatedPageviews(1, pvLimit, pvUserType, pvQuery, pvSort, timeRange, activeProjectId);
-  }, [activeProjectId, timeRange, fetchData, fetchPaginatedPageviews, pvLimit, pvUserType, pvQuery, pvSort]);
+  }, [activeProjectId, timeRange, fetchData, fetchPaginatedPageviews, pvLimit, pvUserType, pvQuery, pvSort, pvVitals]);
 
   // Project creation
   const handleCreateProject = async (name: string, domains: string): Promise<boolean> => {
@@ -355,6 +359,8 @@ export function PlatformProvider({ children }: { children: React.ReactNode }) {
         setPvUserType,
         pvDevice,
         setPvDevice,
+        pvVitals,
+        setPvVitals,
         pvSort,
         setPvSort,
         pvTimeRange,

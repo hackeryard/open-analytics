@@ -1,50 +1,64 @@
-# ⚡ Open Analytics & Observability Platform
+# Open Analytics & Observability Platform
 
-> **Next-Generation Standalone Web Analytics, Real User Monitoring (RUM), Behavioral UX Signals & AI-Powered Error Triage.**
+> **Next-Generation Standalone Web Analytics, Real User Monitoring (RUM), Behavioral UX Signals, AI-Powered Error Triage & Multi-Tenant Project Governance.**
 
-Open Analytics is a production-grade, multi-tenant analytics and observability platform designed to connect to any website, mobile application, or SaaS product. 
+Open Analytics is a production-grade, multi-tenant analytics and observability platform designed to connect to any website, mobile application, or SaaS product.
 
-It provides complete insight into user experience, performance bottlenecks, rage clicks, user journeys, and runtime crashes—**with zero custom code required on client websites**.
+It provides complete insight into user experience, performance bottlenecks, rage clicks, multi-step navigation flows, runtime crashes, and audience loyalty—**with zero custom code required on client websites**.
 
 ---
 
-## 🚀 Key Highlights
+## Key Highlights
 
-- **Zero-Code 1-Line Script Installation**: Just paste a single `<script>` tag into any HTML `<head>`—everything (pageviews, dwell times, Web Vitals, hardware diagnostics, rage clicks, errors) is tracked automatically.
-- **True Multi-Tenant Isolation**: Supports multiple organizations and unlimited projects. Each project gets its own Project ID, publishable API key, secret key, allowed domain whitelist, and isolated database indexes.
-- **Real User Monitoring (RUM)**: Live browser performance tracking for Core Web Vitals (LCP, INP, CLS, FCP, TTFB) with "Good / Needs Improvement / Poor" rating distributions.
-- **Hardware & Network Diagnostics**: Detects unmasked WebGL GPU renderers, device RAM (GB), logical CPU cores, DPR, viewport dimensions, and network speeds (5G/4G/3G, downlink, RTT).
-- **Behavioral UX Signals**: Measures active vs. idle dwell time, scroll depth milestones (25%, 50%, 75%, 90%, 100%), rage click detection (≥3 rapid clicks in 500ms within 40px), desktop exit intent, outbound links, and text copy.
-- **360° Error & Crash Monitoring**: Automatically captures uncaught JS runtime errors, failed resource loading (`<script>`, `<img>`), unhandled promise rejections, WebGL context lost, fetch/API 4xx/5xx failures, and console errors, attaching circular user action breadcrumbs.
+- **Zero-Code 1-Line Script Installation**: Paste a single `<script>` tag into any HTML `<head>`—everything (pageviews, dwell times, Web Vitals, hardware diagnostics, rage clicks, errors) is tracked automatically.
+- **Multi-Tenant Project Governance & Ownership Transfer**: Organizations can manage multiple isolated projects. Project creators are automatically assigned as Owner and Admin, with full support for transferring project ownership to other users.
+- **Audience & Loyalty Directory**: Deep customer intelligence calculating dynamic Loyalty Scores (0–100) and grouping visitors into 4 tiers: Brand Champions, Loyal Advocates, Returning Users, and New Explorers.
+- **User Journeys & Route Transitions**: Visual multi-step navigation flow analysis (`Step 1 -> Step 2 -> Step 3`), direct page-to-page transition matrices, landing page bounce rates, and session depth cohorts.
+- **Real User Monitoring (RUM)**: Live browser performance tracking for Core Web Vitals (LCP, INP, CLS, FCP, TTFB) with Good / Needs Improvement / Poor distributions.
+- **Hardware & Network Diagnostics**: Detects WebGL GPU renderers, device RAM, CPU cores, DPR, viewport dimensions, and network speeds (5G/4G, downlink Mbps, RTT).
+- **Behavioral UX Signals**: Measures active vs. idle dwell time, scroll depth milestones, rage click detection (≥3 rapid clicks in 500ms within 40px), desktop exit intent, outbound links, and text copy events.
+- **Universal Error & Crash Monitoring**: Automatically captures uncaught JS runtime errors, failed resource loading, unhandled promise rejections, WebGL context loss, and fetch/API failures, attaching circular user action breadcrumbs.
+- **Edge Error Suppression Rules**: Define match rules (`contains`, `exact`, `regex`, `starts_with`) on message, pathname, errorType, or stack trace to suppress known noise or benign third-party errors at ingestion.
 - **AI-Powered Bug Triage**: Generates comprehensive, copyable bug diagnostic prompts formatted for AI coding assistants (Claude, Gemini, ChatGPT) with stack traces, affected routes, client environment, and step-by-step fix recommendations.
-- **Interactive SVG World Atlas**: Built-in interactive world map with pan, zoom, country rankings, continents breakdown, and city-level drilldown.
-- **Plug-and-Play Product Intelligence**: Keep the core analytics platform 100% product-agnostic, with dynamic domain extensions (such as the *Virtual Labs Module* for OpenLabs) that appear automatically only when domain telemetry is detected.
-- **Privacy & Security by Design**: Built-in IP address anonymization (masking the last octet for GDPR compliance) and automated PII redaction (scrubbing emails, passwords, tokens from URL query parameters and payloads).
+- **Live Telemetry & Real-Time Event Stream**: Live polling stream with configurable refresh intervals (2s, 5s, 10s, 30s), segment filtering, CSV/JSON export, and deep audit inspector modals.
+- **Interactive SVG World Atlas**: Interactive world map with pan, zoom, country rankings, continent breakdowns, and city-level drilldown.
+- **Privacy & Security by Design**: Built-in IP address anonymization (masking the last octet for GDPR compliance) and automated PII redaction (scrubbing emails, passwords, tokens from URL query parameters and error payloads).
 
 ---
 
-## 📦 1-Line Installation for Any Website
+## Installation & Integration Guide
 
-To start tracking any website, paste this single line inside your HTML `<head>`:
+Open Analytics can be integrated into any web application or CMS in under 60 seconds.
+
+---
+
+### 1. Universal 1-Line HTML Tag (Any Website or CMS)
+
+Paste this tag directly before the closing `</head>` tag in your HTML template (compatible with Vanilla HTML, Webflow, WordPress, Shopify, Wix, Ghost, Squarespace):
 
 ```html
-<script defer src="https://open-analytics.vercel.app/open.js" data-project-id="prj_your_project_id"></script>
+<script 
+  defer 
+  src="https://your-analytics-instance.com/open.js" 
+  data-project-id="prj_your_project_id"
+></script>
 ```
 
-### Optional Configuration Attributes
+#### Script Tag Configuration Attributes
 
-| Attribute | Description | Default |
-| :--- | :--- | :--- |
-| `data-project-id` | Your unique Project ID (e.g. `prj_production_app`) | Required |
-| `data-api-key` | Optional publishable client API key (`pk_live_...`) | Optional |
-| `data-endpoint` | Hosted Open Analytics server URL | Origin of the script |
+| Attribute | Required | Description | Example / Default |
+| :--- | :--- | :--- | :--- |
+| `data-project-id` | **Yes** | Unique project identifier generated in Open Analytics | `prj_production_app` |
+| `data-endpoint` | Optional | Open Analytics server origin (only needed if script is hosted on CDN/subdomain) | `https://analytics.company.com` |
+| `data-api-key` | Optional | Publishable client API key | `pk_live_123456789` |
 
 ---
 
-## 💻 React & Next.js Integration
+### 2. Next.js Integration (App Router)
 
-For modern React, Next.js, or Remix applications, you can also use the plug-and-play component:
+In your root layout (`app/layout.tsx`), import the React Tracker component or use Next.js `<Script />`:
 
+#### Option A: Using the React Tracker Component
 ```tsx
 import OpenAnalyticsTracker from "@/lib/sdk/OpenAnalyticsTracker";
 
@@ -52,9 +66,27 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head>
-        <OpenAnalyticsTracker 
-          projectId="prj_production_app" 
-          endpoint="https://open-analytics.vercel.app" 
+        <OpenAnalyticsTracker projectId="prj_your_project_id" />
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+#### Option B: Using `next/script`
+```tsx
+import Script from "next/script";
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <head>
+        <Script
+          id="open-analytics"
+          src="https://open-analytics.vercel.app/open.js"
+          strategy="afterInteractive"
+          data-project-id="prj_your_project_id"
         />
       </head>
       <body>{children}</body>
@@ -65,106 +97,248 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 ---
 
-## 🌐 JavaScript SDK (Optional Manual Tracking)
+### 3. Next.js Integration (Pages Router)
 
-While all core events, vitals, and errors are captured automatically, the global `window.OpenAnalytics` object allows custom telemetry:
+In your `pages/_app.tsx` or `pages/_document.tsx`:
+
+```tsx
+import Script from "next/script";
+import type { AppProps } from "next/app";
+
+export default function App({ Component, pageProps }: AppProps) {
+  return (
+    <>
+      <Script
+        id="open-analytics"
+        src="https://open-analytics.vercel.app/open.js"
+        strategy="afterInteractive"
+        data-project-id="prj_your_project_id"
+      />
+      <Component {...pageProps} />
+    </>
+  );
+}
+```
+
+---
+
+### 4. React Single Page Applications (Vite / CRA / Remix)
+
+In your root `index.html` (inside `<head>`):
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>My Application</title>
+    <!-- Open Analytics Tracking -->
+    <script 
+      defer 
+      src="https://open-analytics.vercel.app/open.js" 
+      data-project-id="prj_your_project_id"
+    ></script>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
+```
+
+---
+
+### 5. Nuxt 3 / Vue.js Integration
+
+In your `nuxt.config.ts`:
+
+```ts
+export default defineNuxtConfig({
+  app: {
+    head: {
+      script: [
+        {
+          src: "https://open-analytics.vercel.app/open.js",
+          defer: true,
+          "data-project-id": "prj_your_project_id",
+        },
+      ],
+    },
+  },
+});
+```
+
+---
+
+### 6. SvelteKit & Astro Integration
+
+In `src/app.html` (SvelteKit) or your base layout (Astro):
+
+```html
+<script 
+  defer 
+  src="https://open-analytics.vercel.app/open.js" 
+  data-project-id="prj_your_project_id"
+></script>
+```
+
+---
+
+## JavaScript SDK & Manual Telemetry Usage
+
+While all standard telemetry (pageviews, dwell times, Web Vitals, hardware diagnostics, rage clicks, errors) is recorded automatically, the `window.OpenAnalytics` global object provides high-level APIs for custom business logic.
+
+### 1. Custom Business Event Tracking
+Track user actions, feature adoption, funnel conversions, and revenue:
 
 ```js
-// Track a custom business event
-window.OpenAnalytics.track("checkout_completed", {
-  plan: "pro_annual",
-  value: 299.00
+// Track a basic event
+window.OpenAnalytics.track("signup_modal_opened");
+
+// Track an event with custom properties and numerical value
+window.OpenAnalytics.track("plan_purchased", {
+  plan: "enterprise_annual",
+  seats: 25,
+  billing_interval: "annual",
+  currency: "USD"
+}, 1200.00);
+```
+
+### 2. User & Account Identification
+Associate anonymous telemetry with authenticated users without cookies:
+
+```js
+window.OpenAnalytics.identify("usr_98124_alex", {
+  name: "Alex Mercer",
+  email: "alex@company.io",
+  company: "Acme Corp",
+  tier: "enterprise"
 });
+```
 
-// Identify an authenticated user
-window.OpenAnalytics.identify("usr_98124", {
-  email: "sarah@acme.com",
-  role: "enterprise_admin"
-});
+### 3. Programmatic Exception & Error Capturing
+Capture handled exceptions in `try/catch` blocks or React Error Boundaries:
 
-// Programmatic pageview trigger (for custom SPA routers)
-window.OpenAnalytics.page("/dashboard/billing");
+```js
+try {
+  executeCriticalPaymentFlow();
+} catch (err) {
+  window.OpenAnalytics.captureError(err, {
+    gateway: "stripe",
+    step: "charge_authorization",
+    cart_id: "cart_88219"
+  });
+}
+```
+
+### 4. 404 Route & Broken Link Tracking
+Capture Not Found pages in custom error catchers or Next.js `not-found.tsx`:
+
+```js
+window.OpenAnalytics.track404("/products/discontinued-item", document.referrer);
+```
+
+### 5. Programmatic SPA Route Transitions
+If using custom routing logic without standard HTML5 History API events:
+
+```js
+window.OpenAnalytics.page("/app/workspace/settings");
 ```
 
 ---
 
-## 📊 Analytics Dashboard Views
+## Allowed Origins & CORS Whitelisting
 
-The standalone dashboard running on `http://localhost:3005/` provides 12+ specialized analytical tabs:
+By default, every new project has `allowedDomains: ["*"]`, accepting hits from all origins (production, staging, and localhost).
 
-1. **Live Feed**: Real-time active paths, live user count, and a paginated, searchable pageview log with device, location, and dwell time filters.
-2. **Returning Visitors**: Retention rate, visit frequency distribution (1, 2, 3–5, 6+ visits), and detailed returning user profiles.
-3. **Core Web Vitals & RUM**: First Contentful Paint (FCP), Largest Contentful Paint (LCP), Cumulative Layout Shift (CLS), Interaction to Next Paint (INP), and Time to First Byte (TTFB) gauges with route-level performance rankings.
-4. **Behavioral UX**: Rage click ranking (with CSS target selectors and text samples), desktop exit intent rates, outbound links, and active dwell vs. idle dwell ratio.
-5. **User Journeys**: Most common entry pages, exit pages, bounce rates, and navigation flow lengths.
-6. **Top Pages & Routes**: Pageviews, unique visitor count, average dwell time, and average vertical scroll depth per route.
-7. **Traffic & Campaigns**: Referrer domains (with percentage share) and UTM campaign breakdown (source, medium, campaign).
-8. **Geo & Systems**: Device breakdown (Desktop, Mobile, Tablet), browser versions, operating systems, screen resolutions, GPU profiles, CPU core counts, and network types (5G/4G/3G, downlink, RTT).
-9. **Dwell & Scroll**: Engagement distribution across dwell durations (<10s, 10s–30s, 30s–1m, 1m–3m, 3m–10m, >10m) and scroll milestones (0–25%, 25–50%, 50–75%, 75–100%).
-10. **Custom Events**: Real-time stream of custom business events with expandable JSON property payloads and category filters.
-11. **Crash & Error Monitoring**: Deduplicated runtime errors, stack trace viewer, user diagnostic breadcrumbs, status management (`new`, `investigating`, `resolved`, `ignored`), CSV/JSON export, and one-click AI Bug Triage prompt generation.
-12. **Interactive World Atlas**: Responsive SVG World Map with zoom, pan, country rankings, continent breakdowns, and city-level drilldown.
-13. **Dynamic Product Intelligence Modules**: Pluggable domain modules (such as the *Virtual Labs Module* for OpenLabs) that activate automatically when domain telemetry is detected.
-
----
-
-## 🛠️ Architecture & Tech Stack
-
-- **Framework**: Next.js 14 (App Router, TypeScript, React 18)
-- **Styling**: Tailwind CSS with CSS variable-backed design tokens (dark theme)
-- **Database**: MongoDB with Mongoose (optimized compound indexes on `projectId + createdAt`)
-- **Charting**: Chart.js & React-Chartjs-2
-- **Icons**: Lucide React
-- **Maps**: Custom high-resolution vector SVG World Atlas (`worldAtlas.ts`)
-
----
-
-## ⚙️ Ingestion API Endpoints
-
-All ingestion endpoints accept cross-origin requests (CORS enabled) and support both HTTP header and body-based API authentication:
-
-- `POST /api/v1/collect`: Primary edge ingestion endpoint handling `pageview`, `heartbeat`, and `event` payloads.
-- `POST /api/v1/error`: Ingests crash reports, groups stack traces, and deduplicates identical errors within a 24-hour window.
-- `POST /api/v1/identify`: Associates anonymous visitor and session IDs with authenticated user accounts and traits.
-
----
-
-## 💻 Local Setup & Development
-
-### 1. Prerequisites
-- Node.js 20+ (Node 22 LTS recommended)
-- MongoDB database connection URI
-
-### 2. Install Dependencies
-```bash
-npm install
-```
-
-### 3. Configure Environment Variables
-Create a `.env.local` file in the root directory:
-```env
-MONGO_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/open_analytics?retryWrites=true&w=majority
-NEXT_PUBLIC_APP_URL=https://open-analytics.vercel.app
-NODE_ENV=production
-```
-
-### 4. Run Development Server
-```bash
-npm run dev
-```
-Open your browser to test locally or view the deployed version at [https://open-analytics.vercel.app](https://open-analytics.vercel.app).
-
----
-
-## 🔄 Live Deployment & Integration
-
-1. In your client website (`app/layout.tsx` or `index.html`), add the 1-line tracking script:
-   ```html
-   <script defer src="https://open-analytics.vercel.app/open.js" data-project-id="prj_your_project_id"></script>
+To restrict telemetry collection to authorized domains only:
+1. Navigate to **Workspace Settings** (`/projects/[projectId]/settings`).
+2. Under **Allowed Origins & CORS Domains**, enter your domains separated by commas:
    ```
-2. Verify that real-time visitor activity, Core Web Vitals, and errors stream into Open Analytics at [https://open-analytics.vercel.app](https://open-analytics.vercel.app).
+   myapp.com, app.myapp.com, staging.myapp.com, localhost:3000
+   ```
+3. Click **Save Changes**. Requests from unapproved origins will automatically be rejected with `403 Forbidden`.
 
 ---
 
-## 📄 License
-MIT License. Open for commercial and self-hosted deployments.
+## What Gets Tracked Automatically
+
+| Metric / Telemetry | Automatic Capture Mechanism |
+| :--- | :--- |
+| **Pageviews & SPA Transitions** | Tracks `pushState`, `replaceState`, `popstate`, and initial page load |
+| **Dwell & Active Attention** | Measures continuous active focus vs. background/idle tab time |
+| **Scroll Depth** | Tracks vertical scroll depth milestones (25%, 50%, 75%, 100%) |
+| **Core Web Vitals** | Captures real browser LCP, INP, CLS, FCP, and TTFB via PerformanceObserver |
+| **Rage Clicks** | Detects frustrational click bursts (≥3 clicks within 500ms and 40px radius) |
+| **Desktop Exit Intent** | Detects cursor acceleration towards browser address bar/tab close area |
+| **Client Errors & Crashes** | Intercepts `window.onerror`, unhandled promise rejections, and asset load failures |
+| **Hardware & GPU** | Detects WebGL GPU renderer, device RAM, CPU cores, DPR, and viewport size |
+| **Network Quality** | Measures effective network type (5G/4G/3G/2G), downlink Mbps, and round-trip time |
+| **Outbound Link Clicks** | Records navigation to external domain URLs |
+| **Text Copy Events** | Measures high-intent user snippet copy actions |
+
+---
+
+## Analytical Modules & Views
+
+1. **Overview Dashboard** (`/`): High-level KPI ribbons, traffic timeseries, device breakdown, top pages, acquisition channels, and real-time live users.
+2. **Live Telemetry** (`/live-feed`): Real-time event stream with multi-interval polling, segment filters (New, Returning, Authenticated, Bounced, Bots), CSV/JSON exports, and raw payload audit modal.
+3. **Audience & Loyalty** (`/audience`, `/visitors`): Visitor intelligence directory with dynamic Loyalty Scores (0–100), 4 loyalty tiers, visit frequency cohorts, and full visitor journey inspection.
+4. **User Journeys** (`/journeys`): Multi-step navigation sequences (`Step 1 -> Step 2 -> Step 3`), direct route transition matrices, and landing page bounce distribution.
+5. **Top Pages & Routes** (`/pages`): High-density route performance table with traffic share distribution, dwell time, scroll depth, CSV export, and live telemetry filtering.
+6. **Custom Events** (`/events`): Custom business conversion event tracking, properties inspector, and frequency analysis.
+7. **Web Vitals (RUM)** (`/vitals`): Core Web Vitals (LCP, INP, CLS, FCP, TTFB) with route-level ratings and distribution gauges.
+8. **Crash & Errors** (`/errors`): Universal error tracking with multi-selection batch management, AI fix prompt generator, expandable stack traces, and Edge suppression rules.
+9. **Behavioral UX** (`/ux`): Rage click detection, desktop exit intent rates, outbound links, and active vs. idle dwell time analysis.
+10. **Devices & Tech** (`/tech`): Browser, OS, device form factors, GPU renderers, memory, and network connection types.
+11. **Audience Geography** (`/geo`): Interactive SVG World Atlas, country rankings, continent breakdowns, and city-level drilldowns.
+12. **Acquisition & Sources** (`/acquisition`): Referrers, direct traffic, search engines, and UTM campaign attribution.
+13. **SEO & Search Radar** (`/seo`): Search engine traffic breakdown, organic discovery, and structured data monitoring.
+14. **GEO & AI Radar** (`/ai-aeo`): AI crawler detection (GPTBot, ClaudeBot, Perplexity, etc.) and AEO citation readiness.
+15. **Workspace Management** (`/projects`, `/projects/[projectId]/settings`): Multi-project directory, role-based access control (Owner, Admin, Editor, Member), team invitations, and secure project ownership transfer.
+
+---
+
+## Tech Stack & Architecture
+
+- **Framework**: Next.js 14 (App Router, Server Actions, Route Handlers)
+- **Database**: MongoDB with Mongoose ODM (Optimized compound indexes)
+- **Styling**: Tailwind CSS & Vanilla CSS Design Tokens (Dark Mode Glassmorphism)
+- **Icons**: Lucide React (Strict Zero-Emoji Policy)
+- **Client Script**: Vanilla JavaScript (`public/open.js`, ~12KB unminified, zero external dependencies)
+- **Authentication**: JWT-based session cookies with bcrypt password hashing and Role-Based Access Control (RBAC)
+
+---
+
+## Getting Started Locally
+
+### 1. Clone & Install Dependencies
+
+```bash
+git clone https://github.com/your-org/open-analytics.git
+cd open-analytics
+npm install # or yarn install
+```
+
+### 2. Environment Configuration
+
+Copy `.env.example` to `.env.local` and set your MongoDB connection string:
+
+```env
+MONGODB_URI=mongodb://localhost:27017/open_analytics
+JWT_SECRET=your_super_secret_jwt_key_here
+NEXT_PUBLIC_APP_URL=http://localhost:3005
+```
+
+### 3. Run Development Server
+
+```bash
+npm run dev # or yarn dev
+```
+
+Open `http://localhost:3005` in your browser.
+
+---
+
+## License
+
+MIT License. Designed and engineered for high-performance web observability.

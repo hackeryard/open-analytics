@@ -22,16 +22,37 @@ export async function GET(req: Request, { params }: { params: { projectId: strin
     const userType = searchParams.get("userType") || "all";
     const query = searchParams.get("query")?.trim() || "";
     const device = searchParams.get("device") || "";
+    const vitals = searchParams.get("vitals") || "all";
     const sortBy = searchParams.get("sortBy") || "createdAt_desc";
 
     const { matchStage } = parseDateFilter(params.projectId, timeRange, startDateParam, endDateParam);
     const andConditions: any[] = [{ projectId: params.projectId, createdAt: matchStage.createdAt }];
 
     if (device && device !== "all") andConditions.push({ device });
-    if (userType === "anonymous") andConditions.push({ userId: null });
-    else if (userType === "authenticated") andConditions.push({ userId: { $ne: null } });
-    else if (userType === "new") andConditions.push({ isReturning: false });
-    else if (userType === "returning") andConditions.push({ isReturning: true });
+
+    if (vitals === "good") {
+      andConditions.push({ "webVitals.lcp": { $lte: 2500, $gt: 0 } });
+    } else if (vitals === "needs_improvement") {
+      andConditions.push({ "webVitals.lcp": { $gt: 2500, $lte: 4000 } });
+    } else if (vitals === "poor") {
+      andConditions.push({ "webVitals.lcp": { $gt: 4000 } });
+    }
+
+    if (userType === "anonymous") {
+      andConditions.push({ userId: null });
+    } else if (userType === "authenticated") {
+      andConditions.push({ userId: { $ne: null } });
+    } else if (userType === "new") {
+      andConditions.push({ isReturning: false });
+    } else if (userType === "returning") {
+      andConditions.push({ isReturning: true });
+    } else if (userType === "bounced") {
+      andConditions.push({ isBounce: true });
+    } else if (userType === "bots") {
+      andConditions.push({ visitorType: { $in: ["search_bot", "ai_crawler"] } });
+    } else if (userType === "humans") {
+      andConditions.push({ visitorType: "human" });
+    }
 
     if (query) {
       const regex = new RegExp(query, "i");
@@ -39,6 +60,7 @@ export async function GET(req: Request, { params }: { params: { projectId: strin
         $or: [
           { pathname: regex },
           { title: regex },
+          { labId: regex },
           { country: regex },
           { city: regex },
           { browser: regex },
@@ -46,6 +68,12 @@ export async function GET(req: Request, { params }: { params: { projectId: strin
           { visitorId: regex },
           { sessionId: regex },
           { referrerDomain: regex },
+          { utmSource: regex },
+          { utmCampaign: regex },
+          { botName: regex },
+          { searchEngine: regex },
+          { aiReferrer: regex },
+          { ip: regex },
         ],
       });
     }
@@ -54,8 +82,10 @@ export async function GET(req: Request, { params }: { params: { projectId: strin
 
     let sortObj: Record<string, 1 | -1> = { createdAt: -1 };
     if (sortBy === "duration_desc") sortObj = { duration: -1, createdAt: -1 };
+    else if (sortBy === "active_desc") sortObj = { activeDuration: -1, createdAt: -1 };
     else if (sortBy === "scroll_desc") sortObj = { scrollDepth: -1, createdAt: -1 };
     else if (sortBy === "createdAt_asc") sortObj = { createdAt: 1 };
+    else if (sortBy === "lcp_desc") sortObj = { "webVitals.lcp": -1, createdAt: -1 };
 
     const total = await (PageView as any).countDocuments(filter);
     const pageviews = await (PageView as any).find(filter)

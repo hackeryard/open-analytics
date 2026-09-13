@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
 
     // Check if this is the very first user in the database
     const totalUsers = await (User as any).countDocuments();
-    const assignedRole = totalUsers === 0 ? "super_admin" : (role === "admin" || role === "member" ? role : "admin");
+    const assignedRole = totalUsers === 0 ? "super_admin" : (["admin", "editor", "member"].includes(role) ? role : "admin");
 
     const passwordHash = await hashPassword(password);
     const user = await (User as any).create({

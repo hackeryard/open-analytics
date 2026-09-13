@@ -2,11 +2,12 @@
 
 import React from "react";
 import Link from "next/link";
-import { Globe, ArrowRight } from "lucide-react";
-import { getCountryFlag } from "@/lib/countries";
+import { Globe, ArrowRight, MapPin } from "lucide-react";
+import { getFullCountryName } from "@/lib/countries";
 
 interface CountryItem {
   country: string;
+  code?: string;
   isoCode?: string;
   count: number;
   percentage: number;
@@ -50,16 +51,18 @@ export default function GeoWidget({
           </div>
         ) : (
           safeCountries.slice(0, 5).map((c, idx) => {
-            const flag = getCountryFlag(c.country);
+            const countryName = getFullCountryName(c.country);
             const pct = Math.max(4, Math.round((c.count / maxCount) * 100));
 
             return (
               <div key={c.country || idx} className="space-y-1 group">
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2 min-w-0 pr-2">
-                    <span className="text-sm shrink-0">{flag || "🌐"}</span>
-                    <span className="font-bold text-slate-200 truncate group-hover:text-purple-400 transition">
-                      {c.country}
+                    <span className="w-5 h-5 rounded-md bg-purple-500/10 text-purple-400 border border-purple-500/20 text-[10px] font-bold font-mono flex items-center justify-center shrink-0">
+                      {idx + 1}
+                    </span>
+                    <span className="font-bold text-slate-200 truncate group-hover:text-purple-400 transition" title={countryName}>
+                      {countryName}
                     </span>
                   </div>
                   <div className="flex items-center gap-3 shrink-0 text-[11px] font-mono">

@@ -32,6 +32,13 @@ import {
   Copy,
   Check,
   ChevronRight,
+  Send,
+  RefreshCw,
+  Gauge,
+  Users,
+  Repeat,
+  Shield,
+  FileCode2,
 } from "lucide-react";
 import PlatformHeader from "@/components/PlatformHeader";
 import { usePlatform } from "@/components/PlatformContext";
@@ -58,11 +65,58 @@ export default function ExecutiveOverviewDashboard() {
     paginatedPageviews,
     liveVisitorCount,
     setShowNewProjectModal,
+    fetchData,
+    fetchPaginatedPageviews,
   } = usePlatform();
 
   const [copiedSnippet, setCopiedSnippet] = useState(false);
+  const [testSignalSending, setTestSignalSending] = useState(false);
+  const [testSignalSuccess, setTestSignalSuccess] = useState(false);
 
-  if (!authChecked) {
+  const scriptTag = `<script defer src="https://open-analytics.vercel.app/open.js" data-project-id="${activeProjectId || "prj_openlabs"}"></script>`;
+
+  const copyScript = () => {
+    navigator.clipboard.writeText(scriptTag);
+    setCopiedSnippet(true);
+    setTimeout(() => setCopiedSnippet(false), 2500);
+  };
+
+  const handleSendTestSignal = async () => {
+    if (!activeProjectId) return;
+    setTestSignalSending(true);
+    try {
+      const res = await fetch("/api/v1/collect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          projectId: activeProjectId,
+          type: "pageview",
+          pathname: "/test-telemetry-ping",
+          title: "Test Ingestion Diagnostic Signal",
+          visitorId: "v_test_" + Math.random().toString(36).slice(2, 8),
+          sessionId: "s_test_" + Math.random().toString(36).slice(2, 8),
+          referrer: "https://open-analytics.vercel.app/docs",
+          device: "desktop",
+          browser: "Chrome",
+          os: "Windows",
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
+        }),
+      });
+      if (res.ok) {
+        setTestSignalSuccess(true);
+        setTimeout(() => setTestSignalSuccess(false), 3000);
+        // Refresh live feed and dashboard
+        fetchData();
+        fetchPaginatedPageviews();
+      }
+    } catch (e) {
+      console.error("Test signal error:", e);
+    } finally {
+      setTestSignalSending(false);
+    }
+  };
+
+  if (loading && !data) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center space-y-4">
         <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 via-blue-600 to-violet-600 p-[1.5px] shadow-lg shadow-cyan-500/20 animate-glow">
@@ -72,29 +126,7 @@ export default function ExecutiveOverviewDashboard() {
         </div>
         <div className="text-sm font-semibold tracking-wide text-slate-400 flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-          Verifying secure telemetry session...
-        </div>
-      </div>
-    );
-  }
-
-  if (!currentUser) {
-    return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center space-y-4">
-        <div className="text-center space-y-3 max-w-sm glass-card p-8 rounded-3xl border border-white/[0.08]">
-          <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center mx-auto">
-            <Activity size={24} />
-          </div>
-          <h2 className="text-xl font-bold text-white">Authentication Required</h2>
-          <p className="text-xs text-muted-foreground">Sign in to access your projects, live telemetry, and observability diagnostics.</p>
-          <div className="pt-2">
-            <Link
-              href="/login"
-              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-xs font-bold shadow-md hover:from-cyan-400 hover:to-blue-500 transition"
-            >
-              Sign In to Open Analytics
-            </Link>
-          </div>
+          Loading analytics telemetry...
         </div>
       </div>
     );
@@ -108,9 +140,9 @@ export default function ExecutiveOverviewDashboard() {
             <Plus size={28} />
           </div>
           <div className="space-y-1">
-            <h2 className="text-xl font-black text-white">Welcome, {currentUser.name}!</h2>
+            <h2 className="text-xl font-black text-white">Welcome to Open Analytics</h2>
             <p className="text-xs text-muted-foreground">
-              You don&apos;t have any projects in your workspace yet. Create your first project to begin tracking live web traffic.
+              You don&apos;t have any projects in your workspace yet. Create your first project to begin tracking live web traffic and Real User Monitoring telemetry.
             </p>
           </div>
           <button
@@ -124,14 +156,6 @@ export default function ExecutiveOverviewDashboard() {
     );
   }
 
-  const scriptTag = `<script defer src="https://open-analytics.vercel.app/open.js" data-project-id="${activeProjectId || "prj_openlabs"}"></script>`;
-
-  const copyScript = () => {
-    navigator.clipboard.writeText(scriptTag);
-    setCopiedSnippet(true);
-    setTimeout(() => setCopiedSnippet(false), 2500);
-  };
-
   const overview = data?.overview || {
     totalViews: 0,
     uniqueVisitors: 0,
@@ -141,11 +165,40 @@ export default function ExecutiveOverviewDashboard() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-16">
       <PlatformHeader
         title="Executive Web Analytics & Observability"
         subtitle="Real-time multi-project telemetry, Real User Monitoring (RUM), search attribution, and automated crash triage"
-      />
+      >
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Real-time Live Visitors Pill */}
+          <Link
+            href="/live-feed"
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold font-mono transition hover:bg-emerald-500/20 shadow-2xs"
+          >
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+            <span>{liveVisitorCount} Active Visitors</span>
+          </Link>
+
+          {/* Direct Live Stream Link */}
+          <Link
+            href="/live-feed"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-card border border-border text-foreground hover:bg-muted text-xs font-bold transition shadow-2xs"
+          >
+            <Radio size={13} className="text-primary" />
+            <span>Live Feed</span>
+          </Link>
+
+          {/* Quick SDK Installation Link */}
+          <Link
+            href={`/projects/${activeProjectId || "prj_openlabs"}/install`}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary text-primary-foreground text-xs font-bold transition shadow-2xs hover:opacity-90"
+          >
+            <Code2 size={13} />
+            <span>Install SDK</span>
+          </Link>
+        </div>
+      </PlatformHeader>
 
       {error && (
         <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/25 text-rose-300 text-xs flex items-center justify-between gap-3">
@@ -172,7 +225,7 @@ export default function ExecutiveOverviewDashboard() {
             </span>
             <span className="text-[10px] font-bold text-emerald-400 flex items-center gap-0.5 font-mono">
               <TrendingUp size={11} />
-              +14.8%
+              Live
             </span>
           </div>
           <div className="text-2xl font-black font-mono text-white tracking-tight">
@@ -196,8 +249,8 @@ export default function ExecutiveOverviewDashboard() {
               Visitors
             </span>
             <span className="text-[10px] font-bold text-emerald-400 flex items-center gap-0.5 font-mono">
-              <TrendingUp size={11} />
-              +8.2%
+              <Users size={11} />
+              Unique
             </span>
           </div>
           <div className="text-2xl font-black font-mono text-white tracking-tight">
@@ -212,9 +265,8 @@ export default function ExecutiveOverviewDashboard() {
         </Link>
 
         {/* Returning Users Rate */}
-        {/* Returning Users Rate */}
         <Link
-          href="/returning-users"
+          href="/audience"
           className="p-4 glass-card glass-card-hover rounded-2xl space-y-2 group block relative overflow-hidden"
         >
           <div className="flex items-center justify-between">
@@ -222,7 +274,7 @@ export default function ExecutiveOverviewDashboard() {
               Retention
             </span>
             <span className="text-[10px] font-bold text-emerald-400 flex items-center gap-0.5 font-mono">
-              <TrendingUp size={11} />
+              <Repeat size={11} />
               {(data?.retention?.returnRate ?? overview.returnRate ?? 0) > 0 ? "Active" : "New"}
             </span>
           </div>
@@ -400,7 +452,7 @@ export default function ExecutiveOverviewDashboard() {
       />
 
       {/* ============================================================ */}
-      {/* 7. QUICK SETUP & INSTALLATION BANNER                         */}
+      {/* 7. QUICK SETUP, INGESTION DIAGNOSTIC & SDK DECK              */}
       {/* ============================================================ */}
       <div className="glass-card rounded-3xl p-6 sm:p-7 border border-cyan-500/20 bg-gradient-to-br from-cyan-950/20 via-blue-950/10 to-transparent flex flex-col md:flex-row md:items-center justify-between gap-5">
         <div className="space-y-1.5 max-w-xl">
@@ -411,11 +463,29 @@ export default function ExecutiveOverviewDashboard() {
             <h3 className="text-base font-black text-white">Embed Telemetry in Your App in 30 Seconds</h3>
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Copy the lightweight (&lt; 3.2 KB), cookieless tracking snippet into your HTML &lt;head&gt; or Next.js layout to begin streaming Real User Monitoring metrics.
+            Copy the lightweight (&lt; 3.2 KB), cookieless tracking snippet into your HTML &lt;head&gt; or Next.js layout to stream real-time events, Core Web Vitals, and autonomous error triage.
           </p>
         </div>
 
-        <div className="flex items-center gap-3 shrink-0 flex-wrap">
+        <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
+          {/* Send Test Event Button */}
+          <button
+            onClick={handleSendTestSignal}
+            disabled={testSignalSending}
+            className="px-3.5 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.1] text-white text-xs font-bold transition cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+            title="Send a sample telemetry event to verify pipeline"
+          >
+            {testSignalSending ? (
+              <RefreshCw size={13} className="animate-spin text-cyan-400" />
+            ) : testSignalSuccess ? (
+              <Check size={13} className="text-emerald-400" />
+            ) : (
+              <Send size={13} className="text-cyan-400" />
+            )}
+            <span>{testSignalSuccess ? "Signal Ingested!" : "Test Signal"}</span>
+          </button>
+
+          {/* Copy Script Tag Button */}
           <button
             onClick={copyScript}
             className="px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black text-xs font-black shadow-lg shadow-cyan-500/20 transition cursor-pointer flex items-center gap-2"
@@ -423,11 +493,13 @@ export default function ExecutiveOverviewDashboard() {
             {copiedSnippet ? <Check size={14} /> : <Copy size={14} />}
             <span>{copiedSnippet ? "Snippet Copied!" : "Copy Script Tag"}</span>
           </button>
+
+          {/* SDK Documentation Link */}
           <Link
             href={`/projects/${activeProjectId || "prj_openlabs"}/install`}
             className="px-4 py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] text-white text-xs font-bold transition"
           >
-            Setup Instructions &rarr;
+            SDK Guides &rarr;
           </Link>
         </div>
       </div>

@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import ErrorLog from "@/models/ErrorLog";
-import { verifyProjectManage } from "@/lib/auth";
+import { verifyProjectEdit } from "@/lib/auth";
 
 export async function PATCH(req: Request, { params }: { params: { projectId: string; id: string } }) {
   try {
     await connectDB();
-    const auth = await verifyProjectManage(req, params.projectId);
+    const auth = await verifyProjectEdit(req, params.projectId);
     if (!auth.ok) {
       return NextResponse.json({ error: auth.error }, { status: auth.status || 403 });
     }
@@ -32,7 +32,7 @@ export async function PATCH(req: Request, { params }: { params: { projectId: str
 export async function DELETE(req: Request, { params }: { params: { projectId: string; id: string } }) {
   try {
     await connectDB();
-    const auth = await verifyProjectManage(req, params.projectId);
+    const auth = await verifyProjectEdit(req, params.projectId);
     if (!auth.ok) {
       return NextResponse.json({ error: auth.error }, { status: auth.status || 403 });
     }

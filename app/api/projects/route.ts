@@ -28,11 +28,31 @@ export async function GET(req: NextRequest) {
       };
     }
 
-    const projects = await (Project as any)
+    const projectsRaw = await (Project as any)
       .find(query)
       .select("-secretKey")
       .sort({ createdAt: -1 })
       .lean();
+
+    const userIdStr = user._id.toString();
+
+    const projects = projectsRaw.map((p: any) => {
+      let currentUserRole = "member";
+      if (user.role === "super_admin") {
+        currentUserRole = "super_admin";
+      } else if (p.ownerId && p.ownerId.toString() === userIdStr) {
+        currentUserRole = "owner";
+      } else if (Array.isArray(p.members)) {
+        const member = p.members.find((m: any) => (m.userId?.toString() || m.userId) === userIdStr);
+        if (member && member.role) {
+          currentUserRole = member.role;
+        }
+      }
+      return {
+        ...p,
+        currentUserRole,
+      };
+    });
 
     return NextResponse.json({ projects, user });
   } catch (err: any) {
@@ -73,6 +93,12 @@ export async function POST(req: NextRequest) {
       name: name.trim(),
       slug: cleanSlug || "web-project",
       ownerId: user._id,
+      members: [
+        {
+          userId: user._id,
+          role: "admin",
+        },
+      ],
       publishableKey,
       secretKey,
       allowedDomains: Array.isArray(allowedDomains) && allowedDomains.length > 0 ? allowedDomains : ["*"],
@@ -93,7 +119,12 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    return NextResponse.json({ project }, { status: 201 });
+    return NextResponse.json({
+      project: {
+        ...project.toObject(),
+        currentUserRole: "owner",
+      },
+    }, { status: 201 });
   } catch (err: any) {
     console.error("Create project error:", err);
     return NextResponse.json({ error: err.message }, { status: 500 });

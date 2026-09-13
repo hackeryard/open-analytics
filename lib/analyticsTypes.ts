@@ -65,6 +65,12 @@ export interface PageViewItem {
   };
   isBounce?: boolean;
   exitIntent?: boolean;
+  visitorType?: "human" | "search_bot" | "ai_crawler";
+  botCategory?: string;
+  botName?: string;
+  searchEngine?: string | null;
+  aiReferrer?: string | null;
+  structuredDataDetected?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -81,6 +87,16 @@ export interface CustomEventItem {
   sessionId: string;
   createdAt: string;
   userId?: UserSnippet | null;
+}
+
+export interface ErrorRule {
+  id: string;
+  name: string;
+  matchField: "message" | "pathname" | "errorType" | "stack";
+  matchType: "contains" | "exact" | "regex" | "starts_with";
+  pattern: string;
+  enabled: boolean;
+  createdAt: string;
 }
 
 export interface ErrorLogItem {
@@ -102,7 +118,7 @@ export interface ErrorLogItem {
   userId?: UserSnippet | null;
 }
 
-export interface ReturningUserItem {
+export interface AudienceUserItem {
   visitorId: string;
   user?: UserSnippet | null;
   visitCount: number;
@@ -117,7 +133,12 @@ export interface ReturningUserItem {
   os: string;
   firstSeen: string;
   lastSeen: string;
+  userType?: "new" | "returning" | "loyal" | "champion";
+  loyaltyScore?: number;
+  loyaltyTier?: "Newcomer" | "Returning" | "Loyal Advocate" | "Brand Champion";
 }
+
+export type ReturningUserItem = AudienceUserItem;
 
 export interface AnalyticsData {
   seoAnalytics?: any;
@@ -281,8 +302,32 @@ export interface AnalyticsData {
     outboundClicks: { href: string; count: number; sampleText: string }[];
   };
   userJourneys?: {
-    entryPages: { pathname: string; count: number; percentage: number }[];
+    overview?: {
+      totalSessions: number;
+      avgPathDepth: number;
+      bounceRate: number;
+      multiPageRate: number;
+    };
+    entryPages: { pathname: string; count: number; percentage: number; bounceRate?: number }[];
     exitPages: { pathname: string; count: number; percentage: number }[];
+    topFlows?: {
+      path: string[];
+      pathString: string;
+      count: number;
+      percentage: number;
+      depth: number;
+    }[];
+    transitions?: {
+      from: string;
+      to: string;
+      count: number;
+      percentage: number;
+    }[];
+    depthDistribution?: {
+      depthLabel: string;
+      count: number;
+      percentage: number;
+    }[];
   };
 }
 

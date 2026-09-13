@@ -47,7 +47,15 @@ export async function GET(req: NextRequest) {
         slug: p.slug,
         publishableKey: p.publishableKey,
         isOwner: p.ownerId ? p.ownerId.toString() === user._id.toString() : false,
-        role: user.role === "super_admin" ? "super_admin" : (p.ownerId?.toString() === user._id.toString() ? "owner" : "member"),
+        role: (() => {
+          if (user.role === "super_admin") return "super_admin";
+          if (p.ownerId && p.ownerId.toString() === user._id.toString()) return "owner";
+          if (Array.isArray(p.members)) {
+            const member = p.members.find((m: any) => (m.userId?.toString() || m.userId) === user._id.toString());
+            if (member?.role) return member.role;
+          }
+          return "member";
+        })(),
         settings: p.settings,
         createdAt: p.createdAt,
       })),

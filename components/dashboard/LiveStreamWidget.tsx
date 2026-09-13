@@ -2,9 +2,9 @@
 
 import React from "react";
 import Link from "next/link";
-import { Radio, ArrowRight, Laptop, Smartphone, Tablet, Globe, Clock } from "lucide-react";
+import { Radio, ArrowRight, Laptop, Smartphone, Tablet, Globe, Clock, Activity } from "lucide-react";
 import { PageViewItem, timeAgo } from "@/lib/analyticsTypes";
-import { getCountryFlag } from "@/lib/countries";
+import { getFullCountryName } from "@/lib/countries";
 
 export default function LiveStreamWidget({
   pageviews,
@@ -30,7 +30,7 @@ export default function LiveStreamWidget({
             href="/live-feed"
             className="inline-flex items-center gap-1 text-[11px] font-bold text-cyan-400 hover:text-cyan-300 transition"
           >
-            <span>Live Stream</span>
+            <span>Live Feed</span>
             <ArrowRight size={12} />
           </Link>
         </div>
@@ -45,28 +45,37 @@ export default function LiveStreamWidget({
           </div>
         ) : (
           safePvs.slice(0, 4).map((pv) => {
-            const flag = getCountryFlag(pv.country);
+            const isMobile = pv.device === "mobile";
+            const isTablet = pv.device === "tablet";
+
             return (
               <div
                 key={pv._id}
-                className="p-2.5 rounded-2xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.05] transition flex items-center justify-between gap-3 text-xs"
+                className="p-2.5 rounded-2xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.05] transition flex items-center justify-between gap-3 text-xs group"
               >
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <span className="text-base shrink-0" title={pv.country}>{flag || "🌐"}</span>
+                  <div className="w-7 h-7 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center shrink-0">
+                    <Globe size={13} />
+                  </div>
                   <div className="min-w-0">
-                    <div className="font-mono font-bold text-slate-200 truncate" title={pv.pathname}>
+                    <div className="font-mono font-bold text-slate-200 truncate group-hover:text-cyan-400 transition" title={pv.pathname}>
                       {pv.pathname}
                     </div>
-                    <div className="text-[10px] text-muted-foreground flex items-center gap-2">
-                      <span className="truncate">{pv.browser}</span>
-                      <span>•</span>
-                      <span>{pv.device}</span>
+                    <div className="text-[10px] text-muted-foreground flex items-center gap-1.5 font-mono">
+                      <span>{getFullCountryName(pv.country)}</span>
+                      <span>&bull;</span>
+                      <span className="capitalize">{pv.browser}</span>
+                      <span>&bull;</span>
+                      <span className="capitalize flex items-center gap-1">
+                        {isMobile ? <Smartphone size={10} /> : isTablet ? <Tablet size={10} /> : <Laptop size={10} />}
+                        {pv.device}
+                      </span>
                     </div>
                   </div>
                 </div>
 
-                <div className="shrink-0 text-right font-mono">
-                  <span className="text-[10px] text-cyan-400 font-bold block">
+                <div className="shrink-0 text-right font-mono" suppressHydrationWarning>
+                  <span className="text-[10px] text-cyan-400 font-bold block" suppressHydrationWarning>
                     {timeAgo(pv.createdAt)}
                   </span>
                   <span className="text-[9px] text-muted-foreground block">
@@ -80,11 +89,11 @@ export default function LiveStreamWidget({
       </div>
 
       <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-[10px] text-muted-foreground font-mono">
-        <span className="flex items-center gap-1 text-emerald-400">
+        <span className="flex items-center gap-1.5 text-emerald-400 font-bold">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-glow" />
-          <span>Stream Healthy</span>
+          <span>Stream Ingestion Active</span>
         </span>
-        <span>{liveVisitors} active in last 5m</span>
+        <span>{liveVisitors} concurrent live visitors</span>
       </div>
     </div>
   );
