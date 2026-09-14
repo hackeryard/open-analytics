@@ -72,10 +72,24 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { name, slug, allowedDomains, settings } = body;
+    const {
+      name,
+      slug,
+      allowedDomains,
+      timezone = "UTC",
+      currency = "USD",
+      industryCategory = "Technology",
+      businessSize = "Medium",
+      websiteUrl = "",
+      streamType = "web",
+      streamName = "",
+      streamUrl = "",
+      settings,
+      enhancedMeasurement,
+    } = body;
 
     if (!name || typeof name !== "string" || name.trim().length === 0) {
-      return NextResponse.json({ error: "Project name is required" }, { status: 400 });
+      return NextResponse.json({ error: "Property / project name is required" }, { status: 400 });
     }
 
     const cleanSlug = (slug || name)
@@ -84,9 +98,25 @@ export async function POST(req: NextRequest) {
       .replace(/-+/g, "-")
       .replace(/(^-|-$)/g, "");
 
-    const projectId = generateProjectId("prj_");
+    const projectId = generateProjectId("open_prj_");
+    const measurementId = `OA-${projectId.replace("open_prj_", "").toUpperCase()}`;
     const publishableKey = generateApiKey("pk");
     const secretKey = generateApiKey("sk");
+
+    const resolvedDomains = Array.isArray(allowedDomains) && allowedDomains.length > 0 
+      ? allowedDomains 
+      : (streamUrl ? [new URL(streamUrl.startsWith("http") ? streamUrl : `https://${streamUrl}`).hostname] : ["*"]);
+
+    const initialStream = {
+      streamId: `strm_${Date.now()}`,
+      streamType: streamType || "web",
+      streamName: streamName || `${name.trim()} Web Stream`,
+      streamUrl: streamUrl || websiteUrl || "https://example.com",
+      appId: streamType !== "web" ? streamUrl || "com.openanalytics.app" : "",
+      measurementId,
+      active: true,
+      createdAt: new Date(),
+    };
 
     const project = await (Project as any).create({
       projectId,
@@ -101,13 +131,28 @@ export async function POST(req: NextRequest) {
       ],
       publishableKey,
       secretKey,
-      allowedDomains: Array.isArray(allowedDomains) && allowedDomains.length > 0 ? allowedDomains : ["*"],
+      measurementId,
+      timezone,
+      currency,
+      industryCategory,
+      businessSize,
+      websiteUrl: streamUrl || websiteUrl,
+      dataStreams: [initialStream],
+      allowedDomains: resolvedDomains,
       settings: {
         ipAnonymization: settings?.ipAnonymization ?? true,
         piiRedaction: settings?.piiRedaction ?? true,
         seoTracking: settings?.seoTracking ?? true,
         aiTracking: settings?.aiTracking ?? true,
         dataRetentionDays: settings?.dataRetentionDays ?? 365,
+        enhancedMeasurement: {
+          scrollTracking: enhancedMeasurement?.scrollTracking ?? true,
+          outboundClicks: enhancedMeasurement?.outboundClicks ?? true,
+          siteSearch: enhancedMeasurement?.siteSearch ?? true,
+          fileDownloads: enhancedMeasurement?.fileDownloads ?? true,
+          videoEngagement: enhancedMeasurement?.videoEngagement ?? true,
+          formInteractions: enhancedMeasurement?.formInteractions ?? true,
+        },
         enabledModules: settings?.enabledModules ?? [
           "core",
           "rum",

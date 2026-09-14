@@ -25,7 +25,17 @@ export async function authenticateProjectRequest(req: Request, body?: any): Prom
       $or: [{ publishableKey: apiKey }, { secretKey: apiKey }],
     }).lean();
   } else if (projectId) {
-    project = await (Project as any).findOne({ projectId }).lean();
+    const rawId = String(projectId).trim();
+    project = await (Project as any).findOne({
+      $or: [
+        { projectId: rawId },
+        { measurementId: rawId },
+        { measurementId: rawId.toUpperCase() },
+        { projectId: rawId.toLowerCase() },
+        { projectId: `open_prj_${rawId.replace(/^open_prj_|^prj_|^oa-|^OA-/i, "").toLowerCase()}` },
+        { measurementId: `OA-${rawId.replace(/^open_prj_|^prj_|^oa-|^OA-/i, "").toUpperCase()}` },
+      ],
+    }).lean();
   }
 
   if (!project) {

@@ -52,11 +52,66 @@ const ProjectSchema = new mongoose.Schema(
       type: [String],
       default: ["*"],
     },
+    timezone: {
+      type: String,
+      default: "UTC",
+    },
+    currency: {
+      type: String,
+      default: "USD",
+    },
+    industryCategory: {
+      type: String,
+      default: "Technology",
+    },
+    businessSize: {
+      type: String,
+      default: "Medium",
+    },
+    websiteUrl: {
+      type: String,
+      default: "",
+    },
+    measurementId: {
+      type: String,
+      default: "",
+    },
+    monitoringStatus: {
+      type: String,
+      enum: ["pending_verification", "active", "paused"],
+      default: "pending_verification",
+    },
+    verifiedAt: {
+      type: Date,
+      default: null,
+    },
+    dataStreams: [
+      {
+        streamId: { type: String, required: true },
+        streamType: { type: String, enum: ["web", "ios", "android"], default: "web" },
+        streamName: { type: String, required: true },
+        streamUrl: { type: String, default: "" },
+        appId: { type: String, default: "" },
+        measurementId: { type: String, default: "" },
+        status: { type: String, enum: ["pending_verification", "active", "inactive"], default: "pending_verification" },
+        active: { type: Boolean, default: false },
+        lastPingAt: { type: Date, default: null },
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
     settings: {
       ipAnonymization: { type: Boolean, default: true },
       piiRedaction: { type: Boolean, default: true },
       seoTracking: { type: Boolean, default: true },
       aiTracking: { type: Boolean, default: true },
+      enhancedMeasurement: {
+        scrollTracking: { type: Boolean, default: true },
+        outboundClicks: { type: Boolean, default: true },
+        siteSearch: { type: Boolean, default: true },
+        fileDownloads: { type: Boolean, default: true },
+        videoEngagement: { type: Boolean, default: true },
+        formInteractions: { type: Boolean, default: true },
+      },
       dataRetentionDays: { type: Number, default: 365 },
       enabledModules: {
         type: [String],

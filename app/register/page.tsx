@@ -10,7 +10,15 @@ import {
   User as UserIcon,
   ArrowRight,
   ShieldCheck,
+  Sparkles,
+  CheckCircle2,
   AlertCircle,
+  Eye,
+  EyeOff,
+  Zap,
+  Radio,
+  Bot,
+  Check,
 } from "lucide-react";
 
 function GoogleIcon({ className = "w-4 h-4" }: { className?: string }) {
@@ -58,15 +66,35 @@ function RegisterFormContent() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("admin");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const displayError = error || (urlError ? (
-    urlError === "oauth_not_configured"
-      ? `${urlProvider === "google" ? "Google" : "GitHub"} sign-up is not enabled. Please create an account with email and password.`
-      : `Authentication error: ${urlError.replace(/_/g, " ")}`
-  ) : null);
+  const formatErrorMessage = (errCode: string | null, provider: string | null) => {
+    if (!errCode) return null;
+    if (errCode === "oauth_not_configured") {
+      return `${provider === "google" ? "Google" : "GitHub"} OAuth is not configured. Please check your credentials in .env.local.`;
+    }
+    if (errCode === "google_token_exchange_failed" || errCode === "github_token_exchange_failed") {
+      return `Failed to exchange authorization token with ${provider || "provider"}. Please try again.`;
+    }
+    if (errCode === "invalid_oauth_state") {
+      return "OAuth security state mismatch. Please refresh and try again.";
+    }
+    return `Authentication error: ${errCode.replace(/_/g, " ")}`;
+  };
+
+  const displayError = error || formatErrorMessage(urlError, urlProvider);
+
+  // Password strength calculation
+  const getPasswordStrength = () => {
+    if (!password) return { score: 0, label: "None", color: "bg-slate-700" };
+    if (password.length < 6) return { score: 1, label: "Too short", color: "bg-rose-500" };
+    if (password.length < 9) return { score: 2, label: "Good", color: "bg-amber-500" };
+    return { score: 3, label: "Strong", color: "bg-emerald-500" };
+  };
+
+  const strength = getPasswordStrength();
 
   async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
@@ -77,7 +105,7 @@ function RegisterFormContent() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password, role }),
+        body: JSON.stringify({ name, email, password }),
       });
 
       const data = await res.json();
@@ -95,157 +123,292 @@ function RegisterFormContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#07090e] text-slate-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Background Glows */}
-      <div className="absolute top-1/4 right-1/3 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-violet-600/15 via-cyan-600/15 to-blue-600/10 blur-[140px] pointer-events-none" />
-      <div className="absolute -bottom-20 -right-20 w-[400px] h-[400px] bg-cyan-600/10 blur-[100px] pointer-events-none" />
+    <div className="min-h-screen bg-[#050811] text-slate-100 flex items-center justify-center p-4 sm:p-6 lg:p-10 relative overflow-hidden bg-grid-pattern">
+      {/* Ambient background glows */}
+      <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-violet-600/10 rounded-full blur-[140px] pointer-events-none animate-pulse-subtle" />
+      <div className="absolute bottom-0 left-1/4 w-[550px] h-[550px] bg-cyan-600/10 rounded-full blur-[150px] pointer-events-none animate-pulse-subtle" />
+      <div className="absolute top-1/3 left-10 w-[350px] h-[350px] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
-        <div className="flex justify-center items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-cyan-500 via-blue-600 to-violet-600 p-[1.5px] shadow-lg shadow-cyan-500/20">
-            <div className="w-full h-full bg-[#0d121f] rounded-[14px] flex items-center justify-center">
-              <Activity className="w-6 h-6 text-cyan-400" />
+      {/* Main Container Card */}
+      <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10">
+        
+        {/* ============================================================ */}
+        {/* LEFT COLUMN: ONBOARDING HIGHLIGHTS & ARCHITECTURE SHOWCASE    */}
+        {/* ============================================================ */}
+        <div className="hidden lg:flex lg:col-span-6 flex-col space-y-8 pr-4">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/25 text-violet-300 text-xs font-bold w-fit shadow-lg shadow-violet-500/10 backdrop-blur-md">
+            <Sparkles className="w-4 h-4 text-violet-400" />
+            <span className="tracking-wide">INSTANT WORKSPACE PROVISIONING</span>
+          </div>
+
+          {/* Headline */}
+          <div className="space-y-4">
+            <h1 className="text-4xl xl:text-5xl font-extrabold tracking-tight text-white leading-[1.15]">
+              Deploy production web intelligence in{" "}
+              <span className="bg-gradient-to-r from-violet-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                under 60 seconds.
+              </span>
+            </h1>
+            <p className="text-base text-slate-400 leading-relaxed">
+              Every new account comes automatically provisioned with a dedicated project workspace, pre-configured publishable and secret keys, and GDPR-compliant telemetry.
+            </p>
+          </div>
+
+          {/* Interactive Feature Checklist Card */}
+          <div className="rounded-3xl bg-[#0b1020]/90 border border-white/[0.1] p-6 shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-xl space-y-4 animate-float-slow">
+            <div className="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center justify-between pb-3 border-b border-white/[0.08]">
+              <span>Included in Your Developer Account</span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300">
+                100% FREE TIER
+              </span>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-start gap-3">
+                <div className="w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5">
+                  <Check className="w-3 h-3" />
+                </div>
+                <div>
+                  <div className="text-sm font-bold text-white">Automated Project &amp; API Key Generation</div>
+                  <div className="text-xs text-slate-400">Instantly generate client publishable keys and ingest endpoints.</div>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5">
+                  <Check className="w-3 h-3" />
+                </div>
+                <div>
+                  <div className="text-sm font-bold text-white">Full Core Web Vitals &amp; Crash Diagnosis</div>
+                  <div className="text-xs text-slate-400">Track LCP, INP, CLS, unhandled exceptions, and rage clicks.</div>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5">
+                  <Check className="w-3 h-3" />
+                </div>
+                <div>
+                  <div className="text-sm font-bold text-white">AI &amp; LLM Search Visibility Radar</div>
+                  <div className="text-xs text-slate-400">Know when ChatGPT, Perplexity, and Claude index your pages.</div>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5">
+                  <Check className="w-3 h-3" />
+                </div>
+                <div>
+                  <div className="text-sm font-bold text-white">Privacy-First (No Cookie Consent Needed)</div>
+                  <div className="text-xs text-slate-400">GDPR, CCPA, and PECR compliant with cryptographic session hashing.</div>
+                </div>
+              </div>
             </div>
           </div>
-          <div>
-            <span className="text-2xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
-              Open
-            </span>
-            <span className="text-xs ml-1.5 px-2 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 font-semibold tracking-wide uppercase">
-              Analytics
-            </span>
+
+          {/* Security & Team Collaboration */}
+          <div className="grid grid-cols-2 gap-3 text-xs">
+            <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-white/[0.02] border border-white/[0.06]">
+              <Lock className="w-4 h-4 text-amber-400 shrink-0" />
+              <span className="text-slate-300 font-medium">Granular Team RBAC Roles</span>
+            </div>
+            <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-white/[0.02] border border-white/[0.06]">
+              <ShieldCheck className="w-4 h-4 text-cyan-400 shrink-0" />
+              <span className="text-slate-300 font-medium">Full Tenant Data Isolation</span>
+            </div>
           </div>
         </div>
-        <h2 className="mt-6 text-center text-3xl font-extrabold tracking-tight text-white">
-          Create your Open Analytics account
-        </h2>
-        <p className="mt-2 text-center text-sm text-slate-400">
-          Already have an account?{" "}
-          <Link href="/login" className="font-medium text-cyan-400 hover:text-cyan-300 transition-colors">
-            Sign in here
-          </Link>
-        </p>
-      </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
-        <div className="bg-[#0e1424]/85 backdrop-blur-xl py-8 px-6 shadow-2xl rounded-3xl sm:px-10 border border-slate-800/80 space-y-6">
-          {/* Top Error Alert */}
-          {displayError && (
-            <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-sm flex items-center gap-2.5 animate-fadeIn">
-              <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
-              <span>{displayError}</span>
-            </div>
-          )}
+        {/* ============================================================ */}
+        {/* RIGHT COLUMN: REGISTRATION FORM & OAUTH SIGNUP               */}
+        {/* ============================================================ */}
+        <div className="lg:col-span-6 w-full max-w-md mx-auto">
+          <div className="bg-[#0b1020]/90 backdrop-blur-2xl p-7 sm:p-9 rounded-3xl border border-white/[0.12] shadow-[0_25px_70px_rgba(0,0,0,0.8),0_0_50px_rgba(139,92,246,0.1)] space-y-6 relative overflow-hidden">
+            
+            {/* Top Ambient Glow */}
+            <div className="absolute -top-24 -right-24 w-48 h-48 bg-gradient-to-br from-violet-500/20 to-cyan-500/10 rounded-full blur-2xl pointer-events-none" />
 
-          {/* Single Sign-On Buttons */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <a
-              href="/api/auth/oauth/google"
-              className="flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.1] hover:border-cyan-500/40 text-xs font-bold text-white transition-all cursor-pointer shadow-sm group"
-            >
-              <GoogleIcon className="w-4 h-4 group-hover:scale-110 transition-transform" />
-              <span>Google</span>
-            </a>
-
-            <a
-              href="/api/auth/oauth/github"
-              className="flex items-center justify-center gap-2.5 py-2.5 px-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.1] hover:border-cyan-500/40 text-xs font-bold text-white transition-all cursor-pointer shadow-sm group"
-            >
-              <GithubIcon className="w-4 h-4 group-hover:scale-110 transition-transform" />
-              <span>GitHub</span>
-            </a>
-          </div>
-
-          {/* Divider */}
-          <div className="relative flex items-center justify-center">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-800" />
-            </div>
-            <span className="relative px-3 bg-[#0e1424] text-[10px] uppercase tracking-wider font-bold text-slate-500">
-              Or create with email
-            </span>
-          </div>
-
-          <form className="space-y-4" onSubmit={handleRegister}>
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
-                Full Name
-              </label>
-              <div className="relative rounded-xl shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
-                  <UserIcon className="h-4 w-4" />
+            {/* Brand Logo Header */}
+            <div className="text-center space-y-2">
+              <div className="flex justify-center items-center gap-2.5">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-violet-600 via-indigo-600 to-cyan-500 p-[1.5px] shadow-lg shadow-violet-500/25">
+                  <div className="w-full h-full bg-[#080d19] rounded-[14px] flex items-center justify-center">
+                    <Activity className="w-5 h-5 text-cyan-400 animate-glow" />
+                  </div>
                 </div>
-                <input
-                  type="text"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Sarah Connor"
-                  className="block w-full pl-10 pr-4 py-2.5 bg-[#080d1a] border border-slate-700/80 rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all"
-                />
+                <div className="flex items-center">
+                  <span className="text-2xl font-black tracking-tight text-white">Open</span>
+                  <span className="text-[10px] ml-1.5 px-2 py-0.5 rounded-full bg-violet-500/10 border border-violet-500/30 text-violet-300 font-bold uppercase tracking-wider">
+                    Analytics
+                  </span>
+                </div>
+              </div>
+              <h2 className="text-2xl font-extrabold text-white tracking-tight pt-2">
+                Create your account
+              </h2>
+              <p className="text-xs text-slate-400">
+                Get started with free unlimited projects and real-time observability.
+              </p>
+            </div>
+
+            {/* Error Notification */}
+            {displayError && (
+              <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/25 text-rose-300 text-xs flex items-start gap-2.5 animate-fadeIn">
+                <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+                <span className="leading-relaxed">{displayError}</span>
+              </div>
+            )}
+
+            {/* Single Sign-On (OAuth) Provider Buttons */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <a
+                href="/api/auth/oauth/google"
+                className="flex items-center justify-center gap-2.5 py-3 px-4 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.1] hover:border-cyan-500/40 text-xs font-bold text-white transition-all cursor-pointer shadow-sm group hover:scale-[1.02]"
+              >
+                <GoogleIcon className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                <span>Google SSO</span>
+              </a>
+
+              <a
+                href="/api/auth/oauth/github"
+                className="flex items-center justify-center gap-2.5 py-3 px-4 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.1] hover:border-violet-500/40 text-xs font-bold text-white transition-all cursor-pointer shadow-sm group hover:scale-[1.02]"
+              >
+                <GithubIcon className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                <span>GitHub SSO</span>
+              </a>
+            </div>
+
+            {/* Divider */}
+            <div className="relative flex items-center justify-center my-2">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-800" />
+              </div>
+              <span className="relative px-3 bg-[#0b1020] text-[10px] uppercase tracking-wider font-extrabold text-slate-500">
+                Or register with email
+              </span>
+            </div>
+
+            {/* Form Fields */}
+            <form className="space-y-4" onSubmit={handleRegister}>
+              <div>
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                  Full Name
+                </label>
+                <div className="relative rounded-2xl">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                    <UserIcon className="h-4 w-4" />
+                  </div>
+                  <input
+                    type="text"
+                    required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Alex Morgan"
+                    autoComplete="name"
+                    className="block w-full pl-10 pr-4 py-2.5 bg-[#060a14] border border-slate-700/80 rounded-2xl text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-400 transition-all"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                  Work Email Address
+                </label>
+                <div className="relative rounded-2xl">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                    <Mail className="h-4 w-4" />
+                  </div>
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="alex@company.com"
+                    autoComplete="email"
+                    className="block w-full pl-10 pr-4 py-2.5 bg-[#060a14] border border-slate-700/80 rounded-2xl text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-400 transition-all"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+                  Password
+                </label>
+                <div className="relative rounded-2xl">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                    <Lock className="h-4 w-4" />
+                  </div>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    required
+                    minLength={6}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••••••"
+                    autoComplete="new-password"
+                    className="block w-full pl-10 pr-11 py-2.5 bg-[#060a14] border border-slate-700/80 rounded-2xl text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-400 transition-all"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-200 transition cursor-pointer"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                {/* Password strength indicator */}
+                {password && (
+                  <div className="mt-2 flex items-center gap-2">
+                    <div className="flex-1 h-1.5 bg-slate-800 rounded-full overflow-hidden flex gap-1">
+                      <div className={`h-full flex-1 rounded-full ${strength.score >= 1 ? strength.color : "bg-transparent"}`} />
+                      <div className={`h-full flex-1 rounded-full ${strength.score >= 2 ? strength.color : "bg-transparent"}`} />
+                      <div className={`h-full flex-1 rounded-full ${strength.score >= 3 ? strength.color : "bg-transparent"}`} />
+                    </div>
+                    <span className="text-[10px] font-mono text-slate-400 shrink-0 font-semibold">{strength.label}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full flex justify-center items-center gap-2 py-3.5 px-4 rounded-2xl font-bold text-sm text-white bg-gradient-to-r from-violet-600 via-indigo-600 to-cyan-500 hover:from-violet-500 hover:via-indigo-500 hover:to-cyan-400 shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40 transition-all disabled:opacity-50 cursor-pointer hover:scale-[1.01] active:scale-[0.99] mt-2"
+              >
+                {loading ? (
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <>
+                    <span>Create Account &amp; Workspace</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
+            </form>
+
+            {/* Footer Navigation */}
+            <div className="text-center pt-2 border-t border-slate-800/80 space-y-2">
+              <p className="text-xs text-slate-400">
+                Already have an account?{" "}
+                <Link
+                  href="/login"
+                  className="font-bold text-cyan-400 hover:text-cyan-300 transition-colors inline-flex items-center gap-1"
+                >
+                  <span>Sign In</span>
+                  <ArrowRight className="w-3 h-3" />
+                </Link>
+              </p>
+
+              <div className="flex items-center justify-center gap-2 text-[11px] text-slate-500">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Automatic workspace creation • GDPR compliant</span>
               </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
-                Work Email Address
-              </label>
-              <div className="relative rounded-xl shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
-                  <Mail className="h-4 w-4" />
-                </div>
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="sarah@cyberdyne.com"
-                  className="block w-full pl-10 pr-4 py-2.5 bg-[#080d1a] border border-slate-700/80 rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
-                Password (min. 6 characters)
-              </label>
-              <div className="relative rounded-xl shadow-sm">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
-                  <Lock className="h-4 w-4" />
-                </div>
-                <input
-                  type="password"
-                  required
-                  minLength={6}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••••••"
-                  className="block w-full pl-10 pr-4 py-2.5 bg-[#080d1a] border border-slate-700/80 rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all"
-                />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-xl shadow-md text-sm font-semibold text-white bg-gradient-to-r from-cyan-500 via-blue-600 to-violet-600 hover:from-cyan-400 hover:via-blue-500 hover:to-violet-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 transition-all disabled:opacity-50 cursor-pointer"
-            >
-              {loading ? (
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : (
-                <>
-                  <span>Create Account &amp; Workspace</span>
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
-            </button>
-          </form>
-
-          <div className="flex items-center justify-center gap-2 text-xs text-slate-400 pt-2 border-t border-slate-800/80">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span>Automatic workspace setup with GDPR compliant tracking</span>
           </div>
         </div>
+
       </div>
     </div>
   );
@@ -253,7 +416,7 @@ function RegisterFormContent() {
 
 export default function RegisterPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#07090e] flex items-center justify-center text-xs text-slate-400">Loading...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-[#050811] flex items-center justify-center text-xs text-slate-400">Loading...</div>}>
       <RegisterFormContent />
     </Suspense>
   );

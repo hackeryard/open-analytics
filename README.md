@@ -84,7 +84,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <Script
           id="open-analytics"
-          src="https://open-analytics.vercel.app/open.js"
+          src="https://openanalytics.org.in/open.js"
           strategy="afterInteractive"
           data-project-id="prj_your_project_id"
         />
@@ -110,7 +110,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <>
       <Script
         id="open-analytics"
-        src="https://open-analytics.vercel.app/open.js"
+        src="https://openanalytics.org.in/open.js"
         strategy="afterInteractive"
         data-project-id="prj_your_project_id"
       />
@@ -135,7 +135,7 @@ In your root `index.html` (inside `<head>`):
     <!-- Open Analytics Tracking -->
     <script 
       defer 
-      src="https://open-analytics.vercel.app/open.js" 
+      src="https://openanalytics.org.in/open.js" 
       data-project-id="prj_your_project_id"
     ></script>
   </head>
@@ -157,7 +157,7 @@ export default defineNuxtConfig({
     head: {
       script: [
         {
-          src: "https://open-analytics.vercel.app/open.js",
+          src: "https://openanalytics.org.in/open.js",
           defer: true,
           "data-project-id": "prj_your_project_id",
         },
@@ -176,7 +176,7 @@ In `src/app.html` (SvelteKit) or your base layout (Astro):
 ```html
 <script 
   defer 
-  src="https://open-analytics.vercel.app/open.js" 
+  src="https://openanalytics.org.in/open.js" 
   data-project-id="prj_your_project_id"
 ></script>
 ```
@@ -326,7 +326,7 @@ Copy `.env.example` to `.env.local` and set your MongoDB connection string:
 ```env
 MONGODB_URI=mongodb://localhost:27017/open_analytics
 JWT_SECRET=your_super_secret_jwt_key_here
-NEXT_PUBLIC_APP_URL=http://localhost:3005
+NEXT_PUBLIC_APP_URL=https://openanalytics.org.in
 ```
 
 ### 3. Run Development Server

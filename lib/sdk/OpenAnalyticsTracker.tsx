@@ -11,7 +11,7 @@ export interface OpenAnalyticsTrackerProps {
 
   /**
    * Optional custom self-hosted endpoint.
-   * Defaults to "https://open-analytics.vercel.app" if omitted.
+   * Defaults to "https://openanalytics.org.in" if omitted.
    */
   endpoint?: string;
 
@@ -21,7 +21,7 @@ export interface OpenAnalyticsTrackerProps {
   apiKey?: string;
 }
 
-export const DEFAULT_OPEN_ANALYTICS_ENDPOINT = "https://open-analytics.vercel.app";
+export const DEFAULT_OPEN_ANALYTICS_ENDPOINT = "https://openanalytics.org.in";
 
 /**
  * OpenAnalyticsTracker

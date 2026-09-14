@@ -1,9 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import User from "@/models/User";
+import Otp from "@/models/Otp";
 import { ensureDefaultProject } from "@/lib/seed";
-import { comparePassword, signToken, SESSION_COOKIE_NAME } from "@/lib/auth";
+import { comparePassword, hashPassword, signOtpChallengeToken } from "@/lib/auth";
 import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
+import { generateOtpCode, sendLoginOtpEmail } from "@/lib/email";
+
+function maskEmail(email: string): string {
+  const [local, domain] = email.split("@");
+  if (!domain) return email;
+  if (local.length <= 2) return `${local[0]}*@${domain}`;
+  const visiblePrefix = local.slice(0, 2);
+  const visibleSuffix = local.slice(-1);
+  return `${visiblePrefix}${"*".repeat(Math.min(4, Math.max(1, local.length - 3)))}${visibleSuffix}@${domain}`;
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -37,37 +48,48 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
     }
 
-    const token = signToken({
-      userId: user._id.toString(),
-      email: user.email,
-      role: user.role,
+    // Credentials are valid -> Generate 6-digit OTP code
+    const otp = generateOtpCode();
+    const otpHash = await hashPassword(otp);
+
+    // Save/refresh OTP record with 10-minute expiration
+    await (Otp as any).deleteMany({ email: normalizedEmail, purpose: "login" });
+    await (Otp as any).create({
+      email: normalizedEmail,
+      otpHash,
+      purpose: "login",
+      attempts: 0,
+      expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes
+    });
+
+    // Send email using nodemailer
+    const emailResult = await sendLoginOtpEmail({
+      to: user.email,
+      otp,
       name: user.name,
     });
 
-    const response = NextResponse.json({
+    // Sign a temporary OTP challenge token
+    const tempToken = signOtpChallengeToken({
+      userId: user._id.toString(),
+      email: user.email,
+      type: "login_otp",
+    });
+
+    const hasSmtp = Boolean(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS);
+
+    return NextResponse.json({
       success: true,
-      user: {
-        id: user._id.toString(),
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        avatar: user.avatar,
-      },
+      requiresOtp: true,
+      tempToken,
+      email: user.email,
+      maskedEmail: maskEmail(user.email),
+      message: `A 6-digit verification code was sent to ${maskEmail(user.email)}.`,
+      smtpConfigured: hasSmtp,
+      devOtp: !hasSmtp ? otp : undefined,
     });
-
-    response.cookies.set({
-      name: SESSION_COOKIE_NAME,
-      value: token,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 30 * 24 * 60 * 60, // 30 days
-      path: "/",
-    });
-
-    return response;
   } catch (err: any) {
     console.error("Login error:", err);
-    return NextResponse.json({ error: err.message || "Failed to log in" }, { status: 500 });
+    return NextResponse.json({ error: err.message || "Failed to initiate login" }, { status: 500 });
   }
 }

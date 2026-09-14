@@ -9,7 +9,7 @@ export default function VerificationDocsPage() {
   const [copied, setCopied] = useState(false);
   const projectId = activeProjectId || "open_prj_your_key";
 
-  const curlCommand = `curl -X POST https://open-analytics.vercel.app/api/v1/collect \\\n  -H "Content-Type: application/json" \\\n  -d '{"projectId": "${projectId}", "pathname": "/test-page", "title": "Test Verification", "device": "desktop"}'`;
+  const curlCommand = `curl -X POST https://openanalytics.org.in/api/v1/collect \\\n  -H "Content-Type: application/json" \\\n  -d '{"projectId": "${projectId}", "pathname": "/test-page", "title": "Test Verification", "device": "desktop"}'`;
 
   const onCopy = () => {
     navigator.clipboard.writeText(curlCommand);

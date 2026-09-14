@@ -2,10 +2,135 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { PlatformProvider } from "@/components/PlatformContext";
 import AppShell from "@/components/AppShell";
+import JsonLd from "@/components/JsonLd";
+
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://openanalytics.org.in";
 
 export const metadata: Metadata = {
-  title: "Open Analytics | Standalone Multi-Tenant Web Observability",
-  description: "Next-generation web analytics, Real User Monitoring, behavioral UX signals, and AI-powered crash triage.",
+  metadataBase: new URL(baseUrl),
+  title: {
+    default: "Open Analytics | Privacy-First Web Analytics & Observability Engine",
+    template: "%s | Open Analytics",
+  },
+  description:
+    "Open Analytics is a modern, lightweight (<3.2KB), cookieless Google Analytics 4 alternative with automated Core Web Vitals (RUM), behavioral UX tracking, and autonomous AI search crawler radar.",
+  keywords: [
+    "open analytics",
+    "web analytics",
+    "google analytics alternative",
+    "privacy-first analytics",
+    "cookieless analytics",
+    "gdpr compliant analytics",
+    "real user monitoring",
+    "core web vitals tracker",
+    "ai crawler radar",
+    "rage click tracker",
+    "ga4 alternative",
+    "lightweight web analytics",
+    "self hosted analytics",
+    "answer engine optimization",
+    "generative engine optimization",
+  ],
+  authors: [{ name: "Open Analytics Team", url: baseUrl }],
+  creator: "Open Analytics",
+  publisher: "Open Analytics",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "Open Analytics | Privacy-First Web Analytics & Observability Engine",
+    description:
+      "Modern, cookieless Google Analytics 4 alternative. Sub-3.2KB Brotli telemetry beacon, Core Web Vitals, behavioral UX signals, and AI bot radar with zero cookie banners.",
+    url: baseUrl,
+    siteName: "Open Analytics",
+    locale: "en_US",
+    type: "website",
+    images: [
+      {
+        url: `${baseUrl}/og-image.png`,
+        width: 1200,
+        height: 630,
+        alt: "Open Analytics Platform Preview - Privacy-First Web Observability",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Open Analytics | Privacy-First Web Analytics & Observability Engine",
+    description:
+      "Modern, cookieless Google Analytics 4 alternative. Sub-3.2KB telemetry beacon, Core Web Vitals, and AI bot radar.",
+    creator: "@openanalytics",
+    images: [`${baseUrl}/og-image.png`],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+};
+
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${baseUrl}/#organization`,
+      name: "Open Analytics",
+      url: baseUrl,
+      logo: `${baseUrl}/favicon.ico`,
+      sameAs: [
+        "https://github.com/open-analytics",
+        "https://twitter.com/openanalytics",
+      ],
+      description:
+        "Open Analytics provides privacy-first, cookieless web analytics and observability infrastructure for modern developers and enterprises.",
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${baseUrl}/#website`,
+      url: baseUrl,
+      name: "Open Analytics",
+      description: "Privacy-first Web Analytics, RUM, and AI Search Radar",
+      publisher: {
+        "@id": `${baseUrl}/#organization`,
+      },
+      inLanguage: "en-US",
+    },
+    {
+      "@type": "SoftwareApplication",
+      name: "Open Analytics",
+      applicationCategory: "BusinessApplication",
+      operatingSystem: "All",
+      url: baseUrl,
+      offers: {
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: "USD",
+      },
+      description:
+        "Lightweight, cookieless web observability platform with Real User Monitoring, Core Web Vitals (LCP, INP, CLS), behavioral rage clicks, and AI bot radar.",
+      featureList: [
+        "Cookieless tracking with zero cookie banner requirement",
+        "Sub-3.2 KB Brotli compressed asynchronous tracking script",
+        "Automated Core Web Vitals: LCP, INP, CLS tracking",
+        "Behavioral UX rage click and dead click detection",
+        "Autonomous AI and LLM search crawler radar (Perplexity, ChatGPT, Claude)",
+        "Automated frontend crash and JavaScript exception grouping",
+        "100% GDPR, CCPA, and PECR compliant with daily salt rotation",
+      ],
+    },
+  ],
 };
 
 export default function RootLayout({
@@ -15,11 +140,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
+      <head>
+        <JsonLd data={organizationSchema} />
+      </head>
       <body className="min-h-screen bg-background text-foreground antialiased selection:bg-cyan-500/30 selection:text-cyan-200">
         <PlatformProvider>
-          <AppShell>
-            {children}
-          </AppShell>
+          <AppShell>{children}</AppShell>
         </PlatformProvider>
       </body>
     </html>
