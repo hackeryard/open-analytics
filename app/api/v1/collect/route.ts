@@ -1,6 +1,7 @@
 import { connectDB } from "@/lib/mongodb";
 import PageView from "@/models/PageView";
 import AnalyticsEvent from "@/models/AnalyticsEvent";
+import Project from "@/models/Project";
 import { authenticateProjectRequest } from "@/lib/projectAuth";
 import { extractGeoLocation } from "@/lib/geolocation";
 import { anonymizeIp, redactPii } from "@/lib/privacy";
@@ -53,6 +54,33 @@ export async function POST(req: Request) {
     }
 
     await connectDB();
+
+    // Auto-activate project monitoring and mark stream verified upon receiving first beacon
+    if (auth.project.monitoringStatus !== "active" || !auth.project.verifiedAt) {
+      await (Project as any).updateOne(
+        { projectId },
+        {
+          $set: {
+            monitoringStatus: "active",
+            verifiedAt: new Date(),
+            "dataStreams.$[elem].active": true,
+            "dataStreams.$[elem].status": "active",
+            "dataStreams.$[elem].lastPingAt": new Date(),
+          },
+        },
+        { arrayFilters: [{ "elem.active": { $exists: true } }] }
+      ).catch(() => {});
+    } else {
+      await (Project as any).updateOne(
+        { projectId },
+        {
+          $set: {
+            "dataStreams.$[elem].lastPingAt": new Date(),
+          },
+        },
+        { arrayFilters: [{ "elem.active": { $exists: true } }] }
+      ).catch(() => {});
+    }
     const geo = extractGeoLocation(req, { timezone: body.timezone, language: body.language });
     const effectiveIp = settings?.ipAnonymization ? anonymizeIp(geo.ip) : geo.ip;
 

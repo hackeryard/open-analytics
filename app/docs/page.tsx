@@ -21,7 +21,7 @@ export default function DocsOverviewPage() {
   const { activeProjectId } = usePlatform();
   const [copied, setCopied] = useState(false);
   const projectId = activeProjectId || "open_prj_your_key";
-  const snippet = `<script defer src="https://open-analytics.vercel.app/open.js" data-project-id="${projectId}"></script>`;
+  const snippet = `<script defer src="https://openanalytics.org.in/open.js" data-project-id="${projectId}"></script>`;
 
   const onCopy = () => {
     navigator.clipboard.writeText(snippet);
@@ -30,7 +30,7 @@ export default function DocsOverviewPage() {
   };
 
   return (
-    <div className="space-y-10 max-w-4xl">
+    <div className="space-y-10 max-w-5xl mx-auto py-12 px-4 sm:px-6">
       <div className="space-y-3">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold">
           <Zap size={13} />

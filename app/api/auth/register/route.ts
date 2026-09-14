@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
 
     await connectDB();
     const body = await req.json();
-    const { name, email, password, role } = body;
+    const { name, email, password } = body;
 
     if (!name || typeof name !== "string" || name.trim().length === 0) {
       return NextResponse.json({ error: "Full Name is required" }, { status: 400 });
@@ -36,30 +36,47 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "An account with this email already exists" }, { status: 409 });
     }
 
-    // Check if this is the very first user in the database
-    const totalUsers = await (User as any).countDocuments();
-    const assignedRole = totalUsers === 0 ? "super_admin" : (["admin", "editor", "member"].includes(role) ? role : "admin");
-
     const passwordHash = await hashPassword(password);
     const user = await (User as any).create({
       name: name.trim(),
       email: normalizedEmail,
       passwordHash,
-      role: assignedRole,
+      role: "admin",
       avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(normalizedEmail)}`,
     });
 
-    // Auto-create initial project with unique ID
-    const uniqueProjectId = generateProjectId("prj_");
+    // Auto-create initial project with unique ID and assign user as owner + admin member
+    const uniqueProjectId = generateProjectId("open_prj_");
+    const measurementId = `OA-${uniqueProjectId.replace("open_prj_", "").toUpperCase()}`;
     const projectSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") + "-app";
     const initialProject = await (Project as any).create({
       projectId: uniqueProjectId,
+      measurementId,
       name: `${name.trim()}'s Application`,
       slug: projectSlug || "my-web-app",
       ownerId: user._id,
+      members: [
+        {
+          userId: user._id,
+          role: "admin",
+        },
+      ],
       publishableKey: generateApiKey("pk"),
       secretKey: generateApiKey("sk"),
       allowedDomains: ["*"],
+      monitoringStatus: "pending_verification",
+      dataStreams: [
+        {
+          streamId: `strm_${Date.now()}`,
+          streamType: "web",
+          streamName: `${name.trim()} Web Stream`,
+          streamUrl: "https://example.com",
+          measurementId,
+          status: "pending_verification",
+          active: false,
+          createdAt: new Date(),
+        },
+      ],
       settings: {
         ipAnonymization: true,
         piiRedaction: true,

@@ -47,12 +47,13 @@ export default function InstallPage() {
   const [testResult, setTestResult] = useState<null | { ok: boolean; status: number; duration: number; message: string; payload?: any }>(null);
   
   // Default to production deployment URL in snippets
-  const [hostUrl, setHostUrl] = useState("https://open-analytics.vercel.app");
+  const [hostUrl, setHostUrl] = useState("https://openanalytics.org.in");
   const [localOrigin, setLocalOrigin] = useState("");
   const [isCustomHost, setIsCustomHost] = useState(false);
   const [loadingAuth, setLoadingAuth] = useState(true);
   const [accessDenied, setAccessDenied] = useState(false);
   const [projectName, setProjectName] = useState("");
+  const [measurementId, setMeasurementId] = useState("");
 
   useEffect(() => {
     fetch(`/api/projects/${projectId}`)
@@ -64,6 +65,9 @@ export default function InstallPage() {
           const data = await r.json();
           if (data?.project?.name) {
             setProjectName(data.project.name);
+          }
+          if (data?.project?.measurementId) {
+            setMeasurementId(data.project.measurementId);
           }
         }
       })
@@ -81,6 +85,8 @@ export default function InstallPage() {
     }
   }, []);
 
+  const activeMeasurementId = measurementId || (projectId ? `OA-${projectId.replace(/^open_prj_|^prj_/, "").toUpperCase()}` : "");
+
   const copyToClipboard = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
     setCopiedKey(id);
@@ -88,7 +94,7 @@ export default function InstallPage() {
   };
 
   const copyProjectId = () => {
-    navigator.clipboard.writeText(projectId);
+    navigator.clipboard.writeText(activeMeasurementId || projectId);
     setCopiedProjectId(true);
     setTimeout(() => setCopiedProjectId(false), 2000);
   };
@@ -105,7 +111,7 @@ export default function InstallPage() {
 <script
   defer
   src="${formattedHost}/open.js"
-  data-project-id="${projectId}">
+  data-project-id="${activeMeasurementId}">
 </script>`,
     },
     next_app: {
@@ -125,7 +131,7 @@ export default function RootLayout({
         <Script
           src="${formattedHost}/open.js"
           strategy="afterInteractive"
-          data-project-id="${projectId}"
+          data-project-id="${activeMeasurementId}"
         />
       </head>
       <body>{children}</body>
@@ -146,7 +152,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       <Script
         src="${formattedHost}/open.js"
         strategy="afterInteractive"
-        data-project-id="${projectId}"
+        data-project-id="${activeMeasurementId}"
       />
       <Component {...pageProps} />
     </>
@@ -168,7 +174,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     <script
       defer
       src="${formattedHost}/open.js"
-      data-project-id="${projectId}">
+      data-project-id="${activeMeasurementId}">
     </script>
   </head>
   <body>
@@ -188,7 +194,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         {
           src: "${formattedHost}/open.js",
           defer: true,
-          "data-project-id": "${projectId}"
+          "data-project-id": "${activeMeasurementId}"
         }
       ]
     }
@@ -210,7 +216,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     <script
       defer
       src="${formattedHost}/open.js"
-      data-project-id="${projectId}">
+      data-project-id="${activeMeasurementId}">
     </script>
   </head>
   <body data-sveltekit-preload-data="hover">
@@ -240,7 +246,7 @@ export default function App() {
         <script
           defer
           src="${formattedHost}/open.js"
-          data-project-id="${projectId}"
+          data-project-id="${activeMeasurementId}"
         />
       </head>
       <body>
@@ -276,7 +282,7 @@ const { title } = Astro.props;
       is:inline
       defer
       src="${formattedHost}/open.js"
-      data-project-id="${projectId}">
+      data-project-id="${activeMeasurementId}">
     </script>
   </head>
   <body>
@@ -506,13 +512,13 @@ if (typeof window !== "undefined" && window.OpenAnalytics) {
               )}
             </div>
             <div className="flex items-center gap-2 mt-1">
-              <span className="text-xs text-muted-foreground">Project ID:</span>
+              <span className="text-xs text-muted-foreground">Measurement ID:</span>
               <button
                 onClick={copyProjectId}
                 className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-muted border border-border text-xs font-mono font-bold text-primary hover:bg-muted/80 transition"
-                title="Click to copy Project ID"
+                title="Click to copy Measurement ID"
               >
-                <span>{projectId}</span>
+                <span>{activeMeasurementId || projectId}</span>
                 {copiedProjectId ? <Check size={12} className="text-emerald-500" /> : <Copy size={12} />}
               </button>
             </div>
@@ -592,10 +598,10 @@ if (typeof window !== "undefined" && window.OpenAnalytics) {
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => setHostUrl("https://open-analytics.vercel.app")}
+                onClick={() => setHostUrl("https://openanalytics.org.in")}
                 className="px-2.5 py-1 rounded-lg bg-card hover:bg-muted border border-border text-[11px] font-medium text-muted-foreground hover:text-foreground transition"
               >
-                Use Production URL (open-analytics.vercel.app)
+                Use Production URL (openanalytics.org.in)
               </button>
               {localOrigin && (
                 <button
@@ -615,7 +621,7 @@ if (typeof window !== "undefined" && window.OpenAnalytics) {
               setHostUrl(e.target.value);
               setIsCustomHost(true);
             }}
-            placeholder="https://open-analytics.vercel.app"
+            placeholder="https://openanalytics.org.in"
             className="w-full px-3.5 py-2 rounded-xl bg-background border border-border font-mono text-xs text-primary focus:outline-none focus:border-primary shadow-2xs"
           />
           <p className="text-[11px] text-muted-foreground">

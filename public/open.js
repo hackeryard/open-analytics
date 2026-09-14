@@ -29,7 +29,7 @@
 
   function getConfig() {
     const el = getScriptElement();
-    const pid = configOverrides.projectId || (el && (el.getAttribute("data-project-id") || el.getAttribute("data-id"))) || (window.__OPEN_ANALYTICS_PROJECT_ID__) || "prj_openlabs";
+    const pid = configOverrides.projectId || (el && (el.getAttribute("data-measurement-id") || el.getAttribute("data-project-id") || el.getAttribute("data-id"))) || (window.__OPEN_ANALYTICS_PROJECT_ID__) || "prj_openlabs";
     const key = configOverrides.apiKey || (el && (el.getAttribute("data-api-key") || el.getAttribute("data-key"))) || "";
     let ep = configOverrides.endpoint || (el && el.getAttribute("data-endpoint")) || "";
 

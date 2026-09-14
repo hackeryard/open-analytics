@@ -23,6 +23,20 @@ import {
   AlertTriangle,
   X,
   UserCheck,
+  Activity,
+  Code2,
+  Radio,
+  Sliders,
+  Zap,
+  CheckCircle2,
+  ExternalLink,
+  Plus,
+  Smartphone,
+  Eye,
+  Layers,
+  Bug,
+  Database,
+  Terminal,
 } from "lucide-react";
 
 interface MemberItem {
@@ -41,18 +55,76 @@ interface OwnerItem {
   avatar?: string;
 }
 
+const TIMEZONES = [
+  { value: "UTC", label: "(GMT+00:00) Universal Coordinated Time (UTC)" },
+  { value: "Asia/Kolkata", label: "(GMT+05:30) India Standard Time (IST)" },
+  { value: "America/New_York", label: "(GMT-05:00) Eastern Time (US & Canada)" },
+  { value: "America/Chicago", label: "(GMT-06:00) Central Time (US & Canada)" },
+  { value: "America/Los_Angeles", label: "(GMT-08:00) Pacific Time (US & Canada)" },
+  { value: "Europe/London", label: "(GMT+00:00) London, Dublin, Edinburgh" },
+  { value: "Europe/Paris", label: "(GMT+01:00) Paris, Berlin, Rome, Madrid" },
+  { value: "Asia/Tokyo", label: "(GMT+09:00) Tokyo, Osaka, Sapporo" },
+  { value: "Asia/Singapore", label: "(GMT+08:00) Singapore, Hong Kong, Beijing" },
+  { value: "Australia/Sydney", label: "(GMT+10:00) Sydney, Melbourne, Brisbane" },
+  { value: "America/Sao_Paulo", label: "(GMT-03:00) Brasilia, Sao Paulo" },
+  { value: "Asia/Dubai", label: "(GMT+04:00) Dubai, Abu Dhabi, Muscat" },
+];
+
+const CURRENCIES = [
+  { code: "USD", symbol: "$", label: "US Dollar ($)" },
+  { code: "EUR", symbol: "€", label: "Euro (€)" },
+  { code: "GBP", symbol: "£", label: "British Pound (£)" },
+  { code: "INR", symbol: "₹", label: "Indian Rupee (₹)" },
+  { code: "CAD", symbol: "$", label: "Canadian Dollar ($)" },
+  { code: "AUD", symbol: "$", label: "Australian Dollar ($)" },
+  { code: "JPY", symbol: "¥", label: "Japanese Yen (¥)" },
+  { code: "SGD", symbol: "$", label: "Singapore Dollar ($)" },
+  { code: "BRL", symbol: "R$", label: "Brazilian Real (R$)" },
+];
+
+const INDUSTRIES = [
+  "Technology & Software",
+  "E-Commerce & Retail",
+  "Financial Services & Fintech",
+  "Healthcare & Life Sciences",
+  "Media, News & Publishing",
+  "Education & EdTech",
+  "Gaming & Entertainment",
+  "Travel & Hospitality",
+  "Real Estate",
+  "Automotive",
+  "Other",
+];
+
 export default function SettingsPage() {
   const params = useParams();
   const router = useRouter();
   const projectId = (params?.projectId as string) || "";
+  
   const [project, setProject] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [copiedKey, setCopiedKey] = useState(false);
-  const [copiedProjectId, setCopiedProjectId] = useState(false);
+  const [copiedMeasurementId, setCopiedMeasurementId] = useState(false);
   const [accessDenied, setAccessDenied] = useState(false);
+  const [activeTab, setActiveTab] = useState<"property" | "streams" | "privacy" | "tag" | "team" | "events" | "danger">("property");
+
+  // Editable Property fields
+  const [propertyName, setPropertyName] = useState("");
+  const [timezone, setTimezone] = useState("UTC");
+  const [currency, setCurrency] = useState("USD");
+  const [industry, setIndustry] = useState("Technology & Software");
+  const [businessSize, setBusinessSize] = useState("Medium (11-100)");
+  const [websiteUrl, setWebsiteUrl] = useState("");
   const [domainsInput, setDomainsInput] = useState("*");
+
+  // Add Stream Modal State
+  const [showAddStreamModal, setShowAddStreamModal] = useState(false);
+  const [newStreamType, setNewStreamType] = useState<"web" | "ios" | "android">("web");
+  const [newStreamName, setNewStreamName] = useState("");
+  const [newStreamUrl, setNewStreamUrl] = useState("");
+  const [addingStream, setAddingStream] = useState(false);
 
   // Team & Permission state
   const [owner, setOwner] = useState<OwnerItem | null>(null);
@@ -81,6 +153,10 @@ export default function SettingsPage() {
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
+  // Live Ping Test State
+  const [testingPing, setTestingPing] = useState(false);
+  const [pingVerified, setPingVerified] = useState(false);
+
   // Load project details
   useEffect(() => {
     fetch(`/api/projects/${projectId}`)
@@ -97,9 +173,16 @@ export default function SettingsPage() {
       })
       .then((d) => {
         if (d?.project) {
-          setProject(d.project);
-          if (Array.isArray(d.project.allowedDomains) && d.project.allowedDomains.length > 0) {
-            setDomainsInput(d.project.allowedDomains.join(", "));
+          const p = d.project;
+          setProject(p);
+          setPropertyName(p.name || "");
+          setTimezone(p.timezone || "UTC");
+          setCurrency(p.currency || "USD");
+          setIndustry(p.industryCategory || "Technology & Software");
+          setBusinessSize(p.businessSize || "Medium (11-100)");
+          setWebsiteUrl(p.websiteUrl || "");
+          if (Array.isArray(p.allowedDomains) && p.allowedDomains.length > 0) {
+            setDomainsInput(p.allowedDomains.join(", "));
           } else {
             setDomainsInput("*");
           }
@@ -111,7 +194,6 @@ export default function SettingsPage() {
       })
       .finally(() => setLoading(false));
 
-    // Load team members
     fetchMembers();
   }, [projectId]);
 
@@ -198,6 +280,84 @@ export default function SettingsPage() {
     }
   };
 
+  const handleAddStream = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newStreamName.trim() || !newStreamUrl.trim()) return;
+    setAddingStream(true);
+
+    const newStream = {
+      streamId: `strm_${Date.now()}`,
+      streamType: newStreamType,
+      streamName: newStreamName.trim(),
+      streamUrl: newStreamUrl.trim(),
+      appId: newStreamType !== "web" ? newStreamUrl.trim() : "",
+      measurementId: project?.measurementId || `OA-${projectId.replace("open_prj_", "").toUpperCase()}`,
+      active: true,
+      createdAt: new Date(),
+    };
+
+    const currentStreams = project?.dataStreams || [];
+    const updatedStreams = [...currentStreams, newStream];
+
+    try {
+      const res = await fetch(`/api/projects/${projectId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ dataStreams: updatedStreams }),
+      });
+
+      if (res.ok) {
+        setProject((prev: any) => ({ ...prev, dataStreams: updatedStreams }));
+        setShowAddStreamModal(false);
+        setNewStreamName("");
+        setNewStreamUrl("");
+      }
+    } catch (err) {
+      console.error("Add stream error:", err);
+    } finally {
+      setAddingStream(false);
+    }
+  };
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    setSaved(false);
+
+    const parsedDomains = domainsInput
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    const finalDomains = parsedDomains.length > 0 ? parsedDomains : ["*"];
+
+    try {
+      const res = await fetch(`/api/projects/${projectId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: propertyName,
+          timezone,
+          currency,
+          industryCategory: industry,
+          businessSize,
+          websiteUrl,
+          allowedDomains: finalDomains,
+          settings: project.settings,
+        }),
+      });
+      if (res.ok) {
+        const d = await res.json();
+        setProject(d.project);
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2500);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleTransferOwnership = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!transferTargetUserId && !transferTargetEmail.trim()) {
@@ -272,650 +432,950 @@ export default function SettingsPage() {
     }
   };
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSaving(true);
-    setSaved(false);
-
-    const parsedDomains = domainsInput
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean);
-    const finalDomains = parsedDomains.length > 0 ? parsedDomains : ["*"];
-
+  const sendTestPing = async () => {
+    if (!project) return;
+    setTestingPing(true);
     try {
-      const res = await fetch(`/api/projects/${projectId}`, {
-        method: "PATCH",
+      const res = await fetch("/api/v1/collect", {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: project.name,
-          allowedDomains: finalDomains,
-          settings: project.settings,
+          type: "pageview",
+          projectId: project.projectId,
+          pathname: "/admin-stream-verification",
+          title: "Admin Test Ping",
+          visitorId: "v_admin_test_" + Date.now(),
+          sessionId: "s_admin_test_" + Date.now(),
+          device: "desktop",
+          browser: "Admin Inspector",
+          os: "Windows",
+          country: "US",
         }),
       });
+
       if (res.ok) {
-        setProject((prev: any) => ({ ...prev, allowedDomains: finalDomains }));
-        setSaved(true);
-        setTimeout(() => setSaved(false), 2500);
+        setPingVerified(true);
+        setProject((prev: any) => ({ ...prev, monitoringStatus: "active" }));
       }
     } catch (e) {
       console.error(e);
     } finally {
-      setSaving(false);
+      setTestingPing(false);
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center space-y-3">
-        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-        <div className="text-xs text-muted-foreground">Loading workspace settings...</div>
+      <div className="flex items-center justify-center min-h-[400px] text-xs text-slate-400">
+        <div className="w-5 h-5 border-2 border-cyan-400/30 border-t-cyan-400 rounded-full animate-spin mr-2" />
+        <span>Loading Property Administration Settings...</span>
       </div>
     );
   }
 
   if (accessDenied || !project) {
     return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center p-6">
-        <div className="max-w-md w-full bg-card border border-rose-500/20 rounded-3xl p-8 text-center space-y-4 shadow-2xl">
-          <div className="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-500 flex items-center justify-center mx-auto">
-            <AlertCircle size={24} />
-          </div>
-          <h2 className="text-xl font-bold text-foreground">Access Restricted</h2>
-          <p className="text-xs text-muted-foreground">
-            You do not have administrative permission to modify settings for workspace <span className="font-mono text-foreground font-bold">{projectId}</span>. Only owners and admins can configure permissions.
-          </p>
-          <div className="pt-2">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-bold shadow-md hover:bg-primary/90 transition cursor-pointer"
-            >
-              <ArrowLeft size={14} />
-              <span>Return to Overview</span>
-            </Link>
-          </div>
-        </div>
+      <div className="p-8 rounded-3xl bg-[#0b1020] border border-rose-500/20 max-w-lg mx-auto text-center space-y-4 my-12">
+        <AlertTriangle size={36} className="text-rose-400 mx-auto" />
+        <h2 className="text-lg font-bold text-white">Access Denied</h2>
+        <p className="text-xs text-slate-400 leading-relaxed">
+          You do not have administrative permissions to view or edit property settings for this workspace.
+        </p>
+        <Link
+          href="/projects"
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-cyan-500 text-slate-950 font-bold text-xs"
+        >
+          <ArrowLeft size={14} />
+          <span>Return to Properties Hub</span>
+        </Link>
       </div>
     );
   }
 
+  const measurementId = project.measurementId || `OA-${project.projectId.replace("open_prj_", "").replace("prj_", "").toUpperCase()}`;
+  const hostUrl = typeof window !== "undefined" && !window.location.host.includes("localhost") && !window.location.host.includes("127.0.0.1") ? window.location.origin : "https://openanalytics.org.in";
+
+  const navTabs = [
+    { id: "property", label: "Property Details", icon: Sliders },
+    { id: "streams", label: "Data Streams", icon: Radio, count: (project.dataStreams?.length || 1) },
+    { id: "privacy", label: "Data Collection & Privacy", icon: ShieldCheck },
+    { id: "tag", label: "Tag & API Setup", icon: Code2 },
+    { id: "team", label: "Property Access (Team)", icon: Users, count: members.length + 1 },
+    { id: "danger", label: "Danger Zone", icon: AlertTriangle },
+  ];
+
   return (
-    <div className="max-w-4xl mx-auto space-y-8 pb-16">
-      {/* Header Banner */}
-      <div className="flex items-center justify-between border-b border-border pb-5">
+    <div className="space-y-6 max-w-7xl mx-auto animate-fadeIn">
+      {/* Top Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/[0.08]">
         <div className="flex items-center gap-3">
           <Link
             href="/projects"
-            className="p-2.5 rounded-xl bg-background hover:bg-muted border border-border text-muted-foreground hover:text-foreground transition shadow-2xs"
-            title="Return to Projects Directory"
+            className="p-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-slate-400 hover:text-white transition"
+            title="Back to Properties"
           >
             <ArrowLeft size={16} />
           </Link>
           <div>
-            <h1 className="text-xl sm:text-2xl font-black text-foreground flex items-center gap-2">
-              <Shield size={22} className="text-primary" />
-              <span>Workspace Settings &amp; Access Control</span>
-            </h1>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Manage project governance, team access, API credentials, and origins for{" "}
-              <span className="font-mono text-primary font-bold">{project.name}</span>
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl font-black text-white tracking-tight">{project.name}</h1>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-bold">
+                {measurementId}
+              </span>
+            </div>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Property Administration Center • {project.industryCategory || "Technology & Software"}
             </p>
           </div>
         </div>
 
-        {isCurrentUserOwner && (
-          <span className="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-xs font-bold font-mono inline-flex items-center gap-1.5 shadow-2xs">
-            <Crown size={13} />
-            <span>Workspace Owner</span>
-          </span>
-        )}
+        <div className="flex items-center gap-2.5">
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText(measurementId);
+              setCopiedMeasurementId(true);
+              setTimeout(() => setCopiedMeasurementId(false), 2000);
+            }}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-xs font-mono text-slate-300 font-bold transition cursor-pointer"
+          >
+            <span>{measurementId}</span>
+            {copiedMeasurementId ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
+          </button>
+
+          <Link
+            href={`/`}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-bold shadow-md shadow-cyan-500/20 transition cursor-pointer"
+          >
+            <span>Analytics Dashboard</span>
+            <ExternalLink size={12} />
+          </Link>
+        </div>
       </div>
 
-      {/* ============================================================ */}
-      {/* 1. TEAM MEMBERS & ACCESS CONTROL (RBAC)                      */}
-      {/* ============================================================ */}
-      <div id="team" className="bg-card rounded-3xl p-6 sm:p-7 space-y-6 border border-border shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border pb-4">
-          <div>
-            <h2 className="text-base font-black text-foreground flex items-center gap-2">
-              <Users size={18} className="text-primary" />
-              <span>Team Members &amp; Permission Control</span>
-            </h2>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Grant team members Admin or Member access to this project
-            </p>
+      {/* Main Layout with Left Tab Sidebar & Right Content Pane */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        {/* Left Navigation Sidebar */}
+        <div className="lg:col-span-3 space-y-1 p-2 rounded-2xl bg-[#0b1020]/90 border border-white/[0.08]">
+          <div className="px-3 py-2 text-[10px] font-mono uppercase tracking-wider text-slate-500 font-bold">
+            Property Admin Settings
           </div>
-          <span className="text-[11px] font-mono px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary font-bold w-fit">
-            {members.length + (owner ? 1 : 0)} Workspace Users
-          </span>
+          {navTabs.map((t) => {
+            const Icon = t.icon;
+            const active = activeTab === t.id;
+
+            return (
+              <button
+                key={t.id}
+                onClick={() => setActiveTab(t.id as any)}
+                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer text-left ${
+                  active
+                    ? "bg-cyan-500/15 border border-cyan-500/40 text-cyan-300 shadow-sm"
+                    : t.id === "danger"
+                    ? "text-rose-400 hover:bg-rose-500/10 border border-transparent"
+                    : "text-slate-400 hover:text-slate-200 hover:bg-white/[0.04] border border-transparent"
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Icon size={15} />
+                  <span>{t.label}</span>
+                </div>
+                {t.count !== undefined && (
+                  <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-white/[0.06] text-slate-300">
+                    {t.count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
 
-        {/* Invite New User Form */}
-        <form onSubmit={handleInviteMember} className="p-4 rounded-2xl bg-muted/20 border border-border space-y-3">
-          <div className="text-xs font-bold text-foreground flex items-center gap-1.5">
-            <UserPlus size={14} className="text-primary" />
-            <span>Add or Invite New User</span>
-          </div>
+        {/* Right Content Pane */}
+        <div className="lg:col-span-9 space-y-6">
 
-          <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
-            <div className="sm:col-span-5">
-              <input
-                type="email"
-                required
-                placeholder="User email address (e.g. alex@company.io)"
-                value={inviteEmail}
-                onChange={(e) => setInviteEmail(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-background border border-border text-xs text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary shadow-2xs"
-              />
-            </div>
-            <div className="sm:col-span-4">
-              <input
-                type="text"
-                placeholder="Full Name (optional)"
-                value={inviteName}
-                onChange={(e) => setInviteName(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-background border border-border text-xs text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary shadow-2xs"
-              />
-            </div>
-            <div className="sm:col-span-3 flex items-center gap-2">
-              <select
-                value={inviteRole}
-                onChange={(e) => setInviteRole(e.target.value as any)}
-                aria-label="Assign member role"
-                className="w-full px-3 py-2 rounded-xl bg-background border border-border text-xs font-bold text-foreground focus:outline-none focus:border-primary cursor-pointer shadow-2xs [&>option]:bg-card [&>option]:text-foreground [&>option]:dark:bg-slate-900 [&>option]:dark:text-slate-100"
-              >
-                <option value="member">Member (Read-Only)</option>
-                <option value="editor">Editor (Edit & Triage)</option>
-                <option value="admin">Admin (Full Access)</option>
-              </select>
-            </div>
-          </div>
+          {/* ============================================================ */}
+          {/* TAB 1: PROPERTY DETAILS                                      */}
+          {/* ============================================================ */}
+          {activeTab === "property" && (
+            <form onSubmit={handleSave} className="p-6 rounded-3xl bg-[#0b1020]/90 border border-white/[0.08] space-y-5 animate-fadeIn">
+              <div className="border-b border-white/[0.08] pb-3">
+                <h3 className="text-base font-bold text-white">Property Details</h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  General identification, reporting timezone, and currency for this measurement property.
+                </p>
+              </div>
 
-          <div className="flex items-center justify-between pt-1">
-            <span className="text-[11px] text-muted-foreground">
-              New users receive login credentials to access this workspace immediately.
-            </span>
-            <button
-              type="submit"
-              disabled={inviting}
-              className="px-4 py-2 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold transition shadow-2xs cursor-pointer disabled:opacity-50 shrink-0"
-            >
-              {inviting ? "Adding..." : "+ Add Member"}
-            </button>
-          </div>
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-300 uppercase tracking-wider">Property Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={propertyName}
+                    onChange={(e) => setPropertyName(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-[#060a14] border border-slate-700/80 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-400"
+                  />
+                </div>
 
-          {inviteError && (
-            <div className="text-xs text-rose-600 dark:text-rose-400 bg-rose-500/10 border border-rose-500/20 p-2.5 rounded-xl flex items-center gap-1.5">
-              <AlertCircle size={14} />
-              <span>{inviteError}</span>
-            </div>
-          )}
-
-          {inviteSuccess && (
-            <div className="text-xs text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 p-2.5 rounded-xl flex items-center gap-1.5">
-              <Check size={14} />
-              <span>Member added successfully!</span>
-            </div>
-          )}
-        </form>
-
-        {/* Members List Table */}
-        <div className="space-y-2">
-          <div className="text-xs font-bold text-foreground">Authorized Workspace Members</div>
-
-          <div className="divide-y divide-border border border-border rounded-2xl overflow-hidden bg-background">
-            {/* Owner Row */}
-            {owner && (
-              <div className="p-3.5 flex items-center justify-between gap-3 bg-muted/30">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30 flex items-center justify-center text-xs font-black shrink-0">
-                    <Crown size={15} />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-300 uppercase tracking-wider">Industry Category</label>
+                    <select
+                      value={industry}
+                      onChange={(e) => setIndustry(e.target.value)}
+                      className="w-full px-3.5 py-2.5 bg-[#060a14] border border-slate-700/80 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-400"
+                    >
+                      {INDUSTRIES.map((ind) => (
+                        <option key={ind} value={ind} className="bg-[#0b1020] text-white">
+                          {ind}
+                        </option>
+                      ))}
+                    </select>
                   </div>
-                  <div className="min-w-0">
-                    <div className="text-xs font-bold text-foreground flex items-center gap-1.5 truncate">
-                      <span>{owner.name}</span>
-                      <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30 font-bold uppercase">
-                        Owner
-                      </span>
-                    </div>
-                    <div className="text-[11px] text-muted-foreground font-mono truncate">{owner.email}</div>
+
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-300 uppercase tracking-wider">Reporting Time Zone</label>
+                    <select
+                      value={timezone}
+                      onChange={(e) => setTimezone(e.target.value)}
+                      className="w-full px-3.5 py-2.5 bg-[#060a14] border border-slate-700/80 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-400"
+                    >
+                      {TIMEZONES.map((tz) => (
+                        <option key={tz.value} value={tz.value} className="bg-[#0b1020] text-white">
+                          {tz.label}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
 
-                <div className="text-right shrink-0">
-                  <span className="text-[11px] font-mono text-muted-foreground font-bold">
-                    Primary Owner
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-300 uppercase tracking-wider">Currency</label>
+                    <select
+                      value={currency}
+                      onChange={(e) => setCurrency(e.target.value)}
+                      className="w-full px-3.5 py-2.5 bg-[#060a14] border border-slate-700/80 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-400"
+                    >
+                      {CURRENCIES.map((c) => (
+                        <option key={c.code} value={c.code} className="bg-[#0b1020] text-white">
+                          {c.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-300 uppercase tracking-wider">Primary Website URL</label>
+                    <input
+                      type="text"
+                      value={websiteUrl}
+                      onChange={(e) => setWebsiteUrl(e.target.value)}
+                      placeholder="https://example.com"
+                      className="w-full px-3.5 py-2.5 bg-[#060a14] border border-slate-700/80 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-400"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-300 uppercase tracking-wider">Allowed Domains (CORS)</label>
+                  <input
+                    type="text"
+                    value={domainsInput}
+                    onChange={(e) => setDomainsInput(e.target.value)}
+                    placeholder="e.g. acme.com, staging.acme.com or *"
+                    className="w-full px-3.5 py-2.5 bg-[#060a14] border border-slate-700/80 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-400"
+                  />
+                  <p className="text-[10px] text-slate-500">Comma-separated domain list, or &ldquo;*&rdquo; to accept telemetry from any origin.</p>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/[0.08]">
+                {saved && (
+                  <span className="text-xs font-bold text-emerald-400 flex items-center gap-1">
+                    <CheckCircle2 size={14} /> Saved Successfully!
+                  </span>
+                )}
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold shadow-md transition disabled:opacity-50 cursor-pointer"
+                >
+                  <Save size={14} />
+                  <span>{saving ? "Saving..." : "Save Property Changes"}</span>
+                </button>
+              </div>
+            </form>
+          )}
+
+          {/* ============================================================ */}
+          {/* TAB 2: DATA STREAMS                                          */}
+          {/* ============================================================ */}
+          {activeTab === "streams" && (
+            <div className="p-6 rounded-3xl bg-[#0b1020]/90 border border-white/[0.08] space-y-5 animate-fadeIn">
+              <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+                <div>
+                  <h3 className="text-base font-bold text-white">Data Streams</h3>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Data streams represent customer touchpoints (Web, iOS, Android) flowing into this property.
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowAddStreamModal(true)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/30 text-cyan-300 text-xs font-bold transition cursor-pointer"
+                >
+                  <Plus size={14} />
+                  <span>Add Stream</span>
+                </button>
+              </div>
+
+              <div className="space-y-3">
+                {(project.dataStreams || [
+                  {
+                    streamId: "strm_default",
+                    streamType: "web",
+                    streamName: `${project.name} Web Stream`,
+                    streamUrl: project.websiteUrl || "https://example.com",
+                    measurementId,
+                    active: true,
+                  },
+                ]).map((stream: any, idx: number) => (
+                  <div
+                    key={stream.streamId || idx}
+                    className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-cyan-500/30 transition flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 shrink-0">
+                        {stream.streamType === "web" ? <Globe size={18} /> : <Smartphone size={18} />}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-white">{stream.streamName}</span>
+                          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-bold uppercase">
+                            Active Stream
+                          </span>
+                        </div>
+                        <div className="text-[11px] text-slate-400 font-mono mt-0.5 truncate max-w-sm">
+                          {stream.streamUrl || stream.appId || "https://example.com"}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      <div className="text-right">
+                        <span className="text-[10px] font-mono text-slate-500 block uppercase">Measurement ID</span>
+                        <span className="text-xs font-mono font-bold text-cyan-300">{stream.measurementId || measurementId}</span>
+                      </div>
+
+                      <Link
+                        href={`/projects/${projectId}/install`}
+                        className="p-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 hover:text-cyan-300 transition"
+                        title="View Web Tag"
+                      >
+                        <Code2 size={15} />
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Enhanced Measurement Global Toggle Box */}
+              <div className="p-4 rounded-2xl bg-[#080d19] border border-white/[0.06] space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Sparkles size={16} className="text-cyan-400" />
+                    <div>
+                      <span className="text-xs font-bold text-white">Enhanced Measurement Engine</span>
+                      <span className="text-[10px] text-slate-400 block">Automatic event ingestion without code modification</span>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-bold">
+                    Enabled
                   </span>
                 </div>
-              </div>
-            )}
 
-            {/* Other Members */}
-            {members.length === 0 && !owner ? (
-              <div className="p-6 text-center text-xs text-muted-foreground">
-                No team members added to this workspace yet.
-              </div>
-            ) : (
-              members.map((m) => (
-                <div key={m.userId} className="p-3.5 flex items-center justify-between gap-3 hover:bg-muted/20 transition">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-8 h-8 rounded-xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center text-xs font-bold shrink-0">
-                      {m.name ? m.name[0].toUpperCase() : "U"}
-                    </div>
-                    <div className="min-w-0">
-                      <div className="text-xs font-bold text-foreground truncate">{m.name}</div>
-                      <div className="text-[11px] text-muted-foreground font-mono truncate">{m.email}</div>
-                    </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-slate-300 pt-2 border-t border-white/[0.06]">
+                  <div className="p-2 rounded-xl bg-white/[0.02] border border-white/[0.04] flex items-center gap-1.5">
+                    <Check size={12} className="text-emerald-400" />
+                    <span>Scroll Depth (90%)</span>
                   </div>
+                  <div className="p-2 rounded-xl bg-white/[0.02] border border-white/[0.04] flex items-center gap-1.5">
+                    <Check size={12} className="text-emerald-400" />
+                    <span>Outbound Links</span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-white/[0.02] border border-white/[0.04] flex items-center gap-1.5">
+                    <Check size={12} className="text-emerald-400" />
+                    <span>Site Search Queries</span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-white/[0.02] border border-white/[0.04] flex items-center gap-1.5">
+                    <Check size={12} className="text-emerald-400" />
+                    <span>AI Bot Crawlers</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
-                  <div className="flex items-center gap-2.5 shrink-0">
-                    {/* Role selector dropdown */}
-                    <select
-                      value={m.role}
-                      onChange={(e) => handleChangeRole(m.userId, e.target.value as any)}
-                      aria-label="Member role"
-                      className="px-2.5 py-1.5 rounded-xl bg-background border border-border text-xs font-bold text-foreground focus:outline-none focus:border-primary cursor-pointer [&>option]:bg-card [&>option]:text-foreground [&>option]:dark:bg-slate-900 [&>option]:dark:text-slate-100"
-                    >
-                      <option value="member">Member</option>
-                      <option value="editor">Editor</option>
-                      <option value="admin">Admin</option>
-                    </select>
+          {/* ============================================================ */}
+          {/* TAB 3: DATA COLLECTION & PRIVACY                             */}
+          {/* ============================================================ */}
+          {activeTab === "privacy" && (
+            <form onSubmit={handleSave} className="p-6 rounded-3xl bg-[#0b1020]/90 border border-white/[0.08] space-y-5 animate-fadeIn">
+              <div className="border-b border-white/[0.08] pb-3">
+                <h3 className="text-base font-bold text-white">Data Retention &amp; Privacy Controls</h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Configure retention policies, IP anonymization, and GDPR/CCPA cookie-less tracking.
+                </p>
+              </div>
 
-                    {/* Quick Transfer Button (for Owner) */}
-                    {isCurrentUserOwner && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setTransferTargetUserId(m.userId);
-                          setTransferTargetEmail(m.email);
-                          setShowTransferModal(true);
-                        }}
-                        className="px-2.5 py-1 rounded-lg text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition cursor-pointer inline-flex items-center gap-1"
-                        title="Transfer Ownership to this user"
-                      >
-                        <Crown size={11} />
-                        <span className="hidden sm:inline">Make Owner</span>
-                      </button>
-                    )}
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+                    Event Data Retention Period
+                  </label>
+                  <select
+                    value={project.settings?.dataRetentionDays || 365}
+                    onChange={(e) =>
+                      setProject({
+                        ...project,
+                        settings: {
+                          ...project.settings,
+                          dataRetentionDays: Number(e.target.value),
+                        },
+                      })
+                    }
+                    className="w-full px-3.5 py-2.5 bg-[#060a14] border border-slate-700/80 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-400"
+                  >
+                    <option value={30} className="bg-[#0b1020] text-white">1 Month (30 Days)</option>
+                    <option value={90} className="bg-[#0b1020] text-white">3 Months (90 Days)</option>
+                    <option value={180} className="bg-[#0b1020] text-white">6 Months (180 Days)</option>
+                    <option value={365} className="bg-[#0b1020] text-white">14 Months (365 Days) — Standard</option>
+                    <option value={730} className="bg-[#0b1020] text-white">24 Months (730 Days)</option>
+                    <option value={0} className="bg-[#0b1020] text-white">Indefinite (Unlimited Retention)</option>
+                  </select>
+                </div>
 
+                <div className="space-y-3 pt-2">
+                  <label className="flex items-start gap-3 p-3 rounded-2xl bg-white/[0.02] border border-white/[0.06] cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={project.settings?.ipAnonymization ?? true}
+                      onChange={(e) =>
+                        setProject({
+                          ...project,
+                          settings: {
+                            ...project.settings,
+                            ipAnonymization: e.target.checked,
+                          },
+                        })
+                      }
+                      className="mt-0.5 rounded border-slate-700 text-cyan-500 focus:ring-cyan-500/30"
+                    />
+                    <div>
+                      <span className="text-xs font-bold text-white block">IP Anonymization (Zero Raw IP Storage)</span>
+                      <span className="text-[11px] text-slate-400 leading-relaxed">
+                        Client IP addresses are cryptographically hashed and discarded immediately after country resolution.
+                      </span>
+                    </div>
+                  </label>
+
+                  <label className="flex items-start gap-3 p-3 rounded-2xl bg-white/[0.02] border border-white/[0.06] cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={project.settings?.piiRedaction ?? true}
+                      onChange={(e) =>
+                        setProject({
+                          ...project,
+                          settings: {
+                            ...project.settings,
+                            piiRedaction: e.target.checked,
+                          },
+                        })
+                      }
+                      className="mt-0.5 rounded border-slate-700 text-cyan-500 focus:ring-cyan-500/30"
+                    />
+                    <div>
+                      <span className="text-xs font-bold text-white block">Automated PII Redaction in Query Strings</span>
+                      <span className="text-[11px] text-slate-400 leading-relaxed">
+                        Strips query parameters containing emails, tokens, SSNs, and passwords before database write.
+                      </span>
+                    </div>
+                  </label>
+
+                  <label className="flex items-start gap-3 p-3 rounded-2xl bg-white/[0.02] border border-white/[0.06] cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={project.settings?.aiTracking ?? true}
+                      onChange={(e) =>
+                        setProject({
+                          ...project,
+                          settings: {
+                            ...project.settings,
+                            aiTracking: e.target.checked,
+                          },
+                        })
+                      }
+                      className="mt-0.5 rounded border-slate-700 text-cyan-500 focus:ring-cyan-500/30"
+                    />
+                    <div>
+                      <span className="text-xs font-bold text-white block">AI &amp; LLM Bot Radar (ChatGPT / Perplexity)</span>
+                      <span className="text-[11px] text-slate-400 leading-relaxed">
+                        Classify search engine indexation by OpenAI GPTBot, Anthropic ClaudeBot, and PerplexityCrawler.
+                      </span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/[0.08]">
+                {saved && (
+                  <span className="text-xs font-bold text-emerald-400 flex items-center gap-1">
+                    <CheckCircle2 size={14} /> Privacy Policy Updated!
+                  </span>
+                )}
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold shadow-md transition disabled:opacity-50 cursor-pointer"
+                >
+                  <Save size={14} />
+                  <span>{saving ? "Saving..." : "Save Privacy Settings"}</span>
+                </button>
+              </div>
+            </form>
+          )}
+
+          {/* ============================================================ */}
+          {/* TAB 4: TAG & API SETUP                                       */}
+          {/* ============================================================ */}
+          {activeTab === "tag" && (
+            <div className="p-6 rounded-3xl bg-[#0b1020]/90 border border-white/[0.08] space-y-5 animate-fadeIn">
+              <div className="border-b border-white/[0.08] pb-3">
+                <h3 className="text-base font-bold text-white">Measurement Tag &amp; API Ingestion</h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Client publishable keys, measurement IDs, and SDK snippets for your web properties.
+                </p>
+              </div>
+
+              {/* Keys Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] space-y-1">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500">Measurement ID</span>
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-sm font-bold text-cyan-300">{measurementId}</span>
                     <button
-                      onClick={() => handleRemoveMember(m.userId)}
-                      className="p-1.5 rounded-lg text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 transition cursor-pointer"
-                      title="Remove Member"
+                      onClick={() => {
+                        navigator.clipboard.writeText(measurementId);
+                        setCopiedMeasurementId(true);
+                        setTimeout(() => setCopiedMeasurementId(false), 2000);
+                      }}
+                      className="p-1 rounded-md text-slate-400 hover:text-white"
                     >
-                      <Trash2 size={14} />
+                      {copiedMeasurementId ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
                     </button>
                   </div>
                 </div>
-              ))
-            )}
-          </div>
-        </div>
 
-        {/* Role Matrix Helper */}
-        <div className="p-4 rounded-2xl bg-muted/20 border border-border space-y-2">
-          <div className="text-xs font-bold text-foreground flex items-center gap-1.5">
-            <ShieldCheck size={14} className="text-primary" />
-            <span>Role Permissions Reference:</span>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 text-[11px]">
-            <div className="p-2.5 rounded-xl bg-card border border-border space-y-1">
-              <strong className="text-amber-600 dark:text-amber-400 block font-bold">Owner</strong>
-              <span className="text-muted-foreground block">Full workspace governance, delete project, transfer ownership.</span>
+                <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] space-y-1">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500">Client Publishable Key</span>
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-xs font-bold text-white truncate max-w-[200px]">
+                      {project.publishableKey || "pk_live_..."}
+                    </span>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(project.publishableKey || "");
+                        setCopiedKey(true);
+                        setTimeout(() => setCopiedKey(false), 2000);
+                      }}
+                      className="p-1 rounded-md text-slate-400 hover:text-white"
+                    >
+                      {copiedKey ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tag Snippet */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-300">Website Installation Tag (HTML / CDN)</span>
+                  <Link
+                    href={`/projects/${projectId}/install`}
+                    className="text-xs text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1"
+                  >
+                    <span>View all frameworks (Next.js, React, cURL)</span>
+                    <ExternalLink size={12} />
+                  </Link>
+                </div>
+
+                <div className="relative rounded-2xl bg-[#040711] border border-white/[0.12] p-4 font-mono text-xs text-cyan-300/90 leading-relaxed overflow-x-auto">
+                  {`<script defer src="${hostUrl}/open.js" data-project-id="${measurementId}"></script>`}
+                </div>
+              </div>
+
+              {/* Live Ingestion Test Ping */}
+              <div className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.07] flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2 text-xs">
+                  <div className={`w-2 h-2 rounded-full ${pingVerified ? "bg-emerald-400 animate-glow" : "bg-cyan-400 animate-pulse"}`} />
+                  <div>
+                    <span className="font-bold text-white">Ingestion Diagnostic: </span>
+                    <span className={pingVerified ? "text-emerald-400 font-semibold" : "text-slate-400"}>
+                      {pingVerified ? "Verification beacon received (200 OK)" : "Ready to receive telemetry"}
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={sendTestPing}
+                  disabled={testingPing}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/30 text-cyan-300 text-xs font-bold transition cursor-pointer disabled:opacity-50"
+                >
+                  {testingPing ? (
+                    <div className="w-3 h-3 border-2 border-cyan-300/30 border-t-cyan-300 rounded-full animate-spin" />
+                  ) : (
+                    <Zap size={12} className="text-cyan-400" />
+                  )}
+                  <span>{pingVerified ? "Send Another Ping" : "Send Test Ping"}</span>
+                </button>
+              </div>
             </div>
-            <div className="p-2.5 rounded-xl bg-card border border-border space-y-1">
-              <strong className="text-primary block font-bold">Admin</strong>
-              <span className="text-muted-foreground block">Manage team, rotate keys, configure domains &amp; project settings.</span>
+          )}
+
+          {/* ============================================================ */}
+          {/* TAB 5: PROPERTY ACCESS & TEAM MANAGEMENT                    */}
+          {/* ============================================================ */}
+          {activeTab === "team" && (
+            <div className="p-6 rounded-3xl bg-[#0b1020]/90 border border-white/[0.08] space-y-5 animate-fadeIn">
+              <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+                <div>
+                  <h3 className="text-base font-bold text-white">Property Access &amp; User Management</h3>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Assign role-based access control (Administrator, Editor, Viewer) for this analytics property.
+                  </p>
+                </div>
+              </div>
+
+              {/* Add Member Form */}
+              <form onSubmit={handleInviteMember} className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] space-y-3">
+                <div className="text-xs font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <UserPlus size={14} />
+                  <span>Grant Property Access</span>
+                </div>
+
+                {inviteError && (
+                  <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-center gap-2">
+                    <AlertCircle size={14} />
+                    <span>{inviteError}</span>
+                  </div>
+                )}
+
+                {inviteSuccess && (
+                  <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs flex items-center gap-2">
+                    <CheckCircle2 size={14} />
+                    <span>User access granted successfully!</span>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <input
+                    type="email"
+                    required
+                    placeholder="colleague@company.com"
+                    value={inviteEmail}
+                    onChange={(e) => setInviteEmail(e.target.value)}
+                    className="w-full px-3 py-2 bg-[#060a14] border border-slate-700/80 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-400"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Full Name (optional)"
+                    value={inviteName}
+                    onChange={(e) => setInviteName(e.target.value)}
+                    className="w-full px-3 py-2 bg-[#060a14] border border-slate-700/80 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-400"
+                  />
+                  <select
+                    value={inviteRole}
+                    onChange={(e) => setInviteRole(e.target.value as any)}
+                    className="w-full px-3 py-2 bg-[#060a14] border border-slate-700/80 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-400"
+                  >
+                    <option value="admin" className="bg-[#0b1020] text-white">Administrator</option>
+                    <option value="editor" className="bg-[#0b1020] text-white">Editor</option>
+                    <option value="member" className="bg-[#0b1020] text-white">Viewer / Analyst</option>
+                  </select>
+                </div>
+
+                <div className="flex justify-end">
+                  <button
+                    type="submit"
+                    disabled={inviting}
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold transition cursor-pointer disabled:opacity-50"
+                  >
+                    <UserPlus size={14} />
+                    <span>{inviting ? "Adding..." : "Add User"}</span>
+                  </button>
+                </div>
+              </form>
+
+              {/* Members Table */}
+              <div className="space-y-2">
+                <span className="text-xs font-bold text-slate-300 uppercase tracking-wider block">Active Users</span>
+
+                {/* Owner Row */}
+                {owner && (
+                  <div className="p-3.5 rounded-2xl bg-white/[0.02] border border-amber-500/20 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 font-bold flex items-center justify-center text-xs">
+                        {owner.name ? owner.name[0].toUpperCase() : "O"}
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                          <span>{owner.name}</span>
+                          <span className="text-[10px] text-amber-400 font-normal">(Workspace Owner)</span>
+                        </div>
+                        <div className="text-[11px] text-slate-400">{owner.email}</div>
+                      </div>
+                    </div>
+
+                    <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center gap-1">
+                      <Crown size={12} /> Owner
+                    </span>
+                  </div>
+                )}
+
+                {/* Member Rows */}
+                {members.map((m) => (
+                  <div
+                    key={m.userId}
+                    className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-center justify-between gap-3"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-xl bg-cyan-500/20 text-cyan-400 font-bold flex items-center justify-center text-xs">
+                        {m.name ? m.name[0].toUpperCase() : "U"}
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-white">{m.name}</div>
+                        <div className="text-[11px] text-slate-400">{m.email}</div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <select
+                        value={m.role}
+                        onChange={(e) => handleChangeRole(m.userId, e.target.value as any)}
+                        className="px-2.5 py-1 bg-[#060a14] border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-cyan-400"
+                      >
+                        <option value="admin" className="bg-[#0b1020]">Administrator</option>
+                        <option value="editor" className="bg-[#0b1020]">Editor</option>
+                        <option value="member" className="bg-[#0b1020]">Viewer</option>
+                      </select>
+
+                      <button
+                        onClick={() => handleRemoveMember(m.userId)}
+                        className="p-1.5 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition"
+                        title="Revoke access"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="p-2.5 rounded-xl bg-card border border-border space-y-1">
-              <strong className="text-blue-600 dark:text-blue-400 block font-bold">Editor</strong>
-              <span className="text-muted-foreground block">Triage &amp; resolve errors, configure suppression rules, edit operational data.</span>
+          )}
+
+          {/* ============================================================ */}
+          {/* TAB 6: DANGER ZONE                                           */}
+          {/* ============================================================ */}
+          {activeTab === "danger" && (
+            <div className="p-6 rounded-3xl bg-[#0b1020]/90 border border-rose-500/30 space-y-5 animate-fadeIn">
+              <div className="border-b border-rose-500/20 pb-3">
+                <h3 className="text-base font-bold text-rose-300 flex items-center gap-2">
+                  <AlertTriangle size={18} className="text-rose-400" />
+                  <span>Property Danger Zone</span>
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Irreversible actions including ownership delegation and property decommissioning.
+                </p>
+              </div>
+
+              {/* Transfer Ownership Card */}
+              <div className="p-4 rounded-2xl bg-white/[0.02] border border-amber-500/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h4 className="text-xs font-bold text-white">Transfer Property Ownership</h4>
+                  <p className="text-[11px] text-slate-400 mt-0.5">
+                    Transfer primary ownership and billing controls of this property to another administrator.
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowTransferModal(true)}
+                  className="px-4 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-400 text-xs font-bold transition cursor-pointer shrink-0"
+                >
+                  Transfer Ownership
+                </button>
+              </div>
+
+              {/* Delete Property Card */}
+              <div className="p-4 rounded-2xl bg-rose-500/5 border border-rose-500/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h4 className="text-xs font-bold text-white">Delete Property &amp; Telemetry</h4>
+                  <p className="text-[11px] text-slate-400 mt-0.5">
+                    Permanently purge all telemetry data streams, session records, and settings.
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowDeleteModal(true)}
+                  className="px-4 py-2 rounded-xl bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold transition cursor-pointer shrink-0"
+                >
+                  Delete Property
+                </button>
+              </div>
             </div>
-            <div className="p-2.5 rounded-xl bg-card border border-border space-y-1">
-              <strong className="text-foreground block font-bold">Member</strong>
-              <span className="text-muted-foreground block">View-only access to dashboards, live telemetry, and analytics reports.</span>
-            </div>
-          </div>
+          )}
+
         </div>
       </div>
 
-      {/* ============================================================ */}
-      {/* 2. API KEYS & IDENTITY                                       */}
-      {/* ============================================================ */}
-      <form onSubmit={handleSave} className="space-y-6">
-        <div className="bg-card rounded-3xl p-6 sm:p-7 space-y-4 border border-border shadow-xs">
-          <div className="border-b border-border pb-3">
-            <h2 className="text-base font-black text-foreground flex items-center gap-2">
-              <Key size={18} className="text-primary" />
-              <span>API Credentials &amp; Project ID</span>
-            </h2>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Client keys used by the tracking script and server ingestion endpoints
-            </p>
-          </div>
-
-          <div className="space-y-3">
-            <div>
-              <label className="text-xs font-bold text-muted-foreground block mb-1">Unique Project ID (Used in Tracker Script)</label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  readOnly
-                  value={project.projectId}
-                  className="flex-1 bg-background border border-primary/30 rounded-xl px-3.5 py-2.5 text-xs font-mono text-primary font-bold select-all"
-                />
-                <button
-                  type="button"
-                  onClick={() => {
-                    navigator.clipboard.writeText(project.projectId);
-                    setCopiedProjectId(true);
-                    setTimeout(() => setCopiedProjectId(false), 2000);
-                  }}
-                  className="p-2.5 bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-xl text-primary transition cursor-pointer"
-                  title="Copy Unique Project ID"
-                >
-                  {copiedProjectId ? <Check size={15} className="text-emerald-500" /> : <Copy size={15} />}
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <label className="text-xs font-bold text-muted-foreground block mb-1">Publishable Client Key (Public)</label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  readOnly
-                  value={project.publishableKey}
-                  className="flex-1 bg-background border border-border rounded-xl px-3.5 py-2.5 text-xs font-mono text-foreground select-all"
-                />
-                <button
-                  type="button"
-                  onClick={() => {
-                    navigator.clipboard.writeText(project.publishableKey);
-                    setCopiedKey(true);
-                    setTimeout(() => setCopiedKey(false), 2000);
-                  }}
-                  className="p-2.5 bg-muted hover:bg-accent border border-border rounded-xl text-muted-foreground hover:text-foreground transition cursor-pointer"
-                >
-                  {copiedKey ? <Check size={15} className="text-emerald-500" /> : <Copy size={15} />}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Security: Allowed Domains */}
-        <div className="bg-card rounded-3xl p-6 sm:p-7 space-y-4 border border-border shadow-xs">
-          <div className="border-b border-border pb-3">
-            <h2 className="text-base font-black text-foreground flex items-center gap-2">
-              <Globe size={18} className="text-blue-500" />
-              <span>Allowed Origins &amp; CORS Domains</span>
-            </h2>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Restrict telemetry collection to authorized domains. Use <code className="font-mono text-primary">*</code> to allow any origin.
-            </p>
-          </div>
-
-          <input
-            type="text"
-            value={domainsInput}
-            onChange={(e) => setDomainsInput(e.target.value)}
-            placeholder="e.g. myapp.com, staging.myapp.com, *"
-            className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-xs font-mono text-foreground focus:outline-none focus:border-primary shadow-2xs"
-          />
-        </div>
-
-        {/* Privacy & Compliance */}
-        <div className="bg-card rounded-3xl p-6 sm:p-7 space-y-4 border border-border shadow-xs">
-          <div className="border-b border-border pb-3">
-            <h2 className="text-base font-black text-foreground flex items-center gap-2">
-              <Shield size={18} className="text-emerald-500" />
-              <span>Privacy &amp; Compliance Configuration</span>
-            </h2>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Automated cookieless anonymization and telemetry payload sanitization
-            </p>
-          </div>
-
-          <div className="space-y-3">
-            <label className="flex items-center gap-3 p-3.5 rounded-2xl bg-muted/20 border border-border cursor-pointer hover:bg-muted/40 transition">
-              <input
-                type="checkbox"
-                checked={project.settings?.ipAnonymization ?? true}
-                onChange={(e) => setProject({ ...project, settings: { ...project.settings, ipAnonymization: e.target.checked } })}
-                className="w-4 h-4 rounded border-border text-primary focus:ring-0 cursor-pointer"
-              />
-              <div>
-                <span className="text-xs font-bold text-foreground block">IP Address Anonymization (GDPR &amp; CCPA compliant)</span>
-                <span className="text-[11px] text-muted-foreground">Masks the last octet of IPv4 and zeroes IPv6 addresses before persistence.</span>
-              </div>
-            </label>
-
-            <label className="flex items-center gap-3 p-3.5 rounded-2xl bg-muted/20 border border-border cursor-pointer hover:bg-muted/40 transition">
-              <input
-                type="checkbox"
-                checked={project.settings?.piiRedaction ?? true}
-                onChange={(e) => setProject({ ...project, settings: { ...project.settings, piiRedaction: e.target.checked } })}
-                className="w-4 h-4 rounded border-border text-primary focus:ring-0 cursor-pointer"
-              />
-              <div>
-                <span className="text-xs font-bold text-foreground block">Automatic PII Redaction Engine</span>
-                <span className="text-[11px] text-muted-foreground">Automatically scrubs email addresses, passwords, auth tokens, and card numbers from error stack traces.</span>
-              </div>
-            </label>
-          </div>
-        </div>
-
-        {/* Save Button */}
-        <div className="flex items-center justify-end gap-3 pt-2">
-          {saved && (
-            <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-              <Check size={14} /> Settings updated successfully
-            </span>
-          )}
-          <button
-            type="submit"
-            disabled={saving}
-            className="flex items-center gap-2 px-6 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-xl transition shadow-md disabled:opacity-50 cursor-pointer"
-          >
-            <Save size={15} />
-            {saving ? "Saving Changes..." : "Save Project Settings"}
-          </button>
-        </div>
-      </form>
-
-      {/* ============================================================ */}
-      {/* 3. DANGER ZONE (OWNERSHIP TRANSFER & DELETE PROJECT)         */}
-      {/* ============================================================ */}
-      {isCurrentUserOwner && (
-        <div className="bg-card rounded-3xl p-6 sm:p-7 space-y-5 border border-rose-500/30 shadow-xs">
-          <div className="border-b border-border pb-3">
-            <h2 className="text-base font-black text-rose-600 dark:text-rose-400 flex items-center gap-2">
-              <AlertTriangle size={18} />
-              <span>Danger Zone</span>
-            </h2>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              High-impact governance actions: transfer primary ownership or permanently destroy this project
-            </p>
-          </div>
-
-          <div className="divide-y divide-border/60">
-            {/* Action 1: Transfer Ownership */}
-            <div className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div className="space-y-0.5">
-                <span className="text-xs font-bold text-foreground block flex items-center gap-1.5">
-                  <Crown size={14} className="text-amber-500" />
-                  <span>Transfer Project Ownership</span>
-                </span>
-                <p className="text-[11px] text-muted-foreground">
-                  Transfer primary ownership and governance of this workspace to another team member or registered user.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  setTransferTargetUserId("");
-                  setTransferTargetEmail("");
-                  setShowTransferModal(true);
-                }}
-                className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition shadow-xs cursor-pointer inline-flex items-center justify-center gap-1.5 shrink-0"
-              >
-                <ArrowRightLeft size={13} />
-                <span>Transfer Ownership</span>
+      {/* Add Stream Modal */}
+      {showAddStreamModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-md" onClick={() => setShowAddStreamModal(false)} />
+          <div className="relative max-w-md w-full bg-[#0b1020] border border-cyan-500/30 rounded-3xl p-6 space-y-4 z-10 animate-fadeIn">
+            <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+              <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <Radio size={18} className="text-cyan-400" />
+                <span>Add Data Stream</span>
+              </h3>
+              <button onClick={() => setShowAddStreamModal(false)} className="p-1 text-slate-400 hover:text-white">
+                <X size={18} />
               </button>
             </div>
 
-            {/* Action 2: Delete Project */}
-            <div className="pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div className="space-y-0.5">
-                <span className="text-xs font-bold text-rose-600 dark:text-rose-400 block flex items-center gap-1.5">
-                  <Trash2 size={14} />
-                  <span>Permanently Delete Project</span>
-                </span>
-                <p className="text-[11px] text-muted-foreground">
-                  Permanently delete this project, API keys, and all recorded analytics data. This action is irreversible.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  setDeleteConfirmName("");
-                  setShowDeleteModal(true);
-                }}
-                className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition shadow-xs cursor-pointer inline-flex items-center justify-center gap-1.5 shrink-0"
-              >
-                <Trash2 size={13} />
-                <span>Delete Project</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ============================================================ */}
-      {/* TRANSFER OWNERSHIP MODAL                                     */}
-      {/* ============================================================ */}
-      {showTransferModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="fixed inset-0" onClick={() => setShowTransferModal(false)} />
-          <div className="relative z-10 w-full max-w-md bg-card border border-border rounded-3xl shadow-2xl p-6 space-y-5 animate-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between border-b border-border pb-4">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-500 border border-amber-500/20 flex items-center justify-center shrink-0">
-                  <Crown size={18} />
-                </div>
-                <div>
-                  <h3 className="text-sm font-black text-foreground">Transfer Project Ownership</h3>
-                  <p className="text-xs text-muted-foreground">Assign a new primary owner for this project</p>
+            <form onSubmit={handleAddStream} className="space-y-4">
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-300">Stream Platform</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {(["web", "ios", "android"] as const).map((type) => (
+                    <button
+                      key={type}
+                      type="button"
+                      onClick={() => setNewStreamType(type)}
+                      className={`p-2 rounded-xl text-xs font-bold uppercase border transition cursor-pointer ${
+                        newStreamType === type
+                          ? "bg-cyan-500/20 border-cyan-500 text-cyan-300"
+                          : "bg-white/[0.02] border-white/[0.06] text-slate-400"
+                      }`}
+                    >
+                      {type}
+                    </button>
+                  ))}
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={() => setShowTransferModal(false)}
-                className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition"
-              >
-                <X size={16} />
-              </button>
-            </div>
 
-            <form onSubmit={handleTransferOwnership} className="space-y-4">
-              {/* Select Existing Member */}
-              {members.length > 0 && (
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-foreground block">Select Existing Team Member:</label>
-                  <select
-                    value={transferTargetUserId}
-                    onChange={(e) => {
-                      setTransferTargetUserId(e.target.value);
-                      if (e.target.value) setTransferTargetEmail("");
-                    }}
-                    aria-label="Select target member for ownership transfer"
-                    className="w-full px-3 py-2 bg-background border border-border rounded-xl text-xs font-bold text-foreground focus:outline-none focus:border-primary cursor-pointer [&>option]:bg-card [&>option]:text-foreground [&>option]:dark:bg-slate-900 [&>option]:dark:text-slate-100"
-                  >
-                    <option value="">-- Choose Member --</option>
-                    {members.map((m) => (
-                      <option key={m.userId} value={m.userId}>
-                        {m.name} ({m.email}) - {m.role}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
-              {/* Or Enter Registered Email */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-foreground block">Or Enter User Email Address:</label>
-                <input
-                  type="email"
-                  placeholder="recipient@company.io"
-                  value={transferTargetEmail}
-                  onChange={(e) => {
-                    setTransferTargetEmail(e.target.value);
-                    if (e.target.value) setTransferTargetUserId("");
-                  }}
-                  className="w-full px-3 py-2 bg-background border border-border rounded-xl text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary shadow-2xs"
-                />
-              </div>
-
-              <div className="space-y-1.5 pt-1">
-                <label className="text-xs font-bold text-foreground block">
-                  To confirm transfer, please type{" "}
-                  <strong className="text-amber-600 dark:text-amber-400 font-mono font-bold select-all">
-                    {project.name}
-                  </strong>{" "}
-                  below:
-                </label>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-300">Stream Name</label>
                 <input
                   type="text"
-                  placeholder={project.name}
-                  value={transferConfirmName}
-                  onChange={(e) => setTransferConfirmName(e.target.value)}
-                  className="w-full px-3 py-2 bg-background border border-border rounded-xl text-xs font-mono text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-amber-500 shadow-2xs"
+                  required
+                  placeholder="e.g. Mobile Web App"
+                  value={newStreamName}
+                  onChange={(e) => setNewStreamName(e.target.value)}
+                  className="w-full px-3 py-2 bg-[#060a14] border border-slate-700 rounded-xl text-xs text-white"
                 />
               </div>
 
-              <div className="p-3 bg-muted/30 border border-border rounded-xl text-[11px] text-muted-foreground space-y-1">
-                <div className="font-bold text-foreground">What happens next:</div>
-                <ul className="list-disc list-inside space-y-0.5">
-                  <li>The selected user becomes the primary Workspace Owner.</li>
-                  <li>Your role will be preserved as Project Admin.</li>
-                  <li>Only the new owner will be able to delete or transfer this project in the future.</li>
-                </ul>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-300">Website URL / Bundle ID</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="https://example.com"
+                  value={newStreamUrl}
+                  onChange={(e) => setNewStreamUrl(e.target.value)}
+                  className="w-full px-3 py-2 bg-[#060a14] border border-slate-700 rounded-xl text-xs text-white"
+                />
               </div>
 
-              {transferError && (
-                <div className="text-xs text-rose-600 dark:text-rose-400 bg-rose-500/10 border border-rose-500/20 p-2.5 rounded-xl flex items-center gap-1.5">
-                  <AlertCircle size={14} />
-                  <span>{transferError}</span>
-                </div>
-              )}
-
-              {transferSuccess && (
-                <div className="text-xs text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 p-2.5 rounded-xl flex items-center gap-1.5">
-                  <Check size={14} />
-                  <span>{transferSuccess}</span>
-                </div>
-              )}
-
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-white/[0.08]">
                 <button
                   type="button"
-                  onClick={() => {
-                    setShowTransferModal(false);
-                    setTransferConfirmName("");
-                  }}
-                  className="px-3.5 py-1.5 bg-muted hover:bg-accent rounded-xl text-xs font-bold text-foreground transition cursor-pointer"
+                  onClick={() => setShowAddStreamModal(false)}
+                  className="px-4 py-2 rounded-xl bg-white/[0.05] text-xs font-bold text-slate-300"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  disabled={
-                    transferring ||
-                    (!transferTargetUserId && !transferTargetEmail.trim()) ||
-                    transferConfirmName !== project.name
-                  }
-                  className="px-4 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer disabled:opacity-50"
+                  disabled={addingStream}
+                  className="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold transition disabled:opacity-50"
+                >
+                  {addingStream ? "Adding..." : "Create Stream"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Transfer Ownership Modal */}
+      {showTransferModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-md" onClick={() => setShowTransferModal(false)} />
+          <div className="relative max-w-md w-full bg-[#0b1020] border border-amber-500/30 rounded-3xl p-6 space-y-4 z-10 animate-fadeIn">
+            <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+              <h3 className="text-base font-bold text-white flex items-center gap-2 text-amber-400">
+                <Crown size={18} />
+                <span>Transfer Property Ownership</span>
+              </h3>
+              <button onClick={() => setShowTransferModal(false)} className="p-1 text-slate-400 hover:text-white">
+                <X size={18} />
+              </button>
+            </div>
+
+            {transferError && (
+              <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs">
+                {transferError}
+              </div>
+            )}
+
+            <form onSubmit={handleTransferOwnership} className="space-y-4">
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-300">New Owner Work Email</label>
+                <input
+                  type="email"
+                  required
+                  placeholder="colleague@company.com"
+                  value={transferTargetEmail}
+                  onChange={(e) => setTransferTargetEmail(e.target.value)}
+                  className="w-full px-3 py-2 bg-[#060a14] border border-slate-700 rounded-xl text-xs text-white"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-300">
+                  Type property name <span className="text-amber-400">&ldquo;{project.name}&rdquo;</span> to confirm
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder={project.name}
+                  value={transferConfirmName}
+                  onChange={(e) => setTransferConfirmName(e.target.value)}
+                  className="w-full px-3 py-2 bg-[#060a14] border border-slate-700 rounded-xl text-xs text-white"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-white/[0.08]">
+                <button
+                  type="button"
+                  onClick={() => setShowTransferModal(false)}
+                  className="px-4 py-2 rounded-xl bg-white/[0.05] text-xs font-bold text-slate-300"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={transferring}
+                  className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold transition disabled:opacity-50"
                 >
                   {transferring ? "Transferring..." : "Confirm Transfer"}
                 </button>
@@ -925,65 +1385,58 @@ export default function SettingsPage() {
         </div>
       )}
 
-      {/* ============================================================ */}
-      {/* DELETE PROJECT MODAL                                         */}
-      {/* ============================================================ */}
+      {/* Delete Property Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="fixed inset-0" onClick={() => setShowDeleteModal(false)} />
-          <div className="relative z-10 w-full max-w-md bg-card border border-rose-500/30 rounded-3xl shadow-2xl p-6 space-y-5 animate-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between border-b border-border pb-4">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-rose-500/10 text-rose-500 border border-rose-500/20 flex items-center justify-center shrink-0">
-                  <AlertTriangle size={18} />
-                </div>
-                <div>
-                  <h3 className="text-sm font-black text-rose-600 dark:text-rose-400">Delete Workspace Project</h3>
-                  <p className="text-xs text-muted-foreground">This action cannot be undone</p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowDeleteModal(false)}
-                className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition"
-              >
-                <X size={16} />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-md" onClick={() => setShowDeleteModal(false)} />
+          <div className="relative max-w-md w-full bg-[#0b1020] border border-rose-500/30 rounded-3xl p-6 space-y-4 z-10 animate-fadeIn">
+            <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+              <h3 className="text-base font-bold text-rose-400 flex items-center gap-2">
+                <AlertTriangle size={18} />
+                <span>Delete Analytics Property</span>
+              </h3>
+              <button onClick={() => setShowDeleteModal(false)} className="p-1 text-slate-400 hover:text-white">
+                <X size={18} />
               </button>
             </div>
 
+            <p className="text-xs text-slate-300 leading-relaxed">
+              This action cannot be undone. All collected pageviews, custom events, and Web Vitals data will be permanently deleted.
+            </p>
+
+            {deleteError && (
+              <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs">
+                {deleteError}
+              </div>
+            )}
+
             <form onSubmit={handleDeleteProject} className="space-y-4">
-              <p className="text-xs text-muted-foreground">
-                To confirm deletion of this workspace and all associated analytics data, please type{" "}
-                <strong className="text-foreground font-mono font-bold select-all">{project.name}</strong> below:
-              </p>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-300">
+                  Type property name <span className="text-rose-400">&ldquo;{project.name}&rdquo;</span> to confirm
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder={project.name}
+                  value={deleteConfirmName}
+                  onChange={(e) => setDeleteConfirmName(e.target.value)}
+                  className="w-full px-3 py-2 bg-[#060a14] border border-slate-700 rounded-xl text-xs text-white"
+                />
+              </div>
 
-              <input
-                type="text"
-                placeholder={project.name}
-                value={deleteConfirmName}
-                onChange={(e) => setDeleteConfirmName(e.target.value)}
-                className="w-full px-3 py-2 bg-background border border-border rounded-xl text-xs font-mono text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-rose-500 shadow-2xs"
-              />
-
-              {deleteError && (
-                <div className="text-xs text-rose-600 dark:text-rose-400 bg-rose-500/10 border border-rose-500/20 p-2.5 rounded-xl flex items-center gap-1.5">
-                  <AlertCircle size={14} />
-                  <span>{deleteError}</span>
-                </div>
-              )}
-
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-white/[0.08]">
                 <button
                   type="button"
                   onClick={() => setShowDeleteModal(false)}
-                  className="px-3.5 py-1.5 bg-muted hover:bg-accent rounded-xl text-xs font-bold text-foreground transition cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-white/[0.05] text-xs font-bold text-slate-300"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  disabled={deleting || deleteConfirmName !== project.name}
-                  className="px-4 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer disabled:opacity-50"
+                  disabled={deleting}
+                  className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition disabled:opacity-50"
                 >
                   {deleting ? "Deleting..." : "Permanently Delete"}
                 </button>
@@ -992,6 +1445,7 @@ export default function SettingsPage() {
           </div>
         </div>
       )}
+
     </div>
   );
 }

@@ -51,6 +51,7 @@ import GeoWidget from "@/components/dashboard/GeoWidget";
 import WebVitalsRadarWidget from "@/components/dashboard/WebVitalsRadarWidget";
 import DeviceBreakdownWidget from "@/components/dashboard/DeviceBreakdownWidget";
 import AiAndErrorWidget from "@/components/dashboard/AiAndErrorWidget";
+import LandingHero from "@/components/public/LandingHero";
 
 export default function ExecutiveOverviewDashboard() {
   const {
@@ -73,7 +74,7 @@ export default function ExecutiveOverviewDashboard() {
   const [testSignalSending, setTestSignalSending] = useState(false);
   const [testSignalSuccess, setTestSignalSuccess] = useState(false);
 
-  const scriptTag = `<script defer src="https://open-analytics.vercel.app/open.js" data-project-id="${activeProjectId || "prj_openlabs"}"></script>`;
+  const scriptTag = `<script defer src="https://openanalytics.org.in/open.js" data-project-id="${activeProjectId || "prj_openlabs"}"></script>`;
 
   const copyScript = () => {
     navigator.clipboard.writeText(scriptTag);
@@ -95,7 +96,7 @@ export default function ExecutiveOverviewDashboard() {
           title: "Test Ingestion Diagnostic Signal",
           visitorId: "v_test_" + Math.random().toString(36).slice(2, 8),
           sessionId: "s_test_" + Math.random().toString(36).slice(2, 8),
-          referrer: "https://open-analytics.vercel.app/docs",
+          referrer: "https://openanalytics.org.in/docs",
           device: "desktop",
           browser: "Chrome",
           os: "Windows",
@@ -115,6 +116,11 @@ export default function ExecutiveOverviewDashboard() {
       setTestSignalSending(false);
     }
   };
+
+  // If visitor is unauthenticated (or search engine bot), display the public landing page
+  if (authChecked && !currentUser) {
+    return <LandingHero />;
+  }
 
   if (loading && !data) {
     return (

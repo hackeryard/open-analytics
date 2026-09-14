@@ -47,6 +47,9 @@ import {
 } from "lucide-react";
 import { usePlatform } from "@/components/PlatformContext";
 import DateRangeNavigator from "@/components/DateRangeNavigator";
+import CreateProjectModal from "@/components/CreateProjectModal";
+import PublicNavbar from "@/components/public/PublicNavbar";
+import PublicFooter from "@/components/public/PublicFooter";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -105,7 +108,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     setTimeout(() => setCopiedSnippet(false), 2500);
   };
 
-  const hostUrl = typeof window !== "undefined" && !window.location.host.includes("localhost") ? window.location.origin : "https://open-analytics.vercel.app";
+  const hostUrl = typeof window !== "undefined" && !window.location.host.includes("localhost") && !window.location.host.includes("127.0.0.1") ? window.location.origin : "https://openanalytics.org.in";
   const prjKey = activeProjectId || "prj_openlabs";
 
   const sendTestPing = async () => {
@@ -213,6 +216,31 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const isAuthPage = pathname === "/login" || pathname === "/register";
   if (isAuthPage) {
     return <>{children}</>;
+  }
+
+  // Render public marketing pages with dedicated PublicNavbar and PublicFooter
+  const isMarketingPage =
+    (pathname === "/" && !currentUser) ||
+    (pathname.startsWith("/docs") && !currentUser) ||
+    pathname === "/features" ||
+    pathname.startsWith("/features/") ||
+    pathname === "/vs-google-analytics" ||
+    pathname.startsWith("/vs-google-analytics/") ||
+    pathname === "/pricing" ||
+    pathname.startsWith("/pricing/") ||
+    pathname === "/privacy" ||
+    pathname.startsWith("/privacy/") ||
+    pathname === "/faq" ||
+    pathname.startsWith("/faq/");
+
+  if (isMarketingPage) {
+    return (
+      <div className="min-h-screen flex flex-col bg-[#050811] text-slate-100 selection:bg-cyan-500/30 selection:text-cyan-200">
+        <PublicNavbar />
+        <main className="flex-1">{children}</main>
+        <PublicFooter />
+      </div>
+    );
   }
 
   const snippets: Record<string, { title: string; targetFile: string; badge: string; description: string; code: string }> = {
@@ -847,65 +875,15 @@ export default function App() {
         </div>
       )}
 
-      {/* ============================================================ */}
-      {/* NEW PROJECT MODAL                                            */}
-      {/* ============================================================ */}
-      {showNewProjectModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="fixed inset-0 bg-black/75 backdrop-blur-md" onClick={() => setShowNewProjectModal(false)} />
-          <div className="relative max-w-md w-full glass-card border border-white/[0.12] rounded-3xl p-6 sm:p-8 shadow-2xl space-y-5 z-10 animate-fadeIn">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-black text-white">Create New Workspace</h3>
-              <button onClick={() => setShowNewProjectModal(false)} className="p-1 rounded-lg text-slate-400 hover:text-white">
-                <X size={18} />
-              </button>
-            </div>
-
-            <form onSubmit={onSubmitCreate} className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-300">Project / Application Name</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Acme Web App"
-                  value={newPrjName}
-                  onChange={(e) => setNewPrjName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#080d1a] border border-white/[0.1] text-xs text-white focus:outline-none focus:border-cyan-500/60 placeholder:text-muted-foreground"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-300">Allowed Domains</label>
-                <input
-                  type="text"
-                  placeholder="e.g. acme.com, app.acme.com or *"
-                  value={newPrjDomains}
-                  onChange={(e) => setNewPrjDomains(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#080d1a] border border-white/[0.1] text-xs text-white focus:outline-none focus:border-cyan-500/60 placeholder:text-muted-foreground"
-                />
-                <p className="text-[10px] text-muted-foreground">Comma-separated or * for all domains</p>
-              </div>
-
-              <div className="flex items-center justify-end gap-3 pt-3">
-                <button
-                  type="button"
-                  onClick={() => setShowNewProjectModal(false)}
-                  className="px-4 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-xs font-bold text-slate-300 transition"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={creatingPrj}
-                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-bold shadow-md transition disabled:opacity-50 cursor-pointer"
-                >
-                  {creatingPrj ? "Creating..." : "Create Project"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* Property & Stream Creation Wizard */}
+      <CreateProjectModal
+        isOpen={showNewProjectModal}
+        onClose={() => setShowNewProjectModal(false)}
+        onProjectCreated={() => {
+          fetchData();
+        }}
+      />
     </div>
   );
 }
+

@@ -18,7 +18,22 @@ interface Project {
   ownerId?: string;
   members?: any[];
   role?: string;
+  currentUserRole?: string;
+  measurementId?: string;
+  monitoringStatus?: "pending_verification" | "active" | "paused";
+  verifiedAt?: string | Date;
+  timezone?: string;
+  currency?: string;
+  industryCategory?: string;
+  businessSize?: string;
+  websiteUrl?: string;
+  dataStreams?: any[];
+  publishableKey?: string;
+  slug?: string;
+  settings?: any;
+  createdAt?: string | Date;
 }
+
 
 interface PlatformContextType {
   currentUser: User | null;
@@ -153,9 +168,17 @@ export function PlatformProvider({ children }: { children: React.ReactNode }) {
   // Auth & Project Resolution
   const checkAuth = useCallback(async (): Promise<boolean> => {
     const isPublicPath = typeof window !== "undefined" && (
+      window.location.pathname === "/" ||
       window.location.pathname.startsWith("/login") ||
       window.location.pathname.startsWith("/register") ||
-      window.location.pathname.startsWith("/docs")
+      window.location.pathname.startsWith("/docs") ||
+      window.location.pathname.startsWith("/features") ||
+      window.location.pathname.startsWith("/vs-google-analytics") ||
+      window.location.pathname.startsWith("/pricing") ||
+      window.location.pathname.startsWith("/privacy") ||
+      window.location.pathname.startsWith("/faq") ||
+      window.location.pathname === "/sitemap.xml" ||
+      window.location.pathname === "/robots.txt"
     );
 
     try {

@@ -111,15 +111,11 @@ export async function GET(req: NextRequest) {
       }
       await user.save();
     } else {
-      // New user registration via GitHub OAuth
-      const totalUsers = await (User as any).countDocuments();
-      const assignedRole = totalUsers === 0 ? "super_admin" : "admin";
-
       user = await (User as any).create({
         name: userName,
         email: normalizedEmail,
         passwordHash: "",
-        role: assignedRole,
+        role: "admin",
         authProvider: "github",
         authProviderId: String(profile.id),
         emailVerified: true,
@@ -128,12 +124,20 @@ export async function GET(req: NextRequest) {
 
       // Automatically provision initial project workspace
       const uniqueProjectId = generateProjectId("open_prj_");
+      const measurementId = `OA-${uniqueProjectId.replace("open_prj_", "").toUpperCase()}`;
       const projectSlug = userName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") + "-app";
       await (Project as any).create({
         projectId: uniqueProjectId,
+        measurementId,
         name: `${userName}'s Application`,
         slug: projectSlug || "my-web-app",
         ownerId: user._id,
+        members: [
+          {
+            userId: user._id,
+            role: "admin",
+          },
+        ],
         publishableKey: generateApiKey("pk"),
         secretKey: generateApiKey("sk"),
         allowedDomains: ["*"],

@@ -15,6 +15,12 @@ export interface TokenPayload {
   name: string;
 }
 
+export interface OtpChallengePayload {
+  userId: string;
+  email: string;
+  type: "login_otp";
+}
+
 export function signToken(payload: TokenPayload): string {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: "30d" });
 }
@@ -22,6 +28,22 @@ export function signToken(payload: TokenPayload): string {
 export function verifyToken(token: string): TokenPayload | null {
   try {
     return jwt.verify(token, JWT_SECRET) as TokenPayload;
+  } catch (err) {
+    return null;
+  }
+}
+
+export function signOtpChallengeToken(payload: OtpChallengePayload): string {
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: "10m" });
+}
+
+export function verifyOtpChallengeToken(token: string): OtpChallengePayload | null {
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    if (decoded && decoded.type === "login_otp" && decoded.userId && decoded.email) {
+      return decoded as OtpChallengePayload;
+    }
+    return null;
   } catch (err) {
     return null;
   }
