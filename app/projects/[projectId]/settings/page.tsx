@@ -526,7 +526,9 @@ export default function SettingsPage() {
   }
 
   const measurementId = project.measurementId || `OA-${project.projectId.replace("open_prj_", "").replace("prj_", "").toUpperCase()}`;
-  const hostUrl = typeof window !== "undefined" && !window.location.host.includes("localhost") && !window.location.host.includes("127.0.0.1") ? window.location.origin : "https://openanalytics.org.in";
+  const hostUrl = typeof window !== "undefined" && !window.location.host.includes("localhost") && !window.location.host.includes("127.0.0.1")
+    ? `https://api.${window.location.host.replace(/^(dashboard\.|api\.|www\.)/i, "")}`
+    : "https://api.openanalytics.org.in";
 
   const navTabs = [
     { id: "property", label: "Property Details", icon: Sliders },

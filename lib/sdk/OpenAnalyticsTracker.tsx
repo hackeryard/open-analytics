@@ -11,7 +11,7 @@ export interface OpenAnalyticsTrackerProps {
 
   /**
    * Optional custom reverse-proxy endpoint or custom domain.
-   * Defaults to "https://openanalytics.org.in" if omitted.
+   * Defaults to "https://api.openanalytics.org.in" if omitted.
    */
   endpoint?: string;
 
@@ -21,7 +21,7 @@ export interface OpenAnalyticsTrackerProps {
   apiKey?: string;
 }
 
-export const DEFAULT_OPEN_ANALYTICS_ENDPOINT = "https://openanalytics.org.in";
+export const DEFAULT_OPEN_ANALYTICS_ENDPOINT = "https://api.openanalytics.org.in";
 
 /**
  * OpenAnalyticsTracker

@@ -308,7 +308,9 @@ export default function CreateProjectModal({ isOpen, onClose, onProjectCreated }
     }
   };
 
-  const hostUrl = typeof window !== "undefined" && !window.location.host.includes("localhost") && !window.location.host.includes("127.0.0.1") ? window.location.origin : "https://openanalytics.org.in";
+  const hostUrl = typeof window !== "undefined" && !window.location.host.includes("localhost") && !window.location.host.includes("127.0.0.1")
+    ? `https://api.${window.location.host.replace(/^(dashboard\.|api\.|www\.)/i, "")}`
+    : "https://api.openanalytics.org.in";
   const prjId = createdProject?.projectId || "open_prj_example";
   const measurementId = createdProject?.measurementId || `OA-${prjId.replace("open_prj_", "").toUpperCase()}`;
 
@@ -364,7 +366,7 @@ export default function App() {
       label: "cURL / Ingestion API",
       file: "Terminal / API",
       desc: "Send server-side telemetry events directly via HTTP POST.",
-      code: `curl -X POST "${hostUrl}/api/v1/collect" \\
+      code: `curl -X POST "${hostUrl}/v1/collect" \\
   -H "Content-Type: application/json" \\
   -d '{
     "type": "pageview",

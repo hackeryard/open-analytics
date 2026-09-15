@@ -101,7 +101,12 @@
   // 2. Beacon Dispatcher
   function sendBeacon(urlPath, data) {
     const cfg = getConfig();
-    const fullUrl = cfg.endpoint.replace(/\/$/, "") + urlPath;
+    let targetPath = urlPath;
+    const isApiDomain = cfg.endpoint.includes("api.") || cfg.endpoint.includes("api.localhost");
+    if (isApiDomain && targetPath.startsWith("/api/v1/")) {
+      targetPath = targetPath.replace("/api/v1/", "/v1/");
+    }
+    const fullUrl = cfg.endpoint.replace(/\/$/, "") + targetPath;
     const visitorMeta = getVisitorMetadata();
 
     const payload = JSON.stringify(Object.assign({}, data, {
@@ -321,7 +326,9 @@
       } catch (e) {}
     }
 
-    const url = cfg.endpoint.replace(/\/$/, "") + "/api/v1/event-rules?projectId=" + encodeURIComponent(cfg.projectId);
+    const isApiDomain = cfg.endpoint.includes("api.") || cfg.endpoint.includes("api.localhost");
+    const rulesPath = isApiDomain ? "/v1/event-rules" : "/api/v1/event-rules";
+    const url = cfg.endpoint.replace(/\/$/, "") + rulesPath + "?projectId=" + encodeURIComponent(cfg.projectId);
     fetch(url, { mode: "cors" })
       .then(function(res) { return res.json(); })
       .then(function(data) {
