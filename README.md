@@ -39,7 +39,7 @@ Paste this tag directly before the closing `</head>` tag in your HTML template (
 ```html
 <script 
   defer 
-  src="https://your-analytics-instance.com/open.js" 
+  src="https://api.openanalytics.org.in/open.js" 
   data-project-id="prj_your_project_id"
 ></script>
 ```
@@ -309,14 +309,40 @@ To restrict telemetry collection to authorized domains only:
 
 ---
 
+## 3-Tier Domain Architecture
+
+Open Analytics is structured across three segregated subdomains:
+
+| Subdomain | Environment / Port | Purpose |
+| :--- | :--- | :--- |
+| **`openanalytics.org.in`** | `localhost:3005` | **Pure SEO & Marketing**: Landing pages, comparison matrix, pricing tiers, public documentation. |
+| **`dashboard.openanalytics.org.in`** | `dashboard.localhost:3005` | **Analytics Workspace & Auth**: Dashboards, live feed, property settings, user login & registration. |
+| **`api.openanalytics.org.in`** | `api.localhost:3005` | **Edge Ingestion & CDN**: Tracker script delivery (`/open.js`) and versioned ingestion (`/v1/collect`, `/v1/error`, `/v1/identify`, `/v1/event-rules`). |
+
+---
+
+## Workflow & Developer Scripts
+
+| Command | Script File | Description |
+| :--- | :--- | :--- |
+| `npm run pull` | `scripts/pull.js` | Pulls latest changes from `origin` for specified branch (default: `dev`). |
+| `npm run push [msg]` | `scripts/push.js` | Stages all changes, creates a commit with the provided message, and pushes to `origin/dev`. |
+| `npm run sync [msg] [--pr]` | `scripts/sync.js` | Full sync pipeline: pull -> commit -> push -> optional PR. |
+| `npm run pr [--title "..." --body "..."]` | `scripts/create-pr.js` | Dynamic GitHub PR creation & synchronization derived from git commits. |
+| `npm run kill:3005` | `scripts/kill-port.js` | Cross-platform process killer releasing port 3005. |
+| `npm run test:subdomain` | `scripts/test-subdomain.js` | Automated 10-point regression test suite for subdomain routing and isolation. |
+| `npm run purge:retention` | `scripts/purge-retention.js` | 1-year telemetry data purge utility for raw collections in MongoDB. |
+
+---
+
 ## Getting Started Locally
 
 ### 1. Clone & Install Dependencies
 
 ```bash
-git clone https://github.com/your-org/open-analytics.git
+git clone https://github.com/hackeryard/open-analytics.git
 cd open-analytics
-npm install # or yarn install
+yarn install # or npm install
 ```
 
 ### 2. Environment Configuration
@@ -327,12 +353,13 @@ Copy `.env.example` to `.env.local` and set your MongoDB connection string:
 MONGODB_URI=mongodb://localhost:27017/open_analytics
 JWT_SECRET=your_super_secret_jwt_key_here
 NEXT_PUBLIC_APP_URL=https://openanalytics.org.in
+NEXT_PUBLIC_API_URL=https://api.openanalytics.org.in
 ```
 
 ### 3. Run Development Server
 
 ```bash
-npm run dev # or yarn dev
+yarn dev # or npm run dev
 ```
 
 Open `http://localhost:3005` in your browser.

@@ -123,3 +123,4 @@ yarn purge:retention # Run 1-year data retention MongoDB purge (node scripts/pur
 2. **Data Aggregations**: Keep complex MongoDB queries inside `lib/analyticsDb.ts` to keep API route handlers clean and maintainable.
 3. **Responsive Glassmorphism**: Use dark-mode themed cards (`bg-card border border-border rounded-3xl shadow-sm`).
 4. **Performance**: Always limit unbounded MongoDB queries and use indexed fields (`projectId`, `createdAt`, `pathname`, `visitorId`, `sessionId`).
+5. **Project Tracking & Documentation Integrity**: Whenever significant architectural, infrastructure, or operational features are introduced, update `CHANGELOG.md`, `ROADMAP.md`, `README.md`, `REQUIREMENTS.md`, and `GEMINI.md` to ensure complete documentation alignment.
