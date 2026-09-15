@@ -24,9 +24,11 @@ import {
   X,
   Zap,
 } from "lucide-react";
+import { getDashboardUrl } from "@/lib/subdomain";
 
 export default function LandingHero() {
   const [copiedSnippet, setCopiedSnippet] = useState(false);
+  const dashboardUrl = getDashboardUrl("/");
   const sampleSnippet = `<script defer src="https://openanalytics.org.in/open.js" data-project-id="prj_live_demo"></script>`;
 
   const copySnippet = () => {
@@ -60,13 +62,13 @@ export default function LandingHero() {
 
         {/* Primary CTAs */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-14">
-          <Link
-            href="/register"
-            className="w-full sm:w-auto py-3.5 px-8 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-slate-950 font-bold text-sm transition-all shadow-xl shadow-cyan-500/25 flex items-center justify-center gap-2"
+          <a
+            href={dashboardUrl}
+            className="w-full sm:w-auto py-3.5 px-8 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-slate-950 font-bold text-sm transition-all shadow-xl shadow-cyan-500/25 flex items-center justify-center gap-2 cursor-pointer"
           >
-            <span>Start Free — No Credit Card</span>
+            <span>Launch Dashboard</span>
             <ArrowRight className="w-4 h-4" />
-          </Link>
+          </a>
           <Link
             href="/vs-google-analytics"
             className="w-full sm:w-auto py-3.5 px-6 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-200 font-semibold text-sm transition-colors border border-slate-800 flex items-center justify-center gap-2"
@@ -82,7 +84,7 @@ export default function LandingHero() {
             Executive Summary / Generative AI Direct Answer
           </div>
           <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-            <strong className="text-white">What is Open Analytics?</strong> Open Analytics is an open-source, privacy-first web telemetry platform engineered for extreme performance. At <span className="text-cyan-300 font-medium">&lt;3.2KB Brotli</span> (15x lighter than GA4), it produces <span className="text-cyan-300 font-medium">zero cookie consent banners</span>, respects GDPR/CCPA through 24-hour cryptographic rotating salts, autonomously tracks traffic from AI search engines (<span className="text-cyan-300 font-medium">SearchGPT, Perplexity, Claude</span>), and monitors real user Core Web Vitals in real time.
+            <strong className="text-white">What is Open Analytics?</strong> Open Analytics is a privacy-first, high-performance web telemetry and observability platform engineered for modern web applications. At <span className="text-cyan-300 font-medium">&lt;3.2KB Brotli</span> (15x lighter than GA4), it produces <span className="text-cyan-300 font-medium">zero cookie consent banners</span>, respects GDPR/CCPA through 24-hour cryptographic rotating salts, autonomously tracks traffic from AI search engines (<span className="text-cyan-300 font-medium">SearchGPT, Perplexity, Claude</span>), and monitors real user Core Web Vitals in real time.
           </p>
         </div>
 
@@ -243,9 +245,9 @@ export default function LandingHero() {
             <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 mb-4">
               <Server className="w-5 h-5" />
             </div>
-            <h3 className="text-lg font-bold text-white mb-2">Self-Host Free or Cloud</h3>
+            <h3 className="text-lg font-bold text-white mb-2">High-Speed Sovereign Cloud</h3>
             <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-              Deploy with Docker or Kubernetes for complete data sovereignty with zero license fees, or use our high-speed managed cloud infrastructure.
+              Global edge telemetry processing with European data residency, guaranteeing zero cross-border personal data transfers and 99.99% uptime.
             </p>
           </div>
         </div>
@@ -323,12 +325,12 @@ export default function LandingHero() {
             Install in 60 seconds. Say goodbye to bloated scripts, delayed reports, and intrusive cookie banners forever.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Link
-              href="/register"
-              className="w-full sm:w-auto py-3 px-8 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-slate-950 font-bold text-sm transition-all shadow-lg shadow-cyan-500/20"
+            <a
+              href={dashboardUrl}
+              className="w-full sm:w-auto py-3 px-8 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-slate-950 font-bold text-sm transition-all shadow-lg shadow-cyan-500/20 cursor-pointer"
             >
-              Get Started Free
-            </Link>
+              Launch Dashboard
+            </a>
             <Link
               href="/pricing"
               className="w-full sm:w-auto py-3 px-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-sm transition-colors border border-slate-700"

@@ -22,18 +22,22 @@ import {
 export default function DateRangeNavigator({
   value,
   onChange,
+  plan = "free",
   className = "",
 }: {
   value: string;
   onChange: (val: string) => void;
+  plan?: string;
   className?: string;
 }) {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showCustomModal, setShowCustomModal] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  const isPro = plan === "pro" || plan === "enterprise";
   const today = getTodayString();
   const yesterday = getYesterdayString();
+  const minAllowedDate = offsetDateString(today, isPro ? -365 : -30);
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -106,9 +110,11 @@ export default function DateRangeNavigator({
       case "30d":
         return "Past 30 Days";
       case "90d":
-        return "Past 90 Days";
+        return isPro ? "Past 90 Days" : "Past 30 Days (Free)";
+      case "1y":
+      case "365d":
       case "all":
-        return "All Time";
+        return isPro ? "Past 365 Days" : "Past 30 Days (Free)";
       default:
         if (value.startsWith("date:")) {
           return formatDayLabel(value.replace("date:", ""));
@@ -119,7 +125,7 @@ export default function DateRangeNavigator({
         }
         return value;
     }
-  }, [value]);
+  }, [value, isPro]);
 
   const isToday = activeSingleDate >= today;
   const isSingleDayMode = value.startsWith("date:") || value === "today" || value === "yesterday";
@@ -171,8 +177,11 @@ export default function DateRangeNavigator({
   const handleApplyCustom = (e: React.FormEvent) => {
     e.preventDefault();
     if (!customStart || !customEnd) return;
-    const start = customStart <= customEnd ? customStart : customEnd;
+    let start = customStart <= customEnd ? customStart : customEnd;
     const end = customStart <= customEnd ? customEnd : customStart;
+    if (start < minAllowedDate) {
+      start = minAllowedDate;
+    }
     if (start === end) {
       if (start === today) onChange("today");
       else if (start === yesterday) onChange("yesterday");
@@ -185,13 +194,23 @@ export default function DateRangeNavigator({
   };
 
   const presets = [
-    { id: "today", label: "Today", desc: "Since midnight" },
-    { id: "yesterday", label: "Yesterday", desc: "Previous full day" },
-    { id: "24h", label: "Past 24 Hours", desc: "Rolling 24h window" },
-    { id: "7d", label: "Past 7 Days", desc: "Previous week" },
-    { id: "30d", label: "Past 30 Days", desc: "Previous month" },
-    { id: "90d", label: "Past 90 Days", desc: "Previous quarter" },
-    { id: "all", label: "All Time", desc: "Complete recorded telemetry" },
+    { id: "today", label: "Today", desc: "Since midnight", proOnly: false },
+    { id: "yesterday", label: "Yesterday", desc: "Previous full day", proOnly: false },
+    { id: "24h", label: "Past 24 Hours", desc: "Rolling 24h window", proOnly: false },
+    { id: "7d", label: "Past 7 Days", desc: "Previous week", proOnly: false },
+    { id: "30d", label: "Past 30 Days", desc: isPro ? "Previous month" : "Max free tier retention", proOnly: false },
+    {
+      id: "90d",
+      label: "Past 90 Days",
+      desc: isPro ? "Previous quarter" : "Clamped to 30d on Free",
+      proOnly: !isPro,
+    },
+    {
+      id: "365d",
+      label: "Past 365 Days",
+      desc: isPro ? "Complete 1-year telemetry" : "Clamped to 30d on Free",
+      proOnly: !isPro,
+    },
   ];
 
   return (
@@ -231,13 +250,16 @@ export default function DateRangeNavigator({
       {/* Dropdown Popover */}
       {showDropdown && (
         <div className="absolute right-0 top-full mt-2 w-64 glass-card border border-white/[0.12] rounded-2xl shadow-2xl p-2 z-50 animate-fadeIn space-y-1">
-          <div className="px-2.5 py-1.5 border-b border-white/[0.07] text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">
-            Select Timeframe
+          <div className="px-2.5 py-1.5 border-b border-white/[0.07] flex items-center justify-between text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">
+            <span>Select Timeframe</span>
+            <span className="text-[9px] font-mono text-cyan-400 font-bold">
+              {isPro ? "1-Yr Retention" : "30-Day Retention"}
+            </span>
           </div>
 
           <div className="space-y-0.5">
             {presets.map((p) => {
-              const isSelected = value === p.id;
+              const isSelected = value === p.id || (p.id === "365d" && (value === "all" || value === "1y"));
               return (
                 <button
                   key={p.id}
@@ -256,7 +278,13 @@ export default function DateRangeNavigator({
                     <span>{p.label}</span>
                     <span className="text-[10px] text-muted-foreground font-normal">{p.desc}</span>
                   </div>
-                  {isSelected && <Check size={13} className="text-cyan-400 shrink-0" />}
+                  {p.proOnly ? (
+                    <span className="text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 uppercase font-bold tracking-wider">
+                      PRO
+                    </span>
+                  ) : isSelected ? (
+                    <Check size={13} className="text-cyan-400 shrink-0" />
+                  ) : null}
                 </button>
               );
             })}
@@ -293,11 +321,19 @@ export default function DateRangeNavigator({
               </button>
             </div>
 
+            <div className="p-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-[11px] text-cyan-300 flex items-center justify-between">
+              <span>{isPro ? "Pro plan includes 1-year history" : "Free plan includes 30-day history"}</span>
+              <span className="text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 uppercase font-bold tracking-wider">
+                {isPro ? "365 DAYS" : "30 DAYS MAX"}
+              </span>
+            </div>
+
             <form onSubmit={handleApplyCustom} className="space-y-4 text-xs">
               <div className="space-y-1">
                 <label className="text-slate-300 font-bold block">Start Date (UTC)</label>
                 <input
                   type="date"
+                  min={minAllowedDate}
                   max={today}
                   value={customStart}
                   onChange={(e) => setCustomStart(e.target.value)}
@@ -309,6 +345,7 @@ export default function DateRangeNavigator({
                 <label className="text-slate-300 font-bold block">End Date (UTC)</label>
                 <input
                   type="date"
+                  min={minAllowedDate}
                   max={today}
                   value={customEnd}
                   onChange={(e) => setCustomEnd(e.target.value)}

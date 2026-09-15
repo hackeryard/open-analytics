@@ -111,6 +111,7 @@ const ErrorLogSchema = new mongoose.Schema(
 ErrorLogSchema.index({ projectId: 1, lastOccurredAt: -1 });
 ErrorLogSchema.index({ projectId: 1, status: 1, lastOccurredAt: -1 });
 ErrorLogSchema.index({ projectId: 1, message: 1, pathname: 1 });
+ErrorLogSchema.index({ createdAt: 1 }, { expireAfterSeconds: 365 * 24 * 60 * 60, name: "retention_1yr_ttl" });
 
 if (process.env.NODE_ENV === "development" && mongoose.models.ErrorLog) {
   delete mongoose.models.ErrorLog;

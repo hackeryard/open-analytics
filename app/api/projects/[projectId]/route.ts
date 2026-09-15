@@ -49,6 +49,9 @@ export async function PATCH(req: Request, { params }: { params: { projectId: str
     if (body.dataStreams !== undefined) updateData.dataStreams = body.dataStreams;
     if (body.allowedDomains !== undefined) updateData.allowedDomains = body.allowedDomains;
     if (body.settings !== undefined) updateData.settings = body.settings;
+    if (body.plan !== undefined && ["free", "pro", "enterprise"].includes(body.plan)) {
+      updateData.plan = body.plan;
+    }
 
     const project = await (Project as any).findOneAndUpdate(
       { projectId: params.projectId },

@@ -124,7 +124,7 @@ const privacyFaqSchema = {
       name: "Is Open Analytics compliant with the Schrems II ruling regarding EU-US data transfers?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Yes. In self-hosted mode, you maintain 100% of data within your chosen jurisdiction (e.g. EU data centers). In Cloud mode, Open Analytics isolates all European client telemetry within EU-based data centers (Frankfurt/Amsterdam) with zero transfer of personal identifiable information to US servers.",
+        text: "Yes. Open Analytics processes and stores all European client telemetry within EU-based data centers (Frankfurt and Amsterdam) with zero transfer of personal identifiable information to US servers.",
       },
     },
   ],
@@ -256,9 +256,9 @@ export default function PrivacyPage() {
               European data protection authorities (including Austria DSB and France CNIL) declared Google Analytics illegal due to US Cloud Act surveillance access:
             </p>
             <ul className="space-y-1.5 text-xs text-slate-300 list-disc list-inside mb-3">
-              <li>Self-host on any sovereign EU VPS (Hetzner, OVH, Scaleway)</li>
-              <li>Managed Cloud hosted exclusively in Frankfurt & Amsterdam</li>
-              <li>Zero cross-border data transfers to US cloud monopolies</li>
+              <li>Managed European Cloud hosted exclusively in Frankfurt &amp; Amsterdam</li>
+              <li>Strict isolation from US Cloud Act jurisdiction</li>
+              <li>Zero cross-border telemetry transfers to US advertising networks</li>
             </ul>
             <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
               Full data sovereignty guarantees your organization remains 100% compliant with EU-US data privacy frameworks.

@@ -5,6 +5,9 @@ import PlatformHeader from "@/components/PlatformHeader";
 import BehavioralUxSection from "@/components/sections/BehavioralUxSection";
 import { usePlatform } from "@/components/PlatformContext";
 
+import { Flame } from "lucide-react";
+import ProFeatureGate from "@/components/ProFeatureGate";
+
 export default function DedicatedPage() {
   const { data, loading, activeProjectId, timeRange } = usePlatform();
 
@@ -20,7 +23,21 @@ export default function DedicatedPage() {
           Loading analytics...
         </div>
       ) : (
-        <BehavioralUxSection />
+        <ProFeatureGate
+          featureName="Behavioral UX & Rage Click Radar"
+          featureKey="behavioral"
+          icon={Flame}
+          description="Detect user frustration signals in real time before users abandon your site. Pinpoint broken buttons, unresponsive elements, and dead clicks."
+          highlights={[
+            "Autonomous Rage Click detection (3+ rapid taps in 800ms)",
+            "Dead Click analysis (clicks on elements yielding zero DOM response)",
+            "Element selector & route breakdown for fast developer triage",
+            "Device & browser distribution of frustrated sessions",
+            "Prioritized friction impact score to guide UX optimizations",
+          ]}
+        >
+          <BehavioralUxSection />
+        </ProFeatureGate>
       )}
     </div>
   );

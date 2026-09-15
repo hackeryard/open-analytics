@@ -112,7 +112,7 @@ const OBJECTIVES = [
 ];
 
 export default function CreateProjectModal({ isOpen, onClose, onProjectCreated }: CreateProjectModalProps) {
-  const { setActiveProjectId, projects, fetchData } = usePlatform();
+  const { setActiveProjectId, projects, fetchData, checkAuth } = usePlatform();
 
   // Step Tracker (1: Details, 2: Objectives, 3: Data Stream, 4: Install Tag)
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
@@ -228,6 +228,7 @@ export default function CreateProjectModal({ isOpen, onClose, onProjectCreated }
       if (onProjectCreated) {
         onProjectCreated(data.project);
       }
+      checkAuth();
       setCurrentStep(4);
     } catch (err: any) {
       setError(err.message || "An error occurred while creating the property");

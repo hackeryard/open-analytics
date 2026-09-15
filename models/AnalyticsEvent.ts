@@ -59,5 +59,6 @@ AnalyticsEventSchema.index({ projectId: 1, createdAt: -1 });
 AnalyticsEventSchema.index({ projectId: 1, eventName: 1, createdAt: -1 });
 AnalyticsEventSchema.index({ projectId: 1, category: 1, createdAt: -1 });
 AnalyticsEventSchema.index({ projectId: 1, labId: 1, createdAt: -1 });
+AnalyticsEventSchema.index({ createdAt: 1 }, { expireAfterSeconds: 365 * 24 * 60 * 60, name: "retention_1yr_ttl" });
 
 export default mongoose.models.AnalyticsEvent || mongoose.model("AnalyticsEvent", AnalyticsEventSchema);

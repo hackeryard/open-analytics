@@ -408,20 +408,20 @@ function LoginFormContent() {
                     Sign in to your account
                   </h2>
                   <p className="text-xs text-slate-400">
-                    Enter your credentials to receive an authentication code.
+                    Enter your email and password to access your dashboard.
                   </p>
                 </>
               ) : (
                 <>
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 text-xs font-bold mt-1">
                     <KeyRound className="w-3.5 h-3.5 text-cyan-400" />
-                    <span>Two-Factor Authentication</span>
+                    <span>Email Verification</span>
                   </div>
                   <h2 className="text-2xl font-extrabold text-white tracking-tight pt-1">
-                    Enter verification code
+                    Verify your email
                   </h2>
                   <p className="text-xs text-slate-400">
-                    We sent a 6-digit one-time passcode to{" "}
+                    Enter the 6-digit verification code sent to{" "}
                     <span className="text-cyan-300 font-mono font-semibold">{maskedEmail}</span>
                   </p>
                 </>
@@ -567,7 +567,7 @@ function LoginFormContent() {
                       <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     ) : (
                       <>
-                        <span>Continue to Verification</span>
+                        <span>Sign In</span>
                         <ArrowRight className="w-4 h-4" />
                       </>
                     )}
@@ -589,7 +589,7 @@ function LoginFormContent() {
 
                   <div className="flex items-center justify-center gap-2 text-[11px] text-slate-500">
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Protected by Nodemailer 2-Factor OTP</span>
+                    <span>Protected by Email Verification &amp; Session Encryption</span>
                   </div>
                 </div>
               </div>

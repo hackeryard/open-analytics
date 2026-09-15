@@ -85,6 +85,16 @@ const ProjectSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    plan: {
+      type: String,
+      enum: ["free", "pro", "enterprise"],
+      default: "free",
+      index: true,
+    },
+    planExpiresAt: {
+      type: Date,
+      default: null,
+    },
     dataStreams: [
       {
         streamId: { type: String, required: true },

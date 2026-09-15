@@ -10,15 +10,21 @@ export function parseDateFilter(
   projectId: string,
   timeRange = "7d",
   startDateParam?: string | null,
-  endDateParam?: string | null
+  endDateParam?: string | null,
+  plan = "free"
 ): {
   matchStage: {
-        projectId,
-        createdAt: { $gte: Date; $lte?: Date } };
+    projectId: string;
+    createdAt: { $gte: Date; $lte?: Date };
+  };
   isHourly: boolean;
   label: string;
+  maxRetentionDays: number;
 } {
   const now = new Date();
+  const isPro = plan === "pro" || plan === "enterprise";
+  const maxRetentionDays = isPro ? 365 : 30;
+  const earliestAllowed = new Date(now.getTime() - maxRetentionDays * 24 * 60 * 60 * 1000);
 
   // 1. Explicit startDate and endDate params or "custom:YYYY-MM-DD_YYYY-MM-DD"
   if (
@@ -34,39 +40,47 @@ export function parseDateFilter(
       endStr = parts[1] || parts[0];
     }
 
-    const start = new Date(`${startStr}T00:00:00.000Z`);
-    const end = new Date(`${endStr}T23:59:59.999Z`);
+    const rawStart = new Date(`${startStr}T00:00:00.000Z`);
+    const rawEnd = new Date(`${endStr}T23:59:59.999Z`);
+    const start = isNaN(rawStart.getTime()) ? earliestAllowed : rawStart;
+    const end = isNaN(rawEnd.getTime()) ? now : rawEnd;
+    const clampedStart = new Date(Math.max(start.getTime(), earliestAllowed.getTime()));
     const isSingleDay = startStr === endStr;
 
     return {
       matchStage: {
         projectId,
         createdAt: {
-          $gte: isNaN(start.getTime()) ? new Date(0) : start,
-          $lte: isNaN(end.getTime()) ? now : end,
+          $gte: clampedStart,
+          $lte: end,
         },
       },
       isHourly: isSingleDay,
       label: isSingleDay ? startStr || "" : `${startStr} to ${endStr}`,
+      maxRetentionDays,
     };
   }
 
   // 2. Single specific day navigation "date:YYYY-MM-DD"
   if (timeRange.startsWith("date:")) {
     const dateStr = timeRange.replace(/^date:/, "").trim();
-    const start = new Date(`${dateStr}T00:00:00.000Z`);
-    const end = new Date(`${dateStr}T23:59:59.999Z`);
+    const rawStart = new Date(`${dateStr}T00:00:00.000Z`);
+    const rawEnd = new Date(`${dateStr}T23:59:59.999Z`);
+    const start = isNaN(rawStart.getTime()) ? earliestAllowed : rawStart;
+    const end = isNaN(rawEnd.getTime()) ? now : rawEnd;
+    const clampedStart = new Date(Math.max(start.getTime(), earliestAllowed.getTime()));
 
     return {
       matchStage: {
         projectId,
         createdAt: {
-          $gte: isNaN(start.getTime()) ? new Date(0) : start,
-          $lte: isNaN(end.getTime()) ? now : end,
+          $gte: clampedStart,
+          $lte: end,
         },
       },
       isHourly: true,
       label: dateStr,
+      maxRetentionDays,
     };
   }
 
@@ -77,10 +91,12 @@ export function parseDateFilter(
       todayStart.setHours(0, 0, 0, 0);
       return {
         matchStage: {
-        projectId,
-        createdAt: { $gte: todayStart, $lte: now } },
+          projectId,
+          createdAt: { $gte: todayStart, $lte: now },
+        },
         isHourly: true,
         label: "Today",
+        maxRetentionDays,
       };
     }
     case "yesterday": {
@@ -94,57 +110,101 @@ export function parseDateFilter(
 
       return {
         matchStage: {
-        projectId,
-        createdAt: { $gte: yStart, $lte: yEnd } },
+          projectId,
+          createdAt: { $gte: yStart, $lte: yEnd },
+        },
         isHourly: true,
         label: "Yesterday",
+        maxRetentionDays,
       };
     }
     case "24h":
       return {
         matchStage: {
-        projectId,
-        createdAt: { $gte: new Date(now.getTime() - 24 * 60 * 60 * 1000) },
+          projectId,
+          createdAt: { $gte: new Date(now.getTime() - 24 * 60 * 60 * 1000) },
         },
         isHourly: true,
         label: "Past 24 Hours",
+        maxRetentionDays,
       };
     case "7d":
       return {
         matchStage: {
-        projectId,
-        createdAt: { $gte: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000) },
+          projectId,
+          createdAt: { $gte: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000) },
         },
         isHourly: false,
         label: "Past 7 Days",
+        maxRetentionDays,
       };
     case "30d":
       return {
         matchStage: {
-        projectId,
-        createdAt: { $gte: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000) },
+          projectId,
+          createdAt: { $gte: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000) },
         },
         isHourly: false,
         label: "Past 30 Days",
+        maxRetentionDays,
       };
-    case "90d":
+    case "90d": {
+      if (!isPro) {
+        return {
+          matchStage: {
+            projectId,
+            createdAt: { $gte: earliestAllowed },
+          },
+          isHourly: false,
+          label: "Past 30 Days (Free Tier Limit)",
+          maxRetentionDays,
+        };
+      }
       return {
         matchStage: {
-        projectId,
-        createdAt: { $gte: new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000) },
+          projectId,
+          createdAt: { $gte: new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000) },
         },
         isHourly: false,
         label: "Past 90 Days",
+        maxRetentionDays,
       };
-    case "all":
-    default:
+    }
+    case "1y":
+    case "365d": {
+      if (!isPro) {
+        return {
+          matchStage: {
+            projectId,
+            createdAt: { $gte: earliestAllowed },
+          },
+          isHourly: false,
+          label: "Past 30 Days (Free Tier Limit)",
+          maxRetentionDays,
+        };
+      }
       return {
         matchStage: {
-        projectId,
-        createdAt: { $gte: new Date(0) } },
+          projectId,
+          createdAt: { $gte: earliestAllowed },
+        },
         isHourly: false,
-        label: "All Time",
+        label: "Past 365 Days",
+        maxRetentionDays,
       };
+    }
+    case "all":
+    default: {
+      return {
+        matchStage: {
+          projectId,
+          createdAt: { $gte: earliestAllowed },
+        },
+        isHourly: false,
+        label: isPro ? "Past 365 Days" : "Past 30 Days (Free Tier Limit)",
+        maxRetentionDays,
+      };
+    }
   }
 }
 
@@ -152,11 +212,15 @@ export async function getProjectAnalytics(
   projectId: string,
   timeRange = "7d",
   startDateParam?: string | null,
-  endDateParam?: string | null
+  endDateParam?: string | null,
+  plan = "free"
 ) {
-  const { matchStage, isHourly } = parseDateFilter(projectId, timeRange,
+  const { matchStage, isHourly } = parseDateFilter(
+    projectId,
+    timeRange,
     startDateParam,
-    endDateParam
+    endDateParam,
+    plan
   );
   const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
 

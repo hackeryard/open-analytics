@@ -4,7 +4,8 @@ export function getEmailTransporter() {
   const host = process.env.SMTP_HOST;
   const port = parseInt(process.env.SMTP_PORT || "587", 10);
   const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
+  const rawPass = process.env.SMTP_PASS;
+  const pass = rawPass ? rawPass.replace(/['"]/g, "").replace(/\s+/g, "") : undefined;
 
   if (!host || !user || !pass) {
     return null;
@@ -28,19 +29,44 @@ export function generateOtpCode(): string {
   return crypto.randomInt(100000, 999999).toString();
 }
 
+export function maskEmail(email: string): string {
+  const [local, domain] = email.split("@");
+  if (!domain) return email;
+  if (local.length <= 2) return `${local[0]}*@${domain}`;
+  const visiblePrefix = local.slice(0, 2);
+  const visibleSuffix = local.slice(-1);
+  return `${visiblePrefix}${"*".repeat(Math.min(4, Math.max(1, local.length - 3)))}${visibleSuffix}@${domain}`;
+}
+
 export async function sendLoginOtpEmail({
   to,
   otp,
   name,
+  purpose = "login",
 }: {
   to: string;
   otp: string;
   name?: string;
+  purpose?: "login" | "registration" | "verification";
 }): Promise<{ success: boolean; messageId?: string; simulated?: boolean }> {
   const transporter = getEmailTransporter();
   const from = process.env.SMTP_FROM || "Open Analytics <noreply@openanalytics.org.in>";
 
   const displayName = name || to.split("@")[0] || "User";
+
+  const isRegister = purpose === "registration";
+  const isVerification = purpose === "verification";
+  const headerTitle = isRegister
+    ? "Verify your email address"
+    : isVerification
+    ? "Verify your account"
+    : "Verify your login";
+
+  const messageIntro = isRegister
+    ? "Thank you for creating an account with Open Analytics. Please use the one-time verification code below to verify your email address and activate your account:"
+    : isVerification
+    ? "Your account requires email verification before signing in. Please use the one-time verification code below to complete verification:"
+    : "A sign-in attempt was detected for your account. Please use the one-time verification code below to complete your authentication:";
 
   const htmlContent = `
 <!DOCTYPE html>
@@ -159,11 +185,11 @@ export async function sendLoginOtpEmail({
     <div class="card">
       <div class="brand">
         <span class="brand-text">Open Analytics</span>
-        <span class="brand-badge">2-Factor Auth</span>
+        <span class="brand-badge">${isRegister ? "Registration" : "Email Auth"}</span>
       </div>
-      <h1>Verify your login</h1>
+      <h1>${headerTitle}</h1>
       <p>Hello ${displayName},</p>
-      <p>A sign-in attempt was detected for your account. Please use the one-time verification code below to complete your authentication:</p>
+      <p>${messageIntro}</p>
       
       <div class="otp-container">
         <div class="otp-code">${otp}</div>

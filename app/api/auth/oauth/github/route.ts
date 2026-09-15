@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
+import { getOAuthBaseUrl } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
   const clientId = process.env.GITHUB_CLIENT_ID;
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || req.nextUrl.origin;
-  const redirectUri = `${appUrl}/api/auth/oauth/github/callback`;
+  const baseUrl = getOAuthBaseUrl(req);
+  const redirectUri = `${baseUrl}/api/auth/oauth/github/callback`;
 
   // Graceful handling if GitHub OAuth credentials have not been configured yet
   if (!clientId) {
-    return NextResponse.redirect(new URL("/login?error=oauth_not_configured&provider=github", req.url));
+    return NextResponse.redirect(new URL("/login?error=oauth_not_configured&provider=github", baseUrl));
   }
 
   // Generate cryptographic state for CSRF protection
@@ -22,12 +23,14 @@ export async function GET(req: NextRequest) {
 
   const response = NextResponse.redirect(githubAuthUrl.toString());
 
+  const isLocal = baseUrl.includes("localhost") || baseUrl.includes("127.0.0.1");
+
   // Store state in an HTTP-only, secure short-lived cookie
   response.cookies.set({
     name: "open_oauth_state",
     value: state,
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: !isLocal && process.env.NODE_ENV === "production",
     sameSite: "lax",
     maxAge: 10 * 60, // 10 minutes
     path: "/",

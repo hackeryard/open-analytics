@@ -5,6 +5,9 @@ import PlatformHeader from "@/components/PlatformHeader";
 import ErrorsSection from "@/components/sections/ErrorsSection";
 import { usePlatform } from "@/components/PlatformContext";
 
+import { Bug } from "lucide-react";
+import ProFeatureGate from "@/components/ProFeatureGate";
+
 export default function DedicatedPage() {
   const { data, loading, activeProjectId, timeRange } = usePlatform();
 
@@ -20,7 +23,21 @@ export default function DedicatedPage() {
           Loading analytics...
         </div>
       ) : (
-        <ErrorsSection />
+        <ProFeatureGate
+          featureName="Crash & Frontend Error Triage"
+          featureKey="errors"
+          icon={Bug}
+          description="Automated runtime JavaScript error capture, stack trace grouping, affected URLs, and one-click AI prompt generation to debug production bugs."
+          highlights={[
+            "Real-time capture of uncaught window.onerror & unhandled promise rejections",
+            "Automatic fingerprinting & grouping of identical crash signatures",
+            "Affected route, device, and browser telemetry context",
+            "Zero client overhead beacon transport (navigator.sendBeacon)",
+            "One-click AI prompt generation to debug and fix errors instantly",
+          ]}
+        >
+          <ErrorsSection />
+        </ProFeatureGate>
       )}
     </div>
   );

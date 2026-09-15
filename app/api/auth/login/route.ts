@@ -48,7 +48,46 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
     }
 
-    // Credentials are valid -> Generate 6-digit OTP code
+    // 1. If user is already verified (or super_admin), log them in directly with NO OTP
+    const isVerified = Boolean(user.emailVerified) || user.role === "super_admin";
+
+    if (isVerified) {
+      const { signToken, SESSION_COOKIE_NAME } = await import("@/lib/auth");
+      const token = signToken({
+        userId: user._id.toString(),
+        email: user.email,
+        role: user.role,
+        name: user.name,
+      });
+
+      const response = NextResponse.json({
+        success: true,
+        requiresOtp: false,
+        user: {
+          id: user._id.toString(),
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          avatar: user.avatar,
+          emailVerified: true,
+        },
+        message: "Signed in successfully",
+      });
+
+      response.cookies.set({
+        name: SESSION_COOKIE_NAME,
+        value: token,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 30 * 24 * 60 * 60, // 30 days
+        path: "/",
+      });
+
+      return response;
+    }
+
+    // 2. User is NOT verified yet -> require OTP verification before allowing signin
     const otp = generateOtpCode();
     const otpHash = await hashPassword(otp);
 
@@ -62,11 +101,12 @@ export async function POST(req: NextRequest) {
       expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes
     });
 
-    // Send email using nodemailer
-    const emailResult = await sendLoginOtpEmail({
+    // Send verification email
+    await sendLoginOtpEmail({
       to: user.email,
       otp,
       name: user.name,
+      purpose: "verification",
     });
 
     // Sign a temporary OTP challenge token
@@ -84,7 +124,7 @@ export async function POST(req: NextRequest) {
       tempToken,
       email: user.email,
       maskedEmail: maskEmail(user.email),
-      message: `A 6-digit verification code was sent to ${maskEmail(user.email)}.`,
+      message: `Your account is not verified yet. A 6-digit verification code was sent to ${maskEmail(user.email)}.`,
       smtpConfigured: hasSmtp,
       devOtp: !hasSmtp ? otp : undefined,
     });

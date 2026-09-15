@@ -78,6 +78,12 @@ export async function POST(req: NextRequest) {
     // 5. Verification successful -> consume OTP and issue full user session
     await (Otp as any).deleteOne({ _id: otpRecord._id });
 
+    // Mark user email as verified
+    await (User as any).updateOne(
+      { _id: payload.userId },
+      { $set: { emailVerified: true } }
+    );
+
     const user = await (User as any).findById(payload.userId).lean();
     if (!user) {
       return NextResponse.json({ error: "User account not found." }, { status: 404 });
@@ -98,6 +104,7 @@ export async function POST(req: NextRequest) {
         email: user.email,
         role: user.role,
         avatar: user.avatar,
+        emailVerified: true,
       },
     });
 

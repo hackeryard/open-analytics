@@ -52,6 +52,7 @@ import WebVitalsRadarWidget from "@/components/dashboard/WebVitalsRadarWidget";
 import DeviceBreakdownWidget from "@/components/dashboard/DeviceBreakdownWidget";
 import AiAndErrorWidget from "@/components/dashboard/AiAndErrorWidget";
 import LandingHero from "@/components/public/LandingHero";
+import { isDashboardClient } from "@/lib/subdomain";
 
 export default function ExecutiveOverviewDashboard() {
   const {
@@ -117,9 +118,20 @@ export default function ExecutiveOverviewDashboard() {
     }
   };
 
-  // If visitor is unauthenticated (or search engine bot), display the public landing page
-  if (authChecked && !currentUser) {
+  // 1. If accessing on the main marketing domain, strictly serve the public SEO landing page
+  const isDashboard = typeof window !== "undefined" ? isDashboardClient() : false;
+  if (!isDashboard) {
     return <LandingHero />;
+  }
+
+  // 2. If on dashboard subdomain but not authenticated, display redirect state
+  if (authChecked && !currentUser) {
+    return (
+      <div className="min-h-[70vh] flex flex-col items-center justify-center space-y-4">
+        <div className="w-8 h-8 rounded-full border-2 border-cyan-400 border-t-transparent animate-spin" />
+        <div className="text-xs text-slate-400">Redirecting to login...</div>
+      </div>
+    );
   }
 
   if (loading && !data) {
@@ -346,7 +358,7 @@ export default function ExecutiveOverviewDashboard() {
 
         {/* AI & LLM Crawlers */}
         <Link
-          href="/ai-aeo"
+          href="/ai-visibility"
           className="p-4 glass-card glass-card-hover rounded-2xl space-y-2 group block relative overflow-hidden"
         >
           <div className="flex items-center justify-between">

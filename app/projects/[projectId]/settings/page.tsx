@@ -37,6 +37,8 @@ import {
   Bug,
   Database,
   Terminal,
+  Bot,
+  Flame,
 } from "lucide-react";
 
 interface MemberItem {
@@ -108,7 +110,9 @@ export default function SettingsPage() {
   const [copiedKey, setCopiedKey] = useState(false);
   const [copiedMeasurementId, setCopiedMeasurementId] = useState(false);
   const [accessDenied, setAccessDenied] = useState(false);
-  const [activeTab, setActiveTab] = useState<"property" | "streams" | "privacy" | "tag" | "team" | "events" | "danger">("property");
+  const [activeTab, setActiveTab] = useState<"property" | "plan" | "streams" | "privacy" | "tag" | "team" | "events" | "danger">("property");
+  const [switchingPlan, setSwitchingPlan] = useState(false);
+  const [planMessage, setPlanMessage] = useState<string | null>(null);
 
   // Editable Property fields
   const [propertyName, setPropertyName] = useState("");
@@ -194,8 +198,37 @@ export default function SettingsPage() {
       })
       .finally(() => setLoading(false));
 
+    if (typeof window !== "undefined" && window.location.hash) {
+      const hash = window.location.hash.replace("#", "");
+      if (["property", "plan", "streams", "privacy", "tag", "team", "events", "danger"].includes(hash)) {
+        setActiveTab(hash as any);
+      }
+    }
+
     fetchMembers();
   }, [projectId]);
+
+  const handleSwitchPlan = async (targetPlan: "free" | "pro") => {
+    setSwitchingPlan(true);
+    setPlanMessage(null);
+    try {
+      const res = await fetch(`/api/projects/${projectId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan: targetPlan }),
+      });
+      if (res.ok) {
+        const d = await res.json();
+        setProject(d.project);
+        setPlanMessage(`Successfully updated project to ${targetPlan.toUpperCase()} plan!`);
+        setTimeout(() => setPlanMessage(null), 3500);
+      }
+    } catch (err: any) {
+      setPlanMessage(`Failed to update plan: ${err.message}`);
+    } finally {
+      setSwitchingPlan(false);
+    }
+  };
 
   const fetchMembers = async () => {
     setLoadingMembers(true);
@@ -497,6 +530,7 @@ export default function SettingsPage() {
 
   const navTabs = [
     { id: "property", label: "Property Details", icon: Sliders },
+    { id: "plan", label: "Plan & Add-on Features", icon: Crown, badge: project?.plan === "pro" ? "PRO" : "FREE" },
     { id: "streams", label: "Data Streams", icon: Radio, count: (project.dataStreams?.length || 1) },
     { id: "privacy", label: "Data Collection & Privacy", icon: ShieldCheck },
     { id: "tag", label: "Tag & API Setup", icon: Code2 },
@@ -580,11 +614,24 @@ export default function SettingsPage() {
                   <Icon size={15} />
                   <span>{t.label}</span>
                 </div>
-                {t.count !== undefined && (
-                  <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-white/[0.06] text-slate-300">
-                    {t.count}
-                  </span>
-                )}
+                <div className="flex items-center gap-1.5">
+                  {(t as any).badge && (
+                    <span
+                      className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded tracking-wider uppercase ${
+                        (t as any).badge === "PRO"
+                          ? "bg-gradient-to-r from-amber-400 to-cyan-400 text-slate-950 font-black shadow-xs"
+                          : "bg-white/[0.08] text-slate-400 font-mono"
+                      }`}
+                    >
+                      {(t as any).badge}
+                    </span>
+                  )}
+                  {t.count !== undefined && (
+                    <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-white/[0.06] text-slate-300">
+                      {t.count}
+                    </span>
+                  )}
+                </div>
               </button>
             );
           })}
@@ -706,6 +753,185 @@ export default function SettingsPage() {
                 </button>
               </div>
             </form>
+          )}
+
+          {/* ============================================================ */}
+          {/* TAB: PLAN & ADD-ON FEATURES                                  */}
+          {/* ============================================================ */}
+          {activeTab === "plan" && (
+            <div className="p-6 rounded-3xl bg-[#0b1020]/90 border border-white/[0.08] space-y-6 animate-fadeIn">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/[0.08] pb-4">
+                <div>
+                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                    <Crown className="w-5 h-5 text-amber-400" />
+                    Subscription & Add-on Feature Modules
+                  </h3>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Manage tier allocation and unlock advanced AI radar, Core Web Vitals, and behavioral diagnostics for this project.
+                  </p>
+                </div>
+
+                {planMessage && (
+                  <div className="px-3 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-bold animate-fadeIn">
+                    {planMessage}
+                  </div>
+                )}
+              </div>
+
+              {/* Current Plan Status Box */}
+              <div
+                className={`p-5 rounded-2xl border ${
+                  project?.plan === "pro"
+                    ? "bg-gradient-to-r from-amber-500/10 via-cyan-500/10 to-transparent border-amber-400/40 shadow-lg shadow-amber-500/5"
+                    : "bg-white/[0.02] border-white/[0.08]"
+                }`}
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                        Current Property Plan:
+                      </span>
+                      <span
+                        className={`text-xs font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider ${
+                          project?.plan === "pro"
+                            ? "bg-gradient-to-r from-amber-400 to-cyan-400 text-slate-950 shadow-sm"
+                            : "bg-white/[0.08] text-slate-300"
+                        }`}
+                      >
+                        {project?.plan === "pro" ? "Cloud Pro Plan" : "Free Starter Plan"}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-300">
+                      {project?.plan === "pro"
+                        ? "All 5 Extra Power Modules (AI Search Radar, Core Web Vitals RUM, Behavioral UX, Crash Triage, and Custom Events) are fully active."
+                        : "Standard cookieless web telemetry is active. Advanced AI radar, RUM vitals, rage clicks, and custom events stream are gated."}
+                    </p>
+                  </div>
+
+                  <div>
+                    {project?.plan === "pro" ? (
+                      <button
+                        onClick={() => handleSwitchPlan("free")}
+                        disabled={switchingPlan}
+                        className="px-4 py-2 rounded-xl bg-white/[0.06] hover:bg-rose-500/20 text-slate-300 hover:text-rose-300 border border-white/[0.1] text-xs font-semibold transition cursor-pointer"
+                      >
+                        {switchingPlan ? "Updating..." : "Downgrade to Free"}
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleSwitchPlan("pro")}
+                        disabled={switchingPlan}
+                        className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-cyan-400 to-indigo-500 hover:from-amber-300 hover:to-cyan-300 text-slate-950 text-xs font-extrabold shadow-lg shadow-cyan-500/20 transition cursor-pointer flex items-center gap-1.5"
+                      >
+                        <Zap className="w-3.5 h-3.5 fill-current" />
+                        <span>{switchingPlan ? "Activating..." : "Upgrade to Pro ($19/mo)"}</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Extra Feature Modules Breakdown */}
+              <div className="space-y-3">
+                <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400">
+                  Feature Matrix & Module Entitlements
+                </h4>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Module 1 */}
+                  <div className="p-4 rounded-2xl bg-[#060a14] border border-white/[0.06] space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Activity className="w-4 h-4 text-cyan-400" />
+                        <span className="text-xs font-bold text-white">Core Web Vitals (RUM)</span>
+                      </div>
+                      <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-amber-400/15 border border-amber-400/30 text-amber-300 uppercase">
+                        PRO
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 leading-relaxed">
+                      Capture real user field experience metrics (LCP, INP, CLS, TTFB) across all visitor devices without synthetic noise.
+                    </p>
+                  </div>
+
+                  {/* Module 2 */}
+                  <div className="p-4 rounded-2xl bg-[#060a14] border border-white/[0.06] space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Bot className="w-4 h-4 text-indigo-400" />
+                        <span className="text-xs font-bold text-white">GEO & AI Search Radar</span>
+                      </div>
+                      <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-amber-400/15 border border-amber-400/30 text-amber-300 uppercase">
+                        PRO
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 leading-relaxed">
+                      Autonomous classification of referral clicks and scraper traffic from OpenAI SearchGPT, Perplexity AI, ClaudeBot, and Gemini.
+                    </p>
+                  </div>
+
+                  {/* Module 3 */}
+                  <div className="p-4 rounded-2xl bg-[#060a14] border border-white/[0.06] space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Flame className="w-4 h-4 text-rose-400" />
+                        <span className="text-xs font-bold text-white">Behavioral UX & Rage Clicks</span>
+                      </div>
+                      <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-amber-400/15 border border-amber-400/30 text-amber-300 uppercase">
+                        PRO
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 leading-relaxed">
+                      Detect user frustration friction in real time. Identify rage clicks (3+ rapid taps) and dead clicks on broken buttons.
+                    </p>
+                  </div>
+
+                  {/* Module 4 */}
+                  <div className="p-4 rounded-2xl bg-[#060a14] border border-white/[0.06] space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Bug className="w-4 h-4 text-emerald-400" />
+                        <span className="text-xs font-bold text-white">Crash & Error Diagnostics</span>
+                      </div>
+                      <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-amber-400/15 border border-amber-400/30 text-amber-300 uppercase">
+                        PRO
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 leading-relaxed">
+                      Automated runtime error capture, stack trace grouping, affected URLs, and one-click AI prompt generation to debug bugs.
+                    </p>
+                  </div>
+
+                  {/* Module 5 */}
+                  <div className="p-4 rounded-2xl bg-[#060a14] border border-white/[0.06] space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Zap className="w-4 h-4 text-amber-400" />
+                        <span className="text-xs font-bold text-white">Custom Events & Conversion Rules</span>
+                      </div>
+                      <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-amber-400/15 border border-amber-400/30 text-amber-300 uppercase">
+                        PRO
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 leading-relaxed">
+                      Custom business event telemetry, revenue value attribution, payload inspection, and no-code CSS selector autotrack rules.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Free Core Inclusions */}
+              <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.05] text-xs text-slate-400 space-y-2">
+                <div className="font-bold text-white text-xs flex items-center gap-1.5">
+                  <Check className="w-4 h-4 text-emerald-400" />
+                  Free Core Inclusions:
+                </div>
+                <p className="text-[11px] leading-relaxed">
+                  Unlimited standard pageviews, unique visitors, sessions, referrers, UTM campaigns, geographic locations (countries & cities), device breakdowns, real-time live feed, and 100% cookieless GDPR/PECR compliance remain permanently free.
+                </p>
+              </div>
+            </div>
           )}
 
           {/* ============================================================ */}

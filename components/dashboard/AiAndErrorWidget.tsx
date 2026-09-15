@@ -33,7 +33,7 @@ export default function AiAndErrorWidget({
               <h3 className="text-sm font-black text-white">AI &amp; AEO Crawler Radar</h3>
             </div>
             <Link
-              href="/ai-aeo"
+              href="/ai-visibility"
               className="inline-flex items-center gap-1 text-[11px] font-bold text-cyan-400 hover:text-cyan-300 transition"
             >
               <span>AI Radar</span>

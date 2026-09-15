@@ -5,6 +5,9 @@ import PlatformHeader from "@/components/PlatformHeader";
 import WebVitalsSection from "@/components/sections/WebVitalsSection";
 import { usePlatform } from "@/components/PlatformContext";
 
+import { Activity } from "lucide-react";
+import ProFeatureGate from "@/components/ProFeatureGate";
+
 export default function DedicatedPage() {
   const { data, loading, activeProjectId, timeRange } = usePlatform();
 
@@ -20,7 +23,21 @@ export default function DedicatedPage() {
           Loading analytics...
         </div>
       ) : (
-        <WebVitalsSection />
+        <ProFeatureGate
+          featureName="Core Web Vitals (RUM)"
+          featureKey="rum"
+          icon={Activity}
+          description="Capture real user field telemetry (LCP, INP, CLS, TTFB, and FCP) across all visitor devices and networks without synthetic testing artifacts."
+          highlights={[
+            "Real user p75 percentiles for Largest Contentful Paint (LCP)",
+            "Interaction to Next Paint (INP) latency tracking",
+            "Cumulative Layout Shift (CLS) layout stability scoring",
+            "Time to First Byte (TTFB) & First Contentful Paint (FCP) field metrics",
+            "Route-by-route and device-by-device performance breakdown",
+          ]}
+        >
+          <WebVitalsSection />
+        </ProFeatureGate>
       )}
     </div>
   );

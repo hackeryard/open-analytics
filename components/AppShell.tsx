@@ -50,6 +50,7 @@ import DateRangeNavigator from "@/components/DateRangeNavigator";
 import CreateProjectModal from "@/components/CreateProjectModal";
 import PublicNavbar from "@/components/public/PublicNavbar";
 import PublicFooter from "@/components/public/PublicFooter";
+import { isDashboardClient, getMainDomainUrl } from "@/lib/subdomain";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -64,6 +65,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     loading,
     pvLoading,
     fetchData,
+    checkAuth,
     liveVisitorCount,
     showNewProjectModal,
     setShowNewProjectModal,
@@ -94,6 +96,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   }, [pathname]);
 
   const activeProject = projects.find((p) => p.projectId === activeProjectId);
+  const isPro = activeProject?.plan === "pro" || activeProject?.plan === "enterprise";
 
   const copyProjectId = () => {
     if (!activeProjectId) return;
@@ -172,7 +175,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         { href: "/audience", label: "Audience & Loyalty", icon: Users, badge: (data?.retention?.returnRate !== undefined || data?.overview?.returnRate !== undefined) ? `${data?.retention?.returnRate ?? data?.overview?.returnRate ?? 0}% return` : undefined },
         { href: "/journeys", label: "User Journeys", icon: Share2 },
         { href: "/pages", label: "Top Pages & Routes", icon: Layers, badge: data?.topPages?.length ? `${data.topPages.length}` : undefined },
-        { href: "/events", label: "Custom Events", icon: Zap, badge: data?.recentEvents?.length ? `${data.recentEvents.length}` : undefined },
+        { href: "/events", label: "Custom Events", icon: Zap, pro: true, badge: data?.recentEvents?.length ? `${data.recentEvents.length}` : undefined },
         ...(data?.labIntelligence?.overview?.totalStarts || data?.labIntelligence?.overview?.totalCompletions
           ? [{ href: "/labs", label: "Virtual Labs", icon: BookOpen }]
           : []),
@@ -181,9 +184,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     {
       group: "Performance & Quality",
       items: [
-        { href: "/vitals", label: "Web Vitals (RUM)", icon: Activity, badge: data?.webVitals?.overall?.lcp ? `${(data.webVitals.overall.lcp / 1000).toFixed(2)}s` : undefined },
-        { href: "/errors", label: "Crash & Errors", icon: Bug, badge: data?.errorStats?.totalErrors ? `${data.errorStats.totalErrors}` : "0", alert: (data?.errorStats?.totalErrors || 0) > 0 },
-        { href: "/ux", label: "Behavioral UX", icon: Flame, badge: data?.behavioralSignals?.rageClicks?.length ? `${data.behavioralSignals.rageClicks.length} rage` : undefined },
+        { href: "/vitals", label: "Web Vitals (RUM)", icon: Activity, pro: true, badge: data?.webVitals?.overall?.lcp ? `${(data.webVitals.overall.lcp / 1000).toFixed(2)}s` : undefined },
+        { href: "/errors", label: "Crash & Errors", icon: Bug, pro: true, badge: data?.errorStats?.totalErrors ? `${data.errorStats.totalErrors}` : "0", alert: (data?.errorStats?.totalErrors || 0) > 0 },
+        { href: "/ux", label: "Behavioral UX", icon: Flame, pro: true, badge: data?.behavioralSignals?.rageClicks?.length ? `${data.behavioralSignals.rageClicks.length} rage` : undefined },
         { href: "/tech", label: "Devices & Tech", icon: Laptop },
       ],
     },
@@ -193,7 +196,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         { href: "/geo", label: "Audience Geography", icon: Globe, badge: data?.countries?.length ? `${data.countries.length}` : undefined },
         { href: "/acquisition", label: "Acquisition & Sources", icon: Compass },
         { href: "/seo", label: "SEO & Search", icon: Search },
-        { href: "/ai-aeo", label: "GEO & AI Radar", icon: Bot, badge: data?.aiVisibility?.overview?.totalAiCrawlerHits ? `${data.aiVisibility.overview.totalAiCrawlerHits}` : undefined },
+        { href: "/ai-visibility", label: "GEO & AI Radar", icon: Bot, pro: true, badge: data?.aiVisibility?.overview?.totalAiCrawlerHits ? `${data.aiVisibility.overview.totalAiCrawlerHits}` : undefined },
       ],
     },
     {
@@ -208,6 +211,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             ]
           : []),
         { href: "/docs", label: "Developer Docs & API", icon: FileText },
+        { href: getMainDomainUrl("/"), label: "Main Website", icon: Globe, external: true },
       ],
     },
   ];
@@ -218,22 +222,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
   }
 
-  // Render public marketing pages with dedicated PublicNavbar and PublicFooter
-  const isMarketingPage =
-    (pathname === "/" && !currentUser) ||
-    (pathname.startsWith("/docs") && !currentUser) ||
-    pathname === "/features" ||
-    pathname.startsWith("/features/") ||
-    pathname === "/vs-google-analytics" ||
-    pathname.startsWith("/vs-google-analytics/") ||
-    pathname === "/pricing" ||
-    pathname.startsWith("/pricing/") ||
-    pathname === "/privacy" ||
-    pathname.startsWith("/privacy/") ||
-    pathname === "/faq" ||
-    pathname.startsWith("/faq/");
+  // Domain context: check if running on dashboard subdomain
+  const isDashboard = typeof window !== "undefined" ? isDashboardClient() : false;
 
-  if (isMarketingPage) {
+  // On the main domain, ALWAYS render the marketing shell (PublicNavbar + content + PublicFooter)
+  // On the dashboard subdomain, render the analytics platform workspace
+  if (!isDashboard) {
     return (
       <div className="min-h-screen flex flex-col bg-[#050811] text-slate-100 selection:bg-cyan-500/30 selection:text-cyan-200">
         <PublicNavbar />
@@ -332,9 +326,11 @@ export default function App() {
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5">
                   <span className="font-extrabold text-sm tracking-tight text-white group-hover:text-cyan-400 transition">Open Analytics</span>
-                  <span className="text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 uppercase font-bold tracking-wider">
-                    PRO
-                  </span>
+                  {isPro && (
+                    <span className="text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 uppercase font-bold tracking-wider">
+                      PRO
+                    </span>
+                  )}
                 </div>
                 <span className="text-[10px] text-muted-foreground truncate">Web Observability</span>
               </div>
@@ -355,19 +351,25 @@ export default function App() {
           <div className="p-3 border-b border-white/[0.07]">
             <div className="relative">
               <button
-                onClick={() => setShowProjectDropdown(!showProjectDropdown)}
+                onClick={() => {
+                  if (projects.length === 0) {
+                    setShowNewProjectModal(true);
+                  } else {
+                    setShowProjectDropdown(!showProjectDropdown);
+                  }
+                }}
                 className="w-full flex items-center justify-between p-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08] transition text-left group cursor-pointer"
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-xs font-black shrink-0">
-                    {activeProject?.name ? activeProject.name[0].toUpperCase() : "P"}
+                    {activeProject?.name ? activeProject.name[0].toUpperCase() : "+"}
                   </div>
                   <div className="min-w-0">
                     <div className="text-xs font-bold text-white truncate group-hover:text-cyan-400 transition">
-                      {activeProject?.name || activeProjectId || "Select Project"}
+                      {activeProject?.name || (projects.length === 0 ? "Create First Project" : "Select Project")}
                     </div>
                     <div className="text-[10px] text-muted-foreground font-mono truncate">
-                      {activeProjectId || "no project"}
+                      {activeProjectId || (projects.length === 0 ? "Click to setup" : "no project")}
                     </div>
                   </div>
                 </div>
@@ -448,6 +450,27 @@ export default function App() {
                   const Icon = item.icon;
                   const isActive = item.exact ? pathname === item.href : pathname === item.href || pathname.startsWith(`${item.href}/`);
 
+                  if ((item as any).external) {
+                    return (
+                      <a
+                        key={item.href}
+                        href={item.href}
+                        className="flex items-center gap-3 px-2.5 py-2 rounded-xl text-xs font-bold transition-all group relative text-slate-400 hover:text-slate-100 hover:bg-white/[0.04] border border-transparent"
+                        title={sidebarCollapsed ? item.label : undefined}
+                      >
+                        <div className="relative shrink-0">
+                          <Icon size={16} className="text-slate-400 group-hover:text-slate-200" />
+                        </div>
+                        {!sidebarCollapsed && (
+                          <div className="flex items-center justify-between w-full min-w-0">
+                            <span className="truncate">{item.label}</span>
+                            <ExternalLink size={12} className="text-slate-500 group-hover:text-slate-300 shrink-0 ml-1" />
+                          </div>
+                        )}
+                      </a>
+                    );
+                  }
+
                   return (
                     <Link
                       key={item.href}
@@ -469,19 +492,26 @@ export default function App() {
                       {!sidebarCollapsed && (
                         <div className="flex items-center justify-between w-full min-w-0">
                           <span className="truncate">{item.label}</span>
-                          {item.badge && (
-                            <span
-                              className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full truncate ml-1 font-bold ${
-                                item.alert
-                                  ? "bg-rose-500/20 text-rose-300 border border-rose-500/30"
-                                  : isActive
-                                  ? "bg-cyan-500/20 text-cyan-300"
-                                  : "bg-white/[0.05] text-slate-400 group-hover:text-slate-200"
-                              }`}
-                            >
-                              {item.badge}
-                            </span>
-                          )}
+                          <div className="flex items-center gap-1.5 shrink-0 ml-1">
+                            {item.pro && (
+                              <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-gradient-to-r from-amber-400 to-cyan-400 text-slate-950 tracking-wider uppercase shadow-xs">
+                                PRO
+                              </span>
+                            )}
+                            {item.badge && (
+                              <span
+                                className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full truncate font-bold ${
+                                  item.alert
+                                    ? "bg-rose-500/20 text-rose-300 border border-rose-500/30"
+                                    : isActive
+                                    ? "bg-cyan-500/20 text-cyan-300"
+                                    : "bg-white/[0.05] text-slate-400 group-hover:text-slate-200"
+                                }`}
+                              >
+                                {item.badge}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       )}
                     </Link>
@@ -542,7 +572,14 @@ export default function App() {
                 <div className="w-8 h-8 rounded-xl bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
                   <Activity size={18} />
                 </div>
-                <span className="font-black text-white text-base">Open Analytics</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="font-black text-white text-base">Open Analytics</span>
+                  {isPro && (
+                    <span className="text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 uppercase font-bold tracking-wider">
+                      PRO
+                    </span>
+                  )}
+                </div>
               </div>
               <button onClick={() => setMobileMenuOpen(false)} className="p-1.5 rounded-lg text-slate-400 hover:text-white">
                 <X size={18} />
@@ -558,6 +595,23 @@ export default function App() {
                   {group.items.map((item) => {
                     const Icon = item.icon;
                     const isActive = item.exact ? pathname === item.href : pathname === item.href || pathname.startsWith(`${item.href}/`);
+
+                    if ((item as any).external) {
+                      return (
+                        <a
+                          key={item.href}
+                          href={item.href}
+                          className="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition text-slate-300 hover:bg-white/[0.04]"
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <Icon size={16} />
+                            <span>{item.label}</span>
+                          </div>
+                          <ExternalLink size={14} className="text-slate-400" />
+                        </a>
+                      );
+                    }
+
                     return (
                       <Link
                         key={item.href}
@@ -570,11 +624,18 @@ export default function App() {
                           <Icon size={16} />
                           <span>{item.label}</span>
                         </div>
-                        {item.badge && (
-                          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-white/[0.06] text-slate-300">
-                            {item.badge}
-                          </span>
-                        )}
+                        <div className="flex items-center gap-1.5">
+                          {item.pro && (
+                            <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-gradient-to-r from-amber-400 to-cyan-400 text-slate-950 tracking-wider uppercase">
+                              PRO
+                            </span>
+                          )}
+                          {item.badge && (
+                            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-white/[0.06] text-slate-300">
+                              {item.badge}
+                            </span>
+                          )}
+                        </div>
                       </Link>
                     );
                   })}
@@ -628,7 +689,7 @@ export default function App() {
           {/* Right: Date Picker & Quick Actions */}
           <div className="flex items-center gap-2 shrink-0">
             {/* Compact Date Range Navigator */}
-            <DateRangeNavigator value={timeRange} onChange={setTimeRange} />
+            <DateRangeNavigator value={timeRange} onChange={setTimeRange} plan={activeProject?.plan} />
 
             {/* Quick Install Snippet Button */}
             <button
@@ -880,6 +941,7 @@ export default function App() {
         isOpen={showNewProjectModal}
         onClose={() => setShowNewProjectModal(false)}
         onProjectCreated={() => {
+          checkAuth();
           fetchData();
         }}
       />

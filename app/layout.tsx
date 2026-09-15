@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     "rage click tracker",
     "ga4 alternative",
     "lightweight web analytics",
-    "self hosted analytics",
+    "cloud web analytics",
     "answer engine optimization",
     "generative engine optimization",
   ],
