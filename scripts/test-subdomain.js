@@ -127,10 +127,85 @@ async function run() {
     });
     const location = res.headers.location || "";
     const ok = (res.statusCode === 307 || res.statusCode === 308) && location.includes("/login");
-    console.log(`[6/6] Dashboard Subdomain (unauthenticated / -> /login): location=${location} => ${ok ? "PASS" : "FAIL"}`);
+    console.log(`[6/10] Dashboard Subdomain (unauthenticated / -> /login): location=${location} => ${ok ? "PASS" : "FAIL"}`);
     if (!ok) failures++;
   } catch (e) {
-    console.error("[6/6] Error:", e.message);
+    console.error("[6/10] Error:", e.message);
+    failures++;
+  }
+
+  // 7. API Subdomain root returns 200 JSON with service status
+  try {
+    const res = await testRequest({
+      hostname: "127.0.0.1",
+      port,
+      path: "/",
+      method: "GET",
+      headers: { Host: `api.localhost:${port}` },
+    });
+    const isJson = (res.headers["content-type"] || "").includes("application/json");
+    const ok = res.statusCode === 200 && isJson && res.body.includes("OpenAnalytics Telemetry & Ingestion API");
+    console.log(`[7/10] API Subdomain (GET / -> Status JSON): status=${res.statusCode}, isJson=${isJson} => ${ok ? "PASS" : "FAIL"}`);
+    if (!ok) failures++;
+  } catch (e) {
+    console.error("[7/10] API Subdomain error:", e.message);
+    failures++;
+  }
+
+  // 8. API Subdomain /open.js returns 200 with global CORS header
+  try {
+    const res = await testRequest({
+      hostname: "127.0.0.1",
+      port,
+      path: "/open.js",
+      method: "GET",
+      headers: { Host: `api.localhost:${port}` },
+    });
+    const cors = res.headers["access-control-allow-origin"];
+    const ok = res.statusCode === 200 && cors === "*";
+    console.log(`[8/10] API Subdomain (GET /open.js): status=${res.statusCode}, CORS=${cors} => ${ok ? "PASS" : "FAIL"}`);
+    if (!ok) failures++;
+  } catch (e) {
+    console.error("[8/10] Error:", e.message);
+    failures++;
+  }
+
+  // 9. API Subdomain /v1/collect handles OPTIONS preflight
+  try {
+    const res = await testRequest({
+      hostname: "127.0.0.1",
+      port,
+      path: "/v1/collect",
+      method: "OPTIONS",
+      headers: {
+        Host: `api.localhost:${port}`,
+        Origin: "https://example.com",
+      },
+    });
+    const cors = res.headers["access-control-allow-origin"];
+    const ok = res.statusCode === 204 && !!cors;
+    console.log(`[9/10] API Subdomain (OPTIONS /v1/collect): status=${res.statusCode}, CORS=${cors} => ${ok ? "PASS" : "FAIL"}`);
+    if (!ok) failures++;
+  } catch (e) {
+    console.error("[9/10] Error:", e.message);
+    failures++;
+  }
+
+  // 10. API Subdomain /login redirects to dashboard
+  try {
+    const res = await testRequest({
+      hostname: "127.0.0.1",
+      port,
+      path: "/login",
+      method: "GET",
+      headers: { Host: `api.localhost:${port}` },
+    });
+    const location = res.headers.location || "";
+    const ok = (res.statusCode === 307 || res.statusCode === 308) && location.includes("dashboard.");
+    console.log(`[10/10] API Subdomain (GET /login -> dashboard redirect): location=${location} => ${ok ? "PASS" : "FAIL"}`);
+    if (!ok) failures++;
+  } catch (e) {
+    console.error("[10/10] Error:", e.message);
     failures++;
   }
 

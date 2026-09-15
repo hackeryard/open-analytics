@@ -29,41 +29,58 @@ You are an expert AI software engineer pair-programming on **Open Analytics**—
 
 ---
 
-## Data Flow & Architecture
+## Data Flow & 3-Tier Architecture
 
 ```
-[ Client Website (public/open.js) ]
+[ Client Website: <script src="https://api.openanalytics.org.in/open.js"> ]
             │
-            ▼ (HTTP POST /api/v1/ingest, /api/v1/error, /api/v1/event)
-[ Open Analytics Ingestion Layer ]
+            ▼ (HTTP POST https://api.openanalytics.org.in/v1/collect, /v1/error, /v1/identify)
+[ Open Analytics Ingestion Subdomain (api.openanalytics.org.in) ]
             │
-            ▼ (Edge suppression rules & PII Sanitization)
-[ MongoDB Collections (PageView, SystemError, CustomEvent) ]
+            ▼ (Edge suppression rules, 365-day TTL index & PII Sanitization)
+[ MongoDB Collections (PageView, AnalyticsEvent, ErrorLog) ]
             │
-            ▼ (Aggregations in lib/analyticsDb.ts)
-[ Next.js API Layer (/api/projects/[projectId]/...) ]
+            ▼ (Aggregations in lib/analyticsDb.ts with plan retention limits)
+[ Next.js API Layer on Dashboard Subdomain (dashboard.openanalytics.org.in) ]
             │
             ▼ (PlatformContext.tsx state synchronization)
-[ Dashboard Sections & Interactive Visualizations ]
+[ Dashboard Sections, Real-Time Live Feed, & Visualizations ]
 ```
 
 ---
 
-## Key Backend Routes Reference
+## 3-Tier Domain Standards
 
-| Route | Method | Guard | Description |
+1. **Main Domain (`openanalytics.org.in`)**:
+   - Strictly reserved for SEO, public marketing pages, and documentation.
+   - Absolutely NO login, registration, or workspace UI. Unified CTA is **"Launch Dashboard"** (linking to `https://dashboard.openanalytics.org.in`).
+2. **Dashboard Subdomain (`dashboard.openanalytics.org.in`)**:
+   - Workspace analytics, live feeds, project administration, and auth (`/login`, `/register`).
+3. **API Subdomain (`api.openanalytics.org.in`)**:
+   - High-throughput tracker script delivery (`/open.js`) and versioned ingestion (`/v1/collect`, `/v1/error`, `/v1/identify`, `/v1/event-rules`).
+
+---
+
+## Developer Automation Scripts
+
+Always use the project scripts for repeated tasks:
+- `npm run pull` (`scripts/pull.js`): Pulls latest changes from origin branch.
+- `npm run push [msg]` (`scripts/push.js`): Stages, commits, and pushes to origin branch.
+- `npm run sync [msg] [--pr]` (`scripts/sync.js`): Full sync pipeline (pull -> commit -> push -> PR).
+- `npm run pr [--title "..." --body "..."]` (`scripts/create-pr.js`): Creates/updates GitHub PR dynamically from git commits.
+- `npm run kill:3005` (`scripts/kill-port.js`): Releases development port 3005.
+- `npm run test:subdomain` (`scripts/test-subdomain.js`): Runs 10-point subdomain regression test suite.
+- `npm run purge:retention` (`scripts/purge-retention.js`): Enforces 1-year data retention MongoDB purge.
+
+---
+
+## Key Ingestion Endpoints Reference
+
+| Subdomain Path | Method | CORS | Description |
 | :--- | :--- | :--- | :--- |
-| `/api/projects` | `GET` | Authenticated | List all accessible projects with `currentUserRole` |
-| `/api/projects` | `POST` | Authenticated | Create project (assigns creator as Owner and Admin) |
-| `/api/projects/[projectId]` | `GET` | `verifyProjectAccess` | Fetch project details |
-| `/api/projects/[projectId]` | `PATCH` | `verifyProjectManage` | Update project settings & allowed domains |
-| `/api/projects/[projectId]` | `DELETE` | `verifyProjectOwner` | Permanently delete project |
-| `/api/projects/[projectId]/analytics` | `GET` | `verifyProjectAccess` | Aggregated metrics for active timeframe |
-| `/api/projects/[projectId]/pageviews` | `GET` | `verifyProjectAccess` | Paginated live telemetry event stream |
-| `/api/projects/[projectId]/members` | `GET`, `POST`, `PATCH`, `DELETE` | `verifyProjectManage` | Manage team RBAC |
-| `/api/projects/[projectId]/transfer-ownership` | `POST` | `verifyProjectOwner` | Transfer primary project ownership |
-| `/api/projects/[projectId]/errors` | `GET`, `PATCH`, `DELETE` | `verifyProjectAccess` / `verifyProjectEdit` | Error log listing, status triage, and resolution |
-| `/api/projects/[projectId]/error-rules` | `GET`, `POST`, `PATCH`, `DELETE` | `verifyProjectAccess` / `verifyProjectEdit` | Edge error suppression rules CRUD |
-| `/api/v1/ingest` | `POST` | Public / Domain Check | Ingestion for pageviews, vitals, hardware, UX |
-| `/api/v1/error` | `POST` | Public / Domain Check | Ingestion for client runtime crashes |
-| `/api/v1/event` | `POST` | Public / Domain Check | Ingestion for custom conversion events |
+| `https://api.openanalytics.org.in/open.js` | `GET` | `*` | Edge-cached client tracking script |
+| `https://api.openanalytics.org.in/v1/collect` | `POST` | `*` | Telemetry ingestion (pageviews, vitals, events, heartbeats) |
+| `https://api.openanalytics.org.in/v1/error` | `POST` | `*` | Ingestion for runtime crashes and exceptions |
+| `https://api.openanalytics.org.in/v1/identify` | `POST` | `*` | Ingestion for visitor identification and custom traits |
+| `https://api.openanalytics.org.in/v1/event-rules` | `GET` | `*` | No-code event rules configuration sync |
+| `https://api.openanalytics.org.in/` | `GET` | `*` | API health check and operational status JSON |

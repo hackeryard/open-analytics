@@ -19,6 +19,7 @@
 | `MONGODB_URI` | Yes | MongoDB connection string | `mongodb://localhost:27017/open_analytics` |
 | `JWT_SECRET` | Yes | Secret key for signing session tokens | `32+ characters random string` |
 | `NEXT_PUBLIC_APP_URL` | Yes | Root URL of hosted dashboard | `https://openanalytics.org.in` |
+| `NEXT_PUBLIC_API_URL` | Optional | Dedicated API & telemetry subdomain | `https://api.openanalytics.org.in` |
 | `NODE_ENV` | Optional | Runtime environment | `development` / `production` |
 
 ---

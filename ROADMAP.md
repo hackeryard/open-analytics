@@ -37,11 +37,20 @@ To build the most developer-friendly, high-performance, and visually stunning an
 - [x] Strict Zero-Emoji standard across all views, prompts, and components.
 - [x] Dark-mode glassmorphism design tokens with Lucide React iconography.
 
+### Phase 6: Subdomain Architecture, Retention & Ingestion Engine (Completed)
+- [x] 3-tier domain isolation (`openanalytics.org.in`, `dashboard.openanalytics.org.in`, `api.openanalytics.org.in`).
+- [x] Dedicated edge script delivery (`https://api.openanalytics.org.in/open.js`) with global CORS.
+- [x] Versioned telemetry collector (`/v1/collect`, `/v1/error`, `/v1/identify`, `/v1/event-rules`).
+- [x] Permanent 365-day TTL index across MongoDB raw telemetry collections.
+- [x] Plan-based query boundaries (30-day Free vs 365-day Pro & Enterprise historical windows).
+- [x] 2-step Email OTP verification flow for user registration.
+- [x] Cross-platform workflow scripts (`pull.js`, `push.js`, `sync.js`, `create-pr.js`, `kill-port.js`, `test-subdomain.js`, `purge-retention.js`).
+
 ---
 
 ## Active & Upcoming Milestones
 
-### Phase 6: Conversion Funnels & Goal Tracking (In Progress)
+### Phase 7: Conversion Funnels & Goal Tracking (In Progress)
 - [ ] Visual multi-step conversion funnel builder with drop-off percentage calculations.
 - [ ] Goal conversion tracking linked to custom business events and revenue attribution.
 - [ ] A/B test variant tracking and statistical significance indicators.

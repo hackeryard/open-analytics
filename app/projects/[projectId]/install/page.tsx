@@ -46,8 +46,8 @@ export default function InstallPage() {
   const [testingType, setTestingType] = useState<"pageview" | "event" | "error" | null>(null);
   const [testResult, setTestResult] = useState<null | { ok: boolean; status: number; duration: number; message: string; payload?: any }>(null);
   
-  // Default to production deployment URL in snippets
-  const [hostUrl, setHostUrl] = useState("https://openanalytics.org.in");
+  // Default to production deployment API URL in snippets
+  const [hostUrl, setHostUrl] = useState("https://api.openanalytics.org.in");
   const [localOrigin, setLocalOrigin] = useState("");
   const [isCustomHost, setIsCustomHost] = useState(false);
   const [loadingAuth, setLoadingAuth] = useState(true);
@@ -78,9 +78,12 @@ export default function InstallPage() {
     if (typeof window !== "undefined") {
       const origin = window.location.origin;
       setLocalOrigin(origin);
-      // If deployed on a real production domain, automatically use that domain
       if (!window.location.host.includes("localhost") && !window.location.host.includes("127.0.0.1")) {
-        setHostUrl(origin);
+        const cleanHost = window.location.host.replace(/^(dashboard\.|api\.|www\.)/i, "");
+        setHostUrl(`https://api.${cleanHost}`);
+      } else {
+        const port = window.location.port ? `:${window.location.port}` : "";
+        setHostUrl(`http://api.localhost${port}`);
       }
     }
   }, []);

@@ -21,7 +21,7 @@ export default function DocsOverviewPage() {
   const { activeProjectId } = usePlatform();
   const [copied, setCopied] = useState(false);
   const projectId = activeProjectId || "open_prj_your_key";
-  const snippet = `<script defer src="https://openanalytics.org.in/open.js" data-project-id="${projectId}"></script>`;
+  const snippet = `<script defer src="https://api.openanalytics.org.in/open.js" data-project-id="${projectId}"></script>`;
 
   const onCopy = () => {
     navigator.clipboard.writeText(snippet);

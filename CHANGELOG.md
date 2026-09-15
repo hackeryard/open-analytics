@@ -2,6 +2,42 @@
 
 All notable changes to the Open Analytics platform are documented in this file.
 
+## [3.0.0] - 2026-09-15
+
+### Added
+- **3-Tier Domain Architecture & Subdomain Isolation**:
+  - **Main Domain (`openanalytics.org.in`)**: 100% Pure SEO, landing pages, GA4 comparison matrix, pricing tiers, and public documentation. Completely eliminated login/register buttons in favor of unified "Launch Dashboard" CTA.
+  - **Dashboard Subdomain (`dashboard.openanalytics.org.in`)**: Authenticated web analytics console, live streams, project settings, and user auth (`/login`, `/register`).
+  - **API Telemetry Subdomain (`api.openanalytics.org.in`)**: Dedicated high-throughput edge telemetry and tracking script delivery (`/open.js`).
+- **Versioned API Telemetry Endpoints**:
+  - `https://api.openanalytics.org.in/open.js`: Edge-cached client tracker script with global CORS (`Access-Control-Allow-Origin: *`).
+  - `POST /v1/collect`: Versioned pageviews, custom events, Web Vitals, and heartbeats ingestion.
+  - `POST /v1/error`: Versioned client error and crash telemetry.
+  - `POST /v1/identify`: Versioned visitor identity and user trait enrichment.
+  - `GET /v1/event-rules`: Versioned no-code custom event rules synchronization.
+  - `GET /`: Fast JSON API health check returning operational status and endpoints.
+- **1-Year Data Retention & Query Boundaries**:
+  - Enforced 365-day TTL index across MongoDB raw telemetry collections (`PageView`, `AnalyticsEvent`, `ErrorLog`).
+  - Automated cron purge endpoint (`/api/cron/retention`) and `purgeExpiredData()` engine.
+  - Free Starter plan strictly clamped to 30-day rolling telemetry window.
+  - Cloud Pro and Enterprise plans unlock full 365-day (1-year) historical telemetry queries.
+- **Pricing & Commercial Standardization**:
+  - Standardized Pro tier pricing to **$19/month** (or **$15/month billed annually** at $180/yr) with 250,000 monthly events.
+  - Gated power modules (Custom Events, AI Search Radar, Web Vitals RUM, Behavioral UX, Crash Diagnostics) behind Pro with clear upgrade modals (`ProFeatureGate.tsx`).
+- **Email OTP Registration & Verification**:
+  - Registration dispatches 6-digit email OTP; accounts start unverified.
+  - Direct sign-in without OTP for verified accounts.
+  - Unverified login attempts automatically trigger verification challenges.
+  - Optional post-signup project creation (no forced default project).
+- **Developer Workflow Automation Suite**:
+  - `npm run pull` (`scripts/pull.js`): Pulls latest changes from origin.
+  - `npm run push [msg]` (`scripts/push.js`): Stages, commits, and pushes changes.
+  - `npm run sync [msg] [--pr]` (`scripts/sync.js`): Unified pipeline (pull -> commit -> push -> PR).
+  - `npm run pr` (`scripts/create-pr.js`): Dynamic PR creation & synchronization deriving title, commit logs, and diff stats from git.
+  - `npm run kill:3005` (`scripts/kill-port.js`): Cross-platform port cleaner.
+  - `npm run test:subdomain` (`scripts/test-subdomain.js`): Automated subdomain routing regression test suite.
+  - `npm run purge:retention` (`scripts/purge-retention.js`): 1-year data retention MongoDB purge utility.
+
 ---
 
 ## [2.5.0] - 2026-09-13

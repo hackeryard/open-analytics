@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isDashboardHost, getDashboardUrl, getMainDomainUrl } from "@/lib/subdomain";
+import {
+  isDashboardHost,
+  isApiHost,
+  getDashboardUrl,
+  getMainDomainUrl,
+} from "@/lib/subdomain";
 
 export const SESSION_COOKIE_NAME = "open_session";
 
@@ -36,27 +41,61 @@ const DASHBOARD_PATHS = [
 export function middleware(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
   const host = req.headers.get("x-forwarded-host") || req.headers.get("host") || "";
+  const isApi = isApiHost(
+    host,
+    req.nextUrl.searchParams,
+    req.headers.get("x-subdomain")
+  );
   const isDashboard = isDashboardHost(
     host,
     req.nextUrl.searchParams,
     req.headers.get("x-subdomain")
   );
 
-  // 1. Allow Next.js internals, static assets, chunks, and public metadata
+  // 1. Script Delivery: /open.js (Allow globally with permissive CORS)
+  if (pathname === "/open.js") {
+    if (req.method === "OPTIONS") {
+      return new NextResponse(null, {
+        status: 204,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+          "Access-Control-Max-Age": "86400",
+        },
+      });
+    }
+    const res = NextResponse.next();
+    res.headers.set("Access-Control-Allow-Origin", "*");
+    res.headers.set("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS");
+    res.headers.set("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
+    return res;
+  }
+
+  // 2. Allow Next.js internals, static assets, chunks, and public metadata
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/static") ||
     pathname === "/favicon.ico" ||
     pathname === "/robots.txt" ||
     pathname === "/sitemap.xml" ||
-    pathname === "/open.js" ||
     pathname.includes(".") // fonts, images, css, static files
   ) {
     return NextResponse.next();
   }
 
-  // 2. Allow Edge Telemetry Ingestion (Client scripts send telemetry to /api/v1/collect)
-  if (pathname.startsWith("/api/v1/")) {
+  // 3. Allow Edge Telemetry Ingestion (supports /v1/collect, /collect, and /api/v1/*)
+  const isTelemetryRoute =
+    pathname === "/v1/collect" ||
+    pathname === "/collect" ||
+    pathname === "/v1/error" ||
+    pathname === "/error" ||
+    pathname === "/v1/identify" ||
+    pathname === "/identify" ||
+    pathname === "/v1/event-rules" ||
+    pathname === "/event-rules" ||
+    pathname.startsWith("/api/v1/");
+
+  if (isTelemetryRoute) {
     const origin = req.headers.get("origin") || "*";
     if (req.method === "OPTIONS") {
       return new NextResponse(null, {
@@ -82,6 +121,60 @@ export function middleware(req: NextRequest) {
     res.headers.set("Access-Control-Max-Age", "86400");
     res.headers.set("Vary", "Origin");
     return res;
+  }
+
+  // =========================================================================
+  // BRANCH 0: API & TELEMETRY SUBDOMAIN (isApi)
+  // e.g. api.openanalytics.org.in or api.localhost:3005
+  // =========================================================================
+  if (isApi) {
+    // A. Health & Status Root
+    if (pathname === "/" || pathname === "/health" || pathname === "/status") {
+      return NextResponse.json(
+        {
+          service: "OpenAnalytics Telemetry & Ingestion API",
+          status: "operational",
+          version: "v1",
+          endpoints: {
+            tracker: "/open.js",
+            collect: "/v1/collect",
+            error: "/v1/error",
+            identify: "/v1/identify",
+            rules: "/v1/event-rules",
+          },
+        },
+        {
+          status: 200,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Cache-Control": "no-store",
+          },
+        }
+      );
+    }
+
+    // B. If a visitor opens dashboard or marketing web routes on the api subdomain, redirect appropriately
+    if (
+      pathname === "/login" ||
+      pathname === "/register" ||
+      DASHBOARD_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"))
+    ) {
+      const targetUrl = getDashboardUrl(`${pathname}${search}`, host);
+      return new NextResponse(null, {
+        status: 307,
+        headers: { Location: targetUrl },
+      });
+    }
+
+    if (MARKETING_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
+      const targetUrl = getMainDomainUrl(`${pathname}${search}`, host);
+      return new NextResponse(null, {
+        status: 307,
+        headers: { Location: targetUrl },
+      });
+    }
+
+    return NextResponse.next();
   }
 
   // =========================================================================

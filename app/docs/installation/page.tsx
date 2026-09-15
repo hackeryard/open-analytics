@@ -20,7 +20,9 @@ export default function InstallationDocsPage() {
   const [testing, setTesting] = useState(false);
 
   const projectId = activeProjectId || "open_prj_your_key";
-  const host = typeof window !== "undefined" && !window.location.host.includes("localhost") && !window.location.host.includes("127.0.0.1") ? window.location.origin : "https://openanalytics.org.in";
+  const host = typeof window !== "undefined" && !window.location.host.includes("localhost") && !window.location.host.includes("127.0.0.1")
+    ? `https://api.${window.location.host.replace(/^(dashboard\.|api\.|www\.)/i, "")}`
+    : "https://api.openanalytics.org.in";
 
   const handleCopy = (id: string, text: string) => {
     navigator.clipboard.writeText(text);

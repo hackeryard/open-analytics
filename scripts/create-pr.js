@@ -1,9 +1,12 @@
 #!/usr/bin/env node
 
 /**
- * Automates creating a GitHub Pull Request from 'dev' to 'main'
- * Uses GitHub REST API with NPM_TOKEN or GITHUB_TOKEN environment variables.
+ * Automates creating or updating a GitHub Pull Request.
+ * Dynamically derives PR title, commit history, and diff summary from git,
+ * or accepts custom CLI arguments (--title, --body, etc.).
  */
+
+import { execSync } from "child_process";
 
 const token = process.env.NPM_TOKEN || process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
 const repo = process.env.GITHUB_REPOSITORY || "hackeryard/open-analytics";
@@ -13,55 +16,137 @@ if (!token) {
   process.exit(1);
 }
 
-const title = "feat: Dashboard Subdomain Separation, Pure SEO Marketing Domain, 1-Year Retention, & OTP Verification";
+// Parse CLI flags
+const args = process.argv.slice(2);
+let customTitle = null;
+let customBody = null;
+let baseBranch = "main";
+let headBranch = null;
 
-const body = `## Summary of Changes
+for (let i = 0; i < args.length; i++) {
+  const arg = args[i];
+  if ((arg === "--title" || arg === "-t") && args[i + 1]) {
+    customTitle = args[i + 1];
+    i++;
+  } else if ((arg === "--body" || arg === "-b") && args[i + 1]) {
+    customBody = args[i + 1];
+    i++;
+  } else if (arg === "--base" && args[i + 1]) {
+    baseBranch = args[i + 1];
+    i++;
+  } else if (arg === "--head" && args[i + 1]) {
+    headBranch = args[i + 1];
+    i++;
+  } else if (!arg.startsWith("-") && !customTitle) {
+    customTitle = arg;
+  } else if (!arg.startsWith("-") && !customBody) {
+    customBody = arg;
+  }
+}
 
-### 1. Dashboard Subdomain Separation & Pure SEO Main Domain
-- **Subdomain Routing (\`lib/subdomain.ts\` & \`middleware.ts\`)**:
-  - Segregated the application between \`dashboard.openanalytics.org.in\` (product workspace & auth) and \`openanalytics.org.in\` (public SEO/marketing).
-  - Main domain strictly reserves \`/\`, \`/features\`, \`/pricing\`, \`/vs-google-analytics\`, \`/privacy\`, \`/faq\`, and \`/docs\`.
-  - Main domain completely eliminates login and signup clutter:
-    - Replaced "Sign In" and "Get Started Free" buttons with unified **"Launch Dashboard"** action linking to \`dashboard.\` subdomain.
-    - Direct visits to \`/login\`, \`/register\`, or internal dashboard paths (\`/events\`, \`/vitals\`, \`/projects\`, etc.) automatically redirect to the dashboard subdomain.
-  - Dashboard subdomain protects internal workspaces, handles authentication (\`/login\`, \`/register\`), and redirects marketing requests back to the main domain.
-  - Added direct **"Main Website"** link inside the platform workspace navigation.
+// Detect current git branch if not specified
+if (!headBranch) {
+  try {
+    headBranch = execSync("git rev-parse --abbrev-ref HEAD", { encoding: "utf8" }).trim();
+  } catch {
+    headBranch = "dev";
+  }
+}
 
-### 2. 1-Year Data Retention & Plan-Based Historical Window
-- **Permanent 365-Day TTL & Purge**:
-  - Enforced 365-day TTL index across raw collections (\`PageView\`, \`AnalyticsEvent\`, \`ErrorLog\`).
-  - Added automated \`/api/cron/retention\` endpoint and \`purgeExpiredData()\` engine.
-- **Tier-Based Historical Query Boundaries**:
-  - Free Starter plan strictly clamped to **30-day** rolling telemetry window.
-  - Cloud Pro and Enterprise plans unlock full **365-day (1-year)** historical telemetry queries.
-  - \`DateRangeNavigator\` UI updated with \`PRO\` badges and custom date range limits.
+// Fetch remote refs to ensure git comparison is accurate
+try {
+  execSync(`git fetch origin ${baseBranch} ${headBranch}`, { stdio: "ignore" });
+} catch {}
 
-### 3. Pricing Matrix & Commercial Rework
-- Standardized Pro tier pricing to **$19/mo** (or **$15/mo billed annually** at $180/yr) with 250k events.
-- Gated power modules (Custom Business Events, AI Search Radar, Web Vitals RUM, Behavioral UX Rage Clicks, and Crash Diagnostics) behind Pro with clear upgrade modals.
-- Enhanced comparison matrix against Google Analytics 4 with instant benefit breakdown.
+// Dynamically extract commits between base and head
+let commitList = "";
+let latestCommitMsg = "";
+try {
+  commitList = execSync(`git log origin/${baseBranch}..HEAD --pretty=format:"* %h - %s (%an)"`, { encoding: "utf8" }).trim();
+} catch {
+  try {
+    commitList = execSync(`git log -n 5 --pretty=format:"* %h - %s (%an)"`, { encoding: "utf8" }).trim();
+  } catch {}
+}
 
-### 4. Registration Email OTP Verification & Instant Login
-- Registration now creates unverified accounts (\`emailVerified: false\`) and dispatches a 6-digit email OTP.
-- Direct sign-in without OTP for verified users.
-- Unverified login attempts automatically trigger an OTP challenge to complete account activation.
+try {
+  latestCommitMsg = execSync(`git log -n 1 --pretty=format:"%s"`, { encoding: "utf8" }).trim();
+} catch {
+  latestCommitMsg = `feat: Changes on ${headBranch}`;
+}
 
-### 5. Developer & Workflow Automation Scripts
-- Added cross-platform port cleanup script (\`scripts/kill-port.js\`).
-- Added automated subdomain regression test suite (\`scripts/test-subdomain.js\`).
-- Added automated PR creation utility (\`scripts/create-pr.js\`).
+// Diff summary stats
+let diffStat = "";
+try {
+  diffStat = execSync(`git diff --stat origin/${baseBranch}...HEAD`, { encoding: "utf8" }).trim();
+} catch {}
 
----
-### Verification
-- \`yarn build\` and \`npx tsc --noEmit\` pass with 0 errors.
-- Subdomain isolation and redirect test suite passed 100%.
-- Verified visual browser presentation on desktop and mobile viewports.`;
+// Determine dynamic Title and Body
+const title = customTitle || latestCommitMsg || `feat: Updates on ${headBranch}`;
 
-async function createPR() {
-  console.log(`[create-pr] Creating Pull Request for ${repo} (dev -> main)...`);
+let body = customBody;
+if (!body) {
+  body = `## Pull Request Summary\n\n` +
+    `Automated PR from \`${headBranch}\` to \`${baseBranch}\`.\n\n` +
+    `### Commits Included\n` +
+    (commitList ? `${commitList}\n\n` : `* ${latestCommitMsg}\n\n`) +
+    `### Changed Files & Statistics\n` +
+    `\`\`\`text\n${diffStat || "No file changes detected."}\n\`\`\`\n\n` +
+    `---\n*Generated automatically via project PR script.*`;
+}
+
+async function createOrUpdatePR() {
+  console.log(`[create-pr] Target: ${repo} (${headBranch} -> ${baseBranch})`);
+  console.log(`[create-pr] Title: "${title}"`);
+
+  const owner = repo.split("/")[0];
 
   try {
-    const res = await fetch(`https://api.github.com/repos/${repo}/pulls`, {
+    // 1. Check if an open PR already exists
+    const listRes = await fetch(
+      `https://api.github.com/repos/${repo}/pulls?state=open&head=${owner}:${headBranch}`,
+      {
+        headers: {
+          Authorization: `token ${token}`,
+          "User-Agent": "OpenAnalytics-Automation",
+        },
+      }
+    );
+    const existingPRs = await listRes.json();
+
+    if (Array.isArray(existingPRs) && existingPRs.length > 0) {
+      const existing = existingPRs[0];
+      console.log(`[create-pr] Found existing open PR #${existing.number}: ${existing.html_url}`);
+      console.log(`[create-pr] Updating PR #${existing.number} with latest title and body...`);
+
+      const updateRes = await fetch(`https://api.github.com/repos/${repo}/pulls/${existing.number}`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `token ${token}`,
+          "Content-Type": "application/json",
+          "User-Agent": "OpenAnalytics-Automation",
+        },
+        body: JSON.stringify({
+          title,
+          body,
+        }),
+      });
+
+      const updatedData = await updateRes.json();
+      if (updateRes.status >= 200 && updateRes.status < 300) {
+        console.log(`SUCCESS: PR #${updatedData.number} successfully updated!`);
+        console.log(`Title: ${updatedData.title}`);
+        console.log(`URL: ${updatedData.html_url}`);
+        return updatedData;
+      } else {
+        console.error(`ERROR updating PR #${existing.number}:`, JSON.stringify(updatedData, null, 2));
+        process.exit(1);
+      }
+    }
+
+    // 2. Create new PR if none exists
+    console.log(`[create-pr] Creating new Pull Request...`);
+    const createRes = await fetch(`https://api.github.com/repos/${repo}/pulls`, {
       method: "POST",
       headers: {
         Authorization: `token ${token}`,
@@ -71,41 +156,25 @@ async function createPR() {
       body: JSON.stringify({
         title,
         body,
-        head: "dev",
-        base: "main",
+        head: headBranch,
+        base: baseBranch,
       }),
     });
 
-    const data = await res.json();
-    if (res.status >= 200 && res.status < 300) {
-      console.log("SUCCESS: Pull Request Created!");
-      console.log(`PR #${data.number}: ${data.title}`);
-      console.log(`URL: ${data.html_url}`);
-      return data;
+    const createData = await createRes.json();
+    if (createRes.status >= 200 && createRes.status < 300) {
+      console.log(`SUCCESS: Pull Request #${createData.number} Created!`);
+      console.log(`Title: ${createData.title}`);
+      console.log(`URL: ${createData.html_url}`);
+      return createData;
     } else {
-      // Check if PR already exists
-      if (data.errors && data.errors.some((e) => e.message && e.message.includes("A pull request already exists"))) {
-        console.log("Notice: An open pull request already exists from dev to main.");
-        // Fetch existing PR
-        const listRes = await fetch(`https://api.github.com/repos/${repo}/pulls?state=open&head=${repo.split("/")[0]}:dev`, {
-          headers: {
-            Authorization: `token ${token}`,
-            "User-Agent": "OpenAnalytics-Automation",
-          },
-        });
-        const listData = await listRes.json();
-        if (Array.isArray(listData) && listData.length > 0) {
-          console.log(`Existing PR #${listData[0].number}: ${listData[0].html_url}`);
-          return listData[0];
-        }
-      }
-      console.error(`ERROR status ${res.status}:`, JSON.stringify(data, null, 2));
+      console.error(`ERROR creating PR status ${createRes.status}:`, JSON.stringify(createData, null, 2));
       process.exit(1);
     }
   } catch (err) {
-    console.error("Failed to create Pull Request:", err);
+    console.error("[create-pr] Failed:", err.message);
     process.exit(1);
   }
 }
 
-createPR();
+createOrUpdatePR();

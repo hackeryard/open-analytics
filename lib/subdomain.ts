@@ -1,8 +1,9 @@
 /**
  * Subdomain detection and cross-domain URL resolution utilities.
- * Segregates Open Analytics between:
+ * Segregates Open Analytics across a 3-tier architecture:
  * 1. Main Domain (openanalytics.org.in / localhost:3005): Strictly dedicated to SEO, marketing, and public documentation.
  * 2. Dashboard Subdomain (dashboard.openanalytics.org.in / dashboard.localhost:3005): Analytics platform workspace & auth.
+ * 3. API Subdomain (api.openanalytics.org.in / api.localhost:3005): Ingestion & tracker script delivery (/open.js, /v1/collect, etc.).
  */
 
 export function isDashboardHost(
@@ -10,18 +11,33 @@ export function isDashboardHost(
   searchParams?: URLSearchParams | null,
   headerSubdomain?: string | null
 ): boolean {
-  // Query param or header overrides (useful in testing and local simulation)
   if (searchParams?.get("subdomain") === "dashboard" || searchParams?.get("__subdomain") === "dashboard") {
     return true;
   }
   if (headerSubdomain === "dashboard") {
     return true;
   }
-
   if (!host) return false;
 
   const rawHost = host.toLowerCase().split(":")[0];
   return rawHost.startsWith("dashboard.");
+}
+
+export function isApiHost(
+  host?: string | null,
+  searchParams?: URLSearchParams | null,
+  headerSubdomain?: string | null
+): boolean {
+  if (searchParams?.get("subdomain") === "api" || searchParams?.get("__subdomain") === "api") {
+    return true;
+  }
+  if (headerSubdomain === "api") {
+    return true;
+  }
+  if (!host) return false;
+
+  const rawHost = host.toLowerCase().split(":")[0];
+  return rawHost.startsWith("api.");
 }
 
 /**
@@ -35,7 +51,6 @@ export function isDashboardClient(): boolean {
     return true;
   }
 
-  // Local development simulation fallback via query param or cookie
   const params = new URLSearchParams(window.location.search);
   if (params.get("subdomain") === "dashboard") {
     return true;
@@ -67,10 +82,11 @@ export function getDashboardUrl(path = "/", currentHost?: string): string {
       return `${proto}//${host}${normalizedPath === "/" ? "" : normalizedPath}`;
     }
 
-    const isLocal = rawHost.includes("localhost") || rawHost.includes("127.0.0.1");
+    const cleanHost = rawHost.replace(/^(api\.|dashboard\.|www\.)/i, "");
+    const isLocal = cleanHost.includes("localhost") || cleanHost.includes("127.0.0.1");
     const targetHost = isLocal
       ? `dashboard.localhost${port}`
-      : `dashboard.${rawHost.replace(/^www\./, "")}${port}`;
+      : `dashboard.${cleanHost}${port}`;
 
     return `${proto}//${targetHost}${normalizedPath === "/" ? "" : normalizedPath}`;
   }
@@ -86,9 +102,10 @@ export function getDashboardUrl(path = "/", currentHost?: string): string {
       return `${proto}://${currentHost}${normalizedPath === "/" ? "" : normalizedPath}`;
     }
 
+    const cleanHost = rawHost.replace(/^(api\.|dashboard\.|www\.)/i, "");
     const targetHost = isLocal
       ? `dashboard.localhost${port}`
-      : `dashboard.${rawHost.replace(/^www\./, "")}${port}`;
+      : `dashboard.${cleanHost}${port}`;
 
     return `${proto}://${targetHost}${normalizedPath === "/" ? "" : normalizedPath}`;
   }
@@ -97,12 +114,70 @@ export function getDashboardUrl(path = "/", currentHost?: string): string {
   const base = process.env.NEXT_PUBLIC_APP_URL || "https://openanalytics.org.in";
   try {
     const url = new URL(base);
-    if (!url.hostname.toLowerCase().startsWith("dashboard.")) {
-      url.hostname = `dashboard.${url.hostname.replace(/^www\./, "")}`;
-    }
+    let hostname = url.hostname.replace(/^(api\.|dashboard\.|www\.)/i, "");
+    url.hostname = `dashboard.${hostname}`;
     return `${url.origin}${normalizedPath === "/" ? "" : normalizedPath}`;
   } catch {
     return `https://dashboard.openanalytics.org.in${normalizedPath === "/" ? "" : normalizedPath}`;
+  }
+}
+
+/**
+ * Returns the fully qualified URL to the API & Telemetry Subdomain.
+ * E.g. in dev: "http://api.localhost:3005/open.js"
+ * E.g. in prod: "https://api.openanalytics.org.in/open.js"
+ */
+export function getApiUrl(path = "/", currentHost?: string): string {
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+
+  if (typeof window !== "undefined") {
+    const host = window.location.host;
+    const proto = window.location.protocol;
+    const rawHost = host.replace(/:\d+$/, "");
+    const portMatch = host.match(/:\d+$/);
+    const port = portMatch ? portMatch[0] : "";
+
+    if (rawHost.toLowerCase().startsWith("api.")) {
+      return `${proto}//${host}${normalizedPath === "/" ? "" : normalizedPath}`;
+    }
+
+    const cleanHost = rawHost.replace(/^(api\.|dashboard\.|www\.)/i, "");
+    const isLocal = cleanHost.includes("localhost") || cleanHost.includes("127.0.0.1");
+    const targetHost = isLocal
+      ? `api.localhost${port}`
+      : `api.${cleanHost}${port}`;
+
+    return `${proto}//${targetHost}${normalizedPath === "/" ? "" : normalizedPath}`;
+  }
+
+  if (currentHost) {
+    const rawHost = currentHost.replace(/:\d+$/, "");
+    const portMatch = currentHost.match(/:\d+$/);
+    const port = portMatch ? portMatch[0] : "";
+    const isLocal = rawHost.includes("localhost") || rawHost.includes("127.0.0.1");
+    const proto = isLocal ? "http" : "https";
+
+    if (rawHost.toLowerCase().startsWith("api.")) {
+      return `${proto}://${currentHost}${normalizedPath === "/" ? "" : normalizedPath}`;
+    }
+
+    const cleanHost = rawHost.replace(/^(api\.|dashboard\.|www\.)/i, "");
+    const targetHost = isLocal
+      ? `api.localhost${port}`
+      : `api.${cleanHost}${port}`;
+
+    return `${proto}://${targetHost}${normalizedPath === "/" ? "" : normalizedPath}`;
+  }
+
+  // Environment fallback
+  const base = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_APP_URL || "https://openanalytics.org.in";
+  try {
+    const url = new URL(base);
+    let hostname = url.hostname.replace(/^(api\.|dashboard\.|www\.)/i, "");
+    url.hostname = `api.${hostname}`;
+    return `${url.origin}${normalizedPath === "/" ? "" : normalizedPath}`;
+  } catch {
+    return `https://api.openanalytics.org.in${normalizedPath === "/" ? "" : normalizedPath}`;
   }
 }
 
@@ -121,7 +196,7 @@ export function getMainDomainUrl(path = "/", currentHost?: string): string {
     const port = portMatch ? portMatch[0] : "";
     const rawHost = host.replace(/:\d+$/, "");
 
-    const cleanHost = rawHost.replace(/^dashboard\./i, "");
+    const cleanHost = rawHost.replace(/^(api\.|dashboard\.)/i, "");
     return `${proto}//${cleanHost}${port}${normalizedPath === "/" ? "" : normalizedPath}`;
   }
 
@@ -132,7 +207,7 @@ export function getMainDomainUrl(path = "/", currentHost?: string): string {
     const isLocal = rawHost.includes("localhost") || rawHost.includes("127.0.0.1");
     const proto = isLocal ? "http" : "https";
 
-    const cleanHost = rawHost.replace(/^dashboard\./i, "");
+    const cleanHost = rawHost.replace(/^(api\.|dashboard\.)/i, "");
     return `${proto}://${cleanHost}${port}${normalizedPath === "/" ? "" : normalizedPath}`;
   }
 
@@ -140,7 +215,7 @@ export function getMainDomainUrl(path = "/", currentHost?: string): string {
   const base = process.env.NEXT_PUBLIC_APP_URL || "https://openanalytics.org.in";
   try {
     const url = new URL(base);
-    url.hostname = url.hostname.replace(/^dashboard\./i, "");
+    url.hostname = url.hostname.replace(/^(api\.|dashboard\.)/i, "");
     return `${url.origin}${normalizedPath === "/" ? "" : normalizedPath}`;
   } catch {
     return `https://openanalytics.org.in${normalizedPath === "/" ? "" : normalizedPath}`;
