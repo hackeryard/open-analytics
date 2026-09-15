@@ -25,7 +25,8 @@ export async function GET(req: Request, { params }: { params: { projectId: strin
     const vitals = searchParams.get("vitals") || "all";
     const sortBy = searchParams.get("sortBy") || "createdAt_desc";
 
-    const { matchStage } = parseDateFilter(params.projectId, timeRange, startDateParam, endDateParam);
+    const projectPlan = auth.project?.plan || "free";
+    const { matchStage } = parseDateFilter(params.projectId, timeRange, startDateParam, endDateParam, projectPlan);
     const andConditions: any[] = [{ projectId: params.projectId, createdAt: matchStage.createdAt }];
 
     if (device && device !== "all") andConditions.push({ device });

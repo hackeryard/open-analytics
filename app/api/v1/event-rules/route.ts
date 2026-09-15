@@ -18,11 +18,26 @@ export async function GET(req: Request) {
     await connectDB();
     const project = await (Project as any).findOne(
       { projectId: projectId.trim() },
-      { "settings.customEventRules": 1, allowedDomains: 1 }
+      { "settings.customEventRules": 1, allowedDomains: 1, plan: 1 }
     ).lean();
 
     if (!project) {
       return corsJsonResponse({ ok: false, error: "Project not found" }, { status: 404 }, req);
+    }
+
+    // Only deliver automated event rules if project is Pro or Enterprise
+    if (project.plan !== "pro" && project.plan !== "enterprise") {
+      return corsJsonResponse(
+        {
+          ok: true,
+          projectId,
+          rules: [],
+          proRequired: true,
+          timestamp: Date.now(),
+        },
+        { status: 200 },
+        req
+      );
     }
 
     const allRules = Array.isArray(project.settings?.customEventRules)

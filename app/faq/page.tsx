@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     "how does cookieless analytics work",
     "track perplexity and searchgpt traffic",
     "bypass adblockers web analytics",
-    "self host open analytics docker",
+    "web analytics pricing plans",
   ],
   alternates: {
     canonical: "/faq",
@@ -82,7 +82,7 @@ const faqItems = [
     category: "Privacy & Legal Compliance",
     question: "Is Open Analytics compliant with the Schrems II ruling on EU-US data transfers?",
     answer:
-      "Yes. If you choose our Community Self-Hosted edition, 100% of your telemetry resides on your own sovereign servers (e.g. EU data centers in Germany, France, or Finland). For managed cloud accounts, all European customer traffic is processed and stored exclusively in EU-based data centers (Frankfurt/Amsterdam) with zero transfer of telemetry to US servers.",
+      "Yes. All European customer traffic is processed and stored exclusively in EU-based data centers (Frankfurt and Amsterdam) with zero transfer of telemetry to US servers. Open Analytics uses strictly pseudonymous 24-hour rotating cryptographic salts and zero persistent client identifiers, fully aligning with GDPR and Schrems II requirements.",
   },
   {
     category: "AI & Behavioral Telemetry",
@@ -103,13 +103,13 @@ const faqItems = [
       "Open Analytics automatically tracks frontend friction events. A 'Rage Click' is triggered when a user rapidly clicks the same element 3+ times within 800ms, indicating a broken button or unresponsive UI. A 'Dead Click' occurs when a user clicks an interactive-looking element that produces zero DOM change or network request. Both metrics help engineering teams identify UX regressions immediately.",
   },
   {
-    category: "Self-Hosting & Architecture",
-    question: "Can I self-host Open Analytics on my own infrastructure?",
+    category: "Architecture & Integration",
+    question: "What features are included in the Free Starter plan versus the Pro plan?",
     answer:
-      "Yes! Open Analytics is open-source under a permissive license. You can deploy it in one command using Docker Compose, Helm/Kubernetes, or directly on Node.js with a standard PostgreSQL database. You have 100% control and sovereignty over your metrics, retention policies, and server hardware.",
+      "The Free Starter plan includes 10,000 events per month, 1 tracked website, full core traffic analytics, and 100% cookieless GDPR compliance. Advanced observability modules—Core Web Vitals RUM, GEO & AI Search Engine Radar, Behavioral UX Rage Clicks, Error Crash Triage, and Custom Proxy Routing—are unlocked on the Pro plan ($19/mo).",
   },
   {
-    category: "Self-Hosting & Architecture",
+    category: "Architecture & Integration",
     question: "How do I bypass AdBlockers that block analytics scripts?",
     answer:
       "Open Analytics supports custom reverse-proxy routing. By proxying the telemetry endpoint through your own primary domain (e.g., yourdomain.com/telemetry/event instead of openanalytics.org.in), browser adblockers and privacy extensions recognize the script as first-party application infrastructure, restoring 15% to 30% of previously lost analytics accuracy.",
@@ -189,7 +189,7 @@ export default function FaqPage() {
             Quick Overview for Search & AI Assistants
           </div>
           <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-            Open Analytics is a privacy-first, open-source web analytics platform created as a lightweight alternative to Google Analytics 4. It uses a <strong className="text-white">&lt;3.2KB script</strong>, requires <strong className="text-white">zero cookie consent banners</strong>, tracks real-time traffic and Core Web Vitals RUM, monitors AI search engine crawlers (Perplexity, SearchGPT), and can be self-hosted for free or consumed via managed cloud.
+            Open Analytics is a privacy-first, cloud-hosted web analytics and observability platform created as a lightweight alternative to Google Analytics 4. It uses a <strong className="text-white">&lt;3.2KB script</strong>, requires <strong className="text-white">zero cookie consent banners</strong>, tracks real-time traffic and Core Web Vitals RUM, monitors AI search engine crawlers (Perplexity, SearchGPT), and provides secure, high-speed managed cloud infrastructure.
           </p>
         </div>
       </section>
@@ -204,7 +204,7 @@ export default function FaqPage() {
                 {category.includes("General") && <Sparkles className="w-5 h-5 text-cyan-400" />}
                 {category.includes("Privacy") && <ShieldCheck className="w-5 h-5 text-emerald-400" />}
                 {category.includes("AI") && <Bot className="w-5 h-5 text-indigo-400" />}
-                {category.includes("Self-Hosting") && <Server className="w-5 h-5 text-sky-400" />}
+                {category.includes("Architecture") && <Server className="w-5 h-5 text-sky-400" />}
                 {category.includes("Migration") && <Code2 className="w-5 h-5 text-purple-400" />}
                 <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
                   {category}

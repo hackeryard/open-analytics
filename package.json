@@ -6,7 +6,15 @@
   "scripts": {
     "dev": "next dev -p 3005",
     "build": "next build",
-    "start": "next start -p 3005"
+    "start": "next start -p 3005",
+    "pull": "node scripts/pull.js",
+    "push": "node scripts/push.js",
+    "sync": "node scripts/sync.js",
+    "pr": "node scripts/create-pr.js",
+    "kill": "node scripts/kill-port.js",
+    "kill:3005": "node scripts/kill-port.js 3005",
+    "test:subdomain": "node scripts/test-subdomain.js",
+    "purge:retention": "node scripts/purge-retention.js"
   },
   "dependencies": {
     "@types/nodemailer": "^8.0.1",

@@ -18,9 +18,13 @@ export async function ensureDefaultProject() {
       email: "admin@openanalytics.io",
       passwordHash,
       role: defaultCount === 0 ? "super_admin" : "admin",
+      emailVerified: true,
       avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=openanalytics",
     });
     console.log("Seeded Super Admin user:", superAdmin.email);
+  } else if (!superAdmin.emailVerified) {
+    superAdmin.emailVerified = true;
+    await superAdmin.save();
   }
 
   // 2. Ensure commercial default project exists

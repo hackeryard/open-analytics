@@ -1,7 +1,7 @@
 # Product Roadmap: Open Analytics
 
 ## Product Vision
-To build the most developer-friendly, high-performance, and visually stunning open-source analytics & observability platform that provides deep behavioral insights and crash monitoring without requiring complex setups or heavy client SDKs.
+To build the most developer-friendly, high-performance, and visually stunning analytics & observability platform that provides deep behavioral insights and crash monitoring without requiring complex setups or heavy client SDKs.
 
 ---
 
@@ -56,7 +56,7 @@ To build the most developer-friendly, high-performance, and visually stunning op
 - [ ] Click & scroll aggregate heatmaps on rendered pages.
 - [ ] Privacy masking for sensitive user input fields during replay capture.
 
-### Phase 9: Self-Hosted One-Click Deployments & Cloud Edge (Q2 2027)
-- [ ] Docker Compose & Kubernetes Helm charts for 1-click self-hosting.
+### Phase 9: Enterprise Private Cloud & Global Edge (Q2 2027)
+- [ ] Dedicated Enterprise VPC deployments with custom SLAs.
 - [ ] Cloudflare Workers / Vercel Edge middleware ingestion adapters.
 - [ ] ClickHouse database driver support for ultra-high throughput event streaming (100M+ events/mo).

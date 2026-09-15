@@ -13,11 +13,14 @@ import {
   Zap,
   Bot,
   HelpCircle,
+  LayoutDashboard,
 } from "lucide-react";
+import { getDashboardUrl } from "@/lib/subdomain";
 
 export default function PublicNavbar() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const dashboardUrl = getDashboardUrl("/");
 
   const navLinks = [
     { href: "/features", label: "Features" },
@@ -73,22 +76,16 @@ export default function PublicNavbar() {
           })}
         </nav>
 
-        {/* Desktop Actions (Sign In & Get Started) */}
+        {/* Desktop Actions (Launch Dashboard CTA) */}
         <div className="hidden sm:flex items-center gap-3">
-          <Link
-            href="/login"
-            className="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-white hover:bg-white/[0.05] transition"
+          <a
+            href={dashboardUrl}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:via-blue-500 hover:to-indigo-500 shadow-md shadow-cyan-500/20 hover:scale-[1.02] transition-all cursor-pointer"
           >
-            Sign In
-          </Link>
-
-          <Link
-            href="/register"
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:via-blue-500 hover:to-indigo-500 shadow-md shadow-cyan-500/20 hover:scale-[1.02] transition-all"
-          >
-            <span>Get Started Free</span>
+            <LayoutDashboard size={14} />
+            <span>Launch Dashboard</span>
             <ArrowRight size={13} />
-          </Link>
+          </a>
         </div>
 
         {/* Mobile Menu Button */}
@@ -121,21 +118,15 @@ export default function PublicNavbar() {
           ))}
 
           <div className="pt-3 border-t border-white/[0.08] flex flex-col gap-2">
-            <Link
-              href="/login"
+            <a
+              href={dashboardUrl}
               onClick={() => setMobileMenuOpen(false)}
-              className="w-full text-center py-2.5 rounded-xl text-xs font-bold text-slate-300 bg-white/[0.04]"
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-md shadow-cyan-500/20"
             >
-              Sign In
-            </Link>
-            <Link
-              href="/register"
-              onClick={() => setMobileMenuOpen(false)}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-cyan-500 to-indigo-600"
-            >
-              <span>Get Started Free</span>
+              <LayoutDashboard size={14} />
+              <span>Launch Dashboard</span>
               <ArrowRight size={13} />
-            </Link>
+            </a>
           </div>
         </div>
       )}

@@ -225,5 +225,6 @@ PageViewSchema.index({ projectId: 1, aiReferrer: 1, createdAt: -1 });
 PageViewSchema.index({ projectId: 1, pathname: 1, createdAt: -1 });
 PageViewSchema.index({ projectId: 1, sessionId: 1, createdAt: -1 });
 PageViewSchema.index({ projectId: 1, visitorId: 1, createdAt: -1 });
+PageViewSchema.index({ createdAt: 1 }, { expireAfterSeconds: 365 * 24 * 60 * 60, name: "retention_1yr_ttl" });
 
 export default mongoose.models.PageView || mongoose.model("PageView", PageViewSchema);

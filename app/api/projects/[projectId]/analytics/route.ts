@@ -16,7 +16,8 @@ export async function GET(req: Request, { params }: { params: { projectId: strin
     const startDate = searchParams.get("startDate") || null;
     const endDate = searchParams.get("endDate") || null;
 
-    const data = await getProjectAnalytics(params.projectId, timeRange, startDate, endDate);
+    const projectPlan = auth.project?.plan || "free";
+    const data = await getProjectAnalytics(params.projectId, timeRange, startDate, endDate, projectPlan);
     return NextResponse.json(data);
   } catch (err: any) {
     console.error("Analytics fetch error:", err);

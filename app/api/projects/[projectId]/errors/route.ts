@@ -16,7 +16,14 @@ export async function GET(req: Request, { params }: { params: { projectId: strin
     const errorType = searchParams.get("errorType");
     const limit = Math.min(parseInt(searchParams.get("limit") || "500", 10), 1000);
 
-    const filter: Record<string, any> = { projectId: params.projectId };
+    const isPro = auth.project?.plan === "pro" || auth.project?.plan === "enterprise";
+    const maxDays = isPro ? 365 : 30;
+    const earliestAllowed = new Date(Date.now() - maxDays * 24 * 60 * 60 * 1000);
+
+    const filter: Record<string, any> = {
+      projectId: params.projectId,
+      lastOccurredAt: { $gte: earliestAllowed },
+    };
     if (status && status !== "all") filter.status = status;
     if (errorType && errorType !== "all") filter.errorType = errorType;
 

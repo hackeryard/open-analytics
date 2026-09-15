@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import { AnalyticsData, PageViewItem } from "@/lib/analyticsTypes";
+import { isDashboardClient } from "@/lib/subdomain";
 
 interface User {
   _id: string;
@@ -31,6 +32,8 @@ interface Project {
   publishableKey?: string;
   slug?: string;
   settings?: any;
+  plan?: "free" | "pro" | "enterprise";
+  planExpiresAt?: string | Date | null;
   createdAt?: string | Date;
 }
 
@@ -96,6 +99,7 @@ interface PlatformContextType {
   showNewProjectModal: boolean;
   setShowNewProjectModal: (s: boolean) => void;
   handleCreateProject: (name: string, domains: string) => Promise<boolean>;
+  updateProjectPlan: (projectId: string, plan: "free" | "pro" | "enterprise") => Promise<boolean>;
   handleLogout: () => Promise<void>;
 }
 
@@ -167,18 +171,19 @@ export function PlatformProvider({ children }: { children: React.ReactNode }) {
 
   // Auth & Project Resolution
   const checkAuth = useCallback(async (): Promise<boolean> => {
-    const isPublicPath = typeof window !== "undefined" && (
-      window.location.pathname === "/" ||
+    const isDashboard = typeof window !== "undefined" ? isDashboardClient() : false;
+
+    // On the main marketing domain, auth is not used and redirects to login must never occur
+    if (!isDashboard) {
+      setAuthChecked(true);
+      setCurrentUser(null);
+      return false;
+    }
+
+    const isPublicAuthPath = typeof window !== "undefined" && (
       window.location.pathname.startsWith("/login") ||
       window.location.pathname.startsWith("/register") ||
-      window.location.pathname.startsWith("/docs") ||
-      window.location.pathname.startsWith("/features") ||
-      window.location.pathname.startsWith("/vs-google-analytics") ||
-      window.location.pathname.startsWith("/pricing") ||
-      window.location.pathname.startsWith("/privacy") ||
-      window.location.pathname.startsWith("/faq") ||
-      window.location.pathname === "/sitemap.xml" ||
-      window.location.pathname === "/robots.txt"
+      window.location.pathname.startsWith("/docs")
     );
 
     try {
@@ -204,12 +209,19 @@ export function PlatformProvider({ children }: { children: React.ReactNode }) {
             }
           }
           setActiveProjectIdState(selectedId);
+        } else {
+          setProjects([]);
+          setActiveProjectIdState("");
+          setData(null);
+          if (typeof window !== "undefined") {
+            localStorage.removeItem("open_active_project");
+          }
         }
         return true;
       } else {
         setCurrentUser(null);
         setProjects([]);
-        if (!isPublicPath && typeof window !== "undefined") {
+        if (!isPublicAuthPath && typeof window !== "undefined") {
           const redirect = encodeURIComponent(window.location.pathname);
           window.location.href = `/login?redirect=${redirect}`;
         }
@@ -220,7 +232,7 @@ export function PlatformProvider({ children }: { children: React.ReactNode }) {
       setAuthChecked(true);
       setCurrentUser(null);
       setProjects([]);
-      if (!isPublicPath && typeof window !== "undefined") {
+      if (!isPublicAuthPath && typeof window !== "undefined") {
         window.location.href = "/login";
       }
       return false;
@@ -353,6 +365,26 @@ export function PlatformProvider({ children }: { children: React.ReactNode }) {
     return projects.find((p) => p.projectId === activeProjectId);
   }, [projects, activeProjectId]);
 
+  const updateProjectPlan = useCallback(async (projectId: string, plan: "free" | "pro" | "enterprise"): Promise<boolean> => {
+    try {
+      const res = await fetch(`/api/projects/${projectId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan }),
+      });
+      if (res.ok) {
+        setProjects((prev) =>
+          prev.map((p) => (p.projectId === projectId ? { ...p, plan } : p))
+        );
+        return true;
+      }
+      return false;
+    } catch (err) {
+      console.error("Failed to update project plan:", err);
+      return false;
+    }
+  }, []);
+
   return (
     <PlatformContext.Provider
       value={{
@@ -362,6 +394,7 @@ export function PlatformProvider({ children }: { children: React.ReactNode }) {
         activeProjectId,
         setActiveProjectId,
         activeProject,
+        updateProjectPlan,
         timeRange,
         setTimeRange,
         data,

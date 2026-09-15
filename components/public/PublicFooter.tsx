@@ -1,8 +1,10 @@
 import React from "react";
 import Link from "next/link";
 import { Activity, ShieldCheck, Heart, Github, Twitter } from "lucide-react";
+import { getDashboardUrl } from "@/lib/subdomain";
 
 export default function PublicFooter() {
+  const dashboardUrl = getDashboardUrl("/");
   return (
     <footer className="w-full bg-[#040711] border-t border-white/[0.08] text-slate-400 text-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
@@ -86,7 +88,7 @@ export default function PublicFooter() {
                 <Link href="/faq" className="hover:text-cyan-400 transition">Frequently Asked Questions</Link>
               </li>
               <li>
-                <Link href="/register" className="hover:text-cyan-400 transition">Create Free Account</Link>
+                <a href={dashboardUrl} className="hover:text-cyan-400 transition font-medium">Platform Console</a>
               </li>
             </ul>
           </div>

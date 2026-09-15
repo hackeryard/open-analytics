@@ -293,7 +293,7 @@ To restrict telemetry collection to authorized domains only:
 11. **Audience Geography** (`/geo`): Interactive SVG World Atlas, country rankings, continent breakdowns, and city-level drilldowns.
 12. **Acquisition & Sources** (`/acquisition`): Referrers, direct traffic, search engines, and UTM campaign attribution.
 13. **SEO & Search Radar** (`/seo`): Search engine traffic breakdown, organic discovery, and structured data monitoring.
-14. **GEO & AI Radar** (`/ai-aeo`): AI crawler detection (GPTBot, ClaudeBot, Perplexity, etc.) and AEO citation readiness.
+14. **GEO & AI Radar** (`/ai-visibility`): AI crawler detection (GPTBot, ClaudeBot, Perplexity, etc.) and AEO citation readiness.
 15. **Workspace Management** (`/projects`, `/projects/[projectId]/settings`): Multi-project directory, role-based access control (Owner, Admin, Editor, Member), team invitations, and secure project ownership transfer.
 
 ---
@@ -339,6 +339,6 @@ Open `http://localhost:3005` in your browser.
 
 ---
 
-## License
+## License & Terms
 
-MIT License. Designed and engineered for high-performance web observability.
+Copyright &copy; Open Analytics. All rights reserved. Managed and hosted at [openanalytics.org.in](https://openanalytics.org.in).

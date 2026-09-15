@@ -10,7 +10,7 @@ export interface OpenAnalyticsTrackerProps {
   projectId: string;
 
   /**
-   * Optional custom self-hosted endpoint.
+   * Optional custom reverse-proxy endpoint or custom domain.
    * Defaults to "https://openanalytics.org.in" if omitted.
    */
   endpoint?: string;

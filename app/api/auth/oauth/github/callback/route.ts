@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import User from "@/models/User";
-import Project from "@/models/Project";
-import { signToken, SESSION_COOKIE_NAME, generateProjectId, generateApiKey } from "@/lib/auth";
+import { signToken, SESSION_COOKIE_NAME, getOAuthBaseUrl } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
@@ -10,24 +9,24 @@ export async function GET(req: NextRequest) {
   const state = searchParams.get("state");
   const errorParam = searchParams.get("error");
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || req.nextUrl.origin;
-  const redirectUri = `${appUrl}/api/auth/oauth/github/callback`;
+  const baseUrl = getOAuthBaseUrl(req);
+  const redirectUri = `${baseUrl}/api/auth/oauth/github/callback`;
 
   if (errorParam || !code) {
-    return NextResponse.redirect(new URL(`/login?error=${encodeURIComponent(errorParam || "github_auth_cancelled")}`, req.url));
+    return NextResponse.redirect(new URL(`/login?error=${encodeURIComponent(errorParam || "github_auth_cancelled")}`, baseUrl));
   }
 
   // 1. Verify CSRF state against cookie
   const savedState = req.cookies.get("open_oauth_state")?.value;
   if (!savedState || !state || savedState !== state) {
-    return NextResponse.redirect(new URL("/login?error=invalid_oauth_state", req.url));
+    return NextResponse.redirect(new URL("/login?error=invalid_oauth_state", baseUrl));
   }
 
   const clientId = process.env.GITHUB_CLIENT_ID;
   const clientSecret = process.env.GITHUB_CLIENT_SECRET;
 
   if (!clientId || !clientSecret) {
-    return NextResponse.redirect(new URL("/login?error=oauth_not_configured&provider=github", req.url));
+    return NextResponse.redirect(new URL("/login?error=oauth_not_configured&provider=github", baseUrl));
   }
 
   try {
@@ -49,7 +48,7 @@ export async function GET(req: NextRequest) {
     const tokenData = await tokenResponse.json();
     if (!tokenResponse.ok || !tokenData.access_token) {
       console.error("GitHub token exchange error:", tokenData);
-      return NextResponse.redirect(new URL("/login?error=github_token_exchange_failed", req.url));
+      return NextResponse.redirect(new URL("/login?error=github_token_exchange_failed", baseUrl));
     }
 
     const accessToken = tokenData.access_token;
@@ -63,9 +62,9 @@ export async function GET(req: NextRequest) {
     });
 
     const profile = await userResponse.json();
-    if (!userResponse.ok || !profile.id) {
+    if (!userResponse.ok || !profile) {
       console.error("GitHub profile error:", profile);
-      return NextResponse.redirect(new URL("/login?error=github_profile_fetch_failed", req.url));
+      return NextResponse.redirect(new URL("/login?error=github_profile_fetch_failed", baseUrl));
     }
 
     // 4. Resolve primary email (handles users with private GitHub emails)
@@ -121,35 +120,6 @@ export async function GET(req: NextRequest) {
         emailVerified: true,
         avatar: profile.avatar_url || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(normalizedEmail)}`,
       });
-
-      // Automatically provision initial project workspace
-      const uniqueProjectId = generateProjectId("open_prj_");
-      const measurementId = `OA-${uniqueProjectId.replace("open_prj_", "").toUpperCase()}`;
-      const projectSlug = userName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") + "-app";
-      await (Project as any).create({
-        projectId: uniqueProjectId,
-        measurementId,
-        name: `${userName}'s Application`,
-        slug: projectSlug || "my-web-app",
-        ownerId: user._id,
-        members: [
-          {
-            userId: user._id,
-            role: "admin",
-          },
-        ],
-        publishableKey: generateApiKey("pk"),
-        secretKey: generateApiKey("sk"),
-        allowedDomains: ["*"],
-        settings: {
-          ipAnonymization: true,
-          piiRedaction: true,
-          seoTracking: true,
-          aiTracking: true,
-          dataRetentionDays: 365,
-          enabledModules: ["core", "rum", "behavioral", "errors", "seo", "ai_aeo"],
-        },
-      });
     }
 
     // 5. Issue authenticated session token
@@ -160,13 +130,14 @@ export async function GET(req: NextRequest) {
       name: user.name,
     });
 
-    const response = NextResponse.redirect(new URL("/", req.url));
+    const isLocal = baseUrl.includes("localhost") || baseUrl.includes("127.0.0.1");
+    const response = NextResponse.redirect(new URL("/", baseUrl));
 
     response.cookies.set({
       name: SESSION_COOKIE_NAME,
       value: token,
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: !isLocal && process.env.NODE_ENV === "production",
       sameSite: "lax",
       maxAge: 30 * 24 * 60 * 60, // 30 days
       path: "/",
@@ -178,6 +149,6 @@ export async function GET(req: NextRequest) {
     return response;
   } catch (err: any) {
     console.error("GitHub OAuth callback exception:", err);
-    return NextResponse.redirect(new URL("/login?error=oauth_internal_error", req.url));
+    return NextResponse.redirect(new URL("/login?error=oauth_internal_error", baseUrl));
   }
 }

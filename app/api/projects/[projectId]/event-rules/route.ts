@@ -36,6 +36,13 @@ export async function POST(
       return NextResponse.json({ error: auth.error || "Forbidden" }, { status: auth.status || 403 });
     }
 
+    if (auth.project.plan !== "pro" && auth.project.plan !== "enterprise") {
+      return NextResponse.json(
+        { error: "Custom event rules and conversion automation require an active Pro subscription." },
+        { status: 403 }
+      );
+    }
+
     const body = await req.json();
     const {
       name,
@@ -112,6 +119,13 @@ export async function PATCH(
     const auth = await verifyProjectEdit(req, params.projectId);
     if (!auth.ok || !auth.project) {
       return NextResponse.json({ error: auth.error || "Forbidden" }, { status: auth.status || 403 });
+    }
+
+    if (auth.project.plan !== "pro" && auth.project.plan !== "enterprise") {
+      return NextResponse.json(
+        { error: "Custom event rules and conversion automation require an active Pro subscription." },
+        { status: 403 }
+      );
     }
 
     const body = await req.json();
@@ -193,6 +207,13 @@ export async function DELETE(
     const auth = await verifyProjectEdit(req, params.projectId);
     if (!auth.ok || !auth.project) {
       return NextResponse.json({ error: auth.error || "Forbidden" }, { status: auth.status || 403 });
+    }
+
+    if (auth.project.plan !== "pro" && auth.project.plan !== "enterprise") {
+      return NextResponse.json(
+        { error: "Custom event rules and conversion automation require an active Pro subscription." },
+        { status: 403 }
+      );
     }
 
     const { searchParams } = new URL(req.url);

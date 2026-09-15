@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import User from "@/models/User";
-import Project from "@/models/Project";
-import { hashPassword, signToken, SESSION_COOKIE_NAME, generateProjectId, generateApiKey } from "@/lib/auth";
+import Otp from "@/models/Otp";
+import { hashPassword, signOtpChallengeToken } from "@/lib/auth";
 import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
+import { generateOtpCode, sendLoginOtpEmail, maskEmail } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
   try {
@@ -31,97 +32,69 @@ export async function POST(req: NextRequest) {
     }
 
     const normalizedEmail = email.toLowerCase().trim();
-    const existing = await (User as any).findOne({ email: normalizedEmail }).lean();
-    if (existing) {
-      return NextResponse.json({ error: "An account with this email already exists" }, { status: 409 });
+    let user = await (User as any).findOne({ email: normalizedEmail });
+    const passwordHash = await hashPassword(password);
+
+    if (user) {
+      if (user.emailVerified) {
+        return NextResponse.json({ error: "An account with this email already exists. Please sign in." }, { status: 409 });
+      }
+      // If user exists but is not verified, update profile & resend fresh OTP
+      user.name = name.trim();
+      user.passwordHash = passwordHash;
+      await user.save();
+    } else {
+      user = await (User as any).create({
+        name: name.trim(),
+        email: normalizedEmail,
+        passwordHash,
+        role: "admin",
+        emailVerified: false,
+        avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(normalizedEmail)}`,
+      });
     }
 
-    const passwordHash = await hashPassword(password);
-    const user = await (User as any).create({
-      name: name.trim(),
+    // Generate 6-digit OTP code for email verification
+    const otp = generateOtpCode();
+    const otpHash = await hashPassword(otp);
+
+    // Save/refresh OTP record with 10-minute expiration
+    await (Otp as any).deleteMany({ email: normalizedEmail, purpose: "login" });
+    await (Otp as any).create({
       email: normalizedEmail,
-      passwordHash,
-      role: "admin",
-      avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(normalizedEmail)}`,
+      otpHash,
+      purpose: "login",
+      attempts: 0,
+      expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes
     });
 
-    // Auto-create initial project with unique ID and assign user as owner + admin member
-    const uniqueProjectId = generateProjectId("open_prj_");
-    const measurementId = `OA-${uniqueProjectId.replace("open_prj_", "").toUpperCase()}`;
-    const projectSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") + "-app";
-    const initialProject = await (Project as any).create({
-      projectId: uniqueProjectId,
-      measurementId,
-      name: `${name.trim()}'s Application`,
-      slug: projectSlug || "my-web-app",
-      ownerId: user._id,
-      members: [
-        {
-          userId: user._id,
-          role: "admin",
-        },
-      ],
-      publishableKey: generateApiKey("pk"),
-      secretKey: generateApiKey("sk"),
-      allowedDomains: ["*"],
-      monitoringStatus: "pending_verification",
-      dataStreams: [
-        {
-          streamId: `strm_${Date.now()}`,
-          streamType: "web",
-          streamName: `${name.trim()} Web Stream`,
-          streamUrl: "https://example.com",
-          measurementId,
-          status: "pending_verification",
-          active: false,
-          createdAt: new Date(),
-        },
-      ],
-      settings: {
-        ipAnonymization: true,
-        piiRedaction: true,
-        seoTracking: true,
-        aiTracking: true,
-        dataRetentionDays: 365,
-        enabledModules: ["core", "rum", "behavioral", "errors", "seo", "ai_aeo"],
-      },
+    // Send verification email
+    await sendLoginOtpEmail({
+      to: user.email,
+      otp,
+      name: user.name,
+      purpose: "registration",
     });
 
-    const token = signToken({
+    // Sign a temporary OTP challenge token
+    const tempToken = signOtpChallengeToken({
       userId: user._id.toString(),
       email: user.email,
-      role: user.role,
-      name: user.name,
+      type: "login_otp",
     });
 
-    const response = NextResponse.json({
+    const hasSmtp = Boolean(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS);
+
+    return NextResponse.json({
       success: true,
-      user: {
-        id: user._id.toString(),
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        avatar: user.avatar,
-      },
-      project: {
-        projectId: initialProject.projectId,
-        name: initialProject.name,
-        slug: initialProject.slug,
-        publishableKey: initialProject.publishableKey,
-      },
+      requiresOtp: true,
+      tempToken,
+      email: user.email,
+      maskedEmail: maskEmail(user.email),
+      message: `A 6-digit verification code was sent to ${maskEmail(user.email)}. Please verify your email to activate your account.`,
+      smtpConfigured: hasSmtp,
+      devOtp: !hasSmtp ? otp : undefined,
     });
-
-    response.cookies.set({
-      name: SESSION_COOKIE_NAME,
-      value: token,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 30 * 24 * 60 * 60, // 30 days
-      path: "/",
-    });
-
-    return response;
   } catch (err: any) {
     console.error("Registration error:", err);
     return NextResponse.json({ error: err.message || "Failed to register account" }, { status: 500 });

@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
+import { NextRequest } from "next/server";
 import User from "@/models/User";
 import Project from "@/models/Project";
 import { connectDB } from "@/lib/mongodb";
@@ -55,6 +56,37 @@ export async function hashPassword(password: string): Promise<string> {
 
 export async function comparePassword(password: string, hash: string): Promise<boolean> {
   return bcrypt.compare(password, hash);
+}
+
+/**
+ * Resolves the appropriate base URL for OAuth authorization and callback redirects.
+ * Dynamically detects whether the request originates from localhost or a live production domain,
+ * preventing cross-environment redirect loops (e.g. localhost redirecting to prod,
+ * or production redirecting to localhost due to misconfigured env vars).
+ */
+export function getOAuthBaseUrl(req: NextRequest): string {
+  const forwardedHost = req.headers.get("x-forwarded-host");
+  const host = forwardedHost || req.headers.get("host") || req.nextUrl?.host || "";
+  const forwardedProto = req.headers.get("x-forwarded-proto");
+
+  const isLocal = host.includes("localhost") || host.includes("127.0.0.1");
+
+  if (isLocal) {
+    // If accessing on localhost, ALWAYS preserve the local host and port
+    const proto = forwardedProto || "http";
+    return `${proto}://${host}`;
+  }
+
+  // If on a remote/production domain:
+  // Reject any NEXT_PUBLIC_APP_URL that erroneously points to localhost
+  const envUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
+  if (envUrl && !envUrl.includes("localhost") && !envUrl.includes("127.0.0.1")) {
+    return envUrl.replace(/\/+$/, "");
+  }
+
+  // Fallback to request host with HTTPS
+  const proto = forwardedProto || (host.startsWith("localhost") ? "http" : "https");
+  return `${proto}://${host}`;
 }
 
 import crypto from "crypto";
@@ -196,6 +228,7 @@ export async function getCurrentUser(req?: Request): Promise<any | null> {
       email: user.email,
       role: user.role,
       avatar: user.avatar || "",
+      emailVerified: Boolean(user.emailVerified),
     };
   } catch (err) {
     console.error("Error resolving current user:", err);
