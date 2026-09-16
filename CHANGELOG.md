@@ -2,6 +2,19 @@
 
 All notable changes to the Open Analytics platform are documented in this file.
 
+## [3.1.4] - 2026-09-16
+
+### Added
+- **Project Limit Enforcement & Modal Interception**:
+  - Prevented project creation modal (`CreateProjectModal`) from opening whenever a user reaches their subscription website limit (1 for Free Starter, 10 for Cloud Pro, base + add-ons for Enterprise).
+  - Created `LimitReachedModal` component that informs users of their quota consumption (`ownedProjects / maxAllowedProjects`) and provides an immediate upgrade pathway to `/billing`.
+  - Added centralized quota checks (`canCreateProject`, `ownedProjectsCount`, `maxAllowedProjects`, `openCreateProject`) inside `PlatformContext.tsx`.
+  - Wrapped `setShowNewProjectModal`: if a user attempts to open the creation modal while at quota, the creation wizard is blocked and `LimitReachedModal` is presented instead.
+  - Added fallback render guard inside `CreateProjectModal` (`if (!isOpen || !canCreateProject) return null;`) to ensure the wizard never renders when quota is reached.
+  - Updated project switcher button, dropdown "+ Create Project" button in `AppShell.tsx`, and "+ Create Property" buttons in `app/projects/page.tsx` with limit badges and lock icons.
+
+---
+
 ## [3.1.3] - 2026-09-16
 
 ### Fixed

@@ -65,7 +65,7 @@ export default function ExecutiveOverviewDashboard() {
     timeRange,
     paginatedPageviews,
     liveVisitorCount,
-    setShowNewProjectModal,
+    openCreateProject,
     fetchData,
     fetchPaginatedPageviews,
     isDashboard,
@@ -163,7 +163,7 @@ export default function ExecutiveOverviewDashboard() {
             </p>
           </div>
           <button
-            onClick={() => setShowNewProjectModal(true)}
+            onClick={() => openCreateProject()}
             className="w-full py-3 px-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer"
           >
             + Create First Project

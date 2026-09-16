@@ -46,10 +46,12 @@ import {
   FolderGit2,
   CreditCard,
   User,
+  Lock,
 } from "lucide-react";
 import { usePlatform } from "@/components/PlatformContext";
 import DateRangeNavigator from "@/components/DateRangeNavigator";
 import CreateProjectModal from "@/components/CreateProjectModal";
+import LimitReachedModal from "@/components/LimitReachedModal";
 import PublicNavbar from "@/components/public/PublicNavbar";
 import PublicFooter from "@/components/public/PublicFooter";
 import { isDashboardClient, getMainDomainUrl } from "@/lib/subdomain";
@@ -82,6 +84,12 @@ export default function AppShell({
     liveVisitorCount,
     showNewProjectModal,
     setShowNewProjectModal,
+    showLimitModal,
+    setShowLimitModal,
+    canCreateProject,
+    openCreateProject,
+    ownedProjectsCount,
+    maxAllowedProjects,
     handleCreateProject,
     handleLogout,
   } = usePlatform();
@@ -379,7 +387,7 @@ export default function App() {
               <button
                 onClick={() => {
                   if (projects.length === 0) {
-                    setShowNewProjectModal(true);
+                    openCreateProject();
                   } else {
                     setShowProjectDropdown(!showProjectDropdown);
                   }
@@ -434,16 +442,35 @@ export default function App() {
                     </div>
 
                     <div className="pt-1.5 border-t border-white/[0.08]">
-                      <button
-                        onClick={() => {
-                          setShowProjectDropdown(false);
-                          setShowNewProjectModal(true);
-                        }}
-                        className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs font-bold text-cyan-400 hover:bg-cyan-500/10 transition cursor-pointer"
-                      >
-                        <Plus size={14} />
-                        <span>Create Project</span>
-                      </button>
+                      {canCreateProject ? (
+                        <button
+                          onClick={() => {
+                            setShowProjectDropdown(false);
+                            openCreateProject();
+                          }}
+                          className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs font-bold text-cyan-400 hover:bg-cyan-500/10 transition cursor-pointer"
+                        >
+                          <Plus size={14} />
+                          <span>Create Project</span>
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            setShowProjectDropdown(false);
+                            setShowLimitModal(true);
+                          }}
+                          className="w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-semibold text-amber-400/90 hover:bg-amber-500/10 transition cursor-pointer"
+                          title={`Limit reached (${ownedProjectsCount}/${maxAllowedProjects})`}
+                        >
+                          <span className="flex items-center gap-1.5">
+                            <Lock size={12} className="text-amber-400" />
+                            <span>Create Project</span>
+                          </span>
+                          <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-500/15 border border-amber-500/30">
+                            Limit ({ownedProjectsCount}/{maxAllowedProjects})
+                          </span>
+                        </button>
+                      )}
                     </div>
                   </div>
                 </>
@@ -981,6 +1008,12 @@ export default function App() {
           checkAuth();
           fetchData();
         }}
+      />
+
+      {/* Plan Limit Reached Modal */}
+      <LimitReachedModal
+        isOpen={showLimitModal}
+        onClose={() => setShowLimitModal(false)}
       />
     </div>
   );

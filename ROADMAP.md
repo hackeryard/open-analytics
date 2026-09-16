@@ -54,6 +54,7 @@ To build the most developer-friendly, high-performance, and visually stunning an
 - [x] User plan management and billing APIs (`/api/user/plan`).
 - [x] Dedicated Billing & Subscription Management Hub (`/billing`).
 - [x] Developer Profile & Account Management Hub (`/profile`).
+- [x] Quota-based project creation modal blocking and proactive `LimitReachedModal` upgrade prompt.
 
 ---
 

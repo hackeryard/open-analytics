@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import { AnalyticsData, PageViewItem } from "@/lib/analyticsTypes";
 import { isDashboardClient } from "@/lib/subdomain";
+import { getMaxAllowedProjects, getUserEffectivePlan } from "@/lib/planLimits";
 
 interface User {
   _id: string;
@@ -108,6 +109,12 @@ interface PlatformContextType {
   checkAuth: () => Promise<boolean>;
   showNewProjectModal: boolean;
   setShowNewProjectModal: (s: boolean) => void;
+  showLimitModal: boolean;
+  setShowLimitModal: (s: boolean) => void;
+  canCreateProject: boolean;
+  ownedProjectsCount: number;
+  maxAllowedProjects: number;
+  openCreateProject: () => void;
   handleCreateProject: (name: string, domains: string) => Promise<{ success: boolean; error?: string }>;
   updateProjectPlan: (projectId: string, plan: "free" | "pro" | "enterprise") => Promise<boolean>;
   updateUserPlan: (plan: "free" | "pro" | "enterprise", billingCycle?: "monthly" | "annual", extraProjects?: number) => Promise<boolean>;
@@ -161,7 +168,50 @@ export function PlatformProvider({
   const [liveStreamActive, setLiveStreamActive] = useState(true);
   const [jumpPageInput, setJumpPageInput] = useState("");
 
-  const [showNewProjectModal, setShowNewProjectModal] = useState(false);
+  const [showNewProjectModal, setShowNewProjectModalState] = useState(false);
+  const [showLimitModal, setShowLimitModal] = useState(false);
+
+  // Compute owned projects and user quota
+  const ownedProjectsCount = useMemo(() => {
+    if (!currentUser) return 0;
+    return projects.filter(
+      (p) => p.isOwner || p.currentUserRole === "owner" || p.role === "owner"
+    ).length;
+  }, [projects, currentUser]);
+
+  const maxAllowedProjects = useMemo(() => {
+    if (!currentUser) return 1;
+    return getMaxAllowedProjects(currentUser);
+  }, [currentUser]);
+
+  const canCreateProject = useMemo(() => {
+    if (!currentUser) return true;
+    if (currentUser.role === "super_admin") return true;
+    return ownedProjectsCount < maxAllowedProjects;
+  }, [currentUser, ownedProjectsCount, maxAllowedProjects]);
+
+  // Intercept modal open: if quota is exceeded, do NOT open create project modal
+  const setShowNewProjectModal = useCallback(
+    (open: boolean) => {
+      if (open) {
+        if (!canCreateProject) {
+          setShowLimitModal(true);
+          setShowNewProjectModalState(false);
+          return;
+        }
+      }
+      setShowNewProjectModalState(open);
+    },
+    [canCreateProject]
+  );
+
+  const openCreateProject = useCallback(() => {
+    if (!canCreateProject) {
+      setShowLimitModal(true);
+      return;
+    }
+    setShowNewProjectModalState(true);
+  }, [canCreateProject]);
 
   // Set active project & persist
   const setActiveProjectId = useCallback((id: string) => {
@@ -479,6 +529,12 @@ export function PlatformProvider({
         checkAuth,
         showNewProjectModal,
         setShowNewProjectModal,
+        showLimitModal,
+        setShowLimitModal,
+        canCreateProject,
+        ownedProjectsCount,
+        maxAllowedProjects,
+        openCreateProject,
         handleCreateProject,
         updateUserPlan,
         handleLogout,
