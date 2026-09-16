@@ -22,6 +22,8 @@ It provides complete insight into user experience, performance bottlenecks, rage
 - **AI-Powered Bug Triage**: Generates comprehensive, copyable bug diagnostic prompts formatted for AI coding assistants (Claude, Gemini, ChatGPT) with stack traces, affected routes, client environment, and step-by-step fix recommendations.
 - **Live Telemetry & Real-Time Event Stream**: Live polling stream with configurable refresh intervals (2s, 5s, 10s, 30s), segment filtering, CSV/JSON export, and deep audit inspector modals.
 - **Interactive SVG World Atlas**: Interactive world map with pan, zoom, country rankings, continent breakdowns, and city-level drilldown.
+- **Dedicated Billing & Plans Hub (`/billing`)**: User-level subscription management, live website slot gauges (`ownedProjects / maxProjects`), unpooled quotas, and 1-click plan switching.
+- **Developer Profile Hub (`/profile`)**: Manage user profile details, role assignments, subscription tier status, and associated workspaces.
 - **Privacy & Security by Design**: Built-in IP address anonymization (masking the last octet for GDPR compliance) and automated PII redaction (scrubbing emails, passwords, tokens from URL query parameters and error payloads).
 
 ---

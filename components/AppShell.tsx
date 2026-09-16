@@ -44,6 +44,8 @@ import {
   CheckCircle2,
   AlertCircle,
   FolderGit2,
+  CreditCard,
+  User,
 } from "lucide-react";
 import { usePlatform } from "@/components/PlatformContext";
 import DateRangeNavigator from "@/components/DateRangeNavigator";
@@ -208,6 +210,22 @@ export default function AppShell({
         { href: "/acquisition", label: "Acquisition & Sources", icon: Compass },
         { href: "/seo", label: "SEO & Search", icon: Search },
         { href: "/ai-visibility", label: "GEO & AI Radar", icon: Bot, pro: true, badge: data?.aiVisibility?.overview?.totalAiCrawlerHits ? `${data.aiVisibility.overview.totalAiCrawlerHits}` : undefined },
+      ],
+    },
+    {
+      group: "Account & Plans",
+      items: [
+        {
+          href: "/billing",
+          label: "Billing & Plans",
+          icon: CreditCard,
+          badge: currentUser?.plan ? currentUser.plan.toUpperCase() : "FREE",
+        },
+        {
+          href: "/profile",
+          label: "Developer Profile",
+          icon: User,
+        },
       ],
     },
     {
@@ -534,20 +552,31 @@ export default function App() {
         <div className="p-3 border-t border-white/[0.07] shrink-0 bg-white/[0.01]">
           {currentUser ? (
             <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-600 flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-sm">
+              <Link
+                href="/profile"
+                className="flex items-center gap-2.5 min-w-0 flex-1 hover:opacity-80 transition group"
+                title="View Profile & Account"
+              >
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-600 flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-sm group-hover:scale-105 transition-transform">
                   {currentUser.name ? currentUser.name[0].toUpperCase() : "U"}
                 </div>
                 {!sidebarCollapsed && (
                   <div className="min-w-0">
-                    <div className="text-xs font-bold text-white truncate">{currentUser.name}</div>
+                    <div className="text-xs font-bold text-white truncate group-hover:text-cyan-300 transition-colors">
+                      {currentUser.name}
+                    </div>
                     <div className="text-[10px] text-muted-foreground capitalize flex items-center gap-1 truncate">
                       <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 inline-block" />
-                      {currentUser.role.replace("_", " ")}
+                      <span>{currentUser.role.replace("_", " ")}</span>
+                      {currentUser.plan && currentUser.plan !== "free" && (
+                        <span className="text-[9px] uppercase font-bold text-amber-300 font-mono">
+                          • {currentUser.plan}
+                        </span>
+                      )}
                     </div>
                   </div>
                 )}
-              </div>
+              </Link>
 
               <button
                 onClick={handleLogout}

@@ -2,6 +2,26 @@
 
 All notable changes to the Open Analytics platform are documented in this file.
 
+## [3.1.2] - 2026-09-16
+
+### Added
+- **Dedicated Billing & Plans Hub (`/billing`)**:
+  - Implemented interactive account-level subscription and billing management page.
+  - Live usage meters displaying website tracking slot utilization (`ownedProjects / maxProjects`) and unpooled event boundaries.
+  - Subscription expiration date calculation, days remaining tracker, and billing cycle indicator.
+  - Interactive tier switcher allowing instant upgrade or downgrade (`Free`, `Pro`, `Enterprise`) wired to `PATCH /api/user/plan`.
+  - Comprehensive feature entitlement comparison matrix.
+- **Developer Profile Hub (`/profile`)**:
+  - Personal account management page with user avatar, name, email, and role badge.
+  - Summary of all owned and shared workspaces with ownership markers.
+  - Integrated navigation links from the user card in the desktop sidebar and mobile drawer.
+- **Navigation Integration**:
+  - Added dedicated **"Account & Plans"** group in the sidebar navigation (`Billing & Plans`, `Developer Profile`).
+  - Added active plan badge (`FREE`, `PRO`, `ENTERPRISE`) directly to the sidebar billing item.
+  - Added `/billing` and `/profile` to protected `DASHBOARD_PATHS` in `middleware.ts`.
+
+---
+
 ## [3.1.1] - 2026-09-16
 
 ### Fixed

@@ -69,7 +69,7 @@ export default function ProFeatureGate({
             </span>
           </div>
           <Link
-            href={`/projects/${activeProject?.projectId}/settings#plan`}
+            href="/billing"
             className="text-[11px] text-slate-400 hover:text-cyan-300 transition underline underline-offset-2"
           >
             Manage Subscription

@@ -52,6 +52,8 @@ To build the most developer-friendly, high-performance, and visually stunning an
 - [x] Unpooled per-project event quotas (10k Free, 250k Pro, 1M Enterprise).
 - [x] Project Owner plan inheritance: Team members enjoy Pro on owner's projects without cross-account leakage.
 - [x] User plan management and billing APIs (`/api/user/plan`).
+- [x] Dedicated Billing & Subscription Management Hub (`/billing`).
+- [x] Developer Profile & Account Management Hub (`/profile`).
 
 ---
 
