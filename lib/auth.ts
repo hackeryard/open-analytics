@@ -127,13 +127,15 @@ export function canAccessProject(user: any, project: any): boolean {
   if (!user || !project) return false;
   if (user.role === "super_admin") return true;
 
-  const userIdStr = user._id?.toString() || user.userId || user.id;
-  if (project.ownerId && project.ownerId.toString() === userIdStr) {
+  const userIdStr = (user._id?.toString() || user.userId || user.id || "").toString();
+  const projectOwnerIdStr = (project.ownerId?._id ? project.ownerId._id.toString() : project.ownerId?.toString() || "").toString();
+
+  if (projectOwnerIdStr && projectOwnerIdStr === userIdStr) {
     return true;
   }
   if (Array.isArray(project.members)) {
     const isMember = project.members.some(
-      (m: any) => (m.userId?.toString() || m.userId) === userIdStr
+      (m: any) => ((m.userId?._id ? m.userId._id.toString() : m.userId?.toString() || m.userId || "").toString()) === userIdStr
     );
     if (isMember) return true;
   }
@@ -148,13 +150,15 @@ export function canEditProject(user: any, project: any): boolean {
   if (!user || !project) return false;
   if (user.role === "super_admin") return true;
 
-  const userIdStr = user._id?.toString() || user.userId || user.id;
-  if (project.ownerId && project.ownerId.toString() === userIdStr) {
+  const userIdStr = (user._id?.toString() || user.userId || user.id || "").toString();
+  const projectOwnerIdStr = (project.ownerId?._id ? project.ownerId._id.toString() : project.ownerId?.toString() || "").toString();
+
+  if (projectOwnerIdStr && projectOwnerIdStr === userIdStr) {
     return true;
   }
   if (Array.isArray(project.members)) {
     const memberObj = project.members.find(
-      (m: any) => (m.userId?.toString() || m.userId) === userIdStr
+      (m: any) => ((m.userId?._id ? m.userId._id.toString() : m.userId?.toString() || m.userId || "").toString()) === userIdStr
     );
     if (memberObj && (memberObj.role === "admin" || memberObj.role === "editor")) return true;
   }
@@ -169,13 +173,15 @@ export function canManageProject(user: any, project: any): boolean {
   if (!user || !project) return false;
   if (user.role === "super_admin") return true;
 
-  const userIdStr = user._id?.toString() || user.userId || user.id;
-  if (project.ownerId && project.ownerId.toString() === userIdStr) {
+  const userIdStr = (user._id?.toString() || user.userId || user.id || "").toString();
+  const projectOwnerIdStr = (project.ownerId?._id ? project.ownerId._id.toString() : project.ownerId?.toString() || "").toString();
+
+  if (projectOwnerIdStr && projectOwnerIdStr === userIdStr) {
     return true;
   }
   if (Array.isArray(project.members)) {
     const memberObj = project.members.find(
-      (m: any) => (m.userId?.toString() || m.userId) === userIdStr
+      (m: any) => ((m.userId?._id ? m.userId._id.toString() : m.userId?.toString() || m.userId || "").toString()) === userIdStr
     );
     if (memberObj && memberObj.role === "admin") return true;
   }
@@ -353,8 +359,9 @@ export async function verifyProjectManage(req: Request, projectId: string): Prom
 export function isProjectOwner(user: any, project: any): boolean {
   if (!user || !project) return false;
   if (user.role === "super_admin") return true;
-  const userIdStr = user._id?.toString() || user.userId || user.id;
-  return project.ownerId && project.ownerId.toString() === userIdStr;
+  const userIdStr = (user._id?.toString() || user.userId || user.id || "").toString();
+  const projectOwnerIdStr = (project.ownerId?._id ? project.ownerId._id.toString() : project.ownerId?.toString() || "").toString();
+  return Boolean(projectOwnerIdStr && projectOwnerIdStr === userIdStr);
 }
 
 /**

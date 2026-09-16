@@ -5,6 +5,9 @@ All notable changes to the Open Analytics platform are documented in this file.
 ## [3.1.1] - 2026-09-16
 
 ### Fixed
+- **Project Access & Authorization with Populated Owner**:
+  - Resolved 403 "Access denied: You do not have permission to view this project" regression when projects in user workspaces are populated with owner data.
+  - Updated `canAccessProject`, `canEditProject`, `canManageProject`, and `isProjectOwner` in `lib/auth.ts` to safely resolve `ownerId` and `members[].userId` whether unpopulated (ObjectId string) or populated (User document object with `_id`).
 - **AppShell & ExecutiveOverviewDashboard SSR Hydration Mismatch**:
   - Resolved Next.js runtime hydration errors (`Expected server HTML to contain a matching <aside> in <div>` and `Expected server HTML to contain a matching <div> in <div>`).
   - Passed `initialIsDashboard` from `RootLayout` via `headers()` (`x-is-dashboard` header and host inspection) down to both `PlatformProvider` and `AppShell`.
