@@ -41,6 +41,13 @@ Never run ad-hoc raw commands for git pulls, port killing, or PRs. Always use pr
 - Query limits:
   - Free Starter Plan: Clamped to 30-day historical window.
   - Pro & Enterprise Plans: Full 365-day (1-year) historical window.
+- **User-Level Subscription Model & Website Ceilings**:
+  - Subscription is assigned to **User** (`user.plan`, `user.planExpiresAt`), NOT individual projects.
+  - **Free**: Strictly 1 website, 10k events/mo/project, up to 2 team members.
+  - **Pro**: 10 websites included, 250k events/mo/project, up to 10 team members.
+  - **Enterprise**: 10 base websites + $10/mo per extra website, 1M events/mo/project.
+  - **Member Inheritance**: Projects inherit the Project Owner's plan. Members get Pro on owner's project without bleeding into their independent projects.
+  - Quotas are strictly unpooled (per project).
 
 ### 5. Multi-Tenant Project Isolation & RBAC
 - Every analytical database query MUST filter by `projectId`.

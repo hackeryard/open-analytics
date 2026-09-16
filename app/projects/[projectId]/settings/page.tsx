@@ -212,16 +212,19 @@ export default function SettingsPage() {
     setSwitchingPlan(true);
     setPlanMessage(null);
     try {
-      const res = await fetch(`/api/projects/${projectId}`, {
+      const res = await fetch("/api/user/plan", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan: targetPlan }),
+        body: JSON.stringify({ plan: targetPlan, billingCycle: "monthly" }),
       });
       if (res.ok) {
         const d = await res.json();
-        setProject(d.project);
-        setPlanMessage(`Successfully updated project to ${targetPlan.toUpperCase()} plan!`);
+        setProject((prev: any) => prev ? { ...prev, plan: targetPlan, effectivePlan: targetPlan } : prev);
+        setPlanMessage(`Successfully updated your subscription to ${targetPlan.toUpperCase()}!`);
         setTimeout(() => setPlanMessage(null), 3500);
+      } else {
+        const errData = await res.json();
+        setPlanMessage(`Failed to update plan: ${errData.error || "Unknown error"}`);
       }
     } catch (err: any) {
       setPlanMessage(`Failed to update plan: ${err.message}`);
@@ -783,7 +786,7 @@ export default function SettingsPage() {
               {/* Current Plan Status Box */}
               <div
                 className={`p-5 rounded-2xl border ${
-                  project?.plan === "pro"
+                  project?.plan === "pro" || project?.effectivePlan === "pro"
                     ? "bg-gradient-to-r from-amber-500/10 via-cyan-500/10 to-transparent border-amber-400/40 shadow-lg shadow-amber-500/5"
                     : "bg-white/[0.02] border-white/[0.08]"
                 }`}
@@ -796,41 +799,48 @@ export default function SettingsPage() {
                       </span>
                       <span
                         className={`text-xs font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider ${
-                          project?.plan === "pro"
+                          project?.plan === "pro" || project?.effectivePlan === "pro"
                             ? "bg-gradient-to-r from-amber-400 to-cyan-400 text-slate-950 shadow-sm"
                             : "bg-white/[0.08] text-slate-300"
                         }`}
                       >
-                        {project?.plan === "pro" ? "Cloud Pro Plan" : "Free Starter Plan"}
+                        {project?.plan === "pro" || project?.effectivePlan === "pro" ? "Cloud Pro Plan" : "Free Starter Plan"}
                       </span>
+                      {!isCurrentUserOwner && (
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/15 border border-cyan-500/30 text-cyan-300">
+                          Inherited from Owner {owner?.email ? `(${owner.email})` : ""}
+                        </span>
+                      )}
                     </div>
                     <p className="text-xs text-slate-300">
-                      {project?.plan === "pro"
+                      {project?.plan === "pro" || project?.effectivePlan === "pro"
                         ? "All 5 Extra Power Modules (AI Search Radar, Core Web Vitals RUM, Behavioral UX, Crash Triage, and Custom Events) are fully active."
                         : "Standard cookieless web telemetry is active. Advanced AI radar, RUM vitals, rage clicks, and custom events stream are gated."}
                     </p>
                   </div>
 
-                  <div>
-                    {project?.plan === "pro" ? (
-                      <button
-                        onClick={() => handleSwitchPlan("free")}
-                        disabled={switchingPlan}
-                        className="px-4 py-2 rounded-xl bg-white/[0.06] hover:bg-rose-500/20 text-slate-300 hover:text-rose-300 border border-white/[0.1] text-xs font-semibold transition cursor-pointer"
-                      >
-                        {switchingPlan ? "Updating..." : "Downgrade to Free"}
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => handleSwitchPlan("pro")}
-                        disabled={switchingPlan}
-                        className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-cyan-400 to-indigo-500 hover:from-amber-300 hover:to-cyan-300 text-slate-950 text-xs font-extrabold shadow-lg shadow-cyan-500/20 transition cursor-pointer flex items-center gap-1.5"
-                      >
-                        <Zap className="w-3.5 h-3.5 fill-current" />
-                        <span>{switchingPlan ? "Activating..." : "Upgrade to Pro ($19/mo)"}</span>
-                      </button>
-                    )}
-                  </div>
+                  {isCurrentUserOwner && (
+                    <div>
+                      {project?.plan === "pro" || project?.effectivePlan === "pro" ? (
+                        <button
+                          onClick={() => handleSwitchPlan("free")}
+                          disabled={switchingPlan}
+                          className="px-4 py-2 rounded-xl bg-white/[0.06] hover:bg-rose-500/20 text-slate-300 hover:text-rose-300 border border-white/[0.1] text-xs font-semibold transition cursor-pointer"
+                        >
+                          {switchingPlan ? "Updating..." : "Downgrade to Free"}
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleSwitchPlan("pro")}
+                          disabled={switchingPlan}
+                          className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-cyan-400 to-indigo-500 hover:from-amber-300 hover:to-cyan-300 text-slate-950 text-xs font-extrabold shadow-lg shadow-cyan-500/20 transition cursor-pointer flex items-center gap-1.5"
+                        >
+                          <Zap className="w-3.5 h-3.5 fill-current" />
+                          <span>{switchingPlan ? "Activating..." : "Upgrade to Pro ($19/mo)"}</span>
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -1282,6 +1292,14 @@ export default function SettingsPage() {
                     Assign role-based access control (Administrator, Editor, Viewer) for this analytics property.
                   </p>
                 </div>
+              </div>
+
+              {/* Plan Member Limit Notice */}
+              <div className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-center justify-between text-xs">
+                <span className="text-slate-400">Team Collaborators Allocated:</span>
+                <span className="font-mono font-bold text-white">
+                  {members.length} / {project.effectivePlan === "enterprise" ? "Unlimited" : project.effectivePlan === "pro" ? "10" : "2"} members
+                </span>
               </div>
 
               {/* Add Member Form */}

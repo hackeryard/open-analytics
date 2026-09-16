@@ -16,15 +16,20 @@ import {
   Lock,
   Layers,
   Code2,
+  Cpu,
+  MousePointerClick,
+  FileCheck2,
+  Check,
 } from "lucide-react";
 import JsonLd from "@/components/JsonLd";
+import { getDashboardUrl } from "@/lib/subdomain";
 
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://openanalytics.org.in";
 
 export const metadata: Metadata = {
-  title: "Features | Modern Cookieless Web Observability & Analytics",
+  title: "Features | Modern Cookieless Web Observability & Telemetry Engine",
   description:
-    "Explore Open Analytics features: Real User Monitoring (Core Web Vitals), autonomous AI bot radar, behavioral rage click tracking, automated error triage, and sub-3.2KB cookieless telemetry.",
+    "Explore Open Analytics features: Real User Monitoring (Core Web Vitals p75 LCP, INP, CLS), autonomous AI search crawler radar, behavioral rage click intelligence, automated error triage, and sub-3.2KB cookieless telemetry.",
   keywords: [
     "open analytics features",
     "core web vitals real user monitoring",
@@ -34,6 +39,7 @@ export const metadata: Metadata = {
     "javascript error triage",
     "gdpr compliant analytics features",
     "inp lcp cls tracking",
+    "answer engine optimization telemetry",
   ],
   alternates: {
     canonical: "/features",
@@ -80,7 +86,7 @@ const featureListSchema = {
       "@type": "SoftwareApplication",
       position: 1,
       name: "Real User Monitoring (Core Web Vitals)",
-      description: "Automated real-world capture of LCP, INP, and CLS across every page load.",
+      description: "Automated real-world capture of p75 LCP, INP, and CLS across every page load.",
     },
     {
       "@type": "SoftwareApplication",
@@ -110,18 +116,22 @@ const featureListSchema = {
 };
 
 export default function FeaturesPage() {
-  const featureBlocks = [
+  const dashboardUrl = getDashboardUrl("/");
+
+  const featureModules = [
     {
       id: "rum",
-      badge: "Performance & Quality",
+      badge: "Real User Monitoring",
       title: "Automated Core Web Vitals (RUM)",
-      tagline: "Measure the exact user experience your real visitors feel, not simulated lab estimates.",
+      tagline: "Measure the exact user experience your real visitors feel across mobile and desktop devices.",
       icon: Activity,
-      color: "from-cyan-500 to-blue-600",
+      color: "text-cyan-400",
+      bgGradient: "from-cyan-500/10 via-blue-500/5 to-transparent",
+      borderColor: "border-cyan-500/30",
       points: [
         {
           title: "Largest Contentful Paint (LCP)",
-          desc: "Pinpoint slow hero images, delayed font rendering, and server TTFB bottlenecks.",
+          desc: "Pinpoint slow hero images, delayed font rendering, and server TTFB bottlenecks with p75 accuracy.",
         },
         {
           title: "Interaction to Next Paint (INP)",
@@ -129,7 +139,7 @@ export default function FeaturesPage() {
         },
         {
           title: "Cumulative Layout Shift (CLS)",
-          desc: "Catch unexpected visual jumping caused by unsized media, dynamic ads, or font swaps.",
+          desc: "Catch visual jumping caused by unsized media, dynamic banners, or late-injected web fonts.",
         },
         {
           title: "Hardware & Network Profiling",
@@ -138,191 +148,225 @@ export default function FeaturesPage() {
       ],
       stats: [
         { label: "Beacon Size", value: "< 3.2 KB" },
-        { label: "Browser Support", value: "99.8%" },
-        { label: "Overhead", value: "< 1 ms" },
+        { label: "Execution Time", value: "< 2 ms" },
+        { label: "Sampling", value: "Real Visitors" },
       ],
     },
     {
       id: "ai-radar",
-      badge: "GEO & Search Intelligence",
-      title: "Autonomous AI & LLM Bot Radar",
-      tagline: "Know the second generative search engines cite, scrape, or index your content.",
+      badge: "Generative Engine Optimization (GEO)",
+      title: "Autonomous AI & LLM Search Radar",
+      tagline: "Track and measure how generative answer engines index and cite your web pages.",
       icon: Bot,
-      color: "from-violet-500 to-indigo-600",
+      color: "text-indigo-400",
+      bgGradient: "from-indigo-500/10 via-purple-500/5 to-transparent",
+      borderColor: "border-indigo-500/30",
       points: [
         {
-          title: "Generative Engine Visibility",
-          desc: "Differentiate between PerplexityBot, GPTBot, ClaudeBot, Google-Extended, and Applebot.",
+          title: "Perplexity AI & SearchGPT",
+          desc: "Differentiate human referral traffic originating from generative answers versus regular search engines.",
         },
         {
-          title: "GEO Trend Analysis",
-          desc: "Track which landing pages and documentation articles are indexed most frequently by LLM crawlers.",
+          title: "LLM Bot Crawler Detection",
+          desc: "Real-time logging when ClaudeBot, GPTBot, or Bytespider crawl your documentation or articles.",
         },
         {
-          title: "Human vs Bot Traffic Segmentation",
-          desc: "Ensure your marketing metrics remain unpolluted by autonomous AI ingestion traffic.",
+          title: "AEO Citation Intelligence",
+          desc: "Identify which pages are cited as authoritative sources in generative answers.",
         },
         {
-          title: "Direct Answer Attribution",
-          desc: "Track referrals coming from conversational search engines and AI assistants.",
+          title: "Machine-Readable Endpoints",
+          desc: "Built-in support for /llms.txt and /agents.md delivery to assist AI discovery.",
         },
       ],
       stats: [
-        { label: "Bots Detected", value: "24+ Engines" },
-        { label: "Update Rate", value: "Real-time" },
-        { label: "Clean Data", value: "100%" },
+        { label: "Bot Catalog", value: "Auto-Updated" },
+        { label: "Classification", value: "Heuristic + IP" },
+        { label: "Coverage", value: "All Major LLMs" },
       ],
     },
     {
       id: "ux",
-      badge: "Conversion Rate Optimization",
-      title: "Behavioral UX & Rage Click Intelligence",
-      tagline: "Uncover hidden user frustration and broken UI components before they cost you revenue.",
-      icon: Flame,
-      color: "from-amber-500 to-rose-600",
+      badge: "Behavioral Friction Intelligence",
+      title: "Rage Click & Dead Click Detection",
+      tagline: "Detect frontend friction before users file support tickets or abandon workflows.",
+      icon: MousePointerClick,
+      color: "text-rose-400",
+      bgGradient: "from-rose-500/10 via-orange-500/5 to-transparent",
+      borderColor: "border-rose-500/30",
       points: [
         {
-          title: "Rage Click Detection",
-          desc: "Detect when users repeatedly click the same button or non-clickable element out of frustration.",
+          title: "Rage Click Alerts",
+          desc: "Triggers when a visitor clicks the same element 3+ times in 800ms, indicating broken UI states.",
         },
         {
-          title: "Dead Click Attribution",
-          desc: "Find buttons, icons, or mock links that fail to produce any DOM mutation or response.",
+          title: "Dead Click Discovery",
+          desc: "Identifies clicks on non-interactive elements that visitors mistakenly believe are clickable.",
         },
         {
-          title: "Scroll Depth Heat-Milestones",
-          desc: "Measure drop-off points at 25%, 50%, 75%, and 100% of the page length.",
+          title: "Exact CSS Selector Capture",
+          desc: "Captures tag names, classes, IDs, and inner text so frontend developers can find the exact culprit.",
         },
         {
-          title: "Form Abandonment Warnings",
-          desc: "Track which input fields cause users to bounce before completing signups or checkouts.",
+          title: "Zero Heavy Video Recording",
+          desc: "Captures behavioral friction signals mathematically with zero heavy DOM screen recordings.",
         },
       ],
       stats: [
-        { label: "Signal Accuracy", value: "99.4%" },
-        { label: "Zero Setup", value: "Automatic" },
-        { label: "Privacy", value: "No keystrokes stored" },
+        { label: "Detection Threshold", value: "3 clicks / 800ms" },
+        { label: "Payload Overhead", value: "0 KB added" },
+        { label: "Session Impact", value: "Zero lag" },
       ],
     },
     {
       id: "errors",
-      badge: "Full-Stack Reliability",
-      title: "Automated Error & Crash Triage",
-      tagline: "Continuous frontend exception tracking without bloated third-party crash SDKs.",
+      badge: "Diagnostics & Resilience",
+      title: "Automated Error Triage & AI Debugging",
+      tagline: "Uncaught JavaScript exceptions grouped intelligently with AI repair prompts.",
       icon: Bug,
-      color: "from-rose-500 to-red-600",
+      color: "text-amber-400",
+      bgGradient: "from-amber-500/10 via-yellow-500/5 to-transparent",
+      borderColor: "border-amber-500/30",
       points: [
         {
           title: "Unhandled Exception Capture",
-          desc: "Catch window.onerror and unhandled promise rejections with browser stack traces.",
+          desc: "Automatically intercepts window.onerror and unhandledrejection events in production.",
         },
         {
-          title: "Intelligent Crash Grouping",
-          desc: "Deduplicate identical errors automatically into single manageable triage incidents.",
+          title: "Intelligent Stack Fingerprinting",
+          desc: "Groups duplicate errors together so your team only triages unique root causes.",
         },
         {
-          title: "Impact by Browser & OS",
-          desc: "Identify whether a crash is isolated to Safari iOS or affects all Chromium users.",
+          title: "Browser & OS Context",
+          desc: "Correlates errors with specific browser versions, operating systems, and viewport sizes.",
         },
         {
-          title: "Custom Regex Filter Rules",
-          desc: "Create custom suppression rules to ignore benign third-party extension noise.",
+          title: "AI Debug Prompts",
+          desc: "Copy formatted prompts directly into ChatGPT or Claude to debug and write unit test fixes.",
         },
       ],
       stats: [
-        { label: "Stack Trace Depth", value: "Full Stack" },
-        { label: "Resolution State", value: "Open / Ignored / Fixed" },
-        { label: "Telemetry Delay", value: "< 2 ms" },
+        { label: "Error Capture", value: "100% Uncaught" },
+        { label: "Grouping", value: "Automated" },
+        { label: "Setup", value: "Zero Config" },
+      ],
+    },
+    {
+      id: "privacy",
+      badge: "Cryptographic Privacy",
+      title: "100% Cookieless GDPR & PECR Exemption",
+      tagline: "Mathematical privacy that completely eliminates annoying cookie consent banners.",
+      icon: ShieldCheck,
+      color: "text-emerald-400",
+      bgGradient: "from-emerald-500/10 via-teal-500/5 to-transparent",
+      borderColor: "border-emerald-500/30",
+      points: [
+        {
+          title: "Zero Cookies & Zero Storage",
+          desc: "Writes zero cookies, zero LocalStorage tokens, and zero persistent device fingerprinting hashes.",
+        },
+        {
+          title: "24-Hour Rotating Cryptographic Salts",
+          desc: "Hashes are generated with an ephemeral salt permanently purged every night at 00:00:00 UTC.",
+        },
+        {
+          title: "Zero IP Storage",
+          desc: "Raw IP addresses are processed in volatile memory for country lookup and immediately discarded.",
+        },
+        {
+          title: "Full European Data Residency",
+          desc: "European telemetry is processed and stored exclusively in EU data centers (Frankfurt & Amsterdam).",
+        },
+      ],
+      stats: [
+        { label: "Consent Banner", value: "Not Required" },
+        { label: "Salt Rotation", value: "Every 24 Hours" },
+        { label: "PII Storage", value: "0 Bytes" },
       ],
     },
   ];
 
   return (
-    <div className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-20">
-      <JsonLd data={breadcrumbSchema} />
-      <JsonLd data={featureListSchema} />
+    <div className="min-h-screen bg-[#050811] text-slate-100 selection:bg-cyan-500/30 selection:text-cyan-200">
+      <JsonLd schema={breadcrumbSchema} />
+      <JsonLd schema={featureListSchema} />
 
-      {/* Hero Section */}
-      <div className="text-center space-y-6 max-w-3xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-bold shadow-sm">
-          <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-          <span className="tracking-wide">ALL-IN-ONE OBSERVABILITY ENGINE</span>
+      {/* Hero Header */}
+      <section className="relative pt-24 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-cyan-500/15 via-blue-600/10 to-indigo-600/5 blur-[120px] -z-10 pointer-events-none" />
+
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/25 text-cyan-400 text-xs font-semibold tracking-wide uppercase mb-6 backdrop-blur-md">
+          <Sparkles className="w-3.5 h-3.5" />
+          <span>Full Observability Suite</span>
         </div>
 
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-[1.1]">
-          Engineered for speed,{" "}
-          <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400 bg-clip-text text-transparent">
-            privacy &amp; modern search.
+        <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white mb-6 max-w-4xl mx-auto leading-[1.1]">
+          Complete Web Telemetry Built For{" "}
+          <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400 bg-clip-text text-transparent">
+            Speed &amp; Privacy.
           </span>
         </h1>
 
-        <p className="text-base sm:text-lg text-slate-400 leading-relaxed">
-          Open Analytics replaces bloated legacy analytics scripts with a unified 3.2KB beacon that delivers Real User Monitoring (RUM), behavioral signals, error triage, and AI bot visibility.
+        <p className="max-w-2xl mx-auto text-base sm:text-lg text-slate-300 leading-relaxed mb-10">
+          Everything you need to audit real-world performance, detect UX friction, monitor AI search crawler traffic, and track conversions without tracking cookies.
         </p>
 
-        {/* GEO / AEO Direct Answer Summary Box */}
-        <div className="text-left p-5 rounded-2xl bg-[#0b1020] border border-cyan-500/25 shadow-lg space-y-2">
-          <div className="text-[11px] font-mono uppercase tracking-wider text-cyan-400 font-bold flex items-center gap-1.5">
-            <Zap className="w-3.5 h-3.5" />
-            <span>GEO &amp; AEO Quick Summary: What is Open Analytics?</span>
-          </div>
-          <p className="text-xs text-slate-300 leading-relaxed">
-            <strong>Open Analytics</strong> is a lightweight, cookieless web analytics and observability platform designed as a modern alternative to Google Analytics 4. It tracks real user web vitals (LCP, INP, CLS), user behavioral friction (rage clicks), autonomous AI web crawlers (PerplexityBot, GPTBot, ClaudeBot), and client-side JavaScript crashes with 100% GDPR and CCPA compliance without requiring cookie consent banners.
-          </p>
-        </div>
-
-        <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-          <Link
-            href="/register"
-            className="flex items-center gap-2 px-6 py-3 rounded-2xl text-sm font-bold text-white bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 shadow-lg shadow-cyan-500/25 hover:scale-[1.02] transition-all"
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a
+            href={dashboardUrl}
+            className="w-full sm:w-auto py-3.5 px-8 rounded-xl bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-400 hover:from-cyan-300 hover:via-sky-300 hover:to-indigo-300 text-slate-950 font-black text-sm transition-all shadow-xl shadow-cyan-500/25 flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.02]"
           >
-            <span>Start Tracking Free</span>
-            <ArrowRight size={15} />
-          </Link>
+            <span>Launch Dashboard</span>
+            <ArrowRight className="w-4 h-4" />
+          </a>
           <Link
-            href="/vs-google-analytics"
-            className="px-5 py-3 rounded-2xl text-sm font-bold text-slate-300 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.1] transition-all"
+            href="/docs/installation"
+            className="w-full sm:w-auto py-3.5 px-6 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 font-semibold text-sm transition border border-white/[0.1] flex items-center justify-center gap-2"
           >
-            Compare with GA4
+            <Code2 size={16} className="text-cyan-400" />
+            <span>Installation Guides</span>
           </Link>
         </div>
-      </div>
+      </section>
 
-      {/* Feature Deep Dive Cards */}
-      <div className="space-y-16">
-        {featureBlocks.map((block, idx) => {
-          const Icon = block.icon;
+      {/* Feature Modules Deep Dive */}
+      <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-16">
+        {featureModules.map((mod, idx) => {
+          const Icon = mod.icon;
+          const isEven = idx % 2 === 0;
+
           return (
             <div
-              key={block.id}
-              id={block.id}
-              className="p-8 sm:p-10 rounded-3xl bg-[#080d19]/90 border border-white/[0.1] shadow-2xl backdrop-blur-xl relative overflow-hidden group hover:border-cyan-500/40 transition-all duration-300"
+              key={mod.id}
+              id={mod.id}
+              className={`p-8 sm:p-12 rounded-3xl bg-gradient-to-b ${mod.bgGradient} border ${mod.borderColor} backdrop-blur-md shadow-xl transition-all`}
             >
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-                {/* Left Column: Descriptions */}
+                {/* Text Content */}
                 <div className="lg:col-span-7 space-y-6">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-xs font-semibold text-cyan-400">
-                    <Icon className="w-3.5 h-3.5 text-cyan-400" />
-                    <span>{block.badge}</span>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.06] border border-white/[0.1] text-white text-xs font-semibold uppercase tracking-wider font-mono">
+                    <Icon size={14} className={mod.color} />
+                    <span>{mod.badge}</span>
                   </div>
 
                   <div className="space-y-2">
-                    <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-                      {block.title}
+                    <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
+                      {mod.title}
                     </h2>
-                    <p className="text-sm text-slate-400 leading-relaxed">
-                      {block.tagline}
+                    <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+                      {mod.tagline}
                     </p>
                   </div>
 
+                  {/* Bullet Points */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                    {block.points.map((pt) => (
-                      <div key={pt.title} className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.05] space-y-1">
-                        <div className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                    {mod.points.map((pt) => (
+                      <div key={pt.title} className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] space-y-1">
+                        <div className="text-xs font-bold text-white flex items-center gap-2">
+                          <Check size={14} className={mod.color} />
                           <span>{pt.title}</span>
                         </div>
-                        <p className="text-[11px] text-slate-400 leading-relaxed pl-5">
+                        <p className="text-[11px] text-slate-400 leading-snug">
                           {pt.desc}
                         </p>
                       </div>
@@ -330,59 +374,74 @@ export default function FeaturesPage() {
                   </div>
                 </div>
 
-                {/* Right Column: Architectural Highlights & Stats */}
-                <div className="lg:col-span-5 bg-[#040711] rounded-2xl border border-white/[0.08] p-6 space-y-6">
-                  <div className="text-xs font-mono uppercase tracking-wider text-slate-400 pb-3 border-b border-white/[0.06] flex items-center justify-between">
-                    <span>Performance Metrics</span>
-                    <span className="text-cyan-400 font-bold">Open Analytics Spec</span>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-3 text-center">
-                    {block.stats.map((s) => (
-                      <div key={s.label} className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.05]">
-                        <div className="text-sm font-mono font-black text-white">{s.value}</div>
-                        <div className="text-[10px] text-slate-500 mt-1 uppercase font-semibold">{s.label}</div>
+                {/* Metric Summary Panel */}
+                <div className="lg:col-span-5">
+                  <div className="p-6 sm:p-8 rounded-2xl bg-[#070b16] border border-white/[0.08] space-y-6 shadow-2xl">
+                    <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center">
+                          <Icon size={16} className={mod.color} />
+                        </div>
+                        <span className="text-xs font-bold text-white font-mono uppercase tracking-wider">
+                          Module Specifications
+                        </span>
                       </div>
-                    ))}
-                  </div>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 font-bold uppercase">
+                        Active
+                      </span>
+                    </div>
 
-                  <div className="p-3.5 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-xs text-cyan-300 flex items-center gap-2.5">
-                    <ShieldCheck className="w-4 h-4 text-cyan-400 shrink-0" />
-                    <span className="text-[11px] leading-relaxed">
-                      All telemetry is cryptographically hashed with daily salt rotation. Zero cookie banner required.
-                    </span>
+                    <div className="space-y-4">
+                      {mod.stats.map((s) => (
+                        <div key={s.label} className="flex items-center justify-between text-xs">
+                          <span className="text-slate-400">{s.label}</span>
+                          <span className="font-bold text-white font-mono">{s.value}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="pt-4 border-t border-white/[0.08]">
+                      <a
+                        href={dashboardUrl}
+                        className="w-full py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-white text-xs font-bold transition flex items-center justify-center gap-2 border border-white/[0.08] cursor-pointer"
+                      >
+                        <span>Inspect in Live Console</span>
+                        <ArrowRight size={13} />
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           );
         })}
-      </div>
+      </section>
 
       {/* Bottom CTA Banner */}
-      <div className="p-10 rounded-3xl bg-gradient-to-r from-cyan-950/40 via-blue-950/40 to-indigo-950/40 border border-cyan-500/30 text-center space-y-5 relative overflow-hidden">
-        <h3 className="text-2xl sm:text-3xl font-black text-white">
-          Ready to experience sub-millisecond cookieless observability?
-        </h3>
-        <p className="text-sm text-slate-400 max-w-xl mx-auto">
-          Set up Open Analytics on your website in under 60 seconds with our single lightweight script tag.
-        </p>
-        <div className="pt-2 flex justify-center gap-3">
-          <Link
-            href="/register"
-            className="flex items-center gap-2 px-6 py-3 rounded-2xl text-xs font-bold text-white bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 shadow-lg shadow-cyan-500/20 hover:scale-105 transition"
-          >
-            <span>Create Free Account</span>
-            <ArrowRight size={14} />
-          </Link>
-          <Link
-            href="/docs"
-            className="px-5 py-3 rounded-2xl text-xs font-bold text-slate-300 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.1] transition"
-          >
-            View Installation Docs
-          </Link>
+      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center">
+        <div className="p-8 sm:p-14 rounded-3xl bg-gradient-to-r from-cyan-950/40 via-slate-900 to-indigo-950/40 border border-cyan-500/30 relative overflow-hidden space-y-6">
+          <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
+            Ready to Supercharge Your Web Observability?
+          </h2>
+          <p className="text-sm sm:text-base text-slate-300 max-w-lg mx-auto leading-relaxed">
+            Get started in under 60 seconds with our sub-3.2KB universal snippet. No credit card required on the Free Starter plan.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+            <a
+              href={dashboardUrl}
+              className="w-full sm:w-auto py-3.5 px-8 rounded-xl bg-gradient-to-r from-cyan-400 to-indigo-400 hover:from-cyan-300 hover:to-indigo-300 text-slate-950 font-black text-sm transition-all shadow-xl shadow-cyan-500/25 cursor-pointer hover:scale-[1.02]"
+            >
+              Launch Dashboard
+            </a>
+            <Link
+              href="/pricing"
+              className="w-full sm:w-auto py-3.5 px-8 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-slate-200 font-bold text-sm transition border border-white/[0.1]"
+            >
+              Compare Plan Limits
+            </Link>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

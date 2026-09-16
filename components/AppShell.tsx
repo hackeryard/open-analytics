@@ -44,16 +44,32 @@ import {
   CheckCircle2,
   AlertCircle,
   FolderGit2,
+  CreditCard,
+  User,
+  Lock,
 } from "lucide-react";
 import { usePlatform } from "@/components/PlatformContext";
 import DateRangeNavigator from "@/components/DateRangeNavigator";
 import CreateProjectModal from "@/components/CreateProjectModal";
+import LimitReachedModal from "@/components/LimitReachedModal";
+import ActiveProjectSelectionModal from "@/components/ActiveProjectSelectionModal";
 import PublicNavbar from "@/components/public/PublicNavbar";
 import PublicFooter from "@/components/public/PublicFooter";
 import { isDashboardClient, getMainDomainUrl } from "@/lib/subdomain";
 
-export default function AppShell({ children }: { children: React.ReactNode }) {
+export default function AppShell({
+  children,
+  initialIsDashboard = false,
+}: {
+  children: React.ReactNode;
+  initialIsDashboard?: boolean;
+}) {
   const pathname = usePathname();
+  const [isDashboard, setIsDashboard] = useState(initialIsDashboard);
+
+  useEffect(() => {
+    setIsDashboard(isDashboardClient());
+  }, []);
   const {
     currentUser,
     projects,
@@ -69,6 +85,16 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     liveVisitorCount,
     showNewProjectModal,
     setShowNewProjectModal,
+    showLimitModal,
+    setShowLimitModal,
+    canCreateProject,
+    openCreateProject,
+    ownedProjectsCount,
+    maxAllowedProjects,
+    showActiveProjectModal,
+    setShowActiveProjectModal,
+    isPlanExpired,
+    requiresActiveProjectSelection,
     handleCreateProject,
     handleLogout,
   } = usePlatform();
@@ -200,6 +226,22 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       ],
     },
     {
+      group: "Account & Plans",
+      items: [
+        {
+          href: "/billing",
+          label: "Billing & Plans",
+          icon: CreditCard,
+          badge: currentUser?.plan ? currentUser.plan.toUpperCase() : "FREE",
+        },
+        {
+          href: "/profile",
+          label: "Developer Profile",
+          icon: User,
+        },
+      ],
+    },
+    {
       group: "Setup & Integration",
       items: [
         { href: "/projects", label: "Manage Projects", icon: FolderGit2, badge: projects?.length ? `${projects.length}` : undefined },
@@ -221,9 +263,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   if (isAuthPage) {
     return <>{children}</>;
   }
-
-  // Domain context: check if running on dashboard subdomain
-  const isDashboard = typeof window !== "undefined" ? isDashboardClient() : false;
 
   // On the main domain, ALWAYS render the marketing shell (PublicNavbar + content + PublicFooter)
   // On the dashboard subdomain, render the analytics platform workspace
@@ -353,7 +392,7 @@ export default function App() {
               <button
                 onClick={() => {
                   if (projects.length === 0) {
-                    setShowNewProjectModal(true);
+                    openCreateProject();
                   } else {
                     setShowProjectDropdown(!showProjectDropdown);
                   }
@@ -408,16 +447,35 @@ export default function App() {
                     </div>
 
                     <div className="pt-1.5 border-t border-white/[0.08]">
-                      <button
-                        onClick={() => {
-                          setShowProjectDropdown(false);
-                          setShowNewProjectModal(true);
-                        }}
-                        className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs font-bold text-cyan-400 hover:bg-cyan-500/10 transition cursor-pointer"
-                      >
-                        <Plus size={14} />
-                        <span>Create Project</span>
-                      </button>
+                      {canCreateProject ? (
+                        <button
+                          onClick={() => {
+                            setShowProjectDropdown(false);
+                            openCreateProject();
+                          }}
+                          className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs font-bold text-cyan-400 hover:bg-cyan-500/10 transition cursor-pointer"
+                        >
+                          <Plus size={14} />
+                          <span>Create Project</span>
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            setShowProjectDropdown(false);
+                            setShowLimitModal(true);
+                          }}
+                          className="w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-semibold text-amber-400/90 hover:bg-amber-500/10 transition cursor-pointer"
+                          title={`Limit reached (${ownedProjectsCount}/${maxAllowedProjects})`}
+                        >
+                          <span className="flex items-center gap-1.5">
+                            <Lock size={12} className="text-amber-400" />
+                            <span>Create Project</span>
+                          </span>
+                          <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-500/15 border border-amber-500/30">
+                            Limit ({ownedProjectsCount}/{maxAllowedProjects})
+                          </span>
+                        </button>
+                      )}
                     </div>
                   </div>
                 </>
@@ -526,20 +584,31 @@ export default function App() {
         <div className="p-3 border-t border-white/[0.07] shrink-0 bg-white/[0.01]">
           {currentUser ? (
             <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-600 flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-sm">
+              <Link
+                href="/profile"
+                className="flex items-center gap-2.5 min-w-0 flex-1 hover:opacity-80 transition group"
+                title="View Profile & Account"
+              >
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-600 flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-sm group-hover:scale-105 transition-transform">
                   {currentUser.name ? currentUser.name[0].toUpperCase() : "U"}
                 </div>
                 {!sidebarCollapsed && (
                   <div className="min-w-0">
-                    <div className="text-xs font-bold text-white truncate">{currentUser.name}</div>
+                    <div className="text-xs font-bold text-white truncate group-hover:text-cyan-300 transition-colors">
+                      {currentUser.name}
+                    </div>
                     <div className="text-[10px] text-muted-foreground capitalize flex items-center gap-1 truncate">
                       <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 inline-block" />
-                      {currentUser.role.replace("_", " ")}
+                      <span>{currentUser.role.replace("_", " ")}</span>
+                      {currentUser.plan && currentUser.plan !== "free" && (
+                        <span className="text-[9px] uppercase font-bold text-amber-300 font-mono">
+                          • {currentUser.plan}
+                        </span>
+                      )}
                     </div>
                   </div>
                 )}
-              </div>
+              </Link>
 
               <button
                 onClick={handleLogout}
@@ -711,6 +780,44 @@ export default function App() {
             </button>
           </div>
         </header>
+
+        {/* Plan Expired / Paused Warning Banner */}
+        {isPlanExpired && ownedProjectsCount > 1 && (
+          <div className="bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-transparent border-b border-amber-500/25 px-4 py-2.5 sm:px-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 text-xs text-amber-200">
+            <div className="flex items-center gap-2 min-w-0">
+              <Lock size={15} className="text-amber-400 shrink-0" />
+              <div className="truncate">
+                <span className="font-bold text-white">Subscription Expired:</span>{" "}
+                {currentUser?.lockedActiveProjectId ? (
+                  <span>
+                    Only your locked active website is collecting live telemetry. Tracking on other properties is paused.
+                  </span>
+                ) : (
+                  <span>
+                    Your plan allows 1 active tracking website on the Free tier. Please select which website will remain active.
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              {!currentUser?.lockedActiveProjectId && (
+                <button
+                  onClick={() => setShowActiveProjectModal(true)}
+                  className="px-3 py-1 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-[11px] transition cursor-pointer"
+                >
+                  Choose Active Website
+                </button>
+              )}
+              <Link
+                href="/billing"
+                className="px-3 py-1 rounded-lg bg-white/[0.08] hover:bg-white/[0.15] text-white font-bold text-[11px] transition"
+              >
+                Renew Subscription
+              </Link>
+            </div>
+          </div>
+        )}
 
         {/* Page Content Viewport */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 min-w-0">
@@ -944,6 +1051,18 @@ export default function App() {
           checkAuth();
           fetchData();
         }}
+      />
+
+      {/* Plan Limit Reached Modal */}
+      <LimitReachedModal
+        isOpen={showLimitModal}
+        onClose={() => setShowLimitModal(false)}
+      />
+
+      {/* Active Project Selection Modal for Expired Multi-Project Users */}
+      <ActiveProjectSelectionModal
+        isOpen={showActiveProjectModal}
+        onClose={() => setShowActiveProjectModal(false)}
       />
     </div>
   );

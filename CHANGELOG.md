@@ -2,6 +2,127 @@
 
 All notable changes to the Open Analytics platform are documented in this file.
 
+## [3.2.0] - 2026-09-16
+
+### Added
+- **Full SEO, GEO, and AEO Optimization on Main Marketing Domain**:
+  - Engineered comprehensive machine-readable and agentic discovery protocols:
+    - `/llms.txt`: Standardized summary of Open Analytics architecture, capabilities, and integrations for LLM search engines.
+    - `/llms-full.txt`: Deep technical specification including data schemas, cryptographic rotating salt specs, and Core Web Vitals algorithms.
+    - `/agents.md`: Universal operating guide for autonomous coding agents (Claude Code, Cursor, Copilot Workspace, Antigravity) with 1-line installation snippets across Next.js, React, Nuxt, SvelteKit, Astro, and HTML.
+    - `/robots.ts`: Advanced crawler directives explicitly welcoming generative AI agents (`GPTBot`, `PerplexityBot`, `ClaudeBot`, `Applebot-Extended`, `Google-Extended`, `OAI-SearchBot`, `Bytespider`).
+    - `/sitemap.ts`: Canonical marketing and docs index with prioritized change frequencies and modification timestamps.
+- **Complete Visual & Content Redesign Across Marketing Pages**:
+  - `LandingHero.tsx`: High-impact hero, interactive multi-framework code switcher, simulated live telemetry pulse board, 6 technical core pillars, and GEO direct answer unit.
+  - `app/features/page.tsx`: Immersive product tour detailing Core Web Vitals RUM (LCP/INP/CLS), AI bot crawler radar, rage/dead click detection, and automated JavaScript crash triage.
+  - `app/vs-google-analytics/page.tsx`: Data-backed head-to-head comparison against GA4, mobile PageSpeed benchmark (100 vs 72), cookie banner elimination demo, and 60-second migration path.
+  - `app/privacy/page.tsx`: Visual 24-hour cryptographic rotating salt pipeline, transparency matrix (What We Track vs What We Never Track), and ready-to-copy customer privacy policy clause.
+  - `app/faq/page.tsx`: Real-time searchable FAQ accordion with categorized tags and updated API endpoint snippets (`api.openanalytics.org.in/open.js`).
+  - `PublicNavbar.tsx` & `PublicFooter.tsx`: Elevated glassmorphism, responsive navigation drawer, real-time operational status beacon, and protocol links (`/llms.txt`, `/agents.md`).
+- **Strict Project Constraint Adherence**:
+  - Maintained 100% Zero-Emoji rule across all UI components, metadata, and generated machine files.
+  - Enforced 3-tier domain isolation with unified "Launch Dashboard" routing.
+
+---
+
+## [3.1.5] - 2026-09-16
+
+### Added
+- **Expired Plan Multi-Project Handling & Active Website Locking**:
+  - Implemented one-time active website selection for users whose subscriptions have expired or who own more than 1 website on the Free Starter plan.
+  - Added `lockedActiveProjectId` and `activeProjectSelectedAt` fields to `User` schema.
+  - Implemented `POST /api/user/active-project`: allows users to choose their 1 active tracking property, automatically locking the selection to prevent toggling between projects to circumvent Free tier limits.
+  - Upgrading to Cloud Pro or Enterprise automatically lifts the lock and reactivates all paused projects.
+- **Telemetry Ingestion Pausing (`/v1/collect`, `/v1/error`)**:
+  - Validates project tracking status against owner subscription: rejects incoming telemetry on paused/unlocked projects on Free tier (`TRACKING_PAUSED`).
+  - Preserves historical data and analytical dashboards in read-only mode with clear `Paused (Free Plan)` badges.
+- **Team Collaborator Quota Enforcement**:
+  - Strictly limits projects inheriting Free tier to a maximum of 2 team members.
+  - Blocks invitations (`403 MEMBER_LIMIT_REACHED`) when the limit is met.
+- **Interactive UI Components**:
+  - Created `ActiveProjectSelectionModal` for seamless, one-click active website locking.
+  - Added global top banner in `AppShell` alerting users of expired subscriptions with renewal and selection CTAs.
+  - Added locked active website indicators to `/billing` and `/projects`.
+
+---
+
+## [3.1.4] - 2026-09-16
+
+### Added
+- **Project Limit Enforcement & Modal Interception**:
+  - Prevented project creation modal (`CreateProjectModal`) from opening whenever a user reaches their subscription website limit (1 for Free Starter, 10 for Cloud Pro, base + add-ons for Enterprise).
+  - Created `LimitReachedModal` component that informs users of their quota consumption (`ownedProjects / maxAllowedProjects`) and provides an immediate upgrade pathway to `/billing`.
+  - Added centralized quota checks (`canCreateProject`, `ownedProjectsCount`, `maxAllowedProjects`, `openCreateProject`) inside `PlatformContext.tsx`.
+  - Wrapped `setShowNewProjectModal`: if a user attempts to open the creation modal while at quota, the creation wizard is blocked and `LimitReachedModal` is presented instead.
+  - Added fallback render guard inside `CreateProjectModal` (`if (!isOpen || !canCreateProject) return null;`) to ensure the wizard never renders when quota is reached.
+  - Updated project switcher button, dropdown "+ Create Project" button in `AppShell.tsx`, and "+ Create Property" buttons in `app/projects/page.tsx` with limit badges and lock icons.
+
+---
+
+## [3.1.3] - 2026-09-16
+
+### Fixed
+- **React Hook Order Violation in CreateProjectModal**:
+  - Resolved Minified React Error #310 ("Rendered more hooks than during the previous render") when opening the "+ Create Project" wizard modal.
+  - Relocated premature `if (!isOpen) return null;` guard to right before the JSX `return` statement, ensuring all `useState` and `useEffect` hooks run unconditionally in every render pass.
+
+---
+
+## [3.1.2] - 2026-09-16
+
+### Added
+- **Dedicated Billing & Plans Hub (`/billing`)**:
+  - Implemented interactive account-level subscription and billing management page.
+  - Live usage meters displaying website tracking slot utilization (`ownedProjects / maxProjects`) and unpooled event boundaries.
+  - Subscription expiration date calculation, days remaining tracker, and billing cycle indicator.
+  - Interactive tier switcher allowing instant upgrade or downgrade (`Free`, `Pro`, `Enterprise`) wired to `PATCH /api/user/plan`.
+  - Comprehensive feature entitlement comparison matrix.
+- **Developer Profile Hub (`/profile`)**:
+  - Personal account management page with user avatar, name, email, and role badge.
+  - Summary of all owned and shared workspaces with ownership markers.
+  - Integrated navigation links from the user card in the desktop sidebar and mobile drawer.
+- **Navigation Integration**:
+  - Added dedicated **"Account & Plans"** group in the sidebar navigation (`Billing & Plans`, `Developer Profile`).
+  - Added active plan badge (`FREE`, `PRO`, `ENTERPRISE`) directly to the sidebar billing item.
+  - Added `/billing` and `/profile` to protected `DASHBOARD_PATHS` in `middleware.ts`.
+
+---
+
+## [3.1.1] - 2026-09-16
+
+### Fixed
+- **Project Access & Authorization with Populated Owner**:
+  - Resolved 403 "Access denied: You do not have permission to view this project" regression when projects in user workspaces are populated with owner data.
+  - Updated `canAccessProject`, `canEditProject`, `canManageProject`, and `isProjectOwner` in `lib/auth.ts` to safely resolve `ownerId` and `members[].userId` whether unpopulated (ObjectId string) or populated (User document object with `_id`).
+- **AppShell & ExecutiveOverviewDashboard SSR Hydration Mismatch**:
+  - Resolved Next.js runtime hydration errors (`Expected server HTML to contain a matching <aside> in <div>` and `Expected server HTML to contain a matching <div> in <div>`).
+  - Passed `initialIsDashboard` from `RootLayout` via `headers()` (`x-is-dashboard` header and host inspection) down to both `PlatformProvider` and `AppShell`.
+  - Exposed `isDashboard` via `usePlatform()` context, eliminating divergent `window` object inspections in `ExecutiveOverviewDashboard` (`app/page.tsx`).
+  - Guaranteed identical DOM trees across server SSR and client browser hydration on both the marketing domain and dashboard subdomain.
+
+---
+
+## [3.1.0] - 2026-09-16
+
+### Added
+- **User-Level Subscription Architecture (`models/User.ts`)**:
+  - Migrated plan subscription from project-level to user-level (`user.plan`, `user.planExpiresAt`, `user.billingCycle`, `user.extraProjectsAllowed`, `user.subscriptionStatus`).
+  - Added centralized plan definition system (`lib/planLimits.ts`) with expiration verification (`isPlanActive`) and grace fallback to Free.
+- **Website & Member Ceilings**:
+  - **Free Starter Plan**: Strictly capped at **1 tracked website**, 10,000 monthly events/project, and up to 2 team members.
+  - **Cloud Pro Plan**: Includes up to **10 tracked websites**, 250,000 monthly events/project, and up to 10 team members.
+  - **Enterprise Plan**: 10 base websites + predictable add-on cost ($10/mo per additional website slot), 1,000,000 events/project, and unlimited collaborators.
+  - Enforced project creation ceilings in `POST /api/projects` and member invitation ceilings in `POST /api/projects/[projectId]/members`.
+- **Project Owner Plan Inheritance & Collaborator Isolation**:
+  - Projects dynamically inherit the subscription tier of the Project Owner (`getProjectEffectivePlan`).
+  - Team members invited to a Pro owner's project get full access to Pro features for that specific project.
+  - Collaborator's personal projects remain isolated and retain the user's own subscription plan (no cross-account privilege bleeding).
+- **User Plan Management API**:
+  - `GET /api/user/plan`: Returns active plan, expiration date, days until expiry, and website slot utilization.
+  - `PATCH /api/user/plan`: Allows upgrading/downgrading user subscriptions with duration calculation.
+
+---
+
 ## [3.0.0] - 2026-09-15
 
 ### Added

@@ -28,6 +28,15 @@
   - **Member**: Read-only access to dashboards, live telemetry, and analytics reports.
 - Ownership transfer is handled via `POST /api/projects/[projectId]/transfer-ownership`.
 
+### 4. User-Level Subscriptions & Website Ceilings
+- Subscriptions belong to **User accounts** (`user.plan`, `user.planExpiresAt`, `user.billingCycle`), NOT individual projects.
+- **Website Ceilings**:
+  - Free: Exactly 1 website, 10k events/mo per project, up to 2 team members.
+  - Pro: 10 websites included, 250k events/mo per project, up to 10 team members.
+  - Enterprise: 10 base websites + $10/mo per extra website, 1M events/mo per project.
+- **Member Inheritance**: Projects inherit the Project Owner's plan (`getProjectEffectivePlan`). Collaborators enjoy Pro features on owner's projects without cross-account privilege bleeding into their own projects.
+- Quotas are strictly per-project (unpooled).
+
 ---
 
 ## Project Structure & Key Directories

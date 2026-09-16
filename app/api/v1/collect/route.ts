@@ -46,11 +46,22 @@ export async function POST(req: Request) {
       return corsJsonResponse({ ok: false, error: auth.error || "Unauthorized" }, { status: auth.status }, req);
     }
 
-    const { projectId, settings } = auth.project;
+    const { projectId, settings, ownerId } = auth.project;
     const { type, visitorId, sessionId, pathname } = body;
 
     if (!visitorId || !sessionId || !pathname) {
       return corsJsonResponse({ ok: false, error: "Missing visitorId, sessionId, or pathname" }, { status: 400 }, req);
+    }
+
+    // CHECK PLAN EXPIRED / PAUSED PROJECT STATUS
+    const { isProjectIngestionAllowed } = await import("@/lib/planLimits");
+    const ingestionCheck = isProjectIngestionAllowed(auth.project, ownerId);
+    if (!ingestionCheck.allowed) {
+      return corsJsonResponse({
+        ok: false,
+        error: ingestionCheck.reason || "Project tracking paused on Free plan. Upgrade subscription to resume.",
+        code: "TRACKING_PAUSED",
+      }, { status: 403 }, req);
     }
 
     await connectDB();

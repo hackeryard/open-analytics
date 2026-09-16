@@ -5,6 +5,7 @@ import { NextRequest } from "next/server";
 import User from "@/models/User";
 import Project from "@/models/Project";
 import { connectDB } from "@/lib/mongodb";
+import { getUserEffectivePlan, getProjectEffectivePlan, isPlanActive } from "@/lib/planLimits";
 
 export const SESSION_COOKIE_NAME = "open_session";
 const JWT_SECRET = process.env.JWT_SECRET || "open_analytics_super_secret_jwt_key_2026_x89!";
@@ -126,13 +127,15 @@ export function canAccessProject(user: any, project: any): boolean {
   if (!user || !project) return false;
   if (user.role === "super_admin") return true;
 
-  const userIdStr = user._id?.toString() || user.userId || user.id;
-  if (project.ownerId && project.ownerId.toString() === userIdStr) {
+  const userIdStr = (user._id?.toString() || user.userId || user.id || "").toString();
+  const projectOwnerIdStr = (project.ownerId?._id ? project.ownerId._id.toString() : project.ownerId?.toString() || "").toString();
+
+  if (projectOwnerIdStr && projectOwnerIdStr === userIdStr) {
     return true;
   }
   if (Array.isArray(project.members)) {
     const isMember = project.members.some(
-      (m: any) => (m.userId?.toString() || m.userId) === userIdStr
+      (m: any) => ((m.userId?._id ? m.userId._id.toString() : m.userId?.toString() || m.userId || "").toString()) === userIdStr
     );
     if (isMember) return true;
   }
@@ -147,13 +150,15 @@ export function canEditProject(user: any, project: any): boolean {
   if (!user || !project) return false;
   if (user.role === "super_admin") return true;
 
-  const userIdStr = user._id?.toString() || user.userId || user.id;
-  if (project.ownerId && project.ownerId.toString() === userIdStr) {
+  const userIdStr = (user._id?.toString() || user.userId || user.id || "").toString();
+  const projectOwnerIdStr = (project.ownerId?._id ? project.ownerId._id.toString() : project.ownerId?.toString() || "").toString();
+
+  if (projectOwnerIdStr && projectOwnerIdStr === userIdStr) {
     return true;
   }
   if (Array.isArray(project.members)) {
     const memberObj = project.members.find(
-      (m: any) => (m.userId?.toString() || m.userId) === userIdStr
+      (m: any) => ((m.userId?._id ? m.userId._id.toString() : m.userId?.toString() || m.userId || "").toString()) === userIdStr
     );
     if (memberObj && (memberObj.role === "admin" || memberObj.role === "editor")) return true;
   }
@@ -168,13 +173,15 @@ export function canManageProject(user: any, project: any): boolean {
   if (!user || !project) return false;
   if (user.role === "super_admin") return true;
 
-  const userIdStr = user._id?.toString() || user.userId || user.id;
-  if (project.ownerId && project.ownerId.toString() === userIdStr) {
+  const userIdStr = (user._id?.toString() || user.userId || user.id || "").toString();
+  const projectOwnerIdStr = (project.ownerId?._id ? project.ownerId._id.toString() : project.ownerId?.toString() || "").toString();
+
+  if (projectOwnerIdStr && projectOwnerIdStr === userIdStr) {
     return true;
   }
   if (Array.isArray(project.members)) {
     const memberObj = project.members.find(
-      (m: any) => (m.userId?.toString() || m.userId) === userIdStr
+      (m: any) => ((m.userId?._id ? m.userId._id.toString() : m.userId?.toString() || m.userId || "").toString()) === userIdStr
     );
     if (memberObj && memberObj.role === "admin") return true;
   }
@@ -229,6 +236,15 @@ export async function getCurrentUser(req?: Request): Promise<any | null> {
       role: user.role,
       avatar: user.avatar || "",
       emailVerified: Boolean(user.emailVerified),
+      plan: user.plan || "free",
+      planExpiresAt: user.planExpiresAt || null,
+      billingCycle: user.billingCycle || "monthly",
+      extraProjectsAllowed: user.extraProjectsAllowed || 0,
+      subscriptionStatus: user.subscriptionStatus || "active",
+      effectivePlan: getUserEffectivePlan(user),
+      isPlanActive: isPlanActive(user),
+      lockedActiveProjectId: user.lockedActiveProjectId || "",
+      activeProjectSelectedAt: user.activeProjectSelectedAt || null,
     };
   } catch (err) {
     console.error("Error resolving current user:", err);
@@ -252,7 +268,10 @@ export async function verifyProjectAccess(req: Request, projectId: string): Prom
     return { ok: false, status: 401, error: "Authentication required. Please log in." };
   }
 
-  const project = await (Project as any).findOne({ projectId }).lean();
+  const project = await (Project as any)
+    .findOne({ projectId })
+    .populate("ownerId", "name email plan planExpiresAt subscriptionStatus role extraProjectsAllowed")
+    .lean();
   if (!project) {
     return { ok: false, status: 404, error: "Project not found" };
   }
@@ -264,6 +283,10 @@ export async function verifyProjectAccess(req: Request, projectId: string): Prom
       error: "Access denied: You do not have permission to view this project's analytics data.",
     };
   }
+
+  const effectivePlan = getProjectEffectivePlan(project, project.ownerId);
+  project.effectivePlan = effectivePlan;
+  project.plan = effectivePlan;
 
   return { ok: true, user, project };
 }
@@ -338,8 +361,9 @@ export async function verifyProjectManage(req: Request, projectId: string): Prom
 export function isProjectOwner(user: any, project: any): boolean {
   if (!user || !project) return false;
   if (user.role === "super_admin") return true;
-  const userIdStr = user._id?.toString() || user.userId || user.id;
-  return project.ownerId && project.ownerId.toString() === userIdStr;
+  const userIdStr = (user._id?.toString() || user.userId || user.id || "").toString();
+  const projectOwnerIdStr = (project.ownerId?._id ? project.ownerId._id.toString() : project.ownerId?.toString() || "").toString();
+  return Boolean(projectOwnerIdStr && projectOwnerIdStr === userIdStr);
 }
 
 /**

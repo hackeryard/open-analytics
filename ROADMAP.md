@@ -46,11 +46,23 @@ To build the most developer-friendly, high-performance, and visually stunning an
 - [x] 2-step Email OTP verification flow for user registration.
 - [x] Cross-platform workflow scripts (`pull.js`, `push.js`, `sync.js`, `create-pr.js`, `kill-port.js`, `test-subdomain.js`, `purge-retention.js`).
 
+### Phase 7: User-Level Subscriptions & Quota Enforcement (Completed)
+- [x] Subscription model migrated from project to user (`user.plan`, `planExpiresAt`, `billingCycle`).
+- [x] Strict website ceilings: 1 website for Free, 10 websites for Pro, + add-on websites for Enterprise.
+- [x] Unpooled per-project event quotas (10k Free, 250k Pro, 1M Enterprise).
+- [x] Project Owner plan inheritance: Team members enjoy Pro on owner's projects without cross-account leakage.
+- [x] User plan management and billing APIs (`/api/user/plan`).
+- [x] Dedicated Billing & Subscription Management Hub (`/billing`).
+- [x] Developer Profile & Account Management Hub (`/profile`).
+- [x] Quota-based project creation modal blocking and proactive `LimitReachedModal` upgrade prompt.
+- [x] Expired plan multi-project active website selection with permanent lock on Free tier and live telemetry pausing (`/v1/collect`, `/v1/error`).
+- [x] Team member ceiling enforcement (max 2 members on Free tier) on projects inheriting expired plans.
+
 ---
 
 ## Active & Upcoming Milestones
 
-### Phase 7: Conversion Funnels & Goal Tracking (In Progress)
+### Phase 8: Conversion Funnels & Goal Tracking (In Progress)
 - [ ] Visual multi-step conversion funnel builder with drop-off percentage calculations.
 - [ ] Goal conversion tracking linked to custom business events and revenue attribution.
 - [ ] A/B test variant tracking and statistical significance indicators.

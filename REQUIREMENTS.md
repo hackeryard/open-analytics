@@ -26,6 +26,18 @@
 
 ## 3. Data Schemas & Model Contracts
 
+### 3.0 `User` Collection
+- `name` (String): User's full name.
+- `email` (String, Unique, Index): User's email address.
+- `role` (String, Enum: `"super_admin" | "admin" | "editor" | "member"`): User global role.
+- `plan` (String, Enum: `"free" | "pro" | "enterprise"`): Active subscription tier (default: `"free"`).
+- `planExpiresAt` (Date, Nullable): Expiration date of current paid subscription.
+- `billingCycle` (String, Enum: `"monthly" | "annual"`): Billing interval.
+- `extraProjectsAllowed` (Number): Extra website slots beyond base limit for Enterprise/add-ons.
+- `subscriptionStatus` (String, Enum: `"active" | "trialing" | "past_due" | "canceled" | "expired"`).
+- `lockedActiveProjectId` (String): Designated active tracking website locked when user is on Free plan with multiple projects.
+- `activeProjectSelectedAt` (Date, Nullable): Timestamp when the active website was locked.
+
 ### 3.1 `Project` Collection
 - `projectId` (String, Unique, Index): Project identifier (e.g. `prj_abc123`).
 - `name` (String): Human-readable workspace name.

@@ -29,17 +29,18 @@ import { getDashboardUrl } from "@/lib/subdomain";
 
 interface VolumeTier {
   events: string;
+  shortLabel: string;
   monthlyPrice: number;
   annualPrice: number;
   label?: string;
 }
 
 const VOLUME_TIERS: VolumeTier[] = [
-  { events: "100,000", monthlyPrice: 14, annualPrice: 11 },
-  { events: "250,000", monthlyPrice: 19, annualPrice: 15, label: "Recommended" },
-  { events: "500,000", monthlyPrice: 34, annualPrice: 27 },
-  { events: "1,000,000", monthlyPrice: 59, annualPrice: 47 },
-  { events: "2,500,000", monthlyPrice: 99, annualPrice: 79 },
+  { events: "100,000", shortLabel: "100k", monthlyPrice: 14, annualPrice: 11 },
+  { events: "250,000", shortLabel: "250k", monthlyPrice: 19, annualPrice: 15, label: "Recommended" },
+  { events: "500,000", shortLabel: "500k", monthlyPrice: 34, annualPrice: 27 },
+  { events: "1,000,000", shortLabel: "1M", monthlyPrice: 59, annualPrice: 47 },
+  { events: "2,500,000", shortLabel: "2.5M", monthlyPrice: 99, annualPrice: 79 },
 ];
 
 export default function PricingInteractive() {
@@ -79,7 +80,7 @@ export default function PricingInteractive() {
     },
     {
       q: "Do you charge extra for team members or user seats?",
-      a: "No. All Open Analytics plans come with unlimited team seats. You can invite your developers, designers, product managers, and marketing team with granular role-based permissions (Admin, Editor, Member) with zero per-seat fees.",
+      a: "No per-seat fees. Open Analytics includes 2 team members on the Free plan, up to 10 team members on Pro, and unlimited collaborators on Enterprise with granular role-based permissions (Admin, Editor, Member).",
     },
   ];
 
@@ -308,7 +309,7 @@ export default function PricingInteractive() {
                               : "bg-white/[0.05] hover:bg-white/[0.1] text-slate-300"
                           }`}
                         >
-                          {tier.events.replace(",000", "k")}
+                          {tier.shortLabel}
                         </button>
                       );
                     })}
@@ -332,7 +333,7 @@ export default function PricingInteractive() {
                   <div className="w-4 h-4 rounded-full bg-cyan-500/20 flex items-center justify-center shrink-0">
                     <Check className="w-2.5 h-2.5 text-cyan-400" />
                   </div>
-                  <span><strong>Unlimited</strong> websites &amp; domains</span>
+                  <span><strong>10</strong> websites included</span>
                 </li>
                 <li className="flex items-center gap-2.5">
                   <div className="w-4 h-4 rounded-full bg-amber-400/20 flex items-center justify-center shrink-0">
@@ -894,8 +895,8 @@ export default function PricingInteractive() {
               <tr>
                 <td className="py-3.5 px-6 font-medium text-white">Tracked Websites</td>
                 <td className="py-3.5 px-6">1 Website</td>
-                <td className="py-3.5 px-6 font-bold text-cyan-300">Unlimited</td>
-                <td className="py-3.5 px-6 font-bold text-indigo-300">Unlimited</td>
+                <td className="py-3.5 px-6 font-bold text-cyan-300">10 Websites</td>
+                <td className="py-3.5 px-6 font-bold text-indigo-300">10 Included (+ $10/mo per extra)</td>
               </tr>
               <tr>
                 <td className="py-3.5 px-6 font-medium text-white">Data Retention</td>
@@ -904,9 +905,9 @@ export default function PricingInteractive() {
                 <td className="py-3.5 px-6 font-bold text-indigo-300">Custom / Unlimited</td>
               </tr>
               <tr>
-                <td className="py-3.5 px-6 font-medium text-white">Team Members &amp; Seats</td>
-                <td className="py-3.5 px-6 font-semibold text-emerald-400">Unlimited</td>
-                <td className="py-3.5 px-6 font-semibold text-cyan-300">Unlimited</td>
+                <td className="py-3.5 px-6 font-medium text-white">Team Members / Project</td>
+                <td className="py-3.5 px-6 font-semibold text-emerald-400">Up to 2</td>
+                <td className="py-3.5 px-6 font-semibold text-cyan-300">Up to 10</td>
                 <td className="py-3.5 px-6 font-semibold text-indigo-300">Unlimited</td>
               </tr>
 

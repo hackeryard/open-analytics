@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import {
   X,
   Plus,
@@ -112,7 +113,7 @@ const OBJECTIVES = [
 ];
 
 export default function CreateProjectModal({ isOpen, onClose, onProjectCreated }: CreateProjectModalProps) {
-  const { setActiveProjectId, projects, fetchData, checkAuth } = usePlatform();
+  const { setActiveProjectId, projects, fetchData, checkAuth, currentUser, updateUserPlan, canCreateProject } = usePlatform();
 
   // Step Tracker (1: Details, 2: Objectives, 3: Data Stream, 4: Install Tag)
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
@@ -152,8 +153,6 @@ export default function CreateProjectModal({ isOpen, onClose, onProjectCreated }
   const [testingPing, setTestingPing] = useState(false);
   const [pingVerified, setPingVerified] = useState(false);
   const [pingLatency, setPingLatency] = useState<number | null>(null);
-
-  if (!isOpen) return null;
 
   const toggleObjective = (id: string) => {
     setSelectedObjectives((prev) =>
@@ -378,6 +377,8 @@ export default function App() {
     },
   };
 
+  if (!isOpen || !canCreateProject) return null;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
       {/* Backdrop */}
@@ -463,11 +464,37 @@ export default function App() {
           })}
         </div>
 
-        {/* Error Alert */}
+        {/* Error Alert with Upgrade Action */}
         {error && (
-          <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/25 text-rose-300 text-xs flex items-center gap-2.5 animate-fadeIn">
-            <AlertCircle size={15} className="text-rose-400 shrink-0" />
-            <span>{error}</span>
+          <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-200 text-xs space-y-2.5 animate-fadeIn">
+            <div className="flex items-start gap-2.5">
+              <AlertCircle size={16} className="text-rose-400 shrink-0 mt-0.5" />
+              <div className="flex-1 font-medium leading-relaxed">{error}</div>
+            </div>
+            {error.includes("Upgrade") && (
+              <div className="flex items-center gap-3 pt-1 border-t border-rose-500/20">
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setCreating(true);
+                    await updateUserPlan("pro", "monthly");
+                    setCreating(false);
+                    setError(null);
+                  }}
+                  className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-cyan-400 text-slate-950 font-extrabold text-[11px] shadow-sm hover:from-amber-300 hover:to-cyan-300 transition cursor-pointer flex items-center gap-1.5"
+                >
+                  <Zap size={13} className="fill-current" />
+                  <span>Upgrade to Pro Now (10 Websites)</span>
+                </button>
+                <Link
+                  href="/pricing"
+                  target="_blank"
+                  className="text-[11px] text-slate-400 hover:text-cyan-300 transition underline underline-offset-2"
+                >
+                  View Pricing Table
+                </Link>
+              </div>
+            )}
           </div>
         )}
 

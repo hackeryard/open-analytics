@@ -22,6 +22,10 @@ It provides complete insight into user experience, performance bottlenecks, rage
 - **AI-Powered Bug Triage**: Generates comprehensive, copyable bug diagnostic prompts formatted for AI coding assistants (Claude, Gemini, ChatGPT) with stack traces, affected routes, client environment, and step-by-step fix recommendations.
 - **Live Telemetry & Real-Time Event Stream**: Live polling stream with configurable refresh intervals (2s, 5s, 10s, 30s), segment filtering, CSV/JSON export, and deep audit inspector modals.
 - **Interactive SVG World Atlas**: Interactive world map with pan, zoom, country rankings, continent breakdowns, and city-level drilldown.
+- **Dedicated Billing & Plans Hub (`/billing`)**: User-level subscription management, live website slot gauges (`ownedProjects / maxProjects`), unpooled quotas, and 1-click plan switching.
+- **Quota Enforcement & Modal Guarding**: Automated enforcement of website ceilings (1 Free, 10 Pro) blocking project creation wizards when limits are reached with proactive upgrade prompts.
+- **Expired Plan Multi-Project Locking**: Seamless active website selection for expired users, locking 1 active tracking property and pausing unselected properties on Free tier while preserving historical data.
+- **Developer Profile Hub (`/profile`)**: Manage user profile details, role assignments, subscription tier status, and associated workspaces.
 - **Privacy & Security by Design**: Built-in IP address anonymization (masking the last octet for GDPR compliance) and automated PII redaction (scrubbing emails, passwords, tokens from URL query parameters and error payloads).
 
 ---
@@ -318,6 +322,21 @@ Open Analytics is structured across three segregated subdomains:
 | **`openanalytics.org.in`** | `localhost:3005` | **Pure SEO & Marketing**: Landing pages, comparison matrix, pricing tiers, public documentation. |
 | **`dashboard.openanalytics.org.in`** | `dashboard.localhost:3005` | **Analytics Workspace & Auth**: Dashboards, live feed, property settings, user login & registration. |
 | **`api.openanalytics.org.in`** | `api.localhost:3005` | **Edge Ingestion & CDN**: Tracker script delivery (`/open.js`) and versioned ingestion (`/v1/collect`, `/v1/error`, `/v1/identify`, `/v1/event-rules`). |
+
+---
+
+## User-Level Subscription Model & Ceilings
+
+Subscription plans belong to user accounts and are inherited by projects owned by that user:
+
+| Tier | Price | Tracked Websites | Events / Month (Per Project) | Retention | Team Members / Project | Included Modules |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Free Starter** | $0 | **1 Website** | 10,000 | 30 days | Up to 2 | Core Cookieless Web Telemetry |
+| **Cloud Pro** | $19 / mo ($15/mo annual) | **10 Websites** | 250,000 | 365 days (1 yr) | Up to 10 | All 5 Power Modules (RUM, AI Radar, UX, Errors, Custom Events) |
+| **Enterprise** | Custom | **10 Base (+ $10/mo per extra)** | 1,000,000+ | 365 days (1 yr) | Unlimited | All Modules + Dedicated SLA, SSO, Custom DPA |
+
+- **Team Collaborator Inheritance**: Invited team members enjoy Pro privileges on projects owned by a Pro subscriber without cross-account leakage into their independently owned projects.
+- **Unpooled Quotas**: Monthly event limits are enforced per-project, protecting high-throughput streams from starving other properties.
 
 ---
 

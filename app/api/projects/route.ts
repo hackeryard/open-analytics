@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/mongodb";
 import Project from "@/models/Project";
 import { ensureDefaultProject } from "@/lib/seed";
 import { getCurrentUser, generateProjectId, generateApiKey } from "@/lib/auth";
+import { getMaxAllowedProjects, getProjectEffectivePlan, getUserEffectivePlan } from "@/lib/planLimits";
 
 export async function GET(req: NextRequest) {
   try {
@@ -30,6 +31,7 @@ export async function GET(req: NextRequest) {
 
     const projectsRaw = await (Project as any)
       .find(query)
+      .populate("ownerId", "name email plan planExpiresAt subscriptionStatus role extraProjectsAllowed lockedActiveProjectId")
       .select("-secretKey")
       .sort({ createdAt: -1 })
       .lean();
@@ -38,9 +40,11 @@ export async function GET(req: NextRequest) {
 
     const projects = projectsRaw.map((p: any) => {
       let currentUserRole = "member";
+      const isOwner = p.ownerId && (p.ownerId._id ? p.ownerId._id.toString() : p.ownerId.toString()) === userIdStr;
+
       if (user.role === "super_admin") {
         currentUserRole = "super_admin";
-      } else if (p.ownerId && p.ownerId.toString() === userIdStr) {
+      } else if (isOwner) {
         currentUserRole = "owner";
       } else if (Array.isArray(p.members)) {
         const member = p.members.find((m: any) => (m.userId?.toString() || m.userId) === userIdStr);
@@ -48,9 +52,17 @@ export async function GET(req: NextRequest) {
           currentUserRole = member.role;
         }
       }
+
+      // Inherit plan from owner
+      const effectivePlan = getProjectEffectivePlan(p, p.ownerId);
+
       return {
         ...p,
+        plan: effectivePlan,
+        effectivePlan,
         currentUserRole,
+        isOwner,
+        ownerEmail: p.ownerId?.email || "",
       };
     });
 
@@ -90,6 +102,49 @@ export async function POST(req: NextRequest) {
 
     if (!name || typeof name !== "string" || name.trim().length === 0) {
       return NextResponse.json({ error: "Property / project name is required" }, { status: 400 });
+    }
+
+    // ENFORCE PLAN LIMIT ON WEBSITES / PROJECTS
+    if (user.role !== "super_admin") {
+      const ownedProjectsCount = await Project.countDocuments({ ownerId: user._id });
+      const maxAllowed = getMaxAllowedProjects(user);
+
+      if (ownedProjectsCount >= maxAllowed) {
+        const currentPlan = getUserEffectivePlan(user);
+        if (currentPlan === "free") {
+          return NextResponse.json(
+            {
+              error: "Free plan is limited to 1 website. Upgrade to Pro to track up to 10 websites.",
+              code: "PLAN_LIMIT_REACHED",
+              limit: maxAllowed,
+              currentCount: ownedProjectsCount,
+              requiredPlan: "pro",
+            },
+            { status: 403 }
+          );
+        } else if (currentPlan === "pro") {
+          return NextResponse.json(
+            {
+              error: "Pro plan limit reached (10 websites). Upgrade to Enterprise to add extra website slots.",
+              code: "PLAN_LIMIT_REACHED",
+              limit: maxAllowed,
+              currentCount: ownedProjectsCount,
+              requiredPlan: "enterprise",
+            },
+            { status: 403 }
+          );
+        } else {
+          return NextResponse.json(
+            {
+              error: `Enterprise plan limit reached (${maxAllowed} websites). Please add more website slots in billing.`,
+              code: "PLAN_LIMIT_REACHED",
+              limit: maxAllowed,
+              currentCount: ownedProjectsCount,
+            },
+            { status: 403 }
+          );
+        }
+      }
     }
 
     const cleanSlug = (slug || name)

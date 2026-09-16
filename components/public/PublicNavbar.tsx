@@ -32,7 +32,7 @@ export default function PublicNavbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-[#050811]/85 backdrop-blur-2xl border-b border-white/[0.08] transition-all">
+    <header className="sticky top-0 z-50 w-full bg-[#050811]/90 backdrop-blur-2xl border-b border-white/[0.08] transition-all">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
@@ -76,11 +76,15 @@ export default function PublicNavbar() {
           })}
         </nav>
 
-        {/* Desktop Actions (Launch Dashboard CTA) */}
+        {/* Desktop Actions (Launch Dashboard CTA & Status Indicator) */}
         <div className="hidden sm:flex items-center gap-3">
+          <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-semibold">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-glow" />
+            <span>Telemetry Operational</span>
+          </div>
           <a
             href={dashboardUrl}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:via-blue-500 hover:to-indigo-500 shadow-md shadow-cyan-500/20 hover:scale-[1.02] transition-all cursor-pointer"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-slate-950 bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-400 hover:from-cyan-300 hover:via-sky-300 hover:to-indigo-300 shadow-lg shadow-cyan-500/20 hover:scale-[1.02] transition-all cursor-pointer"
           >
             <LayoutDashboard size={14} />
             <span>Launch Dashboard</span>
@@ -121,7 +125,7 @@ export default function PublicNavbar() {
             <a
               href={dashboardUrl}
               onClick={() => setMobileMenuOpen(false)}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-cyan-500 to-indigo-600 shadow-md shadow-cyan-500/20"
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold text-slate-950 bg-gradient-to-r from-cyan-400 to-indigo-400 shadow-md shadow-cyan-500/20"
             >
               <LayoutDashboard size={14} />
               <span>Launch Dashboard</span>

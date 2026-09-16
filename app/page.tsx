@@ -52,7 +52,6 @@ import WebVitalsRadarWidget from "@/components/dashboard/WebVitalsRadarWidget";
 import DeviceBreakdownWidget from "@/components/dashboard/DeviceBreakdownWidget";
 import AiAndErrorWidget from "@/components/dashboard/AiAndErrorWidget";
 import LandingHero from "@/components/public/LandingHero";
-import { isDashboardClient } from "@/lib/subdomain";
 
 export default function ExecutiveOverviewDashboard() {
   const {
@@ -66,9 +65,10 @@ export default function ExecutiveOverviewDashboard() {
     timeRange,
     paginatedPageviews,
     liveVisitorCount,
-    setShowNewProjectModal,
+    openCreateProject,
     fetchData,
     fetchPaginatedPageviews,
+    isDashboard,
   } = usePlatform();
 
   const [copiedSnippet, setCopiedSnippet] = useState(false);
@@ -119,7 +119,6 @@ export default function ExecutiveOverviewDashboard() {
   };
 
   // 1. If accessing on the main marketing domain, strictly serve the public SEO landing page
-  const isDashboard = typeof window !== "undefined" ? isDashboardClient() : false;
   if (!isDashboard) {
     return <LandingHero />;
   }
@@ -164,7 +163,7 @@ export default function ExecutiveOverviewDashboard() {
             </p>
           </div>
           <button
-            onClick={() => setShowNewProjectModal(true)}
+            onClick={() => openCreateProject()}
             className="w-full py-3 px-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer"
           >
             + Create First Project

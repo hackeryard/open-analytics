@@ -33,32 +33,51 @@ export async function GET(req: NextRequest) {
 
     const projects = await (Project as any)
       .find(projectsQuery)
+      .populate("ownerId", "name email plan planExpiresAt subscriptionStatus role extraProjectsAllowed lockedActiveProjectId")
       .select("-secretKey")
       .sort({ createdAt: -1 })
       .lean();
 
+    const { getProjectEffectivePlan } = await import("@/lib/planLimits");
+
     return NextResponse.json({
       authenticated: true,
       user,
-      projects: projects.map((p: any) => ({
-        id: p._id.toString(),
-        projectId: p.projectId,
-        name: p.name,
-        slug: p.slug,
-        publishableKey: p.publishableKey,
-        isOwner: p.ownerId ? p.ownerId.toString() === user._id.toString() : false,
-        role: (() => {
-          if (user.role === "super_admin") return "super_admin";
-          if (p.ownerId && p.ownerId.toString() === user._id.toString()) return "owner";
-          if (Array.isArray(p.members)) {
-            const member = p.members.find((m: any) => (m.userId?.toString() || m.userId) === user._id.toString());
-            if (member?.role) return member.role;
-          }
-          return "member";
-        })(),
-        settings: p.settings,
-        createdAt: p.createdAt,
-      })),
+      projects: projects.map((p: any) => {
+        const isOwner = p.ownerId ? (p.ownerId._id ? p.ownerId._id.toString() : p.ownerId.toString()) === user._id.toString() : false;
+        const effectivePlan = getProjectEffectivePlan(p, p.ownerId);
+
+        return {
+          id: p._id.toString(),
+          projectId: p.projectId,
+          name: p.name,
+          slug: p.slug,
+          publishableKey: p.publishableKey,
+          plan: effectivePlan,
+          effectivePlan,
+          monitoringStatus: p.monitoringStatus || "active",
+          timezone: p.timezone,
+          currency: p.currency,
+          industryCategory: p.industryCategory,
+          businessSize: p.businessSize,
+          websiteUrl: p.websiteUrl,
+          dataStreams: p.dataStreams || [],
+          measurementId: p.measurementId,
+          ownerEmail: p.ownerId?.email || "",
+          isOwner,
+          role: (() => {
+            if (user.role === "super_admin") return "super_admin";
+            if (isOwner) return "owner";
+            if (Array.isArray(p.members)) {
+              const member = p.members.find((m: any) => (m.userId?.toString() || m.userId) === user._id.toString());
+              if (member?.role) return member.role;
+            }
+            return "member";
+          })(),
+          settings: p.settings,
+          createdAt: p.createdAt,
+        };
+      }),
     });
   } catch (err: any) {
     console.error("Auth me error:", err);

@@ -111,6 +111,29 @@ export async function POST(req: Request, { params }: { params: { projectId: stri
       (m: any) => (m.userId?.toString() || m.userId) === targetUserIdStr
     );
 
+    // If adding a new member (not updating an existing member), enforce plan member limit
+    if (existingIndex < 0 && auth.user.role !== "super_admin") {
+      const ownerUser = project.ownerId ? await (User as any).findById(project.ownerId).lean() : null;
+      const { getUserEffectivePlan, PLAN_LIMITS } = await import("@/lib/planLimits");
+      const effectivePlan = getUserEffectivePlan(ownerUser);
+      const limitConfig = PLAN_LIMITS[effectivePlan];
+      const currentMemberCount = (project.members || []).filter(
+        (m: any) => !project.ownerId || m.userId?.toString() !== project.ownerId.toString()
+      ).length;
+
+      if (currentMemberCount >= limitConfig.maxMembersPerProject) {
+        return NextResponse.json(
+          {
+            error: `Team member limit reached (${limitConfig.maxMembersPerProject} members on ${limitConfig.name}). Upgrade the project owner's subscription to invite more collaborators.`,
+            code: "MEMBER_LIMIT_REACHED",
+            limit: limitConfig.maxMembersPerProject,
+            currentCount: currentMemberCount,
+          },
+          { status: 403 }
+        );
+      }
+    }
+
     const validRole = ["admin", "editor", "member"].includes(role) ? role : "member";
 
     if (existingIndex >= 0) {

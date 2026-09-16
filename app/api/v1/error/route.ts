@@ -21,7 +21,19 @@ export async function POST(req: Request) {
       return corsJsonResponse({ ok: false, error: auth.error || "Unauthorized" }, { status: auth.status }, req);
     }
 
-    const { projectId } = auth.project;
+    const { projectId, ownerId } = auth.project;
+
+    // CHECK PLAN EXPIRED / PAUSED PROJECT STATUS
+    const { isProjectIngestionAllowed } = await import("@/lib/planLimits");
+    const ingestionCheck = isProjectIngestionAllowed(auth.project, ownerId);
+    if (!ingestionCheck.allowed) {
+      return corsJsonResponse({
+        ok: false,
+        error: ingestionCheck.reason || "Project tracking paused on Free plan. Upgrade subscription to resume.",
+        code: "TRACKING_PAUSED",
+      }, { status: 403 }, req);
+    }
+
     const { message, stack, digest, componentStack, errorType, pathname, visitorId, sessionId, userId } = body;
 
     const resolvedMessage = (

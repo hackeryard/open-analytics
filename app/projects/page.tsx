@@ -31,9 +31,11 @@ import {
   LayoutDashboard,
   CheckCircle2,
   Sliders,
+  Lock,
 } from "lucide-react";
 import { usePlatform } from "@/components/PlatformContext";
 import CreateProjectModal from "@/components/CreateProjectModal";
+import LimitReachedModal from "@/components/LimitReachedModal";
 
 export default function ProjectsDirectoryPage() {
   const router = useRouter();
@@ -43,6 +45,12 @@ export default function ProjectsDirectoryPage() {
     setActiveProjectId,
     showNewProjectModal,
     setShowNewProjectModal,
+    showLimitModal,
+    setShowLimitModal,
+    canCreateProject,
+    openCreateProject,
+    ownedProjectsCount,
+    maxAllowedProjects,
     fetchData,
   } = usePlatform();
 
@@ -182,13 +190,23 @@ export default function ProjectsDirectoryPage() {
           </div>
         </div>
 
-        <button
-          onClick={() => setShowNewProjectModal(true)}
-          className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:via-blue-500 hover:to-indigo-500 text-xs font-bold text-white shadow-lg shadow-cyan-500/20 transition cursor-pointer"
-        >
-          <Plus size={16} />
-          <span>Create Property</span>
-        </button>
+        {canCreateProject ? (
+          <button
+            onClick={() => openCreateProject()}
+            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:via-blue-500 hover:to-indigo-500 text-xs font-bold text-white shadow-lg shadow-cyan-500/20 transition cursor-pointer"
+          >
+            <Plus size={16} />
+            <span>Create Property</span>
+          </button>
+        ) : (
+          <button
+            onClick={() => setShowLimitModal(true)}
+            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-xs font-bold text-amber-300 shadow-lg shadow-amber-500/10 transition cursor-pointer"
+          >
+            <Lock size={15} className="text-amber-400" />
+            <span>Limit Reached ({ownedProjectsCount}/{maxAllowedProjects})</span>
+          </button>
+        )}
       </div>
 
       {/* Summary KPI Cards */}
@@ -342,7 +360,12 @@ export default function ProjectsDirectoryPage() {
                       <span>{p.dataStreams?.length || 1} Stream</span>
                     </div>
 
-                    {p.monitoringStatus === "active" ? (
+                    {p.monitoringStatus === "paused" ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-rose-500/10 border border-rose-500/20 text-rose-400 text-[10px] font-bold">
+                        <Lock size={10} className="text-rose-400" />
+                        <span>Paused (Free Plan)</span>
+                      </span>
+                    ) : p.monitoringStatus === "active" ? (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-glow" />
                         <span>Active</span>
@@ -422,13 +445,23 @@ export default function ProjectsDirectoryPage() {
               No analytics properties matched your search filters. Create your first property with our setup wizard.
             </p>
           </div>
-          <button
-            onClick={() => setShowNewProjectModal(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold transition cursor-pointer"
-          >
-            <Plus size={14} />
-            <span>Create Property</span>
-          </button>
+          {canCreateProject ? (
+            <button
+              onClick={() => openCreateProject()}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold transition cursor-pointer"
+            >
+              <Plus size={14} />
+              <span>Create Property</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => setShowLimitModal(true)}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 text-xs font-bold transition cursor-pointer"
+            >
+              <Lock size={14} className="text-amber-400" />
+              <span>Limit Reached - Upgrade Plan</span>
+            </button>
+          )}
         </div>
       )}
 
@@ -526,6 +559,12 @@ export default function ProjectsDirectoryPage() {
         onProjectCreated={() => {
           fetchData();
         }}
+      />
+
+      {/* Plan Limit Reached Modal */}
+      <LimitReachedModal
+        isOpen={showLimitModal}
+        onClose={() => setShowLimitModal(false)}
       />
     </div>
   );

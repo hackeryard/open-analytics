@@ -45,6 +45,46 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    plan: {
+      type: String,
+      enum: ["free", "pro", "enterprise"],
+      default: "free",
+      index: true,
+    },
+    planExpiresAt: {
+      type: Date,
+      default: null,
+    },
+    billingCycle: {
+      type: String,
+      enum: ["monthly", "annual"],
+      default: "monthly",
+    },
+    extraProjectsAllowed: {
+      type: Number,
+      default: 0,
+    },
+    subscriptionStatus: {
+      type: String,
+      enum: ["active", "trialing", "past_due", "canceled", "expired"],
+      default: "active",
+    },
+    stripeCustomerId: {
+      type: String,
+      default: "",
+    },
+    stripeSubscriptionId: {
+      type: String,
+      default: "",
+    },
+    lockedActiveProjectId: {
+      type: String,
+      default: "",
+    },
+    activeProjectSelectedAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,

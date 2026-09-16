@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useState, useMemo } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
@@ -11,43 +13,23 @@ import {
   Code2,
   Bot,
   ArrowRight,
+  ChevronDown,
+  ChevronUp,
+  Layers,
+  Activity,
+  MousePointerClick,
+  Bug,
+  Lock,
 } from "lucide-react";
-import JsonLd from "@/components/JsonLd";
+import { getDashboardUrl } from "@/lib/subdomain";
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://openanalytics.org.in";
+interface FaqItem {
+  category: string;
+  question: string;
+  answer: string;
+}
 
-export const metadata: Metadata = {
-  title: "Frequently Asked Questions (FAQ) | Knowledge Base - Open Analytics",
-  description:
-    "Direct, authoritative answers to questions about Open Analytics: installation, privacy compliance, Core Web Vitals RUM, AI Search Radar, adblock bypassing, and GA4 migration.",
-  keywords: [
-    "open analytics faq",
-    "open analytics questions",
-    "how to install open analytics",
-    "is open analytics gdpr compliant",
-    "how does cookieless analytics work",
-    "track perplexity and searchgpt traffic",
-    "bypass adblockers web analytics",
-    "web analytics pricing plans",
-  ],
-  alternates: {
-    canonical: "/faq",
-  },
-  openGraph: {
-    title: "Open Analytics FAQ & Knowledge Base",
-    description:
-      "Direct answers on setup, privacy compliance, AI bot radar, and performance telemetry.",
-    url: `${baseUrl}/faq`,
-    type: "article",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Open Analytics FAQ",
-    description: "All your questions answered about privacy-first web telemetry.",
-  },
-};
-
-const faqItems = [
+const FAQ_ITEMS: FaqItem[] = [
   {
     category: "General & Setup",
     question: "What is Open Analytics and how is it different from Google Analytics?",
@@ -58,7 +40,7 @@ const faqItems = [
     category: "General & Setup",
     question: "How do I install Open Analytics on my website?",
     answer:
-      "Installation takes under 60 seconds. Simply paste a single asynchronous script tag into your website's <head> element: <script defer src=\"https://openanalytics.org.in/script.js\" data-website-id=\"YOUR_PROJECT_ID\"></script>. We also provide official native packages for Next.js (App Router & Pages Router), Nuxt/Vue, SvelteKit, and standard single-page applications.",
+      "Installation takes under 60 seconds. Simply paste a single asynchronous script tag into your website's <head> element: <script defer src=\"https://api.openanalytics.org.in/open.js\" data-project-id=\"YOUR_PROJECT_ID\"></script>. We also provide official native guides for Next.js (App Router & Pages Router), Vite/React, Nuxt/Vue, SvelteKit, and standard single-page applications.",
   },
   {
     category: "General & Setup",
@@ -70,7 +52,7 @@ const faqItems = [
     category: "Privacy & Legal Compliance",
     question: "Do I need a cookie consent banner when using Open Analytics?",
     answer:
-      "No. Under Article 5(3) of the EU ePrivacy Directive and GDPR, cookie banners are strictly mandatory when storing or reading non-essential identifiers on the user's terminal equipment. Open Analytics writes zero cookies, zero localStorage keys, and does not perform persistent hardware fingerprinting. Therefore, you are legally exempt from displaying cookie banners.",
+      "No. Under Article 5(3) of the EU ePrivacy Directive and GDPR, cookie banners are strictly mandatory when storing or reading non-essential identifiers on the user's terminal equipment. Open Analytics writes zero cookies, zero LocalStorage keys, and does not perform persistent hardware fingerprinting. Therefore, you are legally exempt from displaying cookie banners.",
   },
   {
     category: "Privacy & Legal Compliance",
@@ -106,154 +88,181 @@ const faqItems = [
     category: "Architecture & Integration",
     question: "What features are included in the Free Starter plan versus the Pro plan?",
     answer:
-      "The Free Starter plan includes 10,000 events per month, 1 tracked website, full core traffic analytics, and 100% cookieless GDPR compliance. Advanced observability modules—Core Web Vitals RUM, GEO & AI Search Engine Radar, Behavioral UX Rage Clicks, Error Crash Triage, and Custom Proxy Routing—are unlocked on the Pro plan ($19/mo).",
+      "The Free Starter plan includes 10,000 events per month, 1 tracked website, full core traffic analytics, and 100% cookieless GDPR compliance. Advanced observability modules—Core Web Vitals RUM, GEO & AI Search Engine Radar, Behavioral UX Rage Clicks, Error Crash Triage, and Custom Proxy Routing—are unlocked on the Pro plan ($19/mo or $15/mo billed annually).",
   },
   {
     category: "Architecture & Integration",
     question: "How do I bypass AdBlockers that block analytics scripts?",
     answer:
-      "Open Analytics supports custom reverse-proxy routing. By proxying the telemetry endpoint through your own primary domain (e.g., yourdomain.com/telemetry/event instead of openanalytics.org.in), browser adblockers and privacy extensions recognize the script as first-party application infrastructure, restoring 15% to 30% of previously lost analytics accuracy.",
+      "Open Analytics supports custom reverse-proxy routing. By proxying the telemetry endpoint through your own primary domain (e.g., yourdomain.com/open.js instead of api.openanalytics.org.in), browser adblockers and privacy extensions recognize the script as first-party application infrastructure, restoring 15% to 30% of previously lost analytics accuracy.",
   },
   {
-    category: "Migration & Data",
-    question: "Can I export my data or migrate away from Google Analytics?",
+    category: "Machine-Readable Endpoints",
+    question: "Where can AI coding agents and LLM crawlers find machine specifications?",
     answer:
-      "Yes. All Open Analytics data is stored in standard, non-proprietary PostgreSQL relational schemas. You can export complete datasets at any time via CSV, JSON, or SQL dump, or query the analytics tables directly using our REST API or database connections.",
+      "We provide standardized machine-readable endpoints: /llms.txt provides an executive architectural summary, /llms-full.txt provides deep technical context and schemas, and /agents.md provides direct integration instructions for coding agents such as Claude Code, Cursor, and Copilot.",
   },
 ];
 
-const breadcrumbSchema = {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  itemListElement: [
-    {
-      "@type": "ListItem",
-      position: 1,
-      name: "Home",
-      item: baseUrl,
-    },
-    {
-      "@type": "ListItem",
-      position: 2,
-      name: "FAQ",
-      item: `${baseUrl}/faq`,
-    },
-  ],
-};
-
-const faqPageSchema = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: faqItems.map((item) => ({
-    "@type": "Question",
-    name: item.question,
-    acceptedAnswer: {
-      "@type": "Answer",
-      text: item.answer,
-    },
-  })),
-};
-
 export default function FaqPage() {
-  const categories = Array.from(new Set(faqItems.map((item) => item.category)));
+  const dashboardUrl = getDashboardUrl("/");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
+
+  const categories = useMemo(() => {
+    return ["All", ...Array.from(new Set(FAQ_ITEMS.map((item) => item.category)))];
+  }, []);
+
+  const filteredFaqs = useMemo(() => {
+    return FAQ_ITEMS.filter((item) => {
+      const matchesCat = selectedCategory === "All" || item.category === selectedCategory;
+      const q = searchQuery.toLowerCase().trim();
+      const matchesSearch =
+        !q ||
+        item.question.toLowerCase().includes(q) ||
+        item.answer.toLowerCase().includes(q) ||
+        item.category.toLowerCase().includes(q);
+      return matchesCat && matchesSearch;
+    });
+  }, [searchQuery, selectedCategory]);
 
   return (
-    <div className="min-h-screen bg-[#060813] text-slate-100 selection:bg-cyan-500/30 selection:text-cyan-200">
-      <JsonLd schema={breadcrumbSchema} />
-      <JsonLd schema={faqPageSchema} />
-
+    <div className="min-h-screen bg-[#050811] text-slate-100 selection:bg-cyan-500/30 selection:text-cyan-200">
       {/* Hero Header */}
-      <section className="relative pt-28 pb-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center overflow-hidden">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[350px] bg-gradient-to-tr from-cyan-500/10 via-indigo-500/10 to-transparent blur-3xl -z-10 pointer-events-none" />
+      <section className="relative pt-24 pb-12 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center">
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[320px] bg-gradient-to-tr from-cyan-500/15 via-blue-600/10 to-transparent blur-[120px] -z-10 pointer-events-none" />
 
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold tracking-wide uppercase mb-6 backdrop-blur-sm">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/25 text-cyan-400 text-xs font-semibold tracking-wide uppercase mb-6 backdrop-blur-md">
           <HelpCircle className="w-3.5 h-3.5" />
-          AEO & GEO Knowledge Base
+          <span>Frequently Asked Questions</span>
         </div>
 
-        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white mb-6">
-          Frequently Asked{" "}
+        <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white mb-6 leading-[1.1]">
+          Everything You Need To Know About{" "}
           <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400 bg-clip-text text-transparent">
-            Questions
+            Open Analytics
           </span>
         </h1>
 
-        <p className="max-w-2xl mx-auto text-sm sm:text-base text-slate-400 leading-relaxed mb-8">
-          Clear, structured answers to technical, privacy, architectural, and migration questions about Open Analytics.
+        <p className="max-w-2xl mx-auto text-base sm:text-lg text-slate-300 leading-relaxed mb-8">
+          Clear, authoritative answers about cookieless privacy, Core Web Vitals RUM, AI Search Radar, adblock bypassing, and setup.
         </p>
 
-        {/* GEO Quick Answer Box */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-slate-900/80 border border-cyan-500/30 text-left backdrop-blur-md shadow-lg shadow-cyan-950/20">
-          <div className="flex items-center gap-2 text-cyan-400 font-semibold text-xs tracking-wider uppercase mb-1.5">
-            <Zap className="w-3.5 h-3.5" />
-            Quick Overview for Search & AI Assistants
-          </div>
-          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-            Open Analytics is a privacy-first, cloud-hosted web analytics and observability platform created as a lightweight alternative to Google Analytics 4. It uses a <strong className="text-white">&lt;3.2KB script</strong>, requires <strong className="text-white">zero cookie consent banners</strong>, tracks real-time traffic and Core Web Vitals RUM, monitors AI search engine crawlers (Perplexity, SearchGPT), and provides secure, high-speed managed cloud infrastructure.
-          </p>
+        {/* Live Search Input */}
+        <div className="relative max-w-xl mx-auto">
+          <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search questions by keyword (e.g. cookies, next.js, gdpr, vitals)..."
+            className="w-full py-3.5 pl-12 pr-4 rounded-2xl bg-white/[0.04] border border-white/[0.1] text-white text-xs sm:text-sm placeholder-slate-500 focus:outline-hidden focus:border-cyan-400 transition shadow-lg"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-white"
+            >
+              Clear
+            </button>
+          )}
         </div>
       </section>
 
-      {/* Categorized FAQs */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto space-y-16">
-        {categories.map((category) => {
-          const items = faqItems.filter((i) => i.category === category);
-          return (
-            <div key={category} className="space-y-6">
-              <div className="flex items-center gap-3 border-b border-slate-800 pb-3">
-                {category.includes("General") && <Sparkles className="w-5 h-5 text-cyan-400" />}
-                {category.includes("Privacy") && <ShieldCheck className="w-5 h-5 text-emerald-400" />}
-                {category.includes("AI") && <Bot className="w-5 h-5 text-indigo-400" />}
-                {category.includes("Architecture") && <Server className="w-5 h-5 text-sky-400" />}
-                {category.includes("Migration") && <Code2 className="w-5 h-5 text-purple-400" />}
-                <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-                  {category}
-                </h2>
-              </div>
-
-              <div className="space-y-4">
-                {items.map((item, idx) => (
-                  <article
-                    key={idx}
-                    className="p-5 sm:p-6 rounded-2xl bg-slate-900/60 border border-slate-800/80 hover:border-slate-700 transition-all backdrop-blur-sm"
-                  >
-                    <h3 className="text-base sm:text-lg font-semibold text-white mb-2.5 flex items-start gap-2">
-                      <span className="text-cyan-400 font-bold shrink-0">Q:</span>
-                      <span>{item.question}</span>
-                    </h3>
-                    <div className="text-xs sm:text-sm text-slate-400 leading-relaxed pl-6 border-l border-slate-800">
-                      {item.answer}
-                    </div>
-                  </article>
-                ))}
-              </div>
-            </div>
-          );
-        })}
+      {/* Category Pills */}
+      <section className="px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto mb-8">
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+                selectedCategory === cat
+                  ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-xs"
+                  : "bg-white/[0.03] text-slate-400 hover:text-white border border-white/[0.06]"
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
       </section>
 
-      {/* Still Have Questions CTA */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto text-center">
-        <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-r from-cyan-950/40 via-slate-900 to-indigo-950/40 border border-cyan-500/30 relative overflow-hidden">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
-            Have a Question Not Answered Here?
+      {/* FAQ Accordion List */}
+      <section className="px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto space-y-3 pb-20">
+        {filteredFaqs.length === 0 ? (
+          <div className="p-12 text-center rounded-3xl bg-white/[0.02] border border-white/[0.06] text-slate-400 space-y-3">
+            <p className="text-sm">No matching questions found for &ldquo;{searchQuery}&rdquo;.</p>
+            <button
+              onClick={() => {
+                setSearchQuery("");
+                setSelectedCategory("All");
+              }}
+              className="text-xs font-bold text-cyan-400 hover:underline"
+            >
+              Reset Search Filters
+            </button>
+          </div>
+        ) : (
+          filteredFaqs.map((faq, idx) => {
+            const isOpen = openIndex === idx;
+
+            return (
+              <div
+                key={faq.question}
+                className="rounded-2xl border border-white/[0.07] bg-white/[0.02] hover:border-white/[0.12] transition-all overflow-hidden"
+              >
+                <button
+                  type="button"
+                  onClick={() => setOpenIndex(isOpen ? null : idx)}
+                  className="w-full p-5 text-left flex items-center justify-between gap-4 cursor-pointer"
+                >
+                  <div className="space-y-1 min-w-0">
+                    <div className="text-[10px] font-mono uppercase tracking-wider text-cyan-400 font-bold">
+                      {faq.category}
+                    </div>
+                    <div className="text-sm font-bold text-white leading-snug">
+                      {faq.question}
+                    </div>
+                  </div>
+                  <div className="shrink-0 p-1.5 rounded-lg bg-white/[0.04] text-slate-400">
+                    {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  </div>
+                </button>
+
+                {isOpen && (
+                  <div className="px-5 pb-5 pt-1 text-xs sm:text-sm text-slate-300 leading-relaxed border-t border-white/[0.04] animate-fadeIn">
+                    {faq.answer}
+                  </div>
+                )}
+              </div>
+            );
+          })
+        )}
+      </section>
+
+      {/* Bottom CTA */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center">
+        <div className="p-8 sm:p-14 rounded-3xl bg-gradient-to-r from-cyan-950/40 via-slate-900 to-indigo-950/40 border border-cyan-500/30 relative overflow-hidden space-y-6">
+          <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
+            Still Have Questions?
           </h2>
-          <p className="text-xs sm:text-sm text-slate-300 max-w-md mx-auto mb-6">
-            Join our developer Discord community or check out our full technical documentation.
+          <p className="text-sm sm:text-base text-slate-300 max-w-lg mx-auto leading-relaxed">
+            Our comprehensive developer documentation and quickstart guides provide copy-paste snippets for all major web frameworks.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Link
-              href="/register"
-              className="w-full sm:w-auto py-3 px-6 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-slate-950 font-bold text-xs transition-all shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2"
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+            <a
+              href={dashboardUrl}
+              className="w-full sm:w-auto py-3.5 px-8 rounded-xl bg-gradient-to-r from-cyan-400 to-indigo-400 hover:from-cyan-300 hover:to-indigo-300 text-slate-950 font-black text-sm transition-all shadow-xl shadow-cyan-500/25 cursor-pointer hover:scale-[1.02]"
             >
-              Get Started Free
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+              Launch Dashboard
+            </a>
             <Link
-              href="/pricing"
-              className="w-full sm:w-auto py-3 px-6 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs transition-colors border border-slate-700"
+              href="/docs/installation"
+              className="w-full sm:w-auto py-3.5 px-8 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-slate-200 font-bold text-sm transition border border-white/[0.1]"
             >
-              View Pricing & Plans
+              View Installation Guides
             </Link>
           </div>
         </div>

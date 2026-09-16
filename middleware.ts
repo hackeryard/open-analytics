@@ -36,6 +36,8 @@ const DASHBOARD_PATHS = [
   "/ai-aeo",
   "/projects",
   "/settings",
+  "/billing",
+  "/profile",
 ];
 
 export function middleware(req: NextRequest) {
