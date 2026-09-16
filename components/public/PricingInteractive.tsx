@@ -29,17 +29,18 @@ import { getDashboardUrl } from "@/lib/subdomain";
 
 interface VolumeTier {
   events: string;
+  shortLabel: string;
   monthlyPrice: number;
   annualPrice: number;
   label?: string;
 }
 
 const VOLUME_TIERS: VolumeTier[] = [
-  { events: "100,000", monthlyPrice: 14, annualPrice: 11 },
-  { events: "250,000", monthlyPrice: 19, annualPrice: 15, label: "Recommended" },
-  { events: "500,000", monthlyPrice: 34, annualPrice: 27 },
-  { events: "1,000,000", monthlyPrice: 59, annualPrice: 47 },
-  { events: "2,500,000", monthlyPrice: 99, annualPrice: 79 },
+  { events: "100,000", shortLabel: "100k", monthlyPrice: 14, annualPrice: 11 },
+  { events: "250,000", shortLabel: "250k", monthlyPrice: 19, annualPrice: 15, label: "Recommended" },
+  { events: "500,000", shortLabel: "500k", monthlyPrice: 34, annualPrice: 27 },
+  { events: "1,000,000", shortLabel: "1M", monthlyPrice: 59, annualPrice: 47 },
+  { events: "2,500,000", shortLabel: "2.5M", monthlyPrice: 99, annualPrice: 79 },
 ];
 
 export default function PricingInteractive() {
@@ -308,7 +309,7 @@ export default function PricingInteractive() {
                               : "bg-white/[0.05] hover:bg-white/[0.1] text-slate-300"
                           }`}
                         >
-                          {tier.events.replace(",000", "k")}
+                          {tier.shortLabel}
                         </button>
                       );
                     })}
