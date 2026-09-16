@@ -2,6 +2,27 @@
 
 All notable changes to the Open Analytics platform are documented in this file.
 
+## [3.1.0] - 2026-09-16
+
+### Added
+- **User-Level Subscription Architecture (`models/User.ts`)**:
+  - Migrated plan subscription from project-level to user-level (`user.plan`, `user.planExpiresAt`, `user.billingCycle`, `user.extraProjectsAllowed`, `user.subscriptionStatus`).
+  - Added centralized plan definition system (`lib/planLimits.ts`) with expiration verification (`isPlanActive`) and grace fallback to Free.
+- **Website & Member Ceilings**:
+  - **Free Starter Plan**: Strictly capped at **1 tracked website**, 10,000 monthly events/project, and up to 2 team members.
+  - **Cloud Pro Plan**: Includes up to **10 tracked websites**, 250,000 monthly events/project, and up to 10 team members.
+  - **Enterprise Plan**: 10 base websites + predictable add-on cost ($10/mo per additional website slot), 1,000,000 events/project, and unlimited collaborators.
+  - Enforced project creation ceilings in `POST /api/projects` and member invitation ceilings in `POST /api/projects/[projectId]/members`.
+- **Project Owner Plan Inheritance & Collaborator Isolation**:
+  - Projects dynamically inherit the subscription tier of the Project Owner (`getProjectEffectivePlan`).
+  - Team members invited to a Pro owner's project get full access to Pro features for that specific project.
+  - Collaborator's personal projects remain isolated and retain the user's own subscription plan (no cross-account privilege bleeding).
+- **User Plan Management API**:
+  - `GET /api/user/plan`: Returns active plan, expiration date, days until expiry, and website slot utilization.
+  - `PATCH /api/user/plan`: Allows upgrading/downgrading user subscriptions with duration calculation.
+
+---
+
 ## [3.0.0] - 2026-09-15
 
 ### Added

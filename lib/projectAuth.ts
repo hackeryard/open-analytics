@@ -23,7 +23,7 @@ export async function authenticateProjectRequest(req: Request, body?: any): Prom
   if (apiKey) {
     project = await (Project as any).findOne({
       $or: [{ publishableKey: apiKey }, { secretKey: apiKey }],
-    }).lean();
+    }).populate("ownerId", "plan planExpiresAt subscriptionStatus role").lean();
   } else if (projectId) {
     const rawId = String(projectId).trim();
     project = await (Project as any).findOne({
@@ -35,7 +35,7 @@ export async function authenticateProjectRequest(req: Request, body?: any): Prom
         { projectId: `open_prj_${rawId.replace(/^open_prj_|^prj_|^oa-|^OA-/i, "").toLowerCase()}` },
         { measurementId: `OA-${rawId.replace(/^open_prj_|^prj_|^oa-|^OA-/i, "").toUpperCase()}` },
       ],
-    }).lean();
+    }).populate("ownerId", "plan planExpiresAt subscriptionStatus role").lean();
   }
 
   if (!project) {

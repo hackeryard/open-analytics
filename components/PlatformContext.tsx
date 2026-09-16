@@ -9,6 +9,13 @@ interface User {
   name: string;
   email: string;
   role: "super_admin" | "admin" | "editor" | "member";
+  avatar?: string;
+  plan?: "free" | "pro" | "enterprise";
+  effectivePlan?: "free" | "pro" | "enterprise";
+  planExpiresAt?: string | Date | null;
+  billingCycle?: "monthly" | "annual";
+  extraProjectsAllowed?: number;
+  isPlanActive?: boolean;
 }
 
 interface Project {
@@ -17,6 +24,8 @@ interface Project {
   name: string;
   allowedDomains: string[];
   ownerId?: string;
+  ownerEmail?: string;
+  isOwner?: boolean;
   members?: any[];
   role?: string;
   currentUserRole?: string;
@@ -33,6 +42,7 @@ interface Project {
   slug?: string;
   settings?: any;
   plan?: "free" | "pro" | "enterprise";
+  effectivePlan?: "free" | "pro" | "enterprise";
   planExpiresAt?: string | Date | null;
   createdAt?: string | Date;
 }
@@ -98,8 +108,9 @@ interface PlatformContextType {
   checkAuth: () => Promise<boolean>;
   showNewProjectModal: boolean;
   setShowNewProjectModal: (s: boolean) => void;
-  handleCreateProject: (name: string, domains: string) => Promise<boolean>;
+  handleCreateProject: (name: string, domains: string) => Promise<{ success: boolean; error?: string }>;
   updateProjectPlan: (projectId: string, plan: "free" | "pro" | "enterprise") => Promise<boolean>;
+  updateUserPlan: (plan: "free" | "pro" | "enterprise", billingCycle?: "monthly" | "annual", extraProjects?: number) => Promise<boolean>;
   handleLogout: () => Promise<void>;
 }
 
@@ -336,8 +347,8 @@ export function PlatformProvider({ children }: { children: React.ReactNode }) {
   }, [activeProjectId, timeRange, fetchData, fetchPaginatedPageviews, pvLimit, pvUserType, pvQuery, pvSort, pvVitals]);
 
   // Project creation
-  const handleCreateProject = async (name: string, domains: string): Promise<boolean> => {
-    if (!name.trim()) return false;
+  const handleCreateProject = async (name: string, domains: string): Promise<{ success: boolean; error?: string }> => {
+    if (!name.trim()) return { success: false, error: "Project name is required" };
     try {
       const res = await fetch("/api/projects", {
         method: "POST",
@@ -348,16 +359,16 @@ export function PlatformProvider({ children }: { children: React.ReactNode }) {
         }),
       });
       const resData = await res.json();
-      if (resData.project) {
+      if (res.ok && resData.project) {
         setProjects((prev) => [...prev, resData.project]);
         setActiveProjectId(resData.project.projectId);
         setShowNewProjectModal(false);
-        return true;
+        return { success: true };
       }
-      return false;
-    } catch (err) {
+      return { success: false, error: resData.error || "Failed to create project" };
+    } catch (err: any) {
       console.error("Create project error:", err);
-      return false;
+      return { success: false, error: err.message || "Network error" };
     }
   };
 
@@ -374,7 +385,7 @@ export function PlatformProvider({ children }: { children: React.ReactNode }) {
       });
       if (res.ok) {
         setProjects((prev) =>
-          prev.map((p) => (p.projectId === projectId ? { ...p, plan } : p))
+          prev.map((p) => (p.projectId === projectId ? { ...p, plan, effectivePlan: plan } : p))
         );
         return true;
       }
@@ -384,6 +395,33 @@ export function PlatformProvider({ children }: { children: React.ReactNode }) {
       return false;
     }
   }, []);
+
+  const updateUserPlan = useCallback(async (
+    plan: "free" | "pro" | "enterprise",
+    billingCycle: "monthly" | "annual" = "monthly",
+    extraProjects: number = 0
+  ): Promise<boolean> => {
+    try {
+      const res = await fetch("/api/user/plan", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan, billingCycle, extraProjects }),
+      });
+      if (res.ok) {
+        const d = await res.json();
+        if (d.user) {
+          setCurrentUser((prev) => prev ? { ...prev, ...d.user } : null);
+        }
+        // Refresh project list so effectivePlans update
+        checkAuth();
+        return true;
+      }
+      return false;
+    } catch (err) {
+      console.error("Failed to update user plan:", err);
+      return false;
+    }
+  }, [checkAuth]);
 
   return (
     <PlatformContext.Provider
@@ -430,6 +468,7 @@ export function PlatformProvider({ children }: { children: React.ReactNode }) {
         showNewProjectModal,
         setShowNewProjectModal,
         handleCreateProject,
+        updateUserPlan,
         handleLogout,
       }}
     >

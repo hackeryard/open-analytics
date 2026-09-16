@@ -5,6 +5,7 @@ import { NextRequest } from "next/server";
 import User from "@/models/User";
 import Project from "@/models/Project";
 import { connectDB } from "@/lib/mongodb";
+import { getUserEffectivePlan, getProjectEffectivePlan, isPlanActive } from "@/lib/planLimits";
 
 export const SESSION_COOKIE_NAME = "open_session";
 const JWT_SECRET = process.env.JWT_SECRET || "open_analytics_super_secret_jwt_key_2026_x89!";
@@ -229,6 +230,13 @@ export async function getCurrentUser(req?: Request): Promise<any | null> {
       role: user.role,
       avatar: user.avatar || "",
       emailVerified: Boolean(user.emailVerified),
+      plan: user.plan || "free",
+      planExpiresAt: user.planExpiresAt || null,
+      billingCycle: user.billingCycle || "monthly",
+      extraProjectsAllowed: user.extraProjectsAllowed || 0,
+      subscriptionStatus: user.subscriptionStatus || "active",
+      effectivePlan: getUserEffectivePlan(user),
+      isPlanActive: isPlanActive(user),
     };
   } catch (err) {
     console.error("Error resolving current user:", err);
@@ -252,7 +260,10 @@ export async function verifyProjectAccess(req: Request, projectId: string): Prom
     return { ok: false, status: 401, error: "Authentication required. Please log in." };
   }
 
-  const project = await (Project as any).findOne({ projectId }).lean();
+  const project = await (Project as any)
+    .findOne({ projectId })
+    .populate("ownerId", "name email plan planExpiresAt subscriptionStatus role extraProjectsAllowed")
+    .lean();
   if (!project) {
     return { ok: false, status: 404, error: "Project not found" };
   }
@@ -264,6 +275,10 @@ export async function verifyProjectAccess(req: Request, projectId: string): Prom
       error: "Access denied: You do not have permission to view this project's analytics data.",
     };
   }
+
+  const effectivePlan = getProjectEffectivePlan(project, project.ownerId);
+  project.effectivePlan = effectivePlan;
+  project.plan = effectivePlan;
 
   return { ok: true, user, project };
 }

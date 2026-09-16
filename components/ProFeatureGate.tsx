@@ -33,19 +33,21 @@ export default function ProFeatureGate({
   highlights,
   children,
 }: ProFeatureGateProps) {
-  const { activeProject, updateProjectPlan } = usePlatform();
+  const { activeProject, currentUser, updateUserPlan } = usePlatform();
   const [upgrading, setUpgrading] = useState(false);
   const [upgradeSuccess, setUpgradeSuccess] = useState(false);
 
-  // Check if active project has Pro or Enterprise plan
+  // Check if active project has inherited Pro or Enterprise plan from owner
   const isPro =
-    activeProject?.plan === "pro" || activeProject?.plan === "enterprise";
+    activeProject?.effectivePlan === "pro" ||
+    activeProject?.effectivePlan === "enterprise" ||
+    activeProject?.plan === "pro" ||
+    activeProject?.plan === "enterprise";
 
-  // Quick 1-click upgrade handler
+  // Quick 1-click upgrade handler upgrades user's subscription
   const handleQuickUpgrade = async () => {
-    if (!activeProject?.projectId) return;
     setUpgrading(true);
-    const success = await updateProjectPlan(activeProject.projectId, "pro");
+    const success = await updateUserPlan("pro", "monthly");
     setUpgrading(false);
     if (success) {
       setUpgradeSuccess(true);

@@ -321,6 +321,21 @@ Open Analytics is structured across three segregated subdomains:
 
 ---
 
+## User-Level Subscription Model & Ceilings
+
+Subscription plans belong to user accounts and are inherited by projects owned by that user:
+
+| Tier | Price | Tracked Websites | Events / Month (Per Project) | Retention | Team Members / Project | Included Modules |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Free Starter** | $0 | **1 Website** | 10,000 | 30 days | Up to 2 | Core Cookieless Web Telemetry |
+| **Cloud Pro** | $19 / mo ($15/mo annual) | **10 Websites** | 250,000 | 365 days (1 yr) | Up to 10 | All 5 Power Modules (RUM, AI Radar, UX, Errors, Custom Events) |
+| **Enterprise** | Custom | **10 Base (+ $10/mo per extra)** | 1,000,000+ | 365 days (1 yr) | Unlimited | All Modules + Dedicated SLA, SSO, Custom DPA |
+
+- **Team Collaborator Inheritance**: Invited team members enjoy Pro privileges on projects owned by a Pro subscriber without cross-account leakage into their independently owned projects.
+- **Unpooled Quotas**: Monthly event limits are enforced per-project, protecting high-throughput streams from starving other properties.
+
+---
+
 ## Workflow & Developer Scripts
 
 | Command | Script File | Description |
