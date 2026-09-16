@@ -2,6 +2,29 @@
 
 All notable changes to the Open Analytics platform are documented in this file.
 
+## [3.2.0] - 2026-09-16
+
+### Added
+- **Full SEO, GEO, and AEO Optimization on Main Marketing Domain**:
+  - Engineered comprehensive machine-readable and agentic discovery protocols:
+    - `/llms.txt`: Standardized summary of Open Analytics architecture, capabilities, and integrations for LLM search engines.
+    - `/llms-full.txt`: Deep technical specification including data schemas, cryptographic rotating salt specs, and Core Web Vitals algorithms.
+    - `/agents.md`: Universal operating guide for autonomous coding agents (Claude Code, Cursor, Copilot Workspace, Antigravity) with 1-line installation snippets across Next.js, React, Nuxt, SvelteKit, Astro, and HTML.
+    - `/robots.ts`: Advanced crawler directives explicitly welcoming generative AI agents (`GPTBot`, `PerplexityBot`, `ClaudeBot`, `Applebot-Extended`, `Google-Extended`, `OAI-SearchBot`, `Bytespider`).
+    - `/sitemap.ts`: Canonical marketing and docs index with prioritized change frequencies and modification timestamps.
+- **Complete Visual & Content Redesign Across Marketing Pages**:
+  - `LandingHero.tsx`: High-impact hero, interactive multi-framework code switcher, simulated live telemetry pulse board, 6 technical core pillars, and GEO direct answer unit.
+  - `app/features/page.tsx`: Immersive product tour detailing Core Web Vitals RUM (LCP/INP/CLS), AI bot crawler radar, rage/dead click detection, and automated JavaScript crash triage.
+  - `app/vs-google-analytics/page.tsx`: Data-backed head-to-head comparison against GA4, mobile PageSpeed benchmark (100 vs 72), cookie banner elimination demo, and 60-second migration path.
+  - `app/privacy/page.tsx`: Visual 24-hour cryptographic rotating salt pipeline, transparency matrix (What We Track vs What We Never Track), and ready-to-copy customer privacy policy clause.
+  - `app/faq/page.tsx`: Real-time searchable FAQ accordion with categorized tags and updated API endpoint snippets (`api.openanalytics.org.in/open.js`).
+  - `PublicNavbar.tsx` & `PublicFooter.tsx`: Elevated glassmorphism, responsive navigation drawer, real-time operational status beacon, and protocol links (`/llms.txt`, `/agents.md`).
+- **Strict Project Constraint Adherence**:
+  - Maintained 100% Zero-Emoji rule across all UI components, metadata, and generated machine files.
+  - Enforced 3-tier domain isolation with unified "Launch Dashboard" routing.
+
+---
+
 ## [3.1.5] - 2026-09-16
 
 ### Added

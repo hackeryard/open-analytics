@@ -79,6 +79,9 @@ export default function PublicFooter() {
                 <Link href="/docs" className="hover:text-cyan-400 transition">Documentation</Link>
               </li>
               <li>
+                <Link href="/docs/installation" className="hover:text-cyan-400 transition">Framework Integration</Link>
+              </li>
+              <li>
                 <Link href="/pricing" className="hover:text-cyan-400 transition">Pricing Plans</Link>
               </li>
               <li>
@@ -94,15 +97,19 @@ export default function PublicFooter() {
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="mt-12 pt-6 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-500">
-          <div>
-            &copy; {new Date().getFullYear()} Open Analytics. Built for the privacy-first web.
+        {/* AI Machine Discovery & Compliance Badges */}
+        <div className="mt-12 pt-6 border-t border-white/[0.06] flex flex-wrap items-center justify-between gap-4 text-[11px] text-slate-500">
+          <div className="flex items-center gap-3">
+            <span>&copy; {new Date().getFullYear()} Open Analytics. Built for the privacy-first web.</span>
+            <span className="hidden md:inline">•</span>
+            <span className="hidden md:inline text-slate-400">Zero Cookies • Zero IP Storage</span>
           </div>
-          <div className="flex items-center gap-4">
-            <Link href="/privacy" className="hover:text-slate-300 transition">Privacy Architecture</Link>
-            <Link href="/faq" className="hover:text-slate-300 transition">AEO Knowledge Base</Link>
-            <Link href="/sitemap.xml" className="hover:text-slate-300 transition">Sitemap</Link>
+          <div className="flex flex-wrap items-center gap-4 text-xs font-mono">
+            <Link href="/llms.txt" className="text-slate-400 hover:text-cyan-400 transition">llms.txt</Link>
+            <Link href="/llms-full.txt" className="text-slate-400 hover:text-cyan-400 transition">llms-full.txt</Link>
+            <Link href="/agents.md" className="text-slate-400 hover:text-cyan-400 transition">agents.md</Link>
+            <Link href="/privacy" className="text-slate-400 hover:text-cyan-400 transition">Privacy Architecture</Link>
+            <Link href="/sitemap.xml" className="text-slate-400 hover:text-cyan-400 transition">Sitemap</Link>
           </div>
         </div>
       </div>
