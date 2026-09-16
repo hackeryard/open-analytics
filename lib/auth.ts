@@ -243,6 +243,8 @@ export async function getCurrentUser(req?: Request): Promise<any | null> {
       subscriptionStatus: user.subscriptionStatus || "active",
       effectivePlan: getUserEffectivePlan(user),
       isPlanActive: isPlanActive(user),
+      lockedActiveProjectId: user.lockedActiveProjectId || "",
+      activeProjectSelectedAt: user.activeProjectSelectedAt || null,
     };
   } catch (err) {
     console.error("Error resolving current user:", err);

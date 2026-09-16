@@ -120,6 +120,7 @@ interface PlatformContextType {
   // Active Project Selection & Expiration
   showActiveProjectModal: boolean;
   setShowActiveProjectModal: (s: boolean) => void;
+  dismissActiveProjectModal: () => void;
   isPlanExpired: boolean;
   requiresActiveProjectSelection: boolean;
   selectActiveProject: (projectId: string) => Promise<{ success: boolean; error?: string }>;
@@ -215,12 +216,30 @@ export function PlatformProvider({
     return ownedProjectsCount > 1 && !currentUser.lockedActiveProjectId;
   }, [currentUser, ownedProjectsCount]);
 
-  // Auto-prompt selection if required
+  // Track whether the user has dismissed the active project modal in this session
+  const [modalDismissedThisSession, setModalDismissedThisSession] = useState<boolean>(() => {
+    if (typeof window !== "undefined") {
+      return sessionStorage.getItem("open_active_project_modal_dismissed") === "true";
+    }
+    return false;
+  });
+
+  // Auto-prompt selection if required and has not been dismissed in this session
   useEffect(() => {
-    if (authChecked && requiresActiveProjectSelection) {
+    if (authChecked && requiresActiveProjectSelection && !modalDismissedThisSession) {
       setShowActiveProjectModal(true);
     }
-  }, [authChecked, requiresActiveProjectSelection]);
+  }, [authChecked, requiresActiveProjectSelection, modalDismissedThisSession]);
+
+  // Provide a dismissal method that persists across page navigations within the session
+  const dismissActiveProjectModal = useCallback(() => {
+    setShowActiveProjectModal(false);
+    setModalDismissedThisSession(true);
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("open_active_project_modal_dismissed", "true");
+    }
+  }, []);
+
 
 
   // Intercept modal open: if quota is exceeded, do NOT open create project modal
@@ -598,6 +617,7 @@ export function PlatformProvider({
         openCreateProject,
         showActiveProjectModal,
         setShowActiveProjectModal,
+        dismissActiveProjectModal,
         isPlanExpired,
         requiresActiveProjectSelection,
         selectActiveProject,

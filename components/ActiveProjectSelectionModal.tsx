@@ -32,7 +32,17 @@ export default function ActiveProjectSelectionModal({
     projects,
     selectActiveProject,
     isPlanExpired,
+    dismissActiveProjectModal,
   } = usePlatform();
+
+  const handleClose = () => {
+    if (dismissActiveProjectModal) {
+      dismissActiveProjectModal();
+    }
+    if (onClose) {
+      onClose();
+    }
+  };
 
   const [selectedProjectId, setSelectedProjectId] = useState<string>("");
   const [submitting, setSubmitting] = useState(false);
@@ -59,7 +69,7 @@ export default function ActiveProjectSelectionModal({
       if (!res.success) {
         setError(res.error || "Failed to set active project");
       } else {
-        if (onClose) onClose();
+        handleClose();
       }
     } catch (e: any) {
       setError(e.message || "Network error");
@@ -71,22 +81,24 @@ export default function ActiveProjectSelectionModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/90 backdrop-blur-md animate-fadeIn" />
+      <div 
+        onClick={handleClose}
+        className="fixed inset-0 bg-black/90 backdrop-blur-md animate-fadeIn cursor-pointer" 
+      />
 
       {/* Modal Dialog */}
       <div className="relative w-full max-w-xl bg-[#070b16] border border-amber-500/30 rounded-3xl p-6 sm:p-8 shadow-[0_20px_70px_rgba(0,0,0,0.9),0_0_50px_rgba(245,158,11,0.18)] z-10 animate-scaleIn space-y-6">
         {/* Top Accent Gradient */}
         <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 rounded-t-3xl" />
 
-        {/* Close Button if optional */}
-        {onClose && (
-          <button
-            onClick={onClose}
-            className="absolute top-5 right-5 p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.08] transition cursor-pointer"
-          >
-            <X size={18} />
-          </button>
-        )}
+        {/* Close Button */}
+        <button
+          onClick={handleClose}
+          className="absolute top-5 right-5 p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.08] transition cursor-pointer"
+          title="Dismiss for this session"
+        >
+          <X size={18} />
+        </button>
 
         {/* Header */}
         <div className="flex items-start gap-4 pt-1">
@@ -130,14 +142,21 @@ export default function ActiveProjectSelectionModal({
             const isCurrentlyLocked = lockedId === p.projectId;
 
             return (
-              <label
+              <div
                 key={p.projectId}
+                role="button"
+                tabIndex={0}
                 onClick={() => {
                   if (!lockedId) {
                     setSelectedProjectId(p.projectId);
                   }
                 }}
-                className={`flex items-center justify-between p-3.5 rounded-2xl border transition ${
+                onKeyDown={(e) => {
+                  if ((e.key === "Enter" || e.key === " ") && !lockedId) {
+                    setSelectedProjectId(p.projectId);
+                  }
+                }}
+                className={`flex items-center justify-between p-3.5 rounded-2xl border transition select-none ${
                   isSelected
                     ? "bg-cyan-500/10 border-cyan-500/40 text-white shadow-md shadow-cyan-500/10"
                     : "bg-white/[0.02] border-white/[0.06] text-slate-300 hover:bg-white/[0.04]"
@@ -173,7 +192,7 @@ export default function ActiveProjectSelectionModal({
                     {isSelected && <Check size={12} strokeWidth={3} />}
                   </div>
                 </div>
-              </label>
+              </div>
             );
           })}
         </div>
@@ -181,14 +200,24 @@ export default function ActiveProjectSelectionModal({
         {/* Action Controls */}
         <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
           {!lockedId ? (
-            <button
-              onClick={handleConfirm}
-              disabled={submitting || !effectiveSelectedId}
-              className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-cyan-500 hover:from-amber-400 hover:via-orange-400 hover:to-cyan-400 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 transition disabled:opacity-50 cursor-pointer"
-            >
-              <Lock size={14} />
-              <span>{submitting ? "Locking Selection..." : "Confirm & Lock Active Website"}</span>
-            </button>
+            <>
+              <button
+                onClick={handleConfirm}
+                disabled={submitting || !effectiveSelectedId}
+                className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-cyan-500 hover:from-amber-400 hover:via-orange-400 hover:to-cyan-400 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 transition disabled:opacity-50 cursor-pointer"
+              >
+                <Lock size={14} />
+                <span>{submitting ? "Locking Selection..." : "Confirm & Lock Active Website"}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleClose}
+                className="w-full sm:w-auto py-3 px-4 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.1] text-slate-300 hover:text-white font-semibold text-xs transition cursor-pointer"
+              >
+                Dismiss
+              </button>
+            </>
           ) : (
             <div className="w-full sm:flex-1 text-center sm:text-left text-xs text-amber-400 font-semibold py-2">
               Active website is locked ({lockedId}). Upgrade to Pro to unlock multi-site tracking.
@@ -197,7 +226,7 @@ export default function ActiveProjectSelectionModal({
 
           <Link
             href="/billing"
-            onClick={onClose}
+            onClick={handleClose}
             className="w-full sm:w-auto py-3 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-xs shadow-md shadow-cyan-500/20 flex items-center justify-center gap-1.5 transition cursor-pointer"
           >
             <Crown size={14} className="text-amber-300" />
