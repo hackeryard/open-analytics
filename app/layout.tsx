@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import "./globals.css";
 import { PlatformProvider } from "@/components/PlatformContext";
 import AppShell from "@/components/AppShell";
 import JsonLd from "@/components/JsonLd";
+import { isDashboardHost } from "@/lib/subdomain";
 
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://openanalytics.org.in";
 
@@ -138,6 +140,14 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headersList = headers();
+  const host = headersList.get("x-forwarded-host") || headersList.get("host") || "";
+  const headerIsDashboard = headersList.get("x-is-dashboard");
+  const isDashboard =
+    headerIsDashboard !== null
+      ? headerIsDashboard === "1"
+      : isDashboardHost(host, undefined, headersList.get("x-subdomain"));
+
   return (
     <html lang="en" className="dark">
       <head>
@@ -145,9 +155,10 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-background text-foreground antialiased selection:bg-cyan-500/30 selection:text-cyan-200">
         <PlatformProvider>
-          <AppShell>{children}</AppShell>
+          <AppShell initialIsDashboard={isDashboard}>{children}</AppShell>
         </PlatformProvider>
       </body>
     </html>
   );
 }
+

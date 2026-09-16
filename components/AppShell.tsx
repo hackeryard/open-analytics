@@ -52,8 +52,19 @@ import PublicNavbar from "@/components/public/PublicNavbar";
 import PublicFooter from "@/components/public/PublicFooter";
 import { isDashboardClient, getMainDomainUrl } from "@/lib/subdomain";
 
-export default function AppShell({ children }: { children: React.ReactNode }) {
+export default function AppShell({
+  children,
+  initialIsDashboard = false,
+}: {
+  children: React.ReactNode;
+  initialIsDashboard?: boolean;
+}) {
   const pathname = usePathname();
+  const [isDashboard, setIsDashboard] = useState(initialIsDashboard);
+
+  useEffect(() => {
+    setIsDashboard(isDashboardClient());
+  }, []);
   const {
     currentUser,
     projects,
@@ -221,9 +232,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   if (isAuthPage) {
     return <>{children}</>;
   }
-
-  // Domain context: check if running on dashboard subdomain
-  const isDashboard = typeof window !== "undefined" ? isDashboardClient() : false;
 
   // On the main domain, ALWAYS render the marketing shell (PublicNavbar + content + PublicFooter)
   // On the dashboard subdomain, render the analytics platform workspace
