@@ -5,10 +5,11 @@ All notable changes to the Open Analytics platform are documented in this file.
 ## [3.1.1] - 2026-09-16
 
 ### Fixed
-- **AppShell SSR & Subdomain Hydration Mismatch**:
-  - Resolved Next.js runtime hydration error (`Expected server HTML to contain a matching <aside> in <div>`).
-  - Passed `initialIsDashboard` from `RootLayout` via `headers()` (`x-is-dashboard` header and host inspection) down to `AppShell`.
-  - Ensured matching DOM structures during SSR and initial browser hydration across both marketing and dashboard subdomains.
+- **AppShell & ExecutiveOverviewDashboard SSR Hydration Mismatch**:
+  - Resolved Next.js runtime hydration errors (`Expected server HTML to contain a matching <aside> in <div>` and `Expected server HTML to contain a matching <div> in <div>`).
+  - Passed `initialIsDashboard` from `RootLayout` via `headers()` (`x-is-dashboard` header and host inspection) down to both `PlatformProvider` and `AppShell`.
+  - Exposed `isDashboard` via `usePlatform()` context, eliminating divergent `window` object inspections in `ExecutiveOverviewDashboard` (`app/page.tsx`).
+  - Guaranteed identical DOM trees across server SSR and client browser hydration on both the marketing domain and dashboard subdomain.
 
 ---
 

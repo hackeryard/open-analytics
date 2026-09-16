@@ -52,7 +52,6 @@ import WebVitalsRadarWidget from "@/components/dashboard/WebVitalsRadarWidget";
 import DeviceBreakdownWidget from "@/components/dashboard/DeviceBreakdownWidget";
 import AiAndErrorWidget from "@/components/dashboard/AiAndErrorWidget";
 import LandingHero from "@/components/public/LandingHero";
-import { isDashboardClient } from "@/lib/subdomain";
 
 export default function ExecutiveOverviewDashboard() {
   const {
@@ -69,6 +68,7 @@ export default function ExecutiveOverviewDashboard() {
     setShowNewProjectModal,
     fetchData,
     fetchPaginatedPageviews,
+    isDashboard,
   } = usePlatform();
 
   const [copiedSnippet, setCopiedSnippet] = useState(false);
@@ -119,7 +119,6 @@ export default function ExecutiveOverviewDashboard() {
   };
 
   // 1. If accessing on the main marketing domain, strictly serve the public SEO landing page
-  const isDashboard = typeof window !== "undefined" ? isDashboardClient() : false;
   if (!isDashboard) {
     return <LandingHero />;
   }

@@ -154,7 +154,7 @@ export default function RootLayout({
         <JsonLd data={organizationSchema} />
       </head>
       <body className="min-h-screen bg-background text-foreground antialiased selection:bg-cyan-500/30 selection:text-cyan-200">
-        <PlatformProvider>
+        <PlatformProvider initialIsDashboard={isDashboard}>
           <AppShell initialIsDashboard={isDashboard}>{children}</AppShell>
         </PlatformProvider>
       </body>

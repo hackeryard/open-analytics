@@ -112,13 +112,25 @@ interface PlatformContextType {
   updateProjectPlan: (projectId: string, plan: "free" | "pro" | "enterprise") => Promise<boolean>;
   updateUserPlan: (plan: "free" | "pro" | "enterprise", billingCycle?: "monthly" | "annual", extraProjects?: number) => Promise<boolean>;
   handleLogout: () => Promise<void>;
+  isDashboard: boolean;
 }
 
 const PlatformContext = createContext<PlatformContextType | undefined>(undefined);
 
-export function PlatformProvider({ children }: { children: React.ReactNode }) {
+export function PlatformProvider({
+  children,
+  initialIsDashboard = false,
+}: {
+  children: React.ReactNode;
+  initialIsDashboard?: boolean;
+}) {
+  const [isDashboard, setIsDashboard] = useState<boolean>(initialIsDashboard);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
+
+  useEffect(() => {
+    setIsDashboard(isDashboardClient());
+  }, []);
   const [projects, setProjects] = useState<Project[]>([]);
   const [activeProjectId, setActiveProjectIdState] = useState<string>("");
   const [timeRange, setTimeRangeState] = useState<string>("7d");
@@ -470,6 +482,7 @@ export function PlatformProvider({ children }: { children: React.ReactNode }) {
         handleCreateProject,
         updateUserPlan,
         handleLogout,
+        isDashboard,
       }}
     >
       {children}
