@@ -77,6 +77,14 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    lockedActiveProjectId: {
+      type: String,
+      default: "",
+    },
+    activeProjectSelectedAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,

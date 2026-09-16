@@ -2,6 +2,27 @@
 
 All notable changes to the Open Analytics platform are documented in this file.
 
+## [3.1.5] - 2026-09-16
+
+### Added
+- **Expired Plan Multi-Project Handling & Active Website Locking**:
+  - Implemented one-time active website selection for users whose subscriptions have expired or who own more than 1 website on the Free Starter plan.
+  - Added `lockedActiveProjectId` and `activeProjectSelectedAt` fields to `User` schema.
+  - Implemented `POST /api/user/active-project`: allows users to choose their 1 active tracking property, automatically locking the selection to prevent toggling between projects to circumvent Free tier limits.
+  - Upgrading to Cloud Pro or Enterprise automatically lifts the lock and reactivates all paused projects.
+- **Telemetry Ingestion Pausing (`/v1/collect`, `/v1/error`)**:
+  - Validates project tracking status against owner subscription: rejects incoming telemetry on paused/unlocked projects on Free tier (`TRACKING_PAUSED`).
+  - Preserves historical data and analytical dashboards in read-only mode with clear `Paused (Free Plan)` badges.
+- **Team Collaborator Quota Enforcement**:
+  - Strictly limits projects inheriting Free tier to a maximum of 2 team members.
+  - Blocks invitations (`403 MEMBER_LIMIT_REACHED`) when the limit is met.
+- **Interactive UI Components**:
+  - Created `ActiveProjectSelectionModal` for seamless, one-click active website locking.
+  - Added global top banner in `AppShell` alerting users of expired subscriptions with renewal and selection CTAs.
+  - Added locked active website indicators to `/billing` and `/projects`.
+
+---
+
 ## [3.1.4] - 2026-09-16
 
 ### Added

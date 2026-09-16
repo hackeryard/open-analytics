@@ -24,6 +24,7 @@ It provides complete insight into user experience, performance bottlenecks, rage
 - **Interactive SVG World Atlas**: Interactive world map with pan, zoom, country rankings, continent breakdowns, and city-level drilldown.
 - **Dedicated Billing & Plans Hub (`/billing`)**: User-level subscription management, live website slot gauges (`ownedProjects / maxProjects`), unpooled quotas, and 1-click plan switching.
 - **Quota Enforcement & Modal Guarding**: Automated enforcement of website ceilings (1 Free, 10 Pro) blocking project creation wizards when limits are reached with proactive upgrade prompts.
+- **Expired Plan Multi-Project Locking**: Seamless active website selection for expired users, locking 1 active tracking property and pausing unselected properties on Free tier while preserving historical data.
 - **Developer Profile Hub (`/profile`)**: Manage user profile details, role assignments, subscription tier status, and associated workspaces.
 - **Privacy & Security by Design**: Built-in IP address anonymization (masking the last octet for GDPR compliance) and automated PII redaction (scrubbing emails, passwords, tokens from URL query parameters and error payloads).
 

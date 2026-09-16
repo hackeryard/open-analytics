@@ -35,6 +35,8 @@
 - `billingCycle` (String, Enum: `"monthly" | "annual"`): Billing interval.
 - `extraProjectsAllowed` (Number): Extra website slots beyond base limit for Enterprise/add-ons.
 - `subscriptionStatus` (String, Enum: `"active" | "trialing" | "past_due" | "canceled" | "expired"`).
+- `lockedActiveProjectId` (String): Designated active tracking website locked when user is on Free plan with multiple projects.
+- `activeProjectSelectedAt` (Date, Nullable): Timestamp when the active website was locked.
 
 ### 3.1 `Project` Collection
 - `projectId` (String, Unique, Index): Project identifier (e.g. `prj_abc123`).

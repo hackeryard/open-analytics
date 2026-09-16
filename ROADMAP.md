@@ -55,6 +55,8 @@ To build the most developer-friendly, high-performance, and visually stunning an
 - [x] Dedicated Billing & Subscription Management Hub (`/billing`).
 - [x] Developer Profile & Account Management Hub (`/profile`).
 - [x] Quota-based project creation modal blocking and proactive `LimitReachedModal` upgrade prompt.
+- [x] Expired plan multi-project active website selection with permanent lock on Free tier and live telemetry pausing (`/v1/collect`, `/v1/error`).
+- [x] Team member ceiling enforcement (max 2 members on Free tier) on projects inheriting expired plans.
 
 ---
 

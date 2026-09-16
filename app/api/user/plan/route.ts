@@ -49,6 +49,8 @@ export async function GET(req: NextRequest) {
       billingCycle: dbUser.billingCycle || "monthly",
       extraProjectsAllowed: dbUser.extraProjectsAllowed || 0,
       subscriptionStatus: dbUser.subscriptionStatus || "active",
+      lockedActiveProjectId: dbUser.lockedActiveProjectId || "",
+      activeProjectSelectedAt: dbUser.activeProjectSelectedAt || null,
       usage: {
         ownedProjects: ownedProjectsCount,
         maxProjects,
@@ -106,6 +108,13 @@ export async function PATCH(req: NextRequest) {
       dbUser.planExpiresAt = expires;
       dbUser.billingCycle = billingCycle;
       dbUser.subscriptionStatus = "active";
+      // UPGRADE UNLOCKS: Clear locked active project and reactivate all owned projects
+      dbUser.lockedActiveProjectId = "";
+      dbUser.activeProjectSelectedAt = null;
+      await (Project as any).updateMany(
+        { ownerId: user._id, monitoringStatus: "paused" },
+        { $set: { monitoringStatus: "active" } }
+      );
 
       if (typeof extraProjects === "number" && extraProjects >= 0) {
         dbUser.extraProjectsAllowed = extraProjects;

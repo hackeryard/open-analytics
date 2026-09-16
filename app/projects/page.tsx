@@ -360,7 +360,12 @@ export default function ProjectsDirectoryPage() {
                       <span>{p.dataStreams?.length || 1} Stream</span>
                     </div>
 
-                    {p.monitoringStatus === "active" ? (
+                    {p.monitoringStatus === "paused" ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-rose-500/10 border border-rose-500/20 text-rose-400 text-[10px] font-bold">
+                        <Lock size={10} className="text-rose-400" />
+                        <span>Paused (Free Plan)</span>
+                      </span>
+                    ) : p.monitoringStatus === "active" ? (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-glow" />
                         <span>Active</span>

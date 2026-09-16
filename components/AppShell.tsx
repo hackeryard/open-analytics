@@ -52,6 +52,7 @@ import { usePlatform } from "@/components/PlatformContext";
 import DateRangeNavigator from "@/components/DateRangeNavigator";
 import CreateProjectModal from "@/components/CreateProjectModal";
 import LimitReachedModal from "@/components/LimitReachedModal";
+import ActiveProjectSelectionModal from "@/components/ActiveProjectSelectionModal";
 import PublicNavbar from "@/components/public/PublicNavbar";
 import PublicFooter from "@/components/public/PublicFooter";
 import { isDashboardClient, getMainDomainUrl } from "@/lib/subdomain";
@@ -90,6 +91,10 @@ export default function AppShell({
     openCreateProject,
     ownedProjectsCount,
     maxAllowedProjects,
+    showActiveProjectModal,
+    setShowActiveProjectModal,
+    isPlanExpired,
+    requiresActiveProjectSelection,
     handleCreateProject,
     handleLogout,
   } = usePlatform();
@@ -776,6 +781,44 @@ export default function App() {
           </div>
         </header>
 
+        {/* Plan Expired / Paused Warning Banner */}
+        {isPlanExpired && ownedProjectsCount > 1 && (
+          <div className="bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-transparent border-b border-amber-500/25 px-4 py-2.5 sm:px-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 text-xs text-amber-200">
+            <div className="flex items-center gap-2 min-w-0">
+              <Lock size={15} className="text-amber-400 shrink-0" />
+              <div className="truncate">
+                <span className="font-bold text-white">Subscription Expired:</span>{" "}
+                {currentUser?.lockedActiveProjectId ? (
+                  <span>
+                    Only your locked active website is collecting live telemetry. Tracking on other properties is paused.
+                  </span>
+                ) : (
+                  <span>
+                    Your plan allows 1 active tracking website on the Free tier. Please select which website will remain active.
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              {!currentUser?.lockedActiveProjectId && (
+                <button
+                  onClick={() => setShowActiveProjectModal(true)}
+                  className="px-3 py-1 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-[11px] transition cursor-pointer"
+                >
+                  Choose Active Website
+                </button>
+              )}
+              <Link
+                href="/billing"
+                className="px-3 py-1 rounded-lg bg-white/[0.08] hover:bg-white/[0.15] text-white font-bold text-[11px] transition"
+              >
+                Renew Subscription
+              </Link>
+            </div>
+          </div>
+        )}
+
         {/* Page Content Viewport */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 min-w-0">
           {children}
@@ -1014,6 +1057,12 @@ export default function App() {
       <LimitReachedModal
         isOpen={showLimitModal}
         onClose={() => setShowLimitModal(false)}
+      />
+
+      {/* Active Project Selection Modal for Expired Multi-Project Users */}
+      <ActiveProjectSelectionModal
+        isOpen={showActiveProjectModal}
+        onClose={() => setShowActiveProjectModal(false)}
       />
     </div>
   );

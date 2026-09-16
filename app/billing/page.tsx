@@ -23,6 +23,7 @@ import {
   Bug,
   Flame,
   Bot,
+  Lock,
 } from "lucide-react";
 import { usePlatform } from "@/components/PlatformContext";
 import PlatformHeader from "@/components/PlatformHeader";
@@ -36,6 +37,8 @@ interface PlanDetails {
   billingCycle: "monthly" | "annual";
   extraProjectsAllowed: number;
   subscriptionStatus: string;
+  lockedActiveProjectId?: string;
+  activeProjectSelectedAt?: string | null;
   usage: {
     ownedProjects: number;
     maxProjects: number;
@@ -298,6 +301,25 @@ export default function BillingAndPlanPage() {
             </div>
             <span className="text-[11px] text-slate-500 font-mono">
               Billing cycle: {planData.billingCycle || "monthly"}
+            </span>
+          </div>
+        )}
+
+        {/* Locked Active Website on Expired / Free with Multi-projects */}
+        {planData?.lockedActiveProjectId && (
+          <div className="mt-4 p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-between gap-3 text-xs text-amber-200">
+            <div className="flex items-center gap-2">
+              <Lock size={15} className="text-amber-400 shrink-0" />
+              <div>
+                <span className="font-bold text-white">Active Tracking Website (Locked):</span>{" "}
+                <span className="font-mono text-cyan-300 font-bold">{planData.lockedActiveProjectId}</span>
+                <p className="text-[11px] text-slate-400 mt-0.5">
+                  Your Free Starter plan allows 1 active website. Once chosen, this active website cannot be switched until you upgrade to Cloud Pro.
+                </p>
+              </div>
+            </div>
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 uppercase font-bold shrink-0">
+              Locked
             </span>
           </div>
         )}

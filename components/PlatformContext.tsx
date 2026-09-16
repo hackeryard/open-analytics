@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import { AnalyticsData, PageViewItem } from "@/lib/analyticsTypes";
 import { isDashboardClient } from "@/lib/subdomain";
-import { getMaxAllowedProjects, getUserEffectivePlan } from "@/lib/planLimits";
+import { getMaxAllowedProjects, getUserEffectivePlan, isUserPlanExpired, isPlanActive } from "@/lib/planLimits";
 
 interface User {
   _id: string;
@@ -17,6 +17,8 @@ interface User {
   billingCycle?: "monthly" | "annual";
   extraProjectsAllowed?: number;
   isPlanActive?: boolean;
+  lockedActiveProjectId?: string;
+  activeProjectSelectedAt?: string | Date | null;
 }
 
 interface Project {
@@ -115,6 +117,13 @@ interface PlatformContextType {
   ownedProjectsCount: number;
   maxAllowedProjects: number;
   openCreateProject: () => void;
+  // Active Project Selection & Expiration
+  showActiveProjectModal: boolean;
+  setShowActiveProjectModal: (s: boolean) => void;
+  isPlanExpired: boolean;
+  requiresActiveProjectSelection: boolean;
+  selectActiveProject: (projectId: string) => Promise<{ success: boolean; error?: string }>;
+
   handleCreateProject: (name: string, domains: string) => Promise<{ success: boolean; error?: string }>;
   updateProjectPlan: (projectId: string, plan: "free" | "pro" | "enterprise") => Promise<boolean>;
   updateUserPlan: (plan: "free" | "pro" | "enterprise", billingCycle?: "monthly" | "annual", extraProjects?: number) => Promise<boolean>;
@@ -170,6 +179,7 @@ export function PlatformProvider({
 
   const [showNewProjectModal, setShowNewProjectModalState] = useState(false);
   const [showLimitModal, setShowLimitModal] = useState(false);
+  const [showActiveProjectModal, setShowActiveProjectModal] = useState(false);
 
   // Compute owned projects and user quota
   const ownedProjectsCount = useMemo(() => {
@@ -189,6 +199,29 @@ export function PlatformProvider({
     if (currentUser.role === "super_admin") return true;
     return ownedProjectsCount < maxAllowedProjects;
   }, [currentUser, ownedProjectsCount, maxAllowedProjects]);
+
+  // Plan expiration check: user was on Pro/Enterprise, but it is now expired
+  const isPlanExpired = useMemo(() => {
+    if (!currentUser) return false;
+    return isUserPlanExpired(currentUser);
+  }, [currentUser]);
+
+  // Requires active project selection: user is on Free / Expired plan, owns > 1 project, and has not locked an active project yet
+  const requiresActiveProjectSelection = useMemo(() => {
+    if (!currentUser) return false;
+    if (currentUser.role === "super_admin") return false;
+    const paidActive = isPlanActive(currentUser) && (currentUser.plan === "pro" || currentUser.plan === "enterprise");
+    if (paidActive) return false;
+    return ownedProjectsCount > 1 && !currentUser.lockedActiveProjectId;
+  }, [currentUser, ownedProjectsCount]);
+
+  // Auto-prompt selection if required
+  useEffect(() => {
+    if (authChecked && requiresActiveProjectSelection) {
+      setShowActiveProjectModal(true);
+    }
+  }, [authChecked, requiresActiveProjectSelection]);
+
 
   // Intercept modal open: if quota is exceeded, do NOT open create project modal
   const setShowNewProjectModal = useCallback(
@@ -321,6 +354,34 @@ export function PlatformProvider({
       if (savedRange) setTimeRangeState(savedRange);
     }
   }, [checkAuth]);
+
+  // Select Active Project handler
+  const selectActiveProject = useCallback(
+    async (projectId: string): Promise<{ success: boolean; error?: string }> => {
+      try {
+        const res = await fetch("/api/user/active-project", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ projectId }),
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          setCurrentUser((prev) =>
+            prev ? { ...prev, lockedActiveProjectId: projectId } : null
+          );
+          setShowActiveProjectModal(false);
+          setActiveProjectIdState(projectId);
+          await checkAuth();
+          return { success: true };
+        }
+        return { success: false, error: data.error || "Failed to select active project" };
+      } catch (err: any) {
+        console.error("Select active project error:", err);
+        return { success: false, error: err.message || "Network error" };
+      }
+    },
+    [checkAuth]
+  );
 
   // Fetch project analytics
   const fetchData = useCallback(
@@ -535,6 +596,11 @@ export function PlatformProvider({
         ownedProjectsCount,
         maxAllowedProjects,
         openCreateProject,
+        showActiveProjectModal,
+        setShowActiveProjectModal,
+        isPlanExpired,
+        requiresActiveProjectSelection,
+        selectActiveProject,
         handleCreateProject,
         updateUserPlan,
         handleLogout,

@@ -149,3 +149,76 @@ export function getProjectEffectivePlan(
   }
   return getUserEffectivePlan(ownerUser);
 }
+
+/**
+ * Checks if a user's subscription has expired and downgraded to Free Starter.
+ */
+export function isUserPlanExpired(user: {
+  plan?: string;
+  planExpiresAt?: string | Date | null;
+  subscriptionStatus?: string;
+  role?: string;
+}): boolean {
+  if (!user) return false;
+  if (user.role === "super_admin") return false;
+  const rawPlan = (user.plan || "free").toLowerCase();
+  if (rawPlan === "free") return false;
+  return !isPlanActive(user);
+}
+
+/**
+ * Checks if a project is allowed to ingest live hits when owner is on Free / Expired plan.
+ */
+export function isProjectIngestionAllowed(
+  project: { projectId: string; monitoringStatus?: string },
+  ownerUser: {
+    plan?: string;
+    planExpiresAt?: string | Date | null;
+    subscriptionStatus?: string;
+    role?: string;
+    lockedActiveProjectId?: string;
+  } | null | undefined,
+  ownedProjectsCount: number = 1
+): { allowed: boolean; reason?: string } {
+  if (!ownerUser) return { allowed: true };
+  if (ownerUser.role === "super_admin") return { allowed: true };
+
+  const active = isPlanActive(ownerUser);
+  if (active && (ownerUser.plan === "pro" || ownerUser.plan === "enterprise")) {
+    // Pro/Enterprise active: all owned projects ingest as long as not manually paused
+    if (project.monitoringStatus === "paused") {
+      return { allowed: false, reason: "Project monitoring manually paused" };
+    }
+    return { allowed: true };
+  }
+
+  // Free or Expired: strictly 1 project allowed
+  if (ownedProjectsCount <= 1) {
+    if (project.monitoringStatus === "paused") {
+      return { allowed: false, reason: "Project monitoring paused" };
+    }
+    return { allowed: true };
+  }
+
+  // Multi-project on Free/Expired: only the locked active project may ingest
+  if (ownerUser.lockedActiveProjectId) {
+    if (project.projectId === ownerUser.lockedActiveProjectId) {
+      return { allowed: true };
+    }
+    return {
+      allowed: false,
+      reason: "Project monitoring paused on Free plan. Upgrade subscription to track multiple websites.",
+    };
+  }
+
+  // If no project has been locked yet, project must be active
+  if (project.monitoringStatus === "paused") {
+    return {
+      allowed: false,
+      reason: "Project tracking paused pending active project selection",
+    };
+  }
+
+  return { allowed: true };
+}
+

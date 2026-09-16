@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
 
     const projects = await (Project as any)
       .find(projectsQuery)
-      .populate("ownerId", "name email plan planExpiresAt subscriptionStatus role extraProjectsAllowed")
+      .populate("ownerId", "name email plan planExpiresAt subscriptionStatus role extraProjectsAllowed lockedActiveProjectId")
       .select("-secretKey")
       .sort({ createdAt: -1 })
       .lean();
@@ -55,6 +55,14 @@ export async function GET(req: NextRequest) {
           publishableKey: p.publishableKey,
           plan: effectivePlan,
           effectivePlan,
+          monitoringStatus: p.monitoringStatus || "active",
+          timezone: p.timezone,
+          currency: p.currency,
+          industryCategory: p.industryCategory,
+          businessSize: p.businessSize,
+          websiteUrl: p.websiteUrl,
+          dataStreams: p.dataStreams || [],
+          measurementId: p.measurementId,
           ownerEmail: p.ownerId?.email || "",
           isOwner,
           role: (() => {

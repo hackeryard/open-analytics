@@ -1294,6 +1294,14 @@ export default function SettingsPage() {
                 </div>
               </div>
 
+              {/* Plan Member Limit Notice */}
+              <div className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-center justify-between text-xs">
+                <span className="text-slate-400">Team Collaborators Allocated:</span>
+                <span className="font-mono font-bold text-white">
+                  {members.length} / {project.effectivePlan === "enterprise" ? "Unlimited" : project.effectivePlan === "pro" ? "10" : "2"} members
+                </span>
+              </div>
+
               {/* Add Member Form */}
               <form onSubmit={handleInviteMember} className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] space-y-3">
                 <div className="text-xs font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">

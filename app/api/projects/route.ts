@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
 
     const projectsRaw = await (Project as any)
       .find(query)
-      .populate("ownerId", "name email plan planExpiresAt subscriptionStatus role extraProjectsAllowed")
+      .populate("ownerId", "name email plan planExpiresAt subscriptionStatus role extraProjectsAllowed lockedActiveProjectId")
       .select("-secretKey")
       .sort({ createdAt: -1 })
       .lean();
