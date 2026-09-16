@@ -2,6 +2,15 @@
 
 All notable changes to the Open Analytics platform are documented in this file.
 
+## [3.1.3] - 2026-09-16
+
+### Fixed
+- **React Hook Order Violation in CreateProjectModal**:
+  - Resolved Minified React Error #310 ("Rendered more hooks than during the previous render") when opening the "+ Create Project" wizard modal.
+  - Relocated premature `if (!isOpen) return null;` guard to right before the JSX `return` statement, ensuring all `useState` and `useEffect` hooks run unconditionally in every render pass.
+
+---
+
 ## [3.1.2] - 2026-09-16
 
 ### Added

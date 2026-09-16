@@ -154,8 +154,6 @@ export default function CreateProjectModal({ isOpen, onClose, onProjectCreated }
   const [pingVerified, setPingVerified] = useState(false);
   const [pingLatency, setPingLatency] = useState<number | null>(null);
 
-  if (!isOpen) return null;
-
   const toggleObjective = (id: string) => {
     setSelectedObjectives((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
@@ -378,6 +376,8 @@ export default function App() {
   }'`,
     },
   };
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
