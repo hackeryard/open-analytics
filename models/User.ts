@@ -77,6 +77,18 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    razorpayCustomerId: {
+      type: String,
+      default: "",
+    },
+    razorpayPaymentId: {
+      type: String,
+      default: "",
+    },
+    razorpayOrderId: {
+      type: String,
+      default: "",
+    },
     lockedActiveProjectId: {
       type: String,
       default: "",

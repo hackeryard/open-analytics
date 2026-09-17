@@ -47,6 +47,7 @@ import {
   CreditCard,
   User,
   Lock,
+  ShieldAlert,
 } from "lucide-react";
 import { usePlatform } from "@/components/PlatformContext";
 import DateRangeNavigator from "@/components/DateRangeNavigator";
@@ -239,6 +240,16 @@ export default function AppShell({
           label: "Developer Profile",
           icon: User,
         },
+        ...(currentUser?.role === "admin" || currentUser?.role === "super_admin"
+          ? [
+              {
+                href: "/admin/subscriptions",
+                label: "Subscription Requests",
+                icon: ShieldAlert,
+                badge: "Admin",
+              },
+            ]
+          : []),
       ],
     },
     {

@@ -58,16 +58,33 @@ To build the most developer-friendly, high-performance, and visually stunning an
 - [x] Expired plan multi-project active website selection with permanent lock on Free tier and live telemetry pausing (`/v1/collect`, `/v1/error`).
 - [x] Team member ceiling enforcement (max 2 members on Free tier) on projects inheriting expired plans.
 
+### Phase 8: Razorpay Payment Gateway & Checkout Pipeline (Completed)
+- [x] End-to-end Razorpay Standard Checkout SDK integration on `/billing` dashboard page.
+- [x] Support for UPI (Google Pay, PhonePe, Paytm, BHIM, QR code), netbanking, domestic and international cards.
+- [x] Cryptographic Razorpay Order creation API (`POST /api/billing/razorpay/order`).
+- [x] HMAC SHA-256 signature verification and automated plan activation (`POST /api/billing/razorpay/verify`).
+- [x] Asynchronous background webhook reconciliation for `payment.captured` and `order.paid` (`POST /api/billing/razorpay/webhook`).
+- [x] Interactive Monthly vs. Annual subscription cycle selector with 2-months-free discount tiering.
+- [x] Automatic unlocking of project slots (10 websites included) and reactivation of paused project telemetry upon successful upgrade.
+
+### Phase 9: Temporary Provider-Independent Subscription System (Completed)
+- [x] Decoupled `PaymentProvider` abstraction layer (`ManualPaymentProvider`, `RazorpayPaymentProvider`).
+- [x] Standalone subscription schema models (`SubscriptionPlan`, `SubscriptionRequest`, `Subscription`, `Payment`, `SubscriptionAuditLog`).
+- [x] Dynamic plan seeding and server-side authority (`getUserActiveSubscription`, `hasActiveSubscription`).
+- [x] User-side "Request Subscription" workflow with offline payment notice and live status tracker on `/billing`.
+- [x] Downgrade confirmation dialog protecting against accidental plan downgrades.
+- [x] Administrator review and verification hub (`/admin/subscriptions`) with audit logging.
+
 ---
 
 ## Active & Upcoming Milestones
 
-### Phase 8: Conversion Funnels & Goal Tracking (In Progress)
+### Phase 10: Conversion Funnels & Goal Tracking (In Progress)
 - [ ] Visual multi-step conversion funnel builder with drop-off percentage calculations.
 - [ ] Goal conversion tracking linked to custom business events and revenue attribution.
 - [ ] A/B test variant tracking and statistical significance indicators.
 
-### Phase 7: Automated Alerting & Webhook Notifications (Q4 2026)
+### Phase 11: Automated Alerting & Webhook Notifications (Q4 2026)
 - [ ] Real-time incident alerts via Slack, Discord, and Telegram webhooks.
 - [ ] Custom threshold triggers (e.g., Error rate spikes > 5%, Traffic drops > 30%, LCP degradation > 3.5s).
 - [ ] Daily/Weekly executive summary email reports.

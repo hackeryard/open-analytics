@@ -131,35 +131,20 @@ export default function ProFeatureGate({
 
         {/* Upgrade Actions */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-          <button
-            onClick={handleQuickUpgrade}
-            disabled={upgrading}
-            className="w-full sm:w-auto py-3 px-6 rounded-xl bg-gradient-to-r from-amber-400 via-cyan-400 to-indigo-500 hover:from-amber-300 hover:to-cyan-300 text-slate-950 font-extrabold text-xs transition-all shadow-xl shadow-cyan-500/20 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+          <Link
+            href="/billing"
+            className="w-full sm:w-auto py-3 px-6 rounded-xl bg-gradient-to-r from-amber-400 via-cyan-400 to-indigo-500 hover:from-amber-300 hover:to-cyan-300 text-slate-950 font-extrabold text-xs transition-all shadow-xl shadow-cyan-500/20 flex items-center justify-center gap-2 cursor-pointer"
           >
-            {upgrading ? (
-              <>
-                <RefreshCw className="w-4 h-4 animate-spin text-slate-950" />
-                <span>Upgrading Project...</span>
-              </>
-            ) : upgradeSuccess ? (
-              <>
-                <Check className="w-4 h-4 text-slate-950" />
-                <span>Upgraded to Pro!</span>
-              </>
-            ) : (
-              <>
-                <Zap className="w-4 h-4 fill-current" />
-                <span>Upgrade to Pro — $19/mo (Unlock Instantly)</span>
-              </>
-            )}
-          </button>
+            <Crown className="w-4 h-4 text-slate-950" />
+            <span>Request Cloud Pro Access</span>
+          </Link>
 
           <Link
-            href="/pricing"
+            href="/billing"
             className="w-full sm:w-auto py-3 px-5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-300 font-semibold text-xs transition-colors border border-slate-700 flex items-center justify-center gap-1.5"
           >
-            <span>Compare Plans</span>
-            <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
+            <span>Compare Plans & Limits</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
