@@ -2,7 +2,44 @@
 
 All notable changes to the Open Analytics platform are documented in this file.
 
-## [3.2.0] - 2026-09-16
+## [3.4.0] - 2026-09-17
+
+### Added
+- **Temporary Provider-Independent Subscription System**:
+  - Implemented decoupled subscription system to enable production launch while payment gateway PAN / KYC updates (Minor to Major) are being processed.
+  - **Decoupled Architecture**: `PaymentProvider` abstraction layer with `ManualPaymentProvider` and pluggable `RazorpayPaymentProvider` (switchable via `PAYMENT_PROVIDER=manual` with zero database or business logic changes needed later).
+  - **New Domain Data Models**:
+    - `SubscriptionPlan`: Seeded plan catalog (`pro-monthly`, `pro-annual`, `enterprise-monthly`, `enterprise-annual`) with INR pricing, limits, and features.
+    - `SubscriptionRequest`: User-submitted intent to upgrade (`requested`, `contacted`, `payment_pending`, `completed`, `rejected`, `cancelled`).
+    - `Subscription`: Paid access duration (`startDate`, `endDate`, `status`, generic `paymentProvider`).
+    - `Payment`: Verified offline/manual payment record linked to request and subscription.
+    - `SubscriptionAuditLog`: Immutable audit trail for all admin actions and subscription lifecycle events.
+  - **User Billing & Request Experience (`/billing`)**:
+    - "Request Subscription" modal with transparent notice explaining offline payment verification.
+    - Live request status banner with real-time state tracking and instant user cancellation option.
+    - Downgrade confirmation dialog protecting users from accidental plan downgrades.
+  - **Administrator Subscription Management Hub (`/admin/subscriptions`)**:
+    - Comprehensive dashboard for reviewing subscription requests, updating progress (`contacted`, `payment_pending`), and inspecting user notes.
+    - Manual verification modal allowing admins to record verified payment details (amount, currency, notes, reference ID) and atomically activate user subscriptions.
+    - Lazy expiration handling, automatic project unpausing, and audit logging.
+  - **Strict Constraint Adherence**:
+    - 100% Zero-Emoji compliant across all UI components, status pills, and audit logs.
+    - 3-tier domain isolation verified.
+
+---
+
+## [3.3.0] - 2026-09-16
+
+### Added
+- **Razorpay Payment Gateway Integration**:
+  - Implemented complete subscription billing pipeline supporting domestic Indian payment methods (UPI apps: Google Pay, PhonePe, Paytm, BHIM, QR code; netbanking, domestic debit/credit cards) as well as international cards.
+  - Deployed `POST /api/billing/razorpay/order`: Authenticated endpoint generating cryptographic Razorpay orders with metadata notes (`userId`, `plan`, `billingCycle`).
+  - Deployed `POST /api/billing/razorpay/verify`: Cryptographically validates HMAC SHA-256 signatures (`order_id + "|" + payment_id`) using Key Secret and instantly unlocks subscription tier, lifts Free plan locked project limits, and reactivates paused monitoring streams.
+  - Deployed `POST /api/billing/razorpay/webhook`: Asynchronous webhook handler for `payment.captured` and `order.paid` with timing-safe signature verification to guarantee zero plan attribution loss if visitors exit checkout early.
+  - Integrated Razorpay Standard Checkout SDK (`https://checkout.razorpay.com/v1/checkout.js`) on `/billing` dashboard page with interactive Monthly/Annual cycle selector (2 months free discount).
+  - Extended `User` model with `razorpayCustomerId`, `razorpayPaymentId`, and `razorpayOrderId`.
+  - Added development mode mock fallback allowing local testing and building before API keys are populated.
+
 
 ### Added
 - **Full SEO, GEO, and AEO Optimization on Main Marketing Domain**:

@@ -24,6 +24,11 @@ import {
   Flame,
   Bot,
   Lock,
+  X,
+  AlertTriangle,
+  Mail,
+  Info,
+  MessageSquare,
 } from "lucide-react";
 import { usePlatform } from "@/components/PlatformContext";
 import PlatformHeader from "@/components/PlatformHeader";
@@ -59,11 +64,57 @@ interface PlanDetails {
 }
 
 export default function BillingAndPlanPage() {
-  const { currentUser, updateUserPlan, projects } = usePlatform();
+  const { currentUser, updateUserPlan, projects, checkAuth } = usePlatform();
   const [planData, setPlanData] = useState<PlanDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [updatingPlan, setUpdatingPlan] = useState<string | null>(null);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
+  const [selectedCycle, setSelectedCycle] = useState<"monthly" | "annual">("monthly");
+
+  // Confirmation Modals State
+  const [pendingUpgrade, setPendingUpgrade] = useState<{
+    plan: "pro" | "enterprise";
+    cycle: "monthly" | "annual";
+  } | null>(null);
+  const [showDowngradeModal, setShowDowngradeModal] = useState(false);
+
+  // Load Razorpay Standard Checkout script dynamically
+  useEffect(() => {
+    const scriptId = "razorpay-checkout-script";
+    if (!document.getElementById(scriptId)) {
+      const script = document.createElement("script");
+      script.id = scriptId;
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  }, []);
+
+  // Subscription Request State
+  const [subscriptionStatusData, setSubscriptionStatusData] = useState<{
+    hasActiveSubscription: boolean;
+    subscription: any;
+    pendingRequest: any;
+    latestRequest: any;
+    payments: any[];
+  } | null>(null);
+
+  const [requestMessage, setRequestMessage] = useState("");
+  const [submittingRequest, setSubmittingRequest] = useState(false);
+  const [cancellingRequestId, setCancellingRequestId] = useState<string | null>(null);
+
+  const fetchSubscriptionStatus = async () => {
+    try {
+      const res = await fetch("/api/subscription/me");
+      if (res.ok) {
+        const d = await res.json();
+        setSubscriptionStatusData(d);
+      }
+    } catch (e) {
+      console.error("Failed to load subscription status:", e);
+    }
+  };
 
   const fetchPlanDetails = async () => {
     try {
@@ -72,7 +123,11 @@ export default function BillingAndPlanPage() {
       if (res.ok) {
         const d = await res.json();
         setPlanData(d);
+        if (d.billingCycle) {
+          setSelectedCycle(d.billingCycle);
+        }
       }
+      await fetchSubscriptionStatus();
     } catch (e) {
       console.error("Failed to load plan details:", e);
     } finally {
@@ -84,18 +139,17 @@ export default function BillingAndPlanPage() {
     fetchPlanDetails();
   }, []);
 
-  const handleSelectPlan = async (
-    targetPlan: "free" | "pro" | "enterprise",
-    cycle: "monthly" | "annual" = "monthly"
-  ) => {
-    setUpdatingPlan(targetPlan);
+  // Downgrade handler executed after user confirms in the modal
+  const handleConfirmDowngrade = async () => {
+    setShowDowngradeModal(false);
+    setUpdatingPlan("free");
     setMessage(null);
     try {
-      const ok = await updateUserPlan(targetPlan, cycle);
+      const ok = await updateUserPlan("free", "monthly");
       if (ok) {
         setMessage({
           type: "success",
-          text: `Successfully upgraded account to ${targetPlan.toUpperCase()}! Your projects now inherit this plan.`,
+          text: "Successfully switched account to Free Starter tier.",
         });
         await fetchPlanDetails();
       } else {
@@ -111,12 +165,85 @@ export default function BillingAndPlanPage() {
     }
   };
 
+  // Submit Subscription Request (Temporary launch mode while online checkout is disabled)
+  const handleSubmitSubscriptionRequest = async () => {
+    if (!pendingUpgrade) return;
+    const planId = `${pendingUpgrade.plan}-${pendingUpgrade.cycle}`;
+    setSubmittingRequest(true);
+    setMessage(null);
+
+    try {
+      const res = await fetch("/api/subscription/requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          planId,
+          message: requestMessage,
+        }),
+      });
+
+      const d = await res.json();
+      if (!res.ok || !d.success) {
+        throw new Error(d.error || "Failed to submit subscription request.");
+      }
+
+      setPendingUpgrade(null);
+      setRequestMessage("");
+      setMessage({
+        type: "success",
+        text: d.isExisting
+          ? "You already have a subscription request pending review. We will reach out shortly."
+          : `Subscription request for ${pendingUpgrade.plan.toUpperCase()} submitted! Our team will contact you with next steps.`,
+      });
+      await fetchPlanDetails();
+    } catch (err: any) {
+      setMessage({ type: "error", text: err.message || "Failed to submit request." });
+    } finally {
+      setSubmittingRequest(false);
+    }
+  };
+
+  // Cancel an existing pending request
+  const handleCancelRequest = async (requestId: string) => {
+    setCancellingRequestId(requestId);
+    try {
+      const res = await fetch(`/api/subscription/requests/${requestId}/cancel`, {
+        method: "POST",
+      });
+      const d = await res.json();
+      if (res.ok && d.success) {
+        setMessage({
+          type: "success",
+          text: "Subscription request has been cancelled.",
+        });
+        await fetchPlanDetails();
+      } else {
+        throw new Error(d.error || "Failed to cancel request.");
+      }
+    } catch (err: any) {
+      setMessage({ type: "error", text: err.message || "Failed to cancel request." });
+    } finally {
+      setCancellingRequestId(null);
+    }
+  };
+
+  const handleSelectPlan = (
+    targetPlan: "free" | "pro" | "enterprise",
+    cycle: "monthly" | "annual" = selectedCycle
+  ) => {
+    if (targetPlan === "free") {
+      setShowDowngradeModal(true);
+      return;
+    }
+    setPendingUpgrade({ plan: targetPlan, cycle });
+  };
+
   const effectivePlan = planData?.effectivePlan || currentUser?.effectivePlan || currentUser?.plan || "free";
   const isPro = effectivePlan === "pro";
   const isEnterprise = effectivePlan === "enterprise";
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto pb-16 animate-fadeIn">
+    <div className="space-y-6 sm:space-y-8 w-full max-w-6xl mx-auto pb-16 px-1 sm:px-0 animate-fadeIn min-w-0">
       <PlatformHeader
         title="Subscription & Billing"
         subtitle="Manage your account-level subscription, website limits, team allocations, and Pro feature entitlements."
@@ -144,12 +271,12 @@ export default function BillingAndPlanPage() {
       )}
 
       {/* Active Subscription Overview Card */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-[#0c1222] via-[#090d1a] to-[#060811] border border-white/[0.08] shadow-2xl relative overflow-hidden">
+      <div className="p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#0c1222] via-[#090d1a] to-[#060811] border border-white/[0.08] shadow-2xl relative overflow-hidden">
         <div className="absolute top-0 right-0 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none -z-10" />
 
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-white/[0.08]">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6 pb-6 border-b border-white/[0.08]">
           <div className="space-y-2">
-            <div className="flex items-center gap-2.5">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="text-xs font-mono uppercase tracking-wider text-slate-400">Current Plan</span>
               <span
                 className={`text-xs font-black uppercase px-3 py-0.5 rounded-full tracking-wider ${
@@ -170,7 +297,7 @@ export default function BillingAndPlanPage() {
               )}
             </div>
 
-            <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-white tracking-tight">
               {effectivePlan === "enterprise"
                 ? "Enterprise Scale Infrastructure"
                 : isPro
@@ -178,25 +305,25 @@ export default function BillingAndPlanPage() {
                 : "Free Starter Account"}
             </h2>
 
-            <p className="text-xs sm:text-sm text-slate-400 max-w-2xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-400 max-w-2xl leading-relaxed break-words">
               Subscriptions are assigned directly to your user profile (
               <span className="text-cyan-300 font-medium">{currentUser?.email}</span>). All workspaces you own
               automatically inherit your tier capabilities.
             </p>
           </div>
 
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap shrink-0">
             <button
               onClick={fetchPlanDetails}
               disabled={loading}
-              className="p-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-slate-300 hover:text-white transition disabled:opacity-50 cursor-pointer"
+              className="p-2 sm:p-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-slate-300 hover:text-white transition disabled:opacity-50 cursor-pointer"
               title="Refresh Plan Details"
             >
               <RefreshCw size={15} className={loading ? "animate-spin text-cyan-400" : ""} />
             </button>
             <Link
               href="/projects"
-              className="px-4 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] text-white text-xs font-bold transition flex items-center gap-1.5 border border-white/[0.08]"
+              className="px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] text-white text-xs font-bold transition flex items-center gap-1.5 border border-white/[0.08]"
             >
               <Layers size={14} className="text-cyan-400" />
               <span>View Projects ({planData?.usage?.ownedProjects || projects?.length || 0})</span>
@@ -323,18 +450,97 @@ export default function BillingAndPlanPage() {
             </span>
           </div>
         )}
+
+        {/* Live Pending Subscription Request Banner */}
+        {subscriptionStatusData?.pendingRequest && (
+          <div className="mt-4 p-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">
+            <div className="flex items-start gap-3">
+              <div className="p-2 rounded-xl bg-cyan-500/20 text-cyan-300 shrink-0 mt-0.5 sm:mt-0">
+                <Clock size={16} />
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-white">
+                    Subscription Request: {subscriptionStatusData.pendingRequest.planName}
+                  </span>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold font-mono uppercase bg-cyan-400/20 text-cyan-300 border border-cyan-400/30">
+                    {subscriptionStatusData.pendingRequest.status === "payment_pending"
+                      ? "Awaiting Payment Verification"
+                      : subscriptionStatusData.pendingRequest.status === "contacted"
+                      ? "Team Contacted"
+                      : "Under Review"}
+                  </span>
+                </div>
+                <p className="text-slate-300 text-[11px] leading-relaxed">
+                  {subscriptionStatusData.pendingRequest.status === "payment_pending"
+                    ? "Our team has reviewed your request. Once your verified payment is confirmed, your subscription will be activated automatically."
+                    : subscriptionStatusData.pendingRequest.status === "contacted"
+                    ? "Our team has reached out via email regarding your subscription setup and payment steps."
+                    : "Your subscription request has been received. An administrator will contact you with next steps."}
+                </p>
+                <div className="text-[10px] text-slate-400">
+                  Submitted: {new Date(subscriptionStatusData.pendingRequest.createdAt).toLocaleString()} • Amount: ₹{subscriptionStatusData.pendingRequest.price.toLocaleString()}
+                </div>
+              </div>
+            </div>
+            <button
+              onClick={() => handleCancelRequest(subscriptionStatusData.pendingRequest._id)}
+              disabled={cancellingRequestId !== null}
+              className="px-3 py-1.5 rounded-xl bg-white/[0.05] hover:bg-rose-500/20 hover:text-rose-300 border border-white/[0.1] hover:border-rose-500/30 text-slate-400 text-[11px] font-semibold transition cursor-pointer self-start sm:self-center shrink-0"
+            >
+              {cancellingRequestId ? "Cancelling..." : "Cancel Request"}
+            </button>
+          </div>
+        )}
+
+        {/* Temporary Launch Notice: Online Checkout Offline */}
+        <div className="mt-4 p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.08] flex items-center gap-3 text-xs text-slate-300">
+          <Info size={16} className="text-cyan-400 shrink-0" />
+          <p className="text-[11px] text-slate-400 leading-relaxed">
+            <strong className="text-white font-medium">Notice on Online Checkout:</strong> Automated payment gateway integration is currently completing final regulatory compliance verification. You can submit a <strong>Subscription Request</strong> to receive immediate manual review and activation.
+          </p>
+        </div>
       </div>
 
       {/* Subscription Tier Cards */}
-      <div className="space-y-4">
-        <div>
-          <h3 className="text-lg font-black text-white tracking-tight flex items-center gap-2">
-            <Crown size={18} className="text-amber-400" />
-            Available Subscription Plans
-          </h3>
-          <p className="text-xs text-slate-400">
-            Switch your user subscription at any time. Features and project limits take effect immediately.
-          </p>
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h3 className="text-lg font-black text-white tracking-tight flex items-center gap-2">
+              <Crown size={18} className="text-amber-400" />
+              Available Subscription Plans
+            </h3>
+            <p className="text-xs text-slate-400">
+              Switch your user subscription at any time via Razorpay (UPI, Netbanking, Cards). Features and limits take effect immediately.
+            </p>
+          </div>
+
+          {/* Billing Cycle Toggle */}
+          <div className="flex items-center gap-2 bg-white/[0.04] p-1 rounded-2xl border border-white/[0.08] self-start sm:self-auto">
+            <button
+              onClick={() => setSelectedCycle("monthly")}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${
+                selectedCycle === "monthly"
+                  ? "bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setSelectedCycle("annual")}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                selectedCycle === "annual"
+                  ? "bg-gradient-to-r from-amber-400 to-cyan-400 text-slate-950 shadow-md"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <span>Annual</span>
+              <span className="text-[10px] font-black px-1.5 py-0.2 bg-slate-950 text-amber-300 rounded-md">
+                2 Mo Free
+              </span>
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
@@ -358,7 +564,7 @@ export default function BillingAndPlanPage() {
 
               <div>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-black text-white">$0</span>
+                  <span className="text-3xl font-black text-white">₹0</span>
                   <span className="text-xs text-slate-400">/ month</span>
                 </div>
                 <p className="text-xs text-slate-400 mt-1">
@@ -437,8 +643,12 @@ export default function BillingAndPlanPage() {
 
               <div>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-black text-white">$19</span>
-                  <span className="text-xs text-slate-400">/ month</span>
+                  <span className="text-3xl font-black text-white">
+                    {selectedCycle === "annual" ? "₹14,999" : "₹1,499"}
+                  </span>
+                  <span className="text-xs text-slate-400">
+                    / {selectedCycle === "annual" ? "year" : "month"}
+                  </span>
                 </div>
                 <p className="text-xs text-slate-400 mt-1">
                   Advanced observability, AI search crawler radar, and real user Core Web Vitals.
@@ -489,14 +699,24 @@ export default function BillingAndPlanPage() {
                 >
                   Active Plan
                 </button>
+              ) : subscriptionStatusData?.pendingRequest?.planId?.startsWith("pro") ? (
+                <button
+                  disabled
+                  className="w-full py-3 px-3 rounded-xl bg-amber-500/10 text-amber-300 border border-amber-500/30 text-xs font-bold cursor-default flex items-center justify-center gap-1.5"
+                >
+                  <Clock size={14} className="shrink-0 animate-pulse" />
+                  <span>Request Pending Review</span>
+                </button>
               ) : (
                 <button
-                  onClick={() => handleSelectPlan("pro")}
-                  disabled={updatingPlan !== null}
-                  className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-cyan-400 to-indigo-500 hover:from-amber-300 hover:to-cyan-300 text-slate-950 text-xs font-black shadow-lg shadow-cyan-500/20 transition cursor-pointer flex items-center justify-center gap-1.5"
+                  onClick={() => handleSelectPlan("pro", selectedCycle)}
+                  disabled={updatingPlan !== null || Boolean(subscriptionStatusData?.pendingRequest)}
+                  className="w-full py-3 px-3 rounded-xl bg-gradient-to-r from-amber-400 via-cyan-400 to-indigo-500 hover:from-amber-300 hover:to-cyan-300 disabled:opacity-50 disabled:cursor-not-allowed text-slate-950 text-xs font-black shadow-lg shadow-cyan-500/20 transition cursor-pointer flex items-center justify-center gap-1.5 text-center"
                 >
-                  <Zap size={14} className="fill-current" />
-                  <span>{updatingPlan === "pro" ? "Upgrading..." : "Upgrade to Pro ($19/mo)"}</span>
+                  <Mail size={14} className="shrink-0" />
+                  <span className="truncate">
+                    Request Cloud Pro ({selectedCycle === "annual" ? "₹14,999/yr" : "₹1,499/mo"})
+                  </span>
                 </button>
               )}
             </div>
@@ -522,8 +742,12 @@ export default function BillingAndPlanPage() {
 
               <div>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-black text-white">$49</span>
-                  <span className="text-xs text-slate-400">/ month</span>
+                  <span className="text-3xl font-black text-white">
+                    {selectedCycle === "annual" ? "₹79,990" : "₹7,999"}
+                  </span>
+                  <span className="text-xs text-slate-400">
+                    / {selectedCycle === "annual" ? "year" : "month"}
+                  </span>
                 </div>
                 <p className="text-xs text-slate-400 mt-1">
                   High-throughput telemetry for organizations with multiple brands and scaling traffic.
@@ -533,7 +757,7 @@ export default function BillingAndPlanPage() {
               <div className="pt-3 border-t border-white/[0.06] space-y-2.5 text-xs text-slate-300">
                 <div className="flex items-center gap-2 font-semibold text-white">
                   <CheckCircle2 size={14} className="text-violet-400 shrink-0" />
-                  <span><strong>10 Websites Base + $10/mo Extra</strong></span>
+                  <span><strong>10 Websites Base + Additional Capacity</strong></span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 size={14} className="text-violet-400 shrink-0" />
@@ -566,13 +790,24 @@ export default function BillingAndPlanPage() {
                 >
                   Active Plan
                 </button>
+              ) : subscriptionStatusData?.pendingRequest?.planId?.startsWith("enterprise") ? (
+                <button
+                  disabled
+                  className="w-full py-3 px-3 rounded-xl bg-violet-500/10 text-violet-300 border border-violet-500/30 text-xs font-bold cursor-default flex items-center justify-center gap-1.5"
+                >
+                  <Clock size={14} className="shrink-0 animate-pulse" />
+                  <span>Request Pending Review</span>
+                </button>
               ) : (
                 <button
-                  onClick={() => handleSelectPlan("enterprise")}
-                  disabled={updatingPlan !== null}
-                  className="w-full py-2.5 rounded-xl bg-gradient-to-r from-violet-500 to-indigo-600 hover:from-violet-400 hover:to-indigo-500 text-white text-xs font-bold transition shadow-md shadow-violet-500/20 cursor-pointer"
+                  onClick={() => handleSelectPlan("enterprise", selectedCycle)}
+                  disabled={updatingPlan !== null || Boolean(subscriptionStatusData?.pendingRequest)}
+                  className="w-full py-3 px-3 rounded-xl bg-gradient-to-r from-violet-500 to-indigo-600 hover:from-violet-400 hover:to-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-bold transition shadow-md shadow-violet-500/20 cursor-pointer flex items-center justify-center gap-1.5 text-center"
                 >
-                  {updatingPlan === "enterprise" ? "Activating..." : "Select Enterprise ($49/mo)"}
+                  <Mail size={14} className="shrink-0" />
+                  <span className="truncate">
+                    Request Enterprise ({selectedCycle === "annual" ? "₹79,990/yr" : "₹7,999/mo"})
+                  </span>
                 </button>
               )}
             </div>
@@ -661,6 +896,203 @@ export default function BillingAndPlanPage() {
           </table>
         </div>
       </div>
+
+      {/* UPGRADE CONFIRMATION MODAL */}
+      {pendingUpgrade && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-fadeIn overflow-y-auto">
+          <div className="bg-[#0c1222] border border-cyan-500/30 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl shadow-cyan-500/10 space-y-4 sm:space-y-6 relative">
+            <div className="absolute top-0 right-0 w-48 h-48 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none -z-10" />
+
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 sm:p-3 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 shrink-0">
+                  <Crown size={22} />
+                </div>
+                <div>
+                  <h3 className="text-base sm:text-lg font-black text-white">
+                    Upgrade to {pendingUpgrade.plan === "enterprise" ? "Enterprise" : "Cloud Pro"}
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    {pendingUpgrade.cycle === "annual" ? "Annual Billing (2 Months Free)" : "Monthly Flexible Billing"}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setPendingUpgrade(null)}
+                className="p-1.5 rounded-xl hover:bg-white/[0.08] text-slate-400 hover:text-white transition cursor-pointer shrink-0"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Plan Price & Details Summary */}
+            <div className="p-3.5 sm:p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] space-y-3">
+              <div className="flex items-baseline justify-between gap-2">
+                <span className="text-xs text-slate-400">Total Investment:</span>
+                <div className="text-right">
+                  <span className="text-xl sm:text-2xl font-black text-white">
+                    {pendingUpgrade.plan === "enterprise"
+                      ? pendingUpgrade.cycle === "annual"
+                        ? "₹79,990"
+                        : "₹7,999"
+                      : pendingUpgrade.cycle === "annual"
+                      ? "₹14,999"
+                      : "₹1,499"}
+                  </span>
+                  <span className="text-xs text-slate-400 ml-1">
+                    /{pendingUpgrade.cycle === "annual" ? "year" : "month"}
+                  </span>
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-white/[0.06] space-y-2 text-xs text-slate-300">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 size={14} className="text-cyan-400 shrink-0" />
+                  <span>
+                    <strong>
+                      {pendingUpgrade.plan === "enterprise" ? "10 Base Websites + Add-ons" : "10 Tracked Websites Included"}
+                    </strong>
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 size={14} className="text-cyan-400 shrink-0" />
+                  <span>
+                    {pendingUpgrade.plan === "enterprise"
+                      ? "1,000,000 events / mo per project"
+                      : "250,000 events / mo per project"}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 size={14} className="text-cyan-400 shrink-0" />
+                  <span>Full 365-day historical data retention</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 size={14} className="text-cyan-400 shrink-0" />
+                  <span>All 5 Power Modules (Core Web Vitals, AI Radar, Rage Clicks, Crash Triage)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 size={14} className="text-cyan-400 shrink-0" />
+                  <span>Reactivates any paused projects & unlocks single website restrictions</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 space-y-1.5 text-xs text-amber-200">
+              <div className="flex items-center gap-2 font-bold text-white">
+                <Info size={15} className="text-amber-400 shrink-0" />
+                <span>Online payments are temporarily unavailable</span>
+              </div>
+              <p className="text-[11px] text-slate-300 leading-relaxed">
+                We are currently completing our secure payment gateway verification. Submit a subscription request below and our team will contact you directly with manual payment instructions and activate your tier immediately upon verification.
+              </p>
+            </div>
+
+            {/* Optional Note to Admin */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                <MessageSquare size={13} className="text-cyan-400" />
+                <span>Notes or Requirements (Optional)</span>
+              </label>
+              <textarea
+                value={requestMessage}
+                onChange={(e) => setRequestMessage(e.target.value)}
+                placeholder="E.g. Invoicing details, preferred contact channel, or custom team size..."
+                rows={2}
+                className="w-full px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.1] text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 resize-none"
+              />
+            </div>
+
+            <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3 pt-2">
+              <button
+                onClick={() => setPendingUpgrade(null)}
+                className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-slate-300 hover:text-white text-xs font-bold transition cursor-pointer text-center"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSubmitSubscriptionRequest}
+                disabled={submittingRequest}
+                className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-cyan-400 to-indigo-500 hover:from-amber-300 hover:to-cyan-300 text-slate-950 text-xs font-black shadow-lg shadow-cyan-500/20 transition cursor-pointer flex items-center justify-center gap-2 text-center"
+              >
+                <Mail size={15} className="shrink-0" />
+                <span className="truncate">{submittingRequest ? "Submitting Request..." : "Submit Subscription Request"}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* DOWNGRADE CONFIRMATION MODAL */}
+      {showDowngradeModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-fadeIn overflow-y-auto">
+          <div className="bg-[#0c1222] border border-rose-500/30 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl shadow-rose-500/10 space-y-4 sm:space-y-6 relative">
+            <div className="absolute top-0 right-0 w-48 h-48 bg-rose-500/10 rounded-full blur-2xl pointer-events-none -z-10" />
+
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 sm:p-3 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 shrink-0">
+                  <AlertTriangle size={22} />
+                </div>
+                <div>
+                  <h3 className="text-base sm:text-lg font-black text-white">Confirm Downgrade to Free Starter</h3>
+                  <p className="text-xs text-slate-400">Please review what happens when switching to Free</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowDowngradeModal(false)}
+                className="p-1.5 rounded-xl hover:bg-white/[0.08] text-slate-400 hover:text-white transition cursor-pointer shrink-0"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Impact Warning Notice */}
+            <div className="p-3.5 sm:p-4 rounded-2xl bg-rose-500/5 border border-rose-500/20 space-y-2.5 text-xs text-rose-200">
+              <span className="font-bold text-white flex items-center gap-1.5">
+                <AlertCircle size={14} className="text-rose-400 shrink-0" />
+                Account Limitations Upon Downgrading:
+              </span>
+              <ul className="space-y-1.5 list-disc list-inside text-slate-300">
+                <li>
+                  Your account website limit will drop to <strong>1 active website</strong>.
+                </li>
+                <li>
+                  If you currently own multiple websites, you will be asked to choose <strong>1 website to keep active</strong>. Other websites will pause live telemetry ingestion.
+                </li>
+                <li>
+                  Event quota reduces to <strong>10,000 events/month</strong> per website.
+                </li>
+                <li>
+                  Historical retention window reduces to <strong>30 days</strong> (raw data over 30 days becomes inaccessible).
+                </li>
+                <li>
+                  Collaborator quota reduces to <strong>2 team members</strong> per website.
+                </li>
+              </ul>
+            </div>
+
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Are you sure you want to downgrade? You can upgrade back to Cloud Pro at any time.
+            </p>
+
+            <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3 pt-2">
+              <button
+                onClick={() => setShowDowngradeModal(false)}
+                className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-slate-300 hover:text-white text-xs font-bold transition cursor-pointer text-center"
+              >
+                Keep Current Plan
+              </button>
+              <button
+                onClick={handleConfirmDowngrade}
+                disabled={updatingPlan !== null}
+                className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 text-xs font-bold transition cursor-pointer text-center"
+              >
+                {updatingPlan === "free" ? "Downgrading..." : "Yes, Downgrade to Free"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
