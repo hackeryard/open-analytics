@@ -49,7 +49,7 @@ const faqSchema = {
       name: "How do I install Open Analytics on my website?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Installation takes under 60 seconds. Simply paste a single asynchronous script tag into your website's <head> element: <script defer src=\"https://api.openanalytics.org.in/open.js\" data-project-id=\"YOUR_PROJECT_ID\"></script>. We also provide official native guides for Next.js (App Router & Pages Router), Vite/React, Nuxt/Vue, SvelteKit, and standard single-page applications.",
+        text: "Installation takes under 60 seconds. Simply paste a single asynchronous script tag into your website's <head> element: script defer src='https://api.openanalytics.org.in/open.js' data-project-id='YOUR_PROJECT_ID'. We also provide official native guides for Next.js (App Router and Pages Router), Vite/React, Nuxt/Vue, SvelteKit, and standard single-page applications.",
       },
     },
     {
