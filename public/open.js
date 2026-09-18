@@ -319,7 +319,9 @@
     const cached = sessionStorage.getItem(cacheKey);
     const cachedTime = parseInt(sessionStorage.getItem(cacheTimeKey) || "0", 10);
 
-    if (cached && Date.now() - cachedTime < 180000) {
+    // Free users / projects without rules are cached for 1 hour (3600000ms), active rules for 15 mins
+    const ttl = (cached && cached === "[]") ? 3600000 : 900000;
+    if (cached && Date.now() - cachedTime < ttl) {
       try {
         customEventRules = JSON.parse(cached);
         return;
@@ -330,7 +332,17 @@
     const rulesPath = isApiDomain ? "/v1/event-rules" : "/api/v1/event-rules";
     const url = cfg.endpoint.replace(/\/$/, "") + rulesPath + "?projectId=" + encodeURIComponent(cfg.projectId);
     fetch(url, { mode: "cors" })
-      .then(function(res) { return res.json(); })
+      .then(function(res) {
+        if (!res.ok) {
+          // On any non-200, cache empty rules for 1 hour to prevent hammering and error noise
+          try {
+            sessionStorage.setItem(cacheKey, "[]");
+            sessionStorage.setItem(cacheTimeKey, String(Date.now()));
+          } catch (e) {}
+          return null;
+        }
+        return res.json();
+      })
       .then(function(data) {
         if (data && data.ok && Array.isArray(data.rules)) {
           customEventRules = data.rules;
@@ -339,9 +351,21 @@
             sessionStorage.setItem(cacheTimeKey, String(Date.now()));
           } catch (e) {}
           evaluateEventRules("pageview", { pathname: currentPath });
+        } else if (data && data.proRequired) {
+          // Project is on Free Starter: store empty rules and do not refetch for 1 hour
+          try {
+            sessionStorage.setItem(cacheKey, "[]");
+            sessionStorage.setItem(cacheTimeKey, String(Date.now()));
+          } catch (e) {}
         }
       })
-      .catch(function() {});
+      .catch(function() {
+        // Silently swallow network errors and back off for 1 hour
+        try {
+          sessionStorage.setItem(cacheKey, "[]");
+          sessionStorage.setItem(cacheTimeKey, String(Date.now()));
+        } catch (e) {}
+      });
   }
 
   function pathMatchesPattern(pattern, pathMatchType, path) {
@@ -903,13 +927,23 @@
 
   // 6. Network Fetch & XHR Interceptor (Captures API 4xx/5xx and Network Failures)
   if (typeof window !== "undefined") {
+    function isInternalTelemetry(url) {
+      if (!url || typeof url !== "string") return false;
+      return (
+        url.includes("/collect") ||
+        url.includes("/error") ||
+        url.includes("/identify") ||
+        url.includes("/event-rules")
+      );
+    }
+
     if (window.fetch) {
       const originalFetch = window.fetch;
       window.fetch = function(input, init) {
         return originalFetch.apply(this, arguments).then(function(res) {
           try {
             const urlStr = typeof input === "string" ? input : (input && input.url ? input.url : "");
-            if (urlStr && !urlStr.includes("/api/v1/collect") && !urlStr.includes("/api/v1/error") && !urlStr.includes("/api/v1/identify")) {
+            if (urlStr && !isInternalTelemetry(urlStr)) {
               if (res.status === 404) {
                 addBreadcrumb("fetch:404", { url: urlStr.slice(0, 150) });
                 reportError({
@@ -941,7 +975,7 @@
         }).catch(function(err) {
           try {
             const urlStr = typeof input === "string" ? input : (input && input.url ? input.url : "");
-            if (urlStr && !urlStr.includes("/api/v1/collect") && !urlStr.includes("/api/v1/error") && !urlStr.includes("/api/v1/identify")) {
+            if (urlStr && !isInternalTelemetry(urlStr)) {
               addBreadcrumb("fetch:failed", { url: urlStr.slice(0, 150), error: (err && err.message) || String(err) });
               reportError({
                 message: "Network Fetch Failed: " + urlStr,
@@ -970,7 +1004,7 @@
         xhr.addEventListener("loadend", function() {
           try {
             const url = String(xhr._openUrl || "");
-            if (url && !url.includes("/api/v1/collect") && !url.includes("/api/v1/error") && !url.includes("/api/v1/identify")) {
+            if (url && !isInternalTelemetry(url)) {
               if (xhr.status === 404) {
                 addBreadcrumb("xhr:404", { url: url.slice(0, 150) });
                 reportError({
