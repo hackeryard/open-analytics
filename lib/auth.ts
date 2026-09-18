@@ -80,16 +80,19 @@ export function getOAuthBaseUrl(req: NextRequest): string {
     return `http://localhost${port}`;
   }
 
-  // If on a remote/production domain:
-  // Reject any NEXT_PUBLIC_APP_URL that erroneously points to localhost
+  // If request has a host header (e.g. dashboard.openanalytics.org.in or openanalytics.org.in)
+  if (host && !isLocal) {
+    const proto = forwardedProto || "https";
+    return `${proto}://${host}`;
+  }
+
+  // Fallback to configured env URL
   const envUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
   if (envUrl && !envUrl.includes("localhost") && !envUrl.includes("127.0.0.1")) {
     return envUrl.replace(/\/+$/, "");
   }
 
-  // Fallback to request host with HTTPS
-  const proto = forwardedProto || (host.startsWith("localhost") ? "http" : "https");
-  return `${proto}://${host}`;
+  return "https://dashboard.openanalytics.org.in";
 }
 
 import crypto from "crypto";
