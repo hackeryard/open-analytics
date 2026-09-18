@@ -73,13 +73,23 @@ export function middleware(req: NextRequest) {
     return res;
   }
 
-  // 2. Allow Next.js internals, static assets, chunks, and public metadata
+  // 2. SEO & Sitemap: strictly serve from apex domain (redirect if requested on subdomains)
+  if (pathname === "/sitemap.xml" || pathname === "/robots.txt") {
+    if (isDashboard || isApi) {
+      const target = `https://openanalytics.org.in${pathname}`;
+      return new NextResponse(null, {
+        status: 301,
+        headers: { Location: target },
+      });
+    }
+    return NextResponse.next();
+  }
+
+  // 3. Allow Next.js internals, static assets, chunks, and public metadata
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/static") ||
     pathname === "/favicon.ico" ||
-    pathname === "/robots.txt" ||
-    pathname === "/sitemap.xml" ||
     pathname.includes(".") // fonts, images, css, static files
   ) {
     return NextResponse.next();
