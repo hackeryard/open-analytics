@@ -32,20 +32,17 @@ async function run() {
   await mongoose.connect(MONGO_URI);
   const db = mongoose.connection.db;
 
-  const res = await db.collection("users").updateOne(
-    { email: "rahulrajput3621@gmail.com" },
-    { $set: { plan: "free", planExpiresAt: null, subscriptionStatus: "active" } }
-  );
-
-  console.log("User updated successfully:", res.modifiedCount);
-
-  const user = await db.collection("users").findOne({ email: "rahulrajput3621@gmail.com" });
-  console.log("Current user in DB:", {
-    email: user.email,
-    plan: user.plan,
-    planExpiresAt: user.planExpiresAt,
-    subscriptionStatus: user.subscriptionStatus,
-  });
+  const projects = await db.collection("projects").find({}).toArray();
+  const users = await db.collection("users").find({}).toArray();
+  const userMap = new Map(users.map(u => [u._id.toString(), u.email]));
+  console.log("PROJECTS_DETAILED:", projects.map(p => ({
+    id: p._id.toString(),
+    projectId: p.projectId,
+    name: p.name,
+    ownerEmail: userMap.get(p.ownerId?.toString()),
+    publishableKey: p.publishableKey,
+    allowedDomains: p.allowedDomains
+  })));
 
   await mongoose.disconnect();
 }

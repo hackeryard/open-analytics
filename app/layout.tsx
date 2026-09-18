@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
+import Script from "next/script";
 import "./globals.css";
 import { PlatformProvider } from "@/components/PlatformContext";
 import AppShell from "@/components/AppShell";
@@ -80,6 +81,9 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
+  verification: {
+    google: "xCkYbtReDgmW6WjPhKIYkIOij4pYy4-cfq72vEpSzJ4",
+  },
 };
 
 const organizationSchema = {
@@ -152,6 +156,31 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <head>
         <JsonLd data={organizationSchema} />
+        <Script
+          strategy="afterInteractive"
+          src="https://www.googletagmanager.com/gtag/js?id=G-ZDHKTDPHFX"
+        />
+        <Script
+          id="google-analytics-gtag"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-ZDHKTDPHFX');
+            `,
+          }}
+        />
+        {/* Open Analytics Self-Tracking Beacon */}
+        <Script
+          id="open-analytics-tracker"
+          strategy="afterInteractive"
+          src={process.env.NEXT_PUBLIC_TRACKER_URL || "https://api.openanalytics.org.in/open.js"}
+          data-project-id="open_prj_d5f732524ada1a6a"
+          data-api-key="pk_live_8481cc68ffbf81e84b34e6e0e5b447e5"
+          data-endpoint={process.env.NEXT_PUBLIC_API_URL || "https://api.openanalytics.org.in"}
+        />
       </head>
       <body className="min-h-screen bg-background text-foreground antialiased selection:bg-cyan-500/30 selection:text-cyan-200">
         <PlatformProvider initialIsDashboard={isDashboard}>

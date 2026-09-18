@@ -73,9 +73,11 @@ export function getOAuthBaseUrl(req: NextRequest): string {
   const isLocal = host.includes("localhost") || host.includes("127.0.0.1");
 
   if (isLocal) {
-    // If accessing on localhost, ALWAYS preserve the local host and port
-    const proto = forwardedProto || "http";
-    return `${proto}://${host}`;
+    // Google Cloud Console does not support subdomains on localhost (e.g. dashboard.localhost).
+    // Extract the port if present and normalize to standard http://localhost:PORT
+    const portMatch = host.match(/:(\d+)$/);
+    const port = portMatch ? `:${portMatch[1]}` : "";
+    return `http://localhost${port}`;
   }
 
   // If on a remote/production domain:
