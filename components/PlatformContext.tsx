@@ -55,6 +55,7 @@ interface PlatformContextType {
   currentUser: User | null;
   authChecked: boolean;
   projects: Project[];
+  projectsLoading: boolean;
   activeProjectId: string;
   setActiveProjectId: (id: string) => void;
   activeProject: Project | undefined;
@@ -149,6 +150,7 @@ export function PlatformProvider({
     setIsDashboard(isDashboardClient());
   }, []);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [projectsLoading, setProjectsLoading] = useState<boolean>(true);
   const [activeProjectId, setActiveProjectIdState] = useState<string>("");
   const [timeRange, setTimeRangeState] = useState<string>("7d");
   const [data, setData] = useState<AnalyticsData | null>(null);
@@ -361,6 +363,8 @@ export function PlatformProvider({
         window.location.href = "/login";
       }
       return false;
+    } finally {
+      setProjectsLoading(false);
     }
   }, []);
 
@@ -571,6 +575,7 @@ export function PlatformProvider({
         currentUser,
         authChecked,
         projects,
+        projectsLoading,
         activeProjectId,
         setActiveProjectId,
         activeProject,

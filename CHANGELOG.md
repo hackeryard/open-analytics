@@ -25,6 +25,23 @@ All notable changes to the Open Analytics platform are documented in this file.
   - Excluded all Open Analytics internal telemetry endpoints (`/collect`, `/error`, `/identify`, `/event-rules`) from `open.js`'s automatic error interceptor (`reportError`) to prevent synthetic error reporting loops and console noise on host websites.
   - Updated `/v1/event-rules` backend endpoint to always respond with HTTP 200 `{ ok: true, rules: [], proRequired: true }` (instead of 404) for missing projects or Free Starter plan projects, fully caching the response.
   - Enhanced client `open.js` script to cache empty event rules in `sessionStorage` with a 1-hour TTL when a project requires Pro or encounters non-200 responses, avoiding repeated network overhead.
+- **Dashboard Homepage Mobile Responsiveness Redesign**:
+  - Redesigned executive overview dashboard (`app/page.tsx`) to be fully responsive across mobile phones, tablets, and small viewports without horizontal scrolling or clipping.
+  - Re-architected top KPI metrics grid with responsive card padding, text truncation, and responsive layout (`grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7`).
+  - Enhanced `PrimaryAnalyticsChart` metric selector and peak stats bar with flexible wrap, responsive button sizes, and adaptive grid columns (`grid-cols-1 sm:grid-cols-3`).
+  - Refactored `WebVitalsRadarWidget` to stack smoothly on mobile (`grid-cols-1 sm:grid-cols-3`), `DeviceBreakdownWidget` to flex-wrap form factor ratios, and `DateRangeNavigator` trigger button to dynamically fit small mobile viewports.
+  - Optimized `AppShell` header command bar with responsive breadcrumbs, icon collapsing, and overflow guards.
+- **Database Loading Shimmer Skeleton**:
+  - Added dedicated `projectsLoading` lifecycle state in `PlatformContext` to prevent premature flash of the "Create First Project" wizard modal while user workspaces and database records are resolving.
+  - Built an animated high-fidelity shimmer skeleton matching the exact dashboard layout (header, 7 KPI stat cards, primary timeseries chart, and 2-column analytics widgets), eliminating layout shift and providing a seamless loading experience.
+  - Integrated dedicated shimmer loading skeleton and normalized container padding for `/journeys` to match `AppShell` margins.
+- **Tracked Routes Target Website URL Resolution**:
+  - Created [`lib/urlHelper.ts`](file:///c:/Users/rahul/OneDrive/Desktop/open-analytics/lib/urlHelper.ts) with `getTrackedUrl()` and `getProjectBaseUrl()` to properly resolve relative tracked pathnames (`/pricing`, `/docs`, `/blog/post`) against the active project's tracked website URL (`project.websiteUrl`), data streams (`streamUrl`), or allowed domains, rather than resolving to the dashboard domain (`dashboard.openanalytics.org.in` or `localhost:3005`).
+  - Updated all outbound inspection links across Pages (`PagesSection.tsx`), Live Feed (`LiveFeedSection.tsx`), User Journeys (`UserJourneysSection.tsx`), Web Vitals (`WebVitalsSection.tsx`), Behavioral UX (`BehavioralUxSection.tsx`), Errors (`ErrorsSection.tsx`), and Audience (`AudienceSection.tsx`) to open the actual client website in a new tab with `target="_blank"` and `rel="noopener noreferrer"`.
+- **Custom Events Stream Purification**:
+  - Purified the Custom Events section (`/events`) by completely decoupling scroll tracking (`autotrack_scroll_*`) and behavioral UX friction signals (`ux_exit_intent`, `ux_rage_click`, `category: "ux"`) from custom application events.
+  - Streamlined `open.js` by retaining `scrollDepth`, `scrollMilestones`, and `exitIntent` purely as intrinsic `PageView` dwell telemetry and breadcrumbs, eliminating redundant discrete event emissions.
+  - Added query-level and UI-level defensive exclusions in `lib/analyticsDb.ts` and `components/sections/EventsSection.tsx` so historical behavioral signals never pollute event counts, KPI totals, or user-defined event streams.
 
 ---
 

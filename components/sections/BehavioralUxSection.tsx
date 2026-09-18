@@ -14,9 +14,10 @@ import {
 } from "lucide-react";
 import { usePlatform } from "@/components/PlatformContext";
 import { AnalyticsData, formatDuration } from "@/lib/analyticsTypes";
+import { getTrackedUrl } from "@/lib/urlHelper";
 
 export default function BehavioralUxSection({ data: propData }: { data?: AnalyticsData }) {
-  const { data: platformData } = usePlatform();
+  const { data: platformData, activeProject } = usePlatform();
   const data = propData || platformData;
 
   if (!data) return null;
@@ -103,7 +104,7 @@ export default function BehavioralUxSection({ data: propData }: { data?: Analyti
                           <code>{r.element}</code>
                         </td>
                         <td className="p-3.5">
-                          <a href={String(r.pathname)} target="_blank" rel="noopener noreferrer" className="hover:text-primary font-bold text-foreground">
+                          <a href={getTrackedUrl(String(r.pathname), activeProject)} target="_blank" rel="noopener noreferrer" className="hover:text-primary font-bold text-foreground">
                             {r.pathname}
                           </a>
                         </td>

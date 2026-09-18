@@ -56,9 +56,10 @@ import {
   formatExactTime,
   formatExactDate,
 } from "@/lib/analyticsTypes";
+import { getTrackedUrl } from "@/lib/urlHelper";
 
 export default function ErrorsSection({ data: propData }: { data?: AnalyticsData }) {
-  const { activeProjectId, data: platformData } = usePlatform();
+  const { activeProjectId, activeProject, data: platformData } = usePlatform();
   const [dataState, setDataState] = useState<AnalyticsData | null>(propData || platformData);
 
   useEffect(() => {
@@ -1252,7 +1253,7 @@ ${err.stack}
                             {/* Pathname Link */}
                             <div className="flex items-center gap-2 flex-wrap text-[11px] font-mono text-muted-foreground">
                               <a
-                                href={String(err.pathname)}
+                                href={getTrackedUrl(String(err.pathname), activeProject)}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={(e) => e.stopPropagation()}

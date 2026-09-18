@@ -19,9 +19,10 @@ import {
 } from "lucide-react";
 import { usePlatform } from "@/components/PlatformContext";
 import { AnalyticsData } from "@/lib/analyticsTypes";
+import { getTrackedUrl } from "@/lib/urlHelper";
 
 export default function UserJourneysSection({ data: propData }: { data?: AnalyticsData }) {
-  const { data: platformData } = usePlatform();
+  const { data: platformData, activeProject } = usePlatform();
   const data = propData || platformData;
 
   const [flowSearchQuery, setFlowSearchQuery] = useState("");
@@ -296,7 +297,7 @@ export default function UserJourneysSection({ data: propData }: { data?: Analyti
                               </span>
                               <span>{step}</span>
                               <a
-                                href={step}
+                                href={getTrackedUrl(step, activeProject)}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-muted-foreground hover:text-primary transition"
@@ -360,7 +361,7 @@ export default function UserJourneysSection({ data: propData }: { data?: Analyti
                       <tr key={idx} className="hover:bg-muted/20 transition">
                         <td className="p-3.5 font-bold text-foreground max-w-xs truncate">
                           <a
-                            href={t.from}
+                            href={getTrackedUrl(t.from, activeProject)}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="hover:text-primary flex items-center gap-1"
@@ -374,7 +375,7 @@ export default function UserJourneysSection({ data: propData }: { data?: Analyti
                         </td>
                         <td className="p-3.5 font-bold text-foreground max-w-xs truncate">
                           <a
-                            href={t.to}
+                            href={getTrackedUrl(t.to, activeProject)}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="hover:text-primary flex items-center gap-1"
@@ -439,7 +440,7 @@ export default function UserJourneysSection({ data: propData }: { data?: Analyti
                         <tr key={idx} className="hover:bg-muted/20 transition">
                           <td className="p-3 font-bold text-foreground truncate max-w-[150px]">
                             <a
-                              href={entry.pathname}
+                              href={getTrackedUrl(entry.pathname, activeProject)}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="hover:text-primary flex items-center gap-1"
@@ -481,7 +482,7 @@ export default function UserJourneysSection({ data: propData }: { data?: Analyti
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-rose-500" />
                   <h5 className="text-xs font-black uppercase tracking-wider text-foreground">
-                    Top Exit Pages (Drop-off Points)
+                    Top Exit Pages (Drop-off Culprits)
                   </h5>
                 </div>
                 <span className="text-xs font-mono text-muted-foreground font-bold">
@@ -494,8 +495,8 @@ export default function UserJourneysSection({ data: propData }: { data?: Analyti
                   <thead className="bg-muted/40 border-b border-border text-[10px] font-black uppercase tracking-wider text-muted-foreground">
                     <tr>
                       <th className="p-3">Route</th>
-                      <th className="p-3 text-right">Drop-offs</th>
-                      <th className="p-3 text-right">Share %</th>
+                      <th className="p-3 text-right">Exits</th>
+                      <th className="p-3 text-right">Exit Rate</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
@@ -510,7 +511,7 @@ export default function UserJourneysSection({ data: propData }: { data?: Analyti
                         <tr key={idx} className="hover:bg-muted/20 transition">
                           <td className="p-3 font-bold text-foreground truncate max-w-[180px]">
                             <a
-                              href={exit.pathname}
+                              href={getTrackedUrl(exit.pathname, activeProject)}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="hover:text-primary flex items-center gap-1"

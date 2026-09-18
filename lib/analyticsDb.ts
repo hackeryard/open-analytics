@@ -606,8 +606,14 @@ export async function getProjectAnalytics(
     .limit(60)
     .lean();
 
-  // 12. Custom Learning / Lab Events (Detailed Stream)
-  const eventsPromise = (AnalyticsEvent as any).find(matchStage)
+  // 12. Custom Learning / Lab Events (Detailed Stream - strictly custom/app/rules events, excluding scroll & UX telemetry)
+  const eventMatchStage = {
+    ...matchStage,
+    eventName: { $not: /^autotrack_scroll_|^ux_/ },
+    category: { $ne: "ux" },
+  };
+
+  const eventsPromise = (AnalyticsEvent as any).find(eventMatchStage)
     .populate({
       path: "userId",
       select: "name email username avatar level xp",

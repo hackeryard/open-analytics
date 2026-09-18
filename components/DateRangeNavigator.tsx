@@ -220,7 +220,7 @@ export default function DateRangeNavigator({
         <button
           type="button"
           onClick={handlePrevDay}
-          className="p-1.5 text-muted-foreground hover:text-white transition cursor-pointer"
+          className="p-1 sm:p-1.5 text-muted-foreground hover:text-white transition cursor-pointer"
           title="Previous Window"
         >
           <ChevronLeft size={13} />
@@ -229,18 +229,18 @@ export default function DateRangeNavigator({
         <button
           type="button"
           onClick={() => setShowDropdown(!showDropdown)}
-          className="flex items-center gap-2 px-2.5 py-1.5 text-xs font-bold text-slate-200 hover:text-white transition cursor-pointer"
+          className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-2.5 py-1.5 text-xs font-bold text-slate-200 hover:text-white transition cursor-pointer"
         >
           <Calendar size={13} className="text-cyan-400 shrink-0" />
-          <span className="truncate max-w-[130px]">{currentLabel}</span>
-          <ChevronDown size={11} className={`text-muted-foreground transition-transform ${showDropdown ? "rotate-180" : ""}`} />
+          <span className="truncate max-w-[85px] xs:max-w-[110px] sm:max-w-[140px]">{currentLabel}</span>
+          <ChevronDown size={11} className={`text-muted-foreground shrink-0 transition-transform ${showDropdown ? "rotate-180" : ""}`} />
         </button>
 
         <button
           type="button"
           onClick={handleNextDay}
           disabled={isToday && isSingleDayMode}
-          className="p-1.5 text-muted-foreground hover:text-white transition cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+          className="p-1 sm:p-1.5 text-muted-foreground hover:text-white transition cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
           title="Next Window"
         >
           <ChevronRight size={13} />
