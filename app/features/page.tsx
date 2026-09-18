@@ -24,7 +24,7 @@ import {
 import JsonLd from "@/components/JsonLd";
 import { getDashboardUrl } from "@/lib/subdomain";
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://openanalytics.org.in";
+const baseUrl = "https://openanalytics.org.in";
 
 export const metadata: Metadata = {
   title: "Features | Modern Cookieless Web Observability & Telemetry Engine",
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     "answer engine optimization telemetry",
   ],
   alternates: {
-    canonical: "/features",
+    canonical: "https://openanalytics.org.in/features",
   },
   openGraph: {
     title: "Open Analytics Features | Core Web Vitals, AI Radar & Cookieless Observability",

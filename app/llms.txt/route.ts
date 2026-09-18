@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 export const dynamic = "force-static";
 
 export async function GET() {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://openanalytics.org.in";
+  const baseUrl = "https://openanalytics.org.in";
 
   const content = `# Open Analytics
 > Next-Generation Cookieless Web Observability & Performance Intelligence

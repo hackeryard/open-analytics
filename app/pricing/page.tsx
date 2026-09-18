@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import JsonLd from "@/components/JsonLd";
 import PricingInteractive from "@/components/public/PricingInteractive";
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://openanalytics.org.in";
+const baseUrl = "https://openanalytics.org.in";
 
 export const metadata: Metadata = {
   title: "Pricing & Plans | Free Starter & Pro Analytics - Open Analytics",
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     "core web vitals rum pricing",
   ],
   alternates: {
-    canonical: "/pricing",
+    canonical: "https://openanalytics.org.in/pricing",
   },
   openGraph: {
     title: "Open Analytics Pricing | Free Starter & Pro Tiers",
