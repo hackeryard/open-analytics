@@ -18,6 +18,9 @@ All notable changes to the Open Analytics platform are documented in this file.
   - Hardcoded all SEO metadata base URLs and OpenGraph URLs across the main domain strictly to `https://openanalytics.org.in`, completely decoupled from `NEXT_PUBLIC_APP_URL`.
   - Configured explicit absolute canonical tags for all marketing and documentation pages (`/`, `/features`, `/pricing`, `/privacy`, `/vs-google-analytics`, `/faq`, `/docs`, `/docs/installation`, `/docs/verification`, `/docs/web-vitals`, `/docs/seo-aeo`).
   - Synced documentation routes with `sitemap.ts` and `robots.ts`.
+- **Comprehensive AEO & GEO Structured Data Optimization**:
+  - Authored distinct, topic-specific metadata (titles, descriptions, targeted keywords, OpenGraph, Twitter Cards, canonicals) for every marketing and documentation route.
+  - Embedded rich JSON-LD schema graphs across all pages: `Organization`, `WebSite`, `SoftwareApplication`, `BreadcrumbList`, `FAQPage`, `HowTo`, `Product`, and `TechArticle` schemas for maximum Answer Engine Optimization (SearchGPT, Perplexity, Claude, Gemini) and Google Rich Results.
 
 ---
 
