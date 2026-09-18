@@ -2,6 +2,18 @@
 
 All notable changes to the Open Analytics platform are documented in this file.
 
+## [3.4.1] - 2026-09-18
+
+### Added
+- **Google Site Verification**: Integrated Google Search Console verification meta tag in root layout metadata.
+- **Google Tag (`gtag.js`)**: Configured Google Analytics 4 snippet in root layout `<head>`.
+- **Main Domain Telemetry**: Injected native `open.js` beacon on `openanalytics.org.in` to track landing page and marketing visits directly in the analytics dashboard.
+
+### Fixed
+- **Google OAuth Localhost Redirect**: Normalized `getOAuthBaseUrl` for local development to use standard `http://localhost:port` without subdomains, preventing `redirect_uri_mismatch` errors with Google Cloud Console.
+
+---
+
 ## [3.4.0] - 2026-09-17
 
 ### Added
