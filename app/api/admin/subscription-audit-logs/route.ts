@@ -11,8 +11,8 @@ export async function GET(req: NextRequest) {
   try {
     await connectDB();
     const user = await getCurrentUser(req);
-    if (!user || (user.role !== "admin" && user.role !== "super_admin")) {
-      return NextResponse.json({ error: "Administrator authorization required" }, { status: 403 });
+    if (!user || user.role !== "super_admin") {
+      return NextResponse.json({ error: "Super Administrator authorization required" }, { status: 403 });
     }
 
     const { searchParams } = new URL(req.url);

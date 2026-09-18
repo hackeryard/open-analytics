@@ -179,15 +179,15 @@ export default function AdminSubscriptionsPage() {
     }
   };
 
-  const isSuperOrAdmin = currentUser?.role === "admin" || currentUser?.role === "super_admin";
+  const isSuperAdmin = currentUser?.role === "super_admin";
 
-  if (!isSuperOrAdmin) {
+  if (!isSuperAdmin) {
     return (
       <div className="p-8 text-center space-y-4 max-w-md mx-auto">
         <AlertCircle size={36} className="text-rose-400 mx-auto" />
-        <h2 className="text-xl font-bold text-white">Administrator Access Required</h2>
+        <h2 className="text-xl font-bold text-white">Super Administrator Access Required</h2>
         <p className="text-xs text-slate-400">
-          This portal is strictly restricted to system administrators for reviewing subscription requests and recording verified payments.
+          This portal is strictly restricted to Super Administrators for reviewing subscription requests and recording verified payments.
         </p>
       </div>
     );
