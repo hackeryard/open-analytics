@@ -12,6 +12,7 @@ All notable changes to the Open Analytics platform are documented in this file.
 ### Fixed
 - **Google OAuth Localhost Redirect**: Normalized `getOAuthBaseUrl` for local development to use standard `http://localhost:port` without subdomains, preventing `redirect_uri_mismatch` errors with Google Cloud Console.
 - **Google OAuth Production Redirect URI**: Updated `getOAuthBaseUrl` to dynamically respect the request host (`dashboard.openanalytics.org.in`) instead of overriding with `NEXT_PUBLIC_APP_URL`, preventing `redirect_uri_mismatch` errors in production.
+- **Subscription Review Access Hardening**: Strictly restricted subscription requests, manual verification, audit trails, and the `/admin/subscriptions` portal to `super_admin` only (removing general `admin` visibility).
 
 ---
 

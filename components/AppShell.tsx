@@ -240,13 +240,13 @@ export default function AppShell({
           label: "Developer Profile",
           icon: User,
         },
-        ...(currentUser?.role === "admin" || currentUser?.role === "super_admin"
+        ...(currentUser?.role === "super_admin"
           ? [
               {
                 href: "/admin/subscriptions",
                 label: "Subscription Requests",
                 icon: ShieldAlert,
-                badge: "Admin",
+                badge: "Super Admin",
               },
             ]
           : []),
