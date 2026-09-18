@@ -23,7 +23,7 @@ import {
 import JsonLd from "@/components/JsonLd";
 import { getDashboardUrl } from "@/lib/subdomain";
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://openanalytics.org.in";
+const baseUrl = "https://openanalytics.org.in";
 
 export const metadata: Metadata = {
   title: "Open Analytics vs Google Analytics 4 (GA4) | Complete 2026 Comparison",
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     "ai crawler tracking vs ga4",
   ],
   alternates: {
-    canonical: "/vs-google-analytics",
+    canonical: "https://openanalytics.org.in/vs-google-analytics",
   },
   openGraph: {
     title: "Open Analytics vs Google Analytics 4 (GA4) | The Privacy-First Alternative",

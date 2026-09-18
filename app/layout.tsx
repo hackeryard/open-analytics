@@ -7,7 +7,7 @@ import AppShell from "@/components/AppShell";
 import JsonLd from "@/components/JsonLd";
 import { isDashboardHost } from "@/lib/subdomain";
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://openanalytics.org.in";
+const baseUrl = "https://openanalytics.org.in";
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     telephone: false,
   },
   alternates: {
-    canonical: "/",
+    canonical: "https://openanalytics.org.in",
   },
   openGraph: {
     title: "Open Analytics | Privacy-First Web Analytics & Observability Engine",

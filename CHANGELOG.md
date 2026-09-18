@@ -14,6 +14,10 @@ All notable changes to the Open Analytics platform are documented in this file.
 - **Google OAuth Production Redirect URI**: Updated `getOAuthBaseUrl` to dynamically respect the request host (`dashboard.openanalytics.org.in`) instead of overriding with `NEXT_PUBLIC_APP_URL`, preventing `redirect_uri_mismatch` errors in production.
 - **Subscription Review Access Hardening**: Strictly restricted subscription requests, manual verification, audit trails, and the `/admin/subscriptions` portal to `super_admin` only (removing general `admin` visibility).
 - **Hardcoded Sitemap Apex Domain**: Enforced `https://openanalytics.org.in` in `sitemap.ts` and `robots.ts` so subdomains never appear in the sitemap or search indexes, and added 301 redirects for any `/sitemap.xml` and `/robots.txt` requested on subdomains.
+- **Canonical URLs & Main Domain SEO Hardening**:
+  - Hardcoded all SEO metadata base URLs and OpenGraph URLs across the main domain strictly to `https://openanalytics.org.in`, completely decoupled from `NEXT_PUBLIC_APP_URL`.
+  - Configured explicit absolute canonical tags for all marketing and documentation pages (`/`, `/features`, `/pricing`, `/privacy`, `/vs-google-analytics`, `/faq`, `/docs`, `/docs/installation`, `/docs/verification`, `/docs/web-vitals`, `/docs/seo-aeo`).
+  - Synced documentation routes with `sitemap.ts` and `robots.ts`.
 
 ---
 

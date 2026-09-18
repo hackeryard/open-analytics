@@ -22,7 +22,7 @@ import {
 import JsonLd from "@/components/JsonLd";
 import { getDashboardUrl } from "@/lib/subdomain";
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://openanalytics.org.in";
+const baseUrl = "https://openanalytics.org.in";
 
 export const metadata: Metadata = {
   title: "Privacy Architecture & GDPR Compliance Guide | Open Analytics",
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     "rotating cryptographic salt analytics",
   ],
   alternates: {
-    canonical: "/privacy",
+    canonical: "https://openanalytics.org.in/privacy",
   },
   openGraph: {
     title: "Privacy Policy & GDPR Compliance Architecture | Open Analytics",
