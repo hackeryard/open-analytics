@@ -61,7 +61,7 @@ export default function WebVitalsRadarWidget({
         <p className="text-[11px] text-muted-foreground">Google Core Web Vitals measured from real end-user sessions</p>
       </div>
 
-      <div className="grid grid-cols-3 gap-2.5 flex-1 pt-1">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 flex-1 pt-1">
         {/* LCP Gauge */}
         <div className="p-3 rounded-2xl bg-white/[0.02] border border-white/[0.05] space-y-2 flex flex-col justify-between">
           <div className="flex items-center justify-between">

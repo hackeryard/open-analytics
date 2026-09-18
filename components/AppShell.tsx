@@ -738,43 +738,44 @@ export default function App() {
       {/* ============================================================ */}
       <div className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ${sidebarCollapsed ? "lg:pl-20" : "lg:pl-64"}`}>
         {/* Top Command Bar */}
-        <header className="sticky top-0 z-30 h-14 glass-header px-4 sm:px-6 flex items-center justify-between gap-4">
+        <header className="sticky top-0 z-30 h-14 glass-header px-3 sm:px-6 flex items-center justify-between gap-2 sm:gap-4 overflow-hidden">
           {/* Left: Mobile Toggle, Breadcrumb & Live Visitor Beacon */}
-          <div className="flex items-center gap-3 min-w-0">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="lg:hidden p-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition"
+              className="lg:hidden p-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 transition shrink-0"
+              aria-label="Toggle navigation menu"
             >
               <Menu size={18} />
             </button>
 
             {/* Breadcrumb path */}
-            <div className="flex items-center gap-2 text-xs font-bold min-w-0">
-              <span className="text-white truncate max-w-[140px]">
+            <div className="flex items-center gap-1.5 sm:gap-2 text-xs font-bold min-w-0">
+              <span className="text-white truncate max-w-[90px] xs:max-w-[120px] sm:max-w-[160px]">
                 {activeProject?.name || activeProjectId || "Open Analytics"}
               </span>
               <span className="text-slate-600 font-normal">/</span>
-              <span className="text-cyan-400 capitalize truncate">
+              <span className="text-cyan-400 capitalize truncate max-w-[80px] xs:max-w-none">
                 {pathname === "/" ? "Overview" : pathname.replace("/", "").replace(/-/g, " ")}
               </span>
             </div>
 
             {/* Live Telemetry Beacon */}
-            <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-bold shadow-xs shrink-0">
+            <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-bold shadow-xs shrink-0">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-glow" />
               <span>{liveVisitorCount} Live</span>
             </div>
           </div>
 
           {/* Right: Date Picker & Quick Actions */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {/* Compact Date Range Navigator */}
             <DateRangeNavigator value={timeRange} onChange={setTimeRange} plan={activeProject?.plan} />
 
             {/* Quick Install Snippet Button */}
             <button
               onClick={() => setShowInstallModal(true)}
-              className="p-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-slate-300 hover:text-cyan-400 transition cursor-pointer"
+              className="hidden xs:flex p-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-slate-300 hover:text-cyan-400 transition cursor-pointer"
               title="View Tracking Script Snippet"
             >
               <Code2 size={14} />
@@ -784,7 +785,7 @@ export default function App() {
             <button
               onClick={() => fetchData()}
               disabled={loading || pvLoading}
-              className="p-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-slate-300 hover:text-cyan-400 transition cursor-pointer disabled:opacity-50"
+              className="p-1.5 sm:p-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-slate-300 hover:text-cyan-400 transition cursor-pointer disabled:opacity-50"
               title="Refresh Telemetry"
             >
               <RefreshCw size={13} className={loading || pvLoading ? "animate-spin text-cyan-400" : ""} />

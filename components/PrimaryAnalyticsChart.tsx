@@ -223,11 +223,11 @@ export default function PrimaryAnalyticsChart({
         </div>
 
         {/* Metric Selector Pills & Chart Type */}
-        <div className="flex items-center gap-2.5 flex-wrap">
-          <div className="flex items-center bg-white/[0.04] p-1 rounded-xl border border-white/[0.08] text-xs font-bold">
+        <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
+          <div className="flex items-center bg-white/[0.04] p-1 rounded-xl border border-white/[0.08] text-xs font-bold flex-wrap">
             <button
               onClick={() => setSelectedMetric("views")}
-              className={`px-3 py-1.5 rounded-lg transition cursor-pointer ${
+              className={`px-2.5 sm:px-3 py-1.5 rounded-lg transition cursor-pointer text-xs ${
                 selectedMetric === "views"
                   ? "bg-cyan-500 text-white shadow-sm shadow-cyan-500/30"
                   : "text-slate-400 hover:text-white"
@@ -237,17 +237,17 @@ export default function PrimaryAnalyticsChart({
             </button>
             <button
               onClick={() => setSelectedMetric("visitors")}
-              className={`px-3 py-1.5 rounded-lg transition cursor-pointer ${
+              className={`px-2.5 sm:px-3 py-1.5 rounded-lg transition cursor-pointer text-xs ${
                 selectedMetric === "visitors"
                   ? "bg-blue-600 text-white shadow-sm shadow-blue-500/30"
                   : "text-slate-400 hover:text-white"
               }`}
             >
-              Unique Visitors
+              Visitors
             </button>
             <button
               onClick={() => setSelectedMetric("returning")}
-              className={`px-3 py-1.5 rounded-lg transition cursor-pointer ${
+              className={`px-2.5 sm:px-3 py-1.5 rounded-lg transition cursor-pointer text-xs ${
                 selectedMetric === "returning"
                   ? "bg-purple-600 text-white shadow-sm shadow-purple-500/30"
                   : "text-slate-400 hover:text-white"
@@ -257,7 +257,7 @@ export default function PrimaryAnalyticsChart({
             </button>
           </div>
 
-          <div className="flex items-center bg-white/[0.04] p-1 rounded-xl border border-white/[0.08] text-xs">
+          <div className="flex items-center bg-white/[0.04] p-1 rounded-xl border border-white/[0.08] text-xs shrink-0">
             <button
               onClick={() => setChartType("area")}
               className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
@@ -281,28 +281,28 @@ export default function PrimaryAnalyticsChart({
       </div>
 
       {/* Peak and Volume Micro-KPI Strip */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 p-3 rounded-2xl bg-white/[0.02] border border-white/[0.05] text-xs">
-        <div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 rounded-2xl bg-white/[0.02] border border-white/[0.05] text-xs">
+        <div className="min-w-0">
           <span className="text-[10px] font-extrabold uppercase text-muted-foreground tracking-wider block">
             Total in Range
           </span>
-          <span className="text-base font-black font-mono text-white mt-0.5 block">
+          <span className="text-base font-black font-mono text-white mt-0.5 block truncate">
             {totalInPeriod.toLocaleString()}
           </span>
         </div>
-        <div>
-          <span className="text-[10px] font-extrabold uppercase text-muted-foreground tracking-wider block">
+        <div className="min-w-0">
+          <span className="text-[10px] font-extrabold uppercase text-muted-foreground tracking-wider block truncate">
             Peak Interval ({peakPoint.label})
           </span>
-          <span className="text-base font-black font-mono text-cyan-400 mt-0.5 block">
+          <span className="text-base font-black font-mono text-cyan-400 mt-0.5 block truncate">
             {peakPoint.value.toLocaleString()}
           </span>
         </div>
-        <div className="col-span-2 sm:col-span-1">
+        <div className="min-w-0 sm:col-span-1">
           <span className="text-[10px] font-extrabold uppercase text-muted-foreground tracking-wider block">
             Average per Bucket
           </span>
-          <span className="text-base font-black font-mono text-slate-300 mt-0.5 block">
+          <span className="text-base font-black font-mono text-slate-300 mt-0.5 block truncate">
             {timeseries.length > 0 ? Math.round(totalInPeriod / timeseries.length).toLocaleString() : "0"}
           </span>
         </div>

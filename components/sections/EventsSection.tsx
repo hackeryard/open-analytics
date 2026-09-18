@@ -181,7 +181,15 @@ export default function EventsSection({ data: propData }: { data?: AnalyticsData
     }
   };
 
-  const allEvents = data?.recentEvents || [];
+  const rawEvents = data?.recentEvents || [];
+  // Exclude scroll depth and behavioral UX telemetry (exit intent, rage clicks) from the custom events view
+  const allEvents = rawEvents.filter((evt) => {
+    const name = evt.eventName || "";
+    if (name.startsWith("autotrack_scroll_")) return false;
+    if (name.startsWith("ux_")) return false;
+    if (evt.category === "ux") return false;
+    return true;
+  });
 
   const filteredEvents = allEvents.filter((evt) => {
     const matchesSearch =
