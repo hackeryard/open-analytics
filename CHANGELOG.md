@@ -21,7 +21,10 @@ All notable changes to the Open Analytics platform are documented in this file.
 - **Comprehensive AEO & GEO Structured Data Optimization**:
   - Authored distinct, topic-specific metadata (titles, descriptions, targeted keywords, OpenGraph, Twitter Cards, canonicals) for every marketing and documentation route.
   - Embedded rich JSON-LD schema graphs across all pages: `Organization`, `WebSite`, `SoftwareApplication`, `BreadcrumbList`, `FAQPage`, `HowTo`, `Product`, and `TechArticle` schemas for maximum Answer Engine Optimization (SearchGPT, Perplexity, Claude, Gemini) and Google Rich Results.
-  - Fixed unparsable structured data syntax error in Google Search Console by escaping HTML character entities (`\u003c`, `\u003e`, `\u0026`) in `JsonLd` component to prevent premature `<script>` tag termination.
+- **Event-Rules Error Mitigation for Free Users**:
+  - Excluded all Open Analytics internal telemetry endpoints (`/collect`, `/error`, `/identify`, `/event-rules`) from `open.js`'s automatic error interceptor (`reportError`) to prevent synthetic error reporting loops and console noise on host websites.
+  - Updated `/v1/event-rules` backend endpoint to always respond with HTTP 200 `{ ok: true, rules: [], proRequired: true }` (instead of 404) for missing projects or Free Starter plan projects, fully caching the response.
+  - Enhanced client `open.js` script to cache empty event rules in `sessionStorage` with a 1-hour TTL when a project requires Pro or encounters non-200 responses, avoiding repeated network overhead.
 
 ---
 

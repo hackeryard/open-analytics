@@ -22,7 +22,21 @@ export async function GET(req: Request) {
     ).lean();
 
     if (!project) {
-      return corsJsonResponse({ ok: false, error: "Project not found" }, { status: 404 }, req);
+      return corsJsonResponse(
+        {
+          ok: true,
+          projectId,
+          rules: [],
+          timestamp: Date.now(),
+        },
+        {
+          status: 200,
+          headers: {
+            "Cache-Control": "public, max-age=300, s-maxage=600, stale-while-revalidate=86400",
+          },
+        },
+        req
+      );
     }
 
     // Only deliver automated event rules if project is Pro or Enterprise
@@ -35,7 +49,12 @@ export async function GET(req: Request) {
           proRequired: true,
           timestamp: Date.now(),
         },
-        { status: 200 },
+        {
+          status: 200,
+          headers: {
+            "Cache-Control": "public, max-age=300, s-maxage=600, stale-while-revalidate=86400",
+          },
+        },
         req
       );
     }
