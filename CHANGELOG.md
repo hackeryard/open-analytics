@@ -10,6 +10,12 @@ All notable changes to the Open Analytics platform are documented in this file.
   - Synthesized dual-tone audio chime using the Web Audio API for audible alerts without external audio files.
   - Implemented 45-second background synchronization in `PlatformContext` to deliver desktop alerts even when the dashboard tab is in the background.
   - Configured notification click action to focus the browser tab and navigate directly to the incident route (`/errors`, `/seo`, `/notifications`).
+- **Automated Browser Notification Prompt & Permission Banner (`components/BrowserNotificationPrompt.tsx`, `components/PlatformContext.tsx`, `components/AppShell.tsx`)**:
+  - Automatically prompts dashboard users to enable native browser notifications instead of requiring manual interaction with the popover button.
+  - Deploys a floating glassmorphic in-app permission banner with 1-click "Allow Notifications" and "Later" options, satisfying modern browser user-gesture requirements.
+  - Attaches seamless automated permission triggers on workspace mount and on first user interaction (`pointerdown`/`keydown`).
+  - Immediately dispatches a confirmation desktop alert and audio chime when permission is granted.
+  - Persists session dismissal in `sessionStorage` to ensure non-intrusive dashboard UX.
 - **Desktop Alert Controls (`components/NotificationCenterPopover.tsx`, `app/notifications/page.tsx`)**:
   - Added desktop alert banner in `NotificationCenterPopover` with permission prompt, active/muted status indicator, mute/unmute toggle, and instant sample test notification button.
   - Added desktop browser alerts configuration and test trigger inside the Alert Rules modal and action bar on the `/notifications` page.

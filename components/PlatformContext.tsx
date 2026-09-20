@@ -182,9 +182,11 @@ interface PlatformContextType {
   browserNotificationsSupported: boolean;
   browserNotificationsPermission: BrowserNotificationPermission;
   browserNotificationsEnabled: boolean;
-  requestBrowserNotificationPermission: () => Promise<BrowserNotificationPermission>;
+  requestBrowserNotificationPermission: (sendConfirmation?: boolean) => Promise<BrowserNotificationPermission>;
   toggleBrowserNotifications: () => void;
   sendTestBrowserNotification: () => boolean;
+  showBrowserPermissionPrompt: boolean;
+  dismissBrowserPermissionPrompt: () => void;
 }
 
 const PlatformContext = createContext<PlatformContextType | undefined>(undefined);
@@ -222,6 +224,7 @@ export function PlatformProvider({
   const [browserNotificationsSupported, setBrowserNotificationsSupported] = useState<boolean>(false);
   const [browserNotificationsPermission, setBrowserNotificationsPermission] = useState<BrowserNotificationPermission>("default");
   const [browserNotificationsEnabled, setBrowserNotificationsEnabledState] = useState<boolean>(false);
+  const [showBrowserPermissionPrompt, setShowBrowserPermissionPrompt] = useState<boolean>(false);
   const knownNotificationIds = useRef<Set<string>>(new Set());
   const initialNotificationFetchDone = useRef<boolean>(false);
 
@@ -769,12 +772,77 @@ export function PlatformProvider({
   );
 
   // Native Browser Desktop Notification Actions
-  const handleRequestBrowserPermission = useCallback(async (): Promise<BrowserNotificationPermission> => {
-    const res = await requestBrowserNotificationPermission();
-    setBrowserNotificationsPermission(res);
-    setBrowserNotificationsEnabledState(isBrowserNotificationEnabled());
-    return res;
+  const handleRequestBrowserPermission = useCallback(
+    async (sendConfirmation: boolean = true): Promise<BrowserNotificationPermission> => {
+      const res = await requestBrowserNotificationPermission();
+      setBrowserNotificationsPermission(res);
+      setBrowserNotificationsEnabledState(isBrowserNotificationEnabled());
+
+      if (res === "granted") {
+        setShowBrowserPermissionPrompt(false);
+        if (sendConfirmation) {
+          sendBrowserNotification({
+            title: "Desktop Alerts Enabled",
+            body: "You will now receive real-time alerts for repeated errors, crashes, and performance issues.",
+            actionUrl: "/notifications",
+            playSound: true,
+          });
+        }
+      } else if (res === "denied") {
+        setShowBrowserPermissionPrompt(false);
+      }
+      return res;
+    },
+    []
+  );
+
+  const dismissBrowserPermissionPrompt = useCallback(() => {
+    setShowBrowserPermissionPrompt(false);
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("open_browser_perm_dismissed", "true");
+    }
   }, []);
+
+  // Auto-prompt user for browser notification permission on dashboard load & first user interaction
+  useEffect(() => {
+    if (!isDashboard || !isBrowserNotificationSupported()) return;
+
+    const currentPerm = getBrowserNotificationPermission();
+    if (currentPerm !== "default") return;
+
+    const isDismissed =
+      typeof window !== "undefined" &&
+      sessionStorage.getItem("open_browser_perm_dismissed") === "true";
+    if (isDismissed) return;
+
+    // Show prominent in-app prompt card
+    setShowBrowserPermissionPrompt(true);
+
+    // 1. Direct native prompt attempt after brief mount delay
+    const timer = setTimeout(() => {
+      if (getBrowserNotificationPermission() === "default") {
+        handleRequestBrowserPermission(true).catch(() => {});
+      }
+    }, 1200);
+
+    // 2. User gesture trigger: on first interaction anywhere on dashboard, immediately prompt
+    const onUserInteraction = () => {
+      window.removeEventListener("pointerdown", onUserInteraction);
+      window.removeEventListener("keydown", onUserInteraction);
+      if (getBrowserNotificationPermission() === "default") {
+        handleRequestBrowserPermission(true).catch(() => {});
+      }
+    };
+
+    window.addEventListener("pointerdown", onUserInteraction, { once: true });
+    window.addEventListener("keydown", onUserInteraction, { once: true });
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("pointerdown", onUserInteraction);
+      window.removeEventListener("keydown", onUserInteraction);
+    };
+  }, [isDashboard, handleRequestBrowserPermission]);
 
   const toggleBrowserNotifications = useCallback(() => {
     const current = isBrowserNotificationEnabled();
@@ -885,6 +953,8 @@ export function PlatformProvider({
         requestBrowserNotificationPermission: handleRequestBrowserPermission,
         toggleBrowserNotifications,
         sendTestBrowserNotification,
+        showBrowserPermissionPrompt,
+        dismissBrowserPermissionPrompt,
       }}
     >
       {children}

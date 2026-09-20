@@ -691,7 +691,7 @@ export default function NotificationsPage() {
                     {browserNotificationsPermission !== "granted" ? (
                       <button
                         type="button"
-                        onClick={requestBrowserNotificationPermission}
+                        onClick={() => requestBrowserNotificationPermission()}
                         className="px-3 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs transition cursor-pointer"
                       >
                         Enable Desktop Alerts
