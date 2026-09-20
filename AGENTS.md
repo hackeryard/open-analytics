@@ -16,6 +16,7 @@ Always execute repeated tasks via project scripts:
 - `npm run push [msg]`
 - `npm run sync [msg] [--pr]`
 - `npm run pr [--title "..." --body "..."]`
+- `npm run merge:pr [pr_number]`
 - `npm run kill:3005`
 - `npm run test:subdomain`
 - `npm run purge:retention`
