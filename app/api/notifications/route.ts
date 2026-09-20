@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Notification from "@/models/Notification";
 import { verifyProjectAccess } from "@/lib/auth";
+import { runOptimizationScan } from "@/lib/alertsEngine";
+
+export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
   try {
@@ -42,7 +45,7 @@ export async function GET(req: Request) {
       query.type = type;
     }
 
-    const [notifications, unreadCount, criticalCount] = await Promise.all([
+    let [notifications, unreadCount, criticalCount] = await Promise.all([
       (Notification as any)
         .find(query)
         .sort({ createdAt: -1 })
@@ -59,6 +62,34 @@ export async function GET(req: Request) {
         dismissed: false,
       }),
     ]);
+
+    // If active notifications are empty, trigger an initial automated health & optimization scan
+    if (notifications.length === 0 && (!statusFilter || statusFilter === "active" || statusFilter === "unread")) {
+      try {
+        const scanRes = await runOptimizationScan(projectId);
+        if (scanRes.createdCount > 0) {
+          [notifications, unreadCount, criticalCount] = await Promise.all([
+            (Notification as any)
+              .find(query)
+              .sort({ createdAt: -1 })
+              .limit(limit)
+              .lean(),
+            (Notification as any).countDocuments({
+              projectId,
+              read: false,
+              dismissed: false,
+            }),
+            (Notification as any).countDocuments({
+              projectId,
+              severity: "critical",
+              dismissed: false,
+            }),
+          ]);
+        }
+      } catch (scanErr) {
+        console.error("Auto-scan error on notifications GET:", scanErr);
+      }
+    }
 
     return NextResponse.json({
       success: true,

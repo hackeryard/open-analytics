@@ -842,7 +842,7 @@ export default function App() {
       {/* ============================================================ */}
       <div className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ${sidebarCollapsed ? "lg:pl-20" : "lg:pl-64"}`}>
         {/* Top Command Bar */}
-        <header className="sticky top-0 z-30 h-14 glass-header px-3 sm:px-6 flex items-center justify-between gap-2 sm:gap-4 overflow-hidden">
+        <header className="sticky top-0 z-30 h-14 glass-header px-3 sm:px-6 flex items-center justify-between gap-2 sm:gap-4">
           {/* Left: Mobile Toggle, Breadcrumb & Live Visitor Beacon */}
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <button

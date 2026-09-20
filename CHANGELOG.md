@@ -2,6 +2,31 @@
 
 All notable changes to the Open Analytics platform are documented in this file.
 
+## [3.5.2] - 2026-09-20
+
+### Added
+- **Native Browser Desktop Notification Alerts (`lib/browserNotifications.ts`, `components/PlatformContext.tsx`)**:
+  - Implemented native operating system desktop notifications using the HTML5 Web Notification API for repeated error spikes (>= 5 occurrences), error storms, and critical telemetry anomalies.
+  - Synthesized dual-tone audio chime using the Web Audio API for audible alerts without external audio files.
+  - Implemented 45-second background synchronization in `PlatformContext` to deliver desktop alerts even when the dashboard tab is in the background.
+  - Configured notification click action to focus the browser tab and navigate directly to the incident route (`/errors`, `/seo`, `/notifications`).
+- **Desktop Alert Controls (`components/NotificationCenterPopover.tsx`, `app/notifications/page.tsx`)**:
+  - Added desktop alert banner in `NotificationCenterPopover` with permission prompt, active/muted status indicator, mute/unmute toggle, and instant sample test notification button.
+  - Added desktop browser alerts configuration and test trigger inside the Alert Rules modal and action bar on the `/notifications` page.
+
+## [3.5.1] - 2026-09-20
+
+### Fixed
+- **Bell Icon Click & Popover Rendering (`components/AppShell.tsx`, `components/NotificationCenterPopover.tsx`)**:
+  - Removed `overflow-hidden` from the top command bar `<header>` element in `AppShell.tsx`, which previously clipped and hid the notification center dropdown and workspace switcher.
+  - Added full mobile responsive positioning (`fixed inset-x-3 top-16 sm:absolute sm:right-0 sm:top-full sm:w-96`) and a backdrop overlay (`fixed inset-0 z-40`) to ensure reliable outside tap/click closure across mobile and desktop.
+- **Repeated Error Alert Milestone Triggering (`lib/alertsEngine.ts`)**:
+  - Fixed milestone bracket logic in `evaluateErrorAlerts` to reliably flag repeated errors across all occurrence levels (5x, 10x, 25x, 50x, 100x+), preventing errors with 6-24 occurrences from falling through.
+  - Fixed stray character syntax error on line 1 of `lib/alertsEngine.ts`.
+- **Automated Health & Telemetry Scans (`lib/alertsEngine.ts`, `app/api/notifications/route.ts`)**:
+  - Integrated `ErrorLog` repeated error audits and 1-hour error storm velocity checks directly into `runOptimizationScan`.
+  - Added automated fallback scanning on `GET /api/notifications` so that new or previously un-scanned projects automatically generate recommendations (SEO missing titles, GEO citation readiness, Web Vitals, repeated errors) upon viewing the dashboard.
+
 ## [3.5.0] - 2026-09-19
 
 ### Added

@@ -3,6 +3,8 @@ import { connectDB } from "@/lib/mongodb";
 import { verifyProjectAccess } from "@/lib/auth";
 import { runOptimizationScan } from "@/lib/alertsEngine";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: Request) {
   try {
     await connectDB();

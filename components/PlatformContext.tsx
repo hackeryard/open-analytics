@@ -1,9 +1,18 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { AnalyticsData, PageViewItem } from "@/lib/analyticsTypes";
 import { isDashboardClient } from "@/lib/subdomain";
 import { getMaxAllowedProjects, getUserEffectivePlan, isUserPlanExpired, isPlanActive } from "@/lib/planLimits";
+import {
+  BrowserNotificationPermission,
+  isBrowserNotificationSupported,
+  getBrowserNotificationPermission,
+  isBrowserNotificationEnabled,
+  setBrowserNotificationEnabled,
+  requestBrowserNotificationPermission,
+  sendBrowserNotification,
+} from "@/lib/browserNotifications";
 
 interface User {
   _id: string;
@@ -73,6 +82,7 @@ export interface NotificationItem {
   read: boolean;
   readAt?: string | null;
   dismissed: boolean;
+  fingerprint?: string | null;
   createdAt: string;
 }
 
@@ -167,6 +177,14 @@ interface PlatformContextType {
   markAllNotificationsAsRead: (projectId?: string) => Promise<boolean>;
   dismissNotification: (notificationId: string) => Promise<boolean>;
   triggerOptimizationScan: (projectId?: string) => Promise<{ success: boolean; newAlertsCount?: number; message?: string }>;
+
+  // Native Browser Desktop Notifications
+  browserNotificationsSupported: boolean;
+  browserNotificationsPermission: BrowserNotificationPermission;
+  browserNotificationsEnabled: boolean;
+  requestBrowserNotificationPermission: () => Promise<BrowserNotificationPermission>;
+  toggleBrowserNotifications: () => void;
+  sendTestBrowserNotification: () => boolean;
 }
 
 const PlatformContext = createContext<PlatformContextType | undefined>(undefined);
@@ -199,6 +217,21 @@ export function PlatformProvider({
   const [unreadNotificationsCount, setUnreadNotificationsCount] = useState<number>(0);
   const [criticalNotificationsCount, setCriticalNotificationsCount] = useState<number>(0);
   const [notificationsLoading, setNotificationsLoading] = useState<boolean>(false);
+
+  // Native Browser Desktop Notification State
+  const [browserNotificationsSupported, setBrowserNotificationsSupported] = useState<boolean>(false);
+  const [browserNotificationsPermission, setBrowserNotificationsPermission] = useState<BrowserNotificationPermission>("default");
+  const [browserNotificationsEnabled, setBrowserNotificationsEnabledState] = useState<boolean>(false);
+  const knownNotificationIds = useRef<Set<string>>(new Set());
+  const initialNotificationFetchDone = useRef<boolean>(false);
+
+  useEffect(() => {
+    if (isBrowserNotificationSupported()) {
+      setBrowserNotificationsSupported(true);
+      setBrowserNotificationsPermission(getBrowserNotificationPermission());
+      setBrowserNotificationsEnabledState(isBrowserNotificationEnabled());
+    }
+  }, []);
 
   // Live stream & pagination
   const [paginatedPageviews, setPaginatedPageviews] = useState<PageViewItem[]>([]);
@@ -621,9 +654,29 @@ export function PlatformProvider({
       if (res.ok) {
         const json = await res.json();
         if (json.success) {
-          setNotifications(json.notifications || []);
+          const items: NotificationItem[] = json.notifications || [];
+          setNotifications(items);
           setUnreadNotificationsCount(json.unreadCount || 0);
           setCriticalNotificationsCount(json.criticalCount || 0);
+
+          // Dispatch native browser desktop notifications for new unread alerts
+          if (!initialNotificationFetchDone.current) {
+            initialNotificationFetchDone.current = true;
+            knownNotificationIds.current = new Set(items.map((n) => n._id));
+          } else {
+            for (const n of items) {
+              if (!n.read && !knownNotificationIds.current.has(n._id)) {
+                knownNotificationIds.current.add(n._id);
+                sendBrowserNotification({
+                  title: `Open Analytics: ${n.title}`,
+                  body: n.message,
+                  tag: n.fingerprint || n._id,
+                  actionUrl: n.actionUrl || "/notifications",
+                  playSound: true,
+                });
+              }
+            }
+          }
         }
       }
     } catch (err) {
@@ -715,8 +768,43 @@ export function PlatformProvider({
     [activeProjectId, fetchNotifications]
   );
 
+  // Native Browser Desktop Notification Actions
+  const handleRequestBrowserPermission = useCallback(async (): Promise<BrowserNotificationPermission> => {
+    const res = await requestBrowserNotificationPermission();
+    setBrowserNotificationsPermission(res);
+    setBrowserNotificationsEnabledState(isBrowserNotificationEnabled());
+    return res;
+  }, []);
+
+  const toggleBrowserNotifications = useCallback(() => {
+    const current = isBrowserNotificationEnabled();
+    const next = !current;
+    setBrowserNotificationEnabled(next);
+    setBrowserNotificationsEnabledState(next);
+  }, []);
+
+  const sendTestBrowserNotification = useCallback((): boolean => {
+    return sendBrowserNotification({
+      title: "Open Analytics Alert Test",
+      body: "Desktop browser notifications are active. You will be alerted when repeated errors or storms are detected.",
+      actionUrl: "/notifications",
+      playSound: true,
+    });
+  }, []);
+
+  // Background alert polling every 45s so desktop notifications trigger even on background tabs
+  useEffect(() => {
+    if (!activeProjectId) return;
+    const interval = setInterval(() => {
+      fetchNotifications(activeProjectId);
+    }, 45000);
+    return () => clearInterval(interval);
+  }, [activeProjectId, fetchNotifications]);
+
   useEffect(() => {
     if (activeProjectId) {
+      initialNotificationFetchDone.current = false;
+      knownNotificationIds.current.clear();
       fetchNotifications(activeProjectId);
     }
   }, [activeProjectId, fetchNotifications]);
@@ -791,6 +879,12 @@ export function PlatformProvider({
         markAllNotificationsAsRead,
         dismissNotification,
         triggerOptimizationScan,
+        browserNotificationsSupported,
+        browserNotificationsPermission,
+        browserNotificationsEnabled,
+        requestBrowserNotificationPermission: handleRequestBrowserPermission,
+        toggleBrowserNotifications,
+        sendTestBrowserNotification,
       }}
     >
       {children}
