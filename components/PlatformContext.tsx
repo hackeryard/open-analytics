@@ -177,6 +177,11 @@ interface PlatformContextType {
   markAllNotificationsAsRead: (projectId?: string) => Promise<boolean>;
   dismissNotification: (notificationId: string) => Promise<boolean>;
   triggerOptimizationScan: (projectId?: string) => Promise<{ success: boolean; newAlertsCount?: number; message?: string }>;
+  ignoreNotificationType: (type: string, projectId?: string) => Promise<boolean>;
+  unignoreNotificationType: (type: string, projectId?: string) => Promise<boolean>;
+  addNotificationIgnoreRule: (rule: { name?: string; type?: string; matchField: string; matchType: string; pattern: string }, projectId?: string) => Promise<boolean>;
+  deleteNotificationIgnoreRule: (ruleId: string, projectId?: string) => Promise<boolean>;
+  toggleNotificationIgnoreRule: (ruleId: string, enabled: boolean, projectId?: string) => Promise<boolean>;
 
   // Native Browser Desktop Notifications
   browserNotificationsSupported: boolean;
@@ -771,6 +776,111 @@ export function PlatformProvider({
     [activeProjectId, fetchNotifications]
   );
 
+  const ignoreNotificationType = useCallback(
+    async (type: string, projectId?: string): Promise<boolean> => {
+      const prj = projectId || activeProjectId;
+      if (!prj || !type) return false;
+      try {
+        const res = await fetch(`/api/projects/${prj}/alert-rules`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "ignore_type", type }),
+        });
+        if (res.ok) {
+          await fetchNotifications(prj);
+          return true;
+        }
+        return false;
+      } catch {
+        return false;
+      }
+    },
+    [activeProjectId, fetchNotifications]
+  );
+
+  const unignoreNotificationType = useCallback(
+    async (type: string, projectId?: string): Promise<boolean> => {
+      const prj = projectId || activeProjectId;
+      if (!prj || !type) return false;
+      try {
+        const res = await fetch(`/api/projects/${prj}/alert-rules`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "unignore_type", type }),
+        });
+        if (res.ok) {
+          await fetchNotifications(prj);
+          return true;
+        }
+        return false;
+      } catch {
+        return false;
+      }
+    },
+    [activeProjectId, fetchNotifications]
+  );
+
+  const addNotificationIgnoreRule = useCallback(
+    async (
+      rule: { name?: string; type?: string; matchField: string; matchType: string; pattern: string },
+      projectId?: string
+    ): Promise<boolean> => {
+      const prj = projectId || activeProjectId;
+      if (!prj || !rule.pattern) return false;
+      try {
+        const res = await fetch(`/api/projects/${prj}/alert-rules`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "add_rule", ...rule }),
+        });
+        if (res.ok) {
+          await fetchNotifications(prj);
+          return true;
+        }
+        return false;
+      } catch {
+        return false;
+      }
+    },
+    [activeProjectId, fetchNotifications]
+  );
+
+  const deleteNotificationIgnoreRule = useCallback(
+    async (ruleId: string, projectId?: string): Promise<boolean> => {
+      const prj = projectId || activeProjectId;
+      if (!prj || !ruleId) return false;
+      try {
+        const res = await fetch(`/api/projects/${prj}/alert-rules`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "delete_rule", ruleId }),
+        });
+        return res.ok;
+      } catch {
+        return false;
+      }
+    },
+    [activeProjectId]
+  );
+
+  const toggleNotificationIgnoreRule = useCallback(
+    async (ruleId: string, enabled: boolean, projectId?: string): Promise<boolean> => {
+      const prj = projectId || activeProjectId;
+      if (!prj || !ruleId) return false;
+      try {
+        const res = await fetch(`/api/projects/${prj}/alert-rules`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "toggle_rule", ruleId, enabled }),
+        });
+        return res.ok;
+      } catch {
+        return false;
+      }
+    },
+    [activeProjectId]
+  );
+
   // Native Browser Desktop Notification Actions
   const handleRequestBrowserPermission = useCallback(
     async (sendConfirmation: boolean = true): Promise<BrowserNotificationPermission> => {
@@ -947,6 +1057,11 @@ export function PlatformProvider({
         markAllNotificationsAsRead,
         dismissNotification,
         triggerOptimizationScan,
+        ignoreNotificationType,
+        unignoreNotificationType,
+        addNotificationIgnoreRule,
+        deleteNotificationIgnoreRule,
+        toggleNotificationIgnoreRule,
         browserNotificationsSupported,
         browserNotificationsPermission,
         browserNotificationsEnabled,

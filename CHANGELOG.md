@@ -2,6 +2,36 @@
 
 All notable changes to the Open Analytics platform are documented in this file.
 
+## [3.5.3] - 2026-09-20
+
+### Added
+- **Granular Notification Ignore & Suppression System (`lib/alertsEngine.ts`, `models/Project.ts`, `app/api/projects/[projectId]/alert-rules/route.ts`)**:
+  - Implemented support for muting general notification types: Repeated Errors (`error_repeated`), Error Storms (`error_storm`), SEO Missing Titles (`seo_unoptimized`), AEO Low Dwell Friction (`aeo_unoptimized`), GEO AI Citation Radar (`geo_radar`), Core Web Vitals Degradation (`web_vitals`), and Behavioral Rage Clicks (`rage_clicks`).
+  - Added granular ignore rules allowing users to suppress notifications matching specific route pathnames (e.g. `/test`, `/admin`), error messages, alert titles, or exact fingerprints with substring, exact, prefix, or regex matching.
+  - Integrated `isNotificationIgnored` pre-checks into both real-time ingestion (`evaluateErrorAlerts`) and on-demand/background optimization scans (`runOptimizationScan`).
+- **Inline Notification Mute & Ignore Menus (`app/notifications/page.tsx`, `components/NotificationCenterPopover.tsx`)**:
+  - Added an interactive "Ignore / Mute" button (`BellOff`) to every notification card in both the top navbar popover and the full notifications workspace.
+  - Users can immediately mute the entire notification type, ignore all alerts for the affected route, or suppress the specific alert fingerprint with one click.
+- **Tabbed Alert Rules & Filters Management (`app/notifications/page.tsx`)**:
+  - Structured the Alert Rules modal into three dedicated tabs: "General Types & Thresholds", "Specific Ignore Rules", and "Desktop Alerts".
+  - Added active rule management with real-time enable/disable toggles, deletion, and an inline rule creation form.
+- **Main Domain Documentation & Feature Showcase (`app/docs/alerts/page.tsx`, `app/docs/page.tsx`, `components/docs/DocsClientShell.tsx`, `app/features/page.tsx`, `components/public/LandingHero.tsx`)**:
+  - Built a comprehensive public documentation guide for the Alerts & Incident Engine (`/docs/alerts`) covering the 7 anomaly heuristics, native desktop notifications, Web Audio chimes, and suppression rules.
+  - Registered `/docs/alerts` in `DocsClientShell` navigation under "Observability Modules".
+  - Enhanced `app/docs/page.tsx` with modules directory and 3-tier domain isolation architecture breakdown.
+  - Added "Autonomous Anomaly Alerts & OS Desktop Notifications" module to `app/features/page.tsx` with JSON-LD schema integration.
+  - Added interactive "Incident Alerts" live preview tab and 2 new pillars ("Autonomous Incident Alerts", "Mobile-First Workspace & Switcher") to `LandingHero.tsx` on the main domain.
+
+### Fixed
+- **Duplicate Header on Documentation Pages (`components/docs/DocsClientShell.tsx`, `components/public/PublicNavbar.tsx`)**:
+  - Removed redundant inner `<header>` from `DocsClientShell` that previously stacked below `PublicNavbar`.
+  - Positioned the desktop docs navigation sidebar to `sticky top-16 h-[calc(100vh-4rem)]` under the global navbar.
+  - Added a compact mobile breadcrumb sub-bar and dedicated docs drawer toggle for mobile devices.
+  - Enabled `/docs/*` subpath matching for active state indicator on desktop and mobile links in `PublicNavbar`.
+- **Popover & Modal Transparency (`components/NotificationCenterPopover.tsx`, `components/BrowserNotificationPrompt.tsx`, `app/notifications/page.tsx`)**:
+  - Removed `glass-card` semi-transparency from the notification center popover, permission prompt banner, and alert rules modal.
+  - Applied solid dark surfaces (`bg-[#080d1a]`, `bg-[#0b1120]`) with sharp borders and deep shadows to prevent underlying charts and text from bleeding through popover dropdowns.
+
 ## [3.5.2] - 2026-09-20
 
 ### Added

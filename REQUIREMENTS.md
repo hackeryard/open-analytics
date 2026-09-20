@@ -107,10 +107,20 @@
 - `members` (Array of objects): List of `{ userId: ObjectId, role: "admin" | "editor" | "member" }`.
 - `publishableKey` (String, Unique): Public client key (`pk_live_...`).
 - `secretKey` (String): Server-side ingestion secret (`sk_live_...`).
-- `allowedDomains` (Array of Strings): Permitted CORS origins (e.g. `["app.acme.com"]` or `["*"]`).
-- `settings`: Object containing `ipAnonymization`, `piiRedaction`, `dataRetentionDays`, and `errorRules`.
-
-### 3.2 `PageView` Collection
+- `settings`: Object containing:
+  - `ipAnonymization`, `piiRedaction`, `dataRetentionDays`, and `errorRules`.
+  - `alertSettings`: Incident alerting preferences:
+    - `errorThreshold` (Number, default: 5): Occurrence count to trigger repeated error alert.
+    - `errorRepeatedAlerts` (Boolean): Toggle for repeated crash spikes (5x+).
+    - `errorStormAlerts` (Boolean): Toggle for velocity error storm alerts (>10/5m).
+    - `seoTitleAlerts` (Boolean): Toggle for missing SEO title audits.
+    - `aeoDwellAlerts` (Boolean): Toggle for AEO low-dwell retention friction audits.
+    - `geoRadarAlerts` (Boolean): Toggle for GEO AI citation radar audits.
+    - `webVitalsAlerts` (Boolean): Toggle for Core Web Vitals degradation alerts.
+    - `rageClicksAlerts` (Boolean): Toggle for behavioral rage click hotspots.
+    - `desktopAlerts` (Boolean): Desktop notification delivery preference.
+    - `ignoredTypes` (Array of Strings): List of muted notification types.
+    - `ignoredRules` (Array of Objects): Granular suppression rules `{ id, name, type, matchField, matchType, pattern, enabled, createdAt }`.
 - `projectId` (String, Indexed): Multi-tenant isolation key.
 - `pathname` (String, Indexed): Active URL route path.
 - `visitorId` (String, Indexed): Persistent client UUID stored in localStorage.

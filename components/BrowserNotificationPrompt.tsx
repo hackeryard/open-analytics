@@ -22,7 +22,7 @@ export default function BrowserNotificationPrompt() {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 max-w-[calc(100vw-2rem)] sm:w-[420px] glass-card p-4 rounded-2xl border border-cyan-500/30 shadow-2xl shadow-cyan-950/50 animate-fadeIn backdrop-blur-xl bg-[#080d19]/90">
+    <div className="fixed bottom-4 right-4 z-50 max-w-[calc(100vw-2rem)] sm:w-[420px] bg-[#080d1a] p-4 rounded-2xl border border-cyan-500/30 shadow-2xl shadow-cyan-950/50 animate-fadeIn">
       <div className="flex items-start gap-3">
         <div className="w-9 h-9 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0 mt-0.5">
           <Radio size={18} className="animate-pulse" />

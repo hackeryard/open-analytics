@@ -81,16 +81,18 @@ open-analytics/
 │           ├── event/                 # Custom conversion events
 │           └── error/                 # Runtime crashes & stack traces
 ├── components/                        # React UI Components
-│   ├── AppShell.tsx                   # Main layout shell, sidebar navigation
-│   ├── NotificationCenterPopover.tsx  # Top navbar alert popover
-│   ├── PlatformContext.tsx            # Global state & data synchronization
+│   ├── AppShell.tsx                   # Main layout shell, sidebar navigation, mobile switcher
+│   ├── BrowserNotificationPrompt.tsx  # In-app desktop notification permission prompt banner
+│   ├── NotificationCenterPopover.tsx  # Top navbar alert popover with inline mute menus
+│   ├── PlatformContext.tsx            # Global state, 45s desktop sync, alert rule methods
 │   ├── PlatformHeader.tsx             # Shared view header banner
 │   └── sections/                      # Dedicated view section components
 ├── lib/                               # Core Utilities & Business Logic
-│   ├── alertsEngine.ts                # Anomaly & repeated error detection
+│   ├── alertsEngine.ts                # Anomaly, repeated error detection & ignore rules engine
 │   ├── analyticsDb.ts                 # High-performance MongoDB aggregations
 │   ├── analyticsTypes.ts              # TypeScript interfaces & types
 │   ├── auth.ts                        # JWT verification, RBAC guards
+│   ├── browserNotifications.ts        # Native Web Notifications API & Web Audio chime synthesis
 │   ├── countries.ts                   # Country codes & geo names mapping
 │   └── mongodb.ts                     # Mongoose connection pooling
 ├── models/                            # Mongoose ODM Models

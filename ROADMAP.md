@@ -85,14 +85,20 @@ To build the most developer-friendly, high-performance, and visually stunning an
 - [ ] A/B test variant tracking and statistical significance indicators.
 
 ### Phase 11: Automated Alerting & Notification Center (Completed)
-- [x] Autonomous real-time error alert triggers on repeated crash occurrences (≥ 5x threshold).
-- [x] Error velocity and storm spike detection (> 10 errors/hour threshold).
+- [x] Autonomous real-time error alert triggers on repeated crash occurrences (≥ 5x threshold with brackets at 10x, 25x, 50x, 100x+).
+- [x] Error velocity and storm spike detection (> 10 errors/5m threshold).
 - [x] SEO & AEO optimization audits (missing page titles, low dwell, and high bounce routes).
 - [x] GEO & AI search radar readiness alerts (citation readiness score < 50%).
 - [x] Core Web Vitals degradation warnings (LCP > 2.5s, CLS > 0.25).
 - [x] Behavioral UX rage click hotspot warnings (≥ 3 rage clicks).
 - [x] In-app top navbar Notification Center popover with live unread badge and quick filters.
 - [x] Dedicated Alerts & Notification Hub (`/notifications`) with customizable alert rules & thresholds.
+- [x] Native OS Desktop Notifications (Web Notification API) with synthesized Web Audio chimes and 45-second background sync.
+- [x] Automated in-app Browser Notification Permission Prompt banner with 1-click allow and session snooze.
+- [x] Granular Notification Ignore & Suppression System with 7 general category toggles and custom pattern rules (contains, exact, prefix, regex).
+- [x] 1-Click inline mute menus (`BellOff`) on notification cards and popover items.
+- [x] Zero-transparency solid UI surfaces (`bg-[#080d1a]`, `bg-[#0b1120]`) for popovers, modals, and prompts.
+- [x] Mobile-first responsive navigation bar and interactive one-tap header & drawer project switcher.
 - [x] 24-hour fingerprint cooldown deduplication and 365-day TTL index.
 - [ ] External incident alerts via Slack, Discord, and Telegram webhooks.
 - [ ] Daily/Weekly executive summary email reports.
