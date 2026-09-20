@@ -136,7 +136,7 @@ export default function NotificationCenterPopover({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-slate-300 hover:text-white transition cursor-pointer group"
+        className="relative z-10 p-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-slate-300 hover:text-white transition cursor-pointer group"
         title="Alerts & Notifications"
         aria-label="Alerts & Notifications"
       >
@@ -156,11 +156,18 @@ export default function NotificationCenterPopover({
 
       {/* Popover Dropdown */}
       {isOpen && (
-        <div
-          className={`absolute ${
-            align === "right" ? "right-0" : "left-0"
-          } top-full mt-2 w-[calc(100vw-1.5rem)] max-w-sm sm:w-96 glass-card rounded-2xl shadow-2xl z-50 animate-fadeIn border border-white/[0.12] flex flex-col max-h-[85vh] overflow-hidden`}
-        >
+        <>
+          {/* Backdrop overlay for outside tap/click */}
+          <div
+            className="fixed inset-0 z-40 bg-black/20 sm:bg-transparent"
+            onClick={() => setIsOpen(false)}
+          />
+
+          <div
+            className={`fixed inset-x-3 top-16 sm:inset-x-auto sm:top-full sm:mt-2 ${
+              align === "right" ? "sm:right-0" : "sm:left-0"
+            } sm:w-96 glass-card rounded-2xl shadow-2xl z-50 animate-fadeIn border border-white/[0.12] flex flex-col max-h-[80vh] sm:max-h-[85vh] overflow-hidden`}
+          >
           {/* Header */}
           <div className="p-3.5 border-b border-white/[0.08] bg-[#080d19]/80 flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -384,6 +391,7 @@ export default function NotificationCenterPopover({
             </Link>
           </div>
         </div>
+        </>
       )}
     </div>
   );

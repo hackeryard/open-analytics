@@ -27,11 +27,19 @@ export async function evaluateErrorAlerts(projectId: string, errorLog: any) {
 
     // 1. REPEATED ERROR CHECK (occurrences >= repeatThreshold)
     if (occurrences >= repeatThreshold) {
-      // Bracket calculation (e.g. at 5, 25, 50, 100)
-      const bracket =
-        occurrences === repeatThreshold
-          ? repeatThreshold
-          : Math.floor(occurrences / 25) * 25;
+      // Bracket calculation milestones (e.g. at 5, 10, 25, 50, 100...)
+      let bracket = repeatThreshold;
+      if (occurrences >= 100) {
+        bracket = Math.floor(occurrences / 50) * 50;
+      } else if (occurrences >= 50) {
+        bracket = 50;
+      } else if (occurrences >= 25) {
+        bracket = 25;
+      } else if (occurrences >= 10) {
+        bracket = 10;
+      } else {
+        bracket = repeatThreshold;
+      }
 
       if (bracket >= repeatThreshold) {
         const fingerprint = `err_rep:${projectId}:${pathname}:${digest}:${bracket}`;
@@ -129,6 +137,104 @@ export async function runOptimizationScan(projectId: string): Promise<{ createdC
     let createdCount = 0;
     const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
+    // 0. REPEATED ERRORS TELEMETRY SCAN
+    const alertSettings = (project as any)?.settings?.alertSettings || {};
+    const repeatThreshold = Number(alertSettings.errorRepeatThreshold) || 5;
+    const repeatedErrors = await (ErrorLog as any)
+      .find({
+        projectId,
+        occurrences: { $gte: repeatThreshold },
+        lastOccurredAt: { $gte: twentyFourHoursAgo },
+      })
+      .sort({ occurrences: -1 })
+      .limit(10)
+      .lean();
+
+    for (const err of repeatedErrors) {
+      const occurrences = Number(err.occurrences) || repeatThreshold;
+      const message = String(err.message || "Unknown error").trim();
+      const pathname = String(err.pathname || "/").trim();
+      const errorType = String(err.errorType || "runtime").trim();
+      const digest = err.digest || message.slice(0, 50);
+
+      let bracket = repeatThreshold;
+      if (occurrences >= 100) bracket = Math.floor(occurrences / 50) * 50;
+      else if (occurrences >= 50) bracket = 50;
+      else if (occurrences >= 25) bracket = 25;
+      else if (occurrences >= 10) bracket = 10;
+      else bracket = repeatThreshold;
+
+      const fingerprint = `err_rep:${projectId}:${pathname}:${digest}:${bracket}`;
+      const existing = await (Notification as any).findOne({
+        projectId,
+        fingerprint,
+        createdAt: { $gte: twentyFourHoursAgo },
+      });
+
+      if (!existing) {
+        const isCritical =
+          errorType === "boundary" ||
+          errorType === "http_5xx" ||
+          errorType === "unhandledrejection";
+
+        await (Notification as any).create({
+          projectId,
+          title: `Repeated Error (${occurrences}x): ${errorType.toUpperCase()}`,
+          message: `Error "${message.slice(0, 100)}" has occurred ${occurrences} times on route "${pathname}".`,
+          type: "error_repeated",
+          severity: isCritical ? "critical" : "warning",
+          metadata: {
+            errorId: err._id?.toString(),
+            pathname,
+            message,
+            occurrences,
+            errorType,
+            bracket,
+          },
+          actionUrl: `/errors?search=${encodeURIComponent(message.slice(0, 40))}`,
+          actionLabel: "Inspect Error",
+          fingerprint,
+        });
+        createdCount++;
+      }
+    }
+
+    // 0b. ERROR STORM CHECK
+    const stormThreshold = Number(alertSettings.errorStormThreshold) || 10;
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+    const recentErrorsCount = await (ErrorLog as any).countDocuments({
+      projectId,
+      lastOccurredAt: { $gte: oneHourAgo },
+    });
+    if (recentErrorsCount >= stormThreshold) {
+      const hourKey = new Date().toISOString().slice(0, 13);
+      const stormFingerprint = `err_storm:${projectId}:${hourKey}`;
+      const existingStormAlert = await (Notification as any).findOne({
+        projectId,
+        fingerprint: stormFingerprint,
+        createdAt: { $gte: new Date(Date.now() - 3 * 60 * 60 * 1000) },
+      });
+
+      if (!existingStormAlert) {
+        await (Notification as any).create({
+          projectId,
+          title: "High Error Velocity Detected",
+          message: `Detected ${recentErrorsCount} error occurrences across your website in the past hour. Investigate recent code deployments or API availability.`,
+          type: "error_storm",
+          severity: "critical",
+          metadata: {
+            errorCount: recentErrorsCount,
+            timeWindow: "1h",
+            threshold: stormThreshold,
+          },
+          actionUrl: "/errors",
+          actionLabel: "View Error Telemetry",
+          fingerprint: stormFingerprint,
+        });
+        createdCount++;
+      }
+    }
+
     // 1. SEO & AEO: UNOPTIMIZED PAGE TITLES
     const topPages = data?.topPages || [];
     for (const page of topPages) {
@@ -143,7 +249,7 @@ export async function runOptimizationScan(projectId: string): Promise<{ createdC
         title.toLowerCase() === "untitled" ||
         title.length < 3;
 
-      if (views >= 3 && isTitleMissing) {
+      if (views >= 1 && isTitleMissing) {
         const fingerprint = `seo_title:${projectId}:${pathname}`;
         const existing = await (Notification as any).findOne({
           projectId,
