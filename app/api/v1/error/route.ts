@@ -2,6 +2,7 @@ import { connectDB } from "@/lib/mongodb";
 import ErrorLog from "@/models/ErrorLog";
 import { authenticateProjectRequest } from "@/lib/projectAuth";
 import { corsJsonResponse, handleCorsPreflight } from "@/lib/cors";
+import { evaluateErrorAlerts } from "@/lib/alertsEngine";
 
 export async function OPTIONS(req: Request) {
   return handleCorsPreflight(req);
@@ -162,6 +163,11 @@ export async function POST(req: Request) {
       if (stack && !existing.stack) existing.stack = stack;
       await existing.save();
 
+      // Asynchronously trigger automated error alerts check (repeated errors / storm detection)
+      evaluateErrorAlerts(projectId, existing).catch((e) =>
+        console.error("evaluateErrorAlerts error:", e)
+      );
+
       return corsJsonResponse({ ok: true, deduplicated: true, errorId: existing._id }, { status: 200 }, req);
     }
 
@@ -184,6 +190,11 @@ export async function POST(req: Request) {
       occurrences: 1,
       lastOccurredAt: new Date(),
     });
+
+    // Asynchronously trigger automated error alerts check (storm detection)
+    evaluateErrorAlerts(projectId, errorLog).catch((e) =>
+      console.error("evaluateErrorAlerts error:", e)
+    );
 
     return corsJsonResponse({ ok: true, errorId: errorLog._id }, { status: 200 }, req);
   } catch (err: any) {

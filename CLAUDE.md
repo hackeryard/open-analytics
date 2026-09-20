@@ -53,9 +53,11 @@ open-analytics/
 │   ├── geo/                           # Interactive World Atlas & geo drilldown
 │   ├── journeys/                      # Multi-step navigation flows & transitions
 │   ├── live-feed/                     # Real-time event stream & telemetry
+│   ├── notifications/                 # Incident alerts & optimization hub
 │   ├── pages/                         # Top routes & page performance hub
 │   ├── projects/                      # Project directory & settings
 │   │   └── [projectId]/
+│   │       ├── alert-rules/           # Project threshold preferences
 │   │       ├── install/               # Tracking script installation snippet
 │   │       └── settings/              # Settings, team RBAC, ownership transfer
 │   ├── seo/                           # Organic search engine monitoring
@@ -64,8 +66,10 @@ open-analytics/
 │   ├── vitals/                        # Core Web Vitals (LCP, INP, CLS, FCP, TTFB)
 │   └── api/                           # Backend API route handlers
 │       ├── auth/                      # Login, register, logout, me
+│       ├── notifications/             # Notification CRUD & on-demand scan
 │       ├── projects/                  # Project CRUD & listing
 │       │   └── [projectId]/
+│       │       ├── alert-rules/       # Threshold settings CRUD
 │       │       ├── analytics/         # Aggregated analytical metrics
 │       │       ├── error-rules/       # Edge suppression rules CRUD
 │       │       ├── errors/            # Error logs & status updates
@@ -78,20 +82,23 @@ open-analytics/
 │           └── error/                 # Runtime crashes & stack traces
 ├── components/                        # React UI Components
 │   ├── AppShell.tsx                   # Main layout shell, sidebar navigation
+│   ├── NotificationCenterPopover.tsx  # Top navbar alert popover
 │   ├── PlatformContext.tsx            # Global state & data synchronization
 │   ├── PlatformHeader.tsx             # Shared view header banner
 │   └── sections/                      # Dedicated view section components
 ├── lib/                               # Core Utilities & Business Logic
+│   ├── alertsEngine.ts                # Anomaly & repeated error detection
 │   ├── analyticsDb.ts                 # High-performance MongoDB aggregations
 │   ├── analyticsTypes.ts              # TypeScript interfaces & types
 │   ├── auth.ts                        # JWT verification, RBAC guards
 │   ├── countries.ts                   # Country codes & geo names mapping
 │   └── mongodb.ts                     # Mongoose connection pooling
 ├── models/                            # Mongoose ODM Models
-│   ├── CustomEvent.ts                 # Custom event schema
+│   ├── AnalyticsEvent.ts              # Custom event schema
+│   ├── ErrorLog.ts                    # Error logs, stack traces schema
+│   ├── Notification.ts                # Incident & optimization alerts schema
 │   ├── PageView.ts                    # Pageview, RUM, hardware, UX schema
 │   ├── Project.ts                     # Project, settings, rules, members schema
-│   ├── SystemError.ts                 # Error logs, stack traces schema
 │   └── User.ts                        # User accounts, auth schema
 └── public/
     └── open.js                        # Zero-dependency vanilla JS client tracker

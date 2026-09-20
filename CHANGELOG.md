@@ -2,6 +2,37 @@
 
 All notable changes to the Open Analytics platform are documented in this file.
 
+## [3.5.0] - 2026-09-19
+
+### Added
+- **Automated Notification & Alerting System**:
+  - Engineered an autonomous telemetry anomaly detection and alerting engine (`lib/alertsEngine.ts`).
+  - **Repeated Error Alerts**: Triggers high-priority notifications when an identical error signature occurs 5 or more times (`occurrences >= 5`), with progressive bracket tracking (25x, 50x, 100x).
+  - **Error Storm Detection**: Automatically monitors 1-hour error velocity and fires critical incident alerts when project errors exceed the configured velocity threshold (default: 10 errors/hr).
+  - **SEO & AEO Unoptimized Page Audits**: Scans top routes for missing `<title>` tags, generic "untitled" routes, and ultra-short dwell times (< 4s) with high bounce friction.
+  - **GEO & AI Search Radar Health**: Alerts site owners when Generative Engine Optimization (GEO) citation readiness scores drop below 50%, providing actionable remediation links.
+  - **Core Web Vitals Degradation**: Emits warning/critical alerts when Largest Contentful Paint (LCP > 2.5s/4s) or Cumulative Layout Shift (CLS > 0.25) degrade on tracked pages.
+  - **Behavioral UX Friction**: Detects repeated rage click clusters (>= 3 rage sessions) on UI elements to highlight broken or non-responsive interactions.
+- **In-App Notification Center Popover (`components/NotificationCenterPopover.tsx`)**:
+  - Interactive top navbar command bar bell button with glowing unread/critical count badge.
+  - Glassmorphic popover dropdown with category filters (All, Unread, Errors, Optimizations), quick actions ("Mark all read", "Scan Now"), and direct deep links to `/errors`, `/seo`, `/vitals`, `/ux`.
+- **Dedicated Alerts & Notification Hub (`app/notifications/page.tsx`)**:
+  - Full-featured incident management workspace with search, severity filtering, type grouping, bulk actions, and custom Alert Rules & Thresholds configuration.
+- **Notification Data Model & APIs (`models/Notification.ts`, `app/api/notifications/route.ts`, `app/api/notifications/scan/route.ts`, `app/api/projects/[projectId]/alert-rules/route.ts`)**:
+  - Indexed schema with smart 24-hour fingerprint deduplication and 365-day TTL retention index.
+
+## [3.4.2] - 2026-09-19
+
+### Added
+- **Mobile Project Switcher in Navbar & Drawer**:
+  - Made the active project breadcrumb in the top command bar navbar interactive on mobile and desktop, enabling one-tap project switching directly from the navbar header without needing to navigate elsewhere.
+  - Added a full project switcher badge and dropdown menu inside the mobile slide-out drawer (`AppShell.tsx`), allowing users to switch workspaces or create new projects seamlessly on mobile devices.
+
+### Fixed
+- **Mobile Navbar Responsiveness & Popover Positioning**:
+  - Optimized top command bar flex layout to prevent clipping on mobile screens down to 320px width.
+  - Clamped `DateRangeNavigator` dropdown popover width on mobile (`max-w-[calc(100vw-1.5rem)]`) and streamlined trigger spacing to eliminate horizontal scrolling.
+
 ## [3.4.1] - 2026-09-18
 
 ### Added

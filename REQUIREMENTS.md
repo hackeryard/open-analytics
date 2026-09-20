@@ -134,6 +134,22 @@
 - `status` (Enum: `"new"` | `"investigating"` | `"resolved"` | `"ignored"`).
 - `breadcrumbs` (Array): Circular buffer of preceding user actions.
 
+### 3.4 `Notification` Collection
+- `projectId` (String, Index): Target project identifier.
+- `userId` (String, Optional, Index): Specific user identifier.
+- `title` (String): Notification headline.
+- `message` (String): Detailed description of anomaly or optimization suggestion.
+- `type` (Enum: `"error_repeated" | "error_storm" | "seo_unoptimized" | "aeo_unoptimized" | "geo_radar" | "web_vitals" | "rage_clicks" | "quota_warning" | "system"`).
+- `severity` (Enum: `"critical" | "warning" | "info"`).
+- `metadata` (Mixed): Associated errorId, pathname, occurrences, metric scores.
+- `actionUrl` (String): Internal routing path to inspect or resolve the issue.
+- `actionLabel` (String): CTA button text.
+- `read` (Boolean, Index): Read state.
+- `readAt` (Date, Nullable): Read timestamp.
+- `dismissed` (Boolean, Index): Dismissed state.
+- `fingerprint` (String, Index): Unique signature used for 24-hour cooldown deduplication.
+- `createdAt` (Date, TTL 365 days): Document creation timestamp.
+
 ---
 
 ## 4. Role-Based Access Control (RBAC) Matrix

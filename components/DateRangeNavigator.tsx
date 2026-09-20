@@ -249,7 +249,7 @@ export default function DateRangeNavigator({
 
       {/* Dropdown Popover */}
       {showDropdown && (
-        <div className="absolute right-0 top-full mt-2 w-64 glass-card border border-white/[0.12] rounded-2xl shadow-2xl p-2 z-50 animate-fadeIn space-y-1">
+        <div className="absolute right-0 top-full mt-2 w-[calc(100vw-1.5rem)] max-w-xs sm:w-64 glass-card border border-white/[0.12] rounded-2xl shadow-2xl p-2 z-50 animate-fadeIn space-y-1">
           <div className="px-2.5 py-1.5 border-b border-white/[0.07] flex items-center justify-between text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">
             <span>Select Timeframe</span>
             <span className="text-[9px] font-mono text-cyan-400 font-bold">

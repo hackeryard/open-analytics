@@ -48,9 +48,11 @@ import {
   User,
   Lock,
   ShieldAlert,
+  Bell,
 } from "lucide-react";
 import { usePlatform } from "@/components/PlatformContext";
 import DateRangeNavigator from "@/components/DateRangeNavigator";
+import NotificationCenterPopover from "@/components/NotificationCenterPopover";
 import CreateProjectModal from "@/components/CreateProjectModal";
 import LimitReachedModal from "@/components/LimitReachedModal";
 import ActiveProjectSelectionModal from "@/components/ActiveProjectSelectionModal";
@@ -98,11 +100,15 @@ export default function AppShell({
     requiresActiveProjectSelection,
     handleCreateProject,
     handleLogout,
+    unreadNotificationsCount,
+    criticalNotificationsCount,
   } = usePlatform();
 
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showProjectDropdown, setShowProjectDropdown] = useState(false);
+  const [showHeaderProjectDropdown, setShowHeaderProjectDropdown] = useState(false);
+  const [showMobileDrawerProjectDropdown, setShowMobileDrawerProjectDropdown] = useState(false);
   const [copiedProjectId, setCopiedProjectId] = useState(false);
 
   // New project modal state
@@ -194,6 +200,7 @@ export default function AppShell({
       items: [
         { href: "/", label: "Overview", icon: LayoutDashboard, exact: true },
         { href: "/live-feed", label: "Live Telemetry", icon: Radio, live: true, badge: data?.overview?.totalViews ? `${data.overview.totalViews.toLocaleString()}` : undefined },
+        { href: "/notifications", label: "Alerts & Incidents", icon: Bell, badge: unreadNotificationsCount > 0 ? `${unreadNotificationsCount}` : undefined, alert: criticalNotificationsCount > 0 },
       ],
     },
     {
@@ -666,6 +673,103 @@ export default function App() {
               </button>
             </div>
 
+            {/* Mobile Drawer Project Switcher */}
+            <div className="py-3 border-b border-white/[0.07]">
+              <div className="relative">
+                <button
+                  onClick={() => {
+                    if (projects.length === 0) {
+                      setMobileMenuOpen(false);
+                      openCreateProject();
+                    } else {
+                      setShowMobileDrawerProjectDropdown(!showMobileDrawerProjectDropdown);
+                    }
+                  }}
+                  className="w-full flex items-center justify-between p-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] transition text-left group cursor-pointer"
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-xs font-black shrink-0">
+                      {activeProject?.name ? activeProject.name[0].toUpperCase() : "+"}
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-xs font-bold text-white truncate group-hover:text-cyan-400 transition">
+                        {activeProject?.name || (projects.length === 0 ? "Create First Project" : "Select Project")}
+                      </div>
+                      <div className="text-[10px] text-muted-foreground font-mono truncate">
+                        {activeProjectId || (projects.length === 0 ? "Click to setup" : "no project")}
+                      </div>
+                    </div>
+                  </div>
+                  <ChevronDown size={14} className={`text-muted-foreground shrink-0 group-hover:text-white transition-transform ${showMobileDrawerProjectDropdown ? "rotate-180" : ""}`} />
+                </button>
+
+                {/* Mobile Drawer Project List */}
+                {showMobileDrawerProjectDropdown && (
+                  <div className="mt-2 w-full glass-card rounded-2xl shadow-2xl p-2 space-y-1 animate-fadeIn border border-white/[0.12]">
+                    <div className="px-2.5 py-1.5 border-b border-white/[0.08] text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider flex items-center justify-between">
+                      <span>Workspaces</span>
+                      <span className="text-cyan-400 font-mono">{projects.length} total</span>
+                    </div>
+
+                    <div className="max-h-48 overflow-y-auto space-y-0.5">
+                      {projects.map((p) => {
+                        const isSelected = p.projectId === activeProjectId;
+                        return (
+                          <button
+                            key={p._id || p.projectId}
+                            onClick={() => {
+                              setActiveProjectId(p.projectId);
+                              setShowMobileDrawerProjectDropdown(false);
+                            }}
+                            className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-left text-xs transition cursor-pointer ${
+                              isSelected ? "bg-cyan-500/15 text-cyan-400 font-bold border border-cyan-500/30" : "text-slate-300 hover:bg-white/[0.05]"
+                            }`}
+                          >
+                            <span className="truncate">{p.name}</span>
+                            {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shrink-0" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <div className="pt-1.5 border-t border-white/[0.08]">
+                      {canCreateProject ? (
+                        <button
+                          onClick={() => {
+                            setShowMobileDrawerProjectDropdown(false);
+                            setMobileMenuOpen(false);
+                            openCreateProject();
+                          }}
+                          className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs font-bold text-cyan-400 hover:bg-cyan-500/10 transition cursor-pointer"
+                        >
+                          <Plus size={14} />
+                          <span>Create Project</span>
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            setShowMobileDrawerProjectDropdown(false);
+                            setMobileMenuOpen(false);
+                            setShowLimitModal(true);
+                          }}
+                          className="w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-semibold text-amber-400/90 hover:bg-amber-500/10 transition cursor-pointer"
+                          title={`Limit reached (${ownedProjectsCount}/${maxAllowedProjects})`}
+                        >
+                          <span className="flex items-center gap-1.5">
+                            <Lock size={12} className="text-amber-400" />
+                            <span>Create Project</span>
+                          </span>
+                          <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-500/15 border border-amber-500/30">
+                            {ownedProjectsCount}/{maxAllowedProjects}
+                          </span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
             <div className="flex-1 overflow-y-auto py-3 space-y-4 no-scrollbar">
               {navGroups.map((group) => (
                 <div key={group.group} className="space-y-1">
@@ -749,13 +853,90 @@ export default function App() {
               <Menu size={18} />
             </button>
 
-            {/* Breadcrumb path */}
+            {/* Project Switcher Trigger & Breadcrumb */}
             <div className="flex items-center gap-1.5 sm:gap-2 text-xs font-bold min-w-0">
-              <span className="text-white truncate max-w-[90px] xs:max-w-[120px] sm:max-w-[160px]">
-                {activeProject?.name || activeProjectId || "Open Analytics"}
-              </span>
-              <span className="text-slate-600 font-normal">/</span>
-              <span className="text-cyan-400 capitalize truncate max-w-[80px] xs:max-w-none">
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setShowHeaderProjectDropdown(!showHeaderProjectDropdown)}
+                  className="flex items-center gap-1 sm:gap-1.5 px-2 py-1 -ml-1 rounded-lg bg-white/[0.03] hover:bg-white/[0.08] border border-transparent hover:border-white/[0.08] text-white transition max-w-[110px] xs:max-w-[140px] sm:max-w-[180px] cursor-pointer group"
+                  title="Switch Project"
+                >
+                  <span className="truncate group-hover:text-cyan-400 transition">
+                    {activeProject?.name || activeProjectId || "Open Analytics"}
+                  </span>
+                  <ChevronDown size={12} className={`text-muted-foreground shrink-0 group-hover:text-white transition-transform ${showHeaderProjectDropdown ? "rotate-180" : ""}`} />
+                </button>
+
+                {/* Header Project Dropdown Popover */}
+                {showHeaderProjectDropdown && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setShowHeaderProjectDropdown(false)} />
+                    <div className="absolute left-0 top-full mt-2 w-64 max-w-[calc(100vw-2rem)] glass-card rounded-2xl shadow-2xl z-50 p-2 space-y-1 animate-fadeIn border border-white/[0.12]">
+                      <div className="px-2.5 py-1.5 border-b border-white/[0.08] text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider flex items-center justify-between">
+                        <span>Switch Workspace</span>
+                        <span className="text-cyan-400 font-mono">{projects.length} total</span>
+                      </div>
+
+                      <div className="max-h-52 overflow-y-auto space-y-0.5">
+                        {projects.map((p) => {
+                          const isSelected = p.projectId === activeProjectId;
+                          return (
+                            <button
+                              key={p._id || p.projectId}
+                              onClick={() => {
+                                setActiveProjectId(p.projectId);
+                                setShowHeaderProjectDropdown(false);
+                              }}
+                              className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-left text-xs transition cursor-pointer ${
+                                isSelected ? "bg-cyan-500/15 text-cyan-400 font-bold border border-cyan-500/30" : "text-slate-300 hover:bg-white/[0.05]"
+                              }`}
+                            >
+                              <span className="truncate">{p.name}</span>
+                              {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shrink-0" />}
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      <div className="pt-1.5 border-t border-white/[0.08]">
+                        {canCreateProject ? (
+                          <button
+                            onClick={() => {
+                              setShowHeaderProjectDropdown(false);
+                              openCreateProject();
+                            }}
+                            className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs font-bold text-cyan-400 hover:bg-cyan-500/10 transition cursor-pointer"
+                          >
+                            <Plus size={14} />
+                            <span>Create Project</span>
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => {
+                              setShowHeaderProjectDropdown(false);
+                              setShowLimitModal(true);
+                            }}
+                            className="w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-semibold text-amber-400/90 hover:bg-amber-500/10 transition cursor-pointer"
+                            title={`Limit reached (${ownedProjectsCount}/${maxAllowedProjects})`}
+                          >
+                            <span className="flex items-center gap-1.5">
+                              <Lock size={12} className="text-amber-400" />
+                              <span>Create Project</span>
+                            </span>
+                            <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-500/15 border border-amber-500/30">
+                              {ownedProjectsCount}/{maxAllowedProjects}
+                            </span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <span className="text-slate-600 font-normal hidden xs:inline">/</span>
+              <span className="text-cyan-400 capitalize truncate hidden xs:inline max-w-[80px] sm:max-w-none">
                 {pathname === "/" ? "Overview" : pathname.replace("/", "").replace(/-/g, " ")}
               </span>
             </div>
@@ -771,6 +952,9 @@ export default function App() {
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {/* Compact Date Range Navigator */}
             <DateRangeNavigator value={timeRange} onChange={setTimeRange} plan={activeProject?.plan} />
+
+            {/* Notification Center Popover */}
+            <NotificationCenterPopover />
 
             {/* Quick Install Snippet Button */}
             <button

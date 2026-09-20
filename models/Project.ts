@@ -127,6 +127,13 @@ const ProjectSchema = new mongoose.Schema(
         type: [String],
         default: ["core", "rum", "behavioral", "errors", "virtual_labs", "seo", "ai_aeo"],
       },
+      alertSettings: {
+        errorRepeatThreshold: { type: Number, default: 5 },
+        errorStormThreshold: { type: Number, default: 10 },
+        seoOptimizationAlerts: { type: Boolean, default: true },
+        webVitalsAlerts: { type: Boolean, default: true },
+        rageClicksAlerts: { type: Boolean, default: true },
+      },
       errorRules: [
         {
           id: { type: String, required: true },

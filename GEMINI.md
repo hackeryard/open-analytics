@@ -36,7 +36,7 @@ Never run ad-hoc raw commands for git pulls, port killing, or PRs. Always use pr
 - `npm run purge:retention` (`scripts/purge-retention.js`): Enforces 1-year data retention MongoDB purge.
 
 ### 4. 1-Year Data Retention & Plan Boundaries
-- Raw telemetry collections (`PageView`, `AnalyticsEvent`, `ErrorLog`) have a 365-day TTL index.
+- Raw telemetry collections (`PageView`, `AnalyticsEvent`, `ErrorLog`, `Notification`) have a 365-day TTL index.
 - Automated purge runs via `lib/dataRetention.ts` and `/api/cron/retention`.
 - Query limits:
   - Free Starter Plan: Clamped to 30-day historical window.
