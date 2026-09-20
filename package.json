@@ -11,6 +11,7 @@
     "push": "node scripts/push.js",
     "sync": "node scripts/sync.js",
     "pr": "node scripts/create-pr.js",
+    "merge:pr": "node scripts/merge-pr.js",
     "kill": "node scripts/kill-port.js",
     "kill:3005": "node scripts/kill-port.js 3005",
     "test:subdomain": "node scripts/test-subdomain.js",

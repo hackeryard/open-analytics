@@ -31,6 +31,7 @@ Never run ad-hoc raw commands for git pulls, port killing, or PRs. Always use pr
 - `npm run push [msg]` (`scripts/push.js`): Stages, commits, and pushes to `origin/<branch>`.
 - `npm run sync [msg] [--pr]` (`scripts/sync.js`): Complete pull -> stage -> commit -> push -> optional PR pipeline.
 - `npm run pr [--title "..." --body "..."]` (`scripts/create-pr.js`): Dynamic GitHub PR creation/synchronization without hardcoded text.
+- `npm run merge:pr [pr_number]` (`scripts/merge-pr.js`): Programmatically merges open PRs into main via GitHub REST API.
 - `npm run kill:3005` (`scripts/kill-port.js`): Forcefully frees development port 3005.
 - `npm run test:subdomain` (`scripts/test-subdomain.js`): Runs 10-point subdomain regression test suite.
 - `npm run purge:retention` (`scripts/purge-retention.js`): Enforces 1-year data retention MongoDB purge.
