@@ -25,6 +25,7 @@ import {
   Zap,
   Info,
   ArrowUpRight,
+  Radio,
 } from "lucide-react";
 
 function timeAgo(dateString: string): string {
@@ -78,6 +79,12 @@ export default function NotificationsPage() {
     markAllNotificationsAsRead,
     dismissNotification,
     triggerOptimizationScan,
+    browserNotificationsSupported,
+    browserNotificationsPermission,
+    browserNotificationsEnabled,
+    requestBrowserNotificationPermission,
+    toggleBrowserNotifications,
+    sendTestBrowserNotification,
   } = usePlatform();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -294,6 +301,48 @@ export default function NotificationsPage() {
             <RefreshCw size={13} className={scanning ? "animate-spin" : ""} />
             <span>{scanning ? "Scanning..." : "Scan Telemetry Now"}</span>
           </button>
+
+          {browserNotificationsSupported && (
+            <button
+              type="button"
+              onClick={() => {
+                if (browserNotificationsPermission !== "granted") {
+                  requestBrowserNotificationPermission();
+                } else {
+                  toggleBrowserNotifications();
+                }
+              }}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-bold transition cursor-pointer ${
+                browserNotificationsPermission === "granted" && browserNotificationsEnabled
+                  ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-400 hover:bg-emerald-500/20"
+                  : "bg-white/[0.04] hover:bg-white/[0.08] border-white/[0.08] text-slate-300 hover:text-white"
+              }`}
+              title={
+                browserNotificationsPermission === "granted"
+                  ? browserNotificationsEnabled
+                    ? "Desktop Alerts Active (Click to mute)"
+                    : "Desktop Alerts Muted (Click to unmute)"
+                  : "Click to enable native browser notifications"
+              }
+            >
+              <Radio
+                size={13}
+                className={
+                  browserNotificationsPermission === "granted" && browserNotificationsEnabled
+                    ? "animate-pulse"
+                    : ""
+                }
+              />
+              <span className="hidden sm:inline">Desktop Alerts:</span>
+              <span>
+                {browserNotificationsPermission === "granted"
+                  ? browserNotificationsEnabled
+                    ? "ON"
+                    : "Muted"
+                  : "Enable"}
+              </span>
+            </button>
+          )}
 
           <button
             type="button"
@@ -604,6 +653,73 @@ export default function NotificationsPage() {
                   />
                 </label>
               </div>
+
+              {/* Desktop Browser Notifications Section */}
+              {browserNotificationsSupported && (
+                <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.08] space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Radio size={14} className="text-cyan-400" />
+                      <span className="text-white font-bold">Desktop Browser Notification Alerts</span>
+                    </div>
+                    <span
+                      className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full ${
+                        browserNotificationsPermission === "granted"
+                          ? browserNotificationsEnabled
+                            ? "bg-emerald-500/15 border border-emerald-500/30 text-emerald-400"
+                            : "bg-slate-500/20 text-slate-400"
+                          : browserNotificationsPermission === "denied"
+                          ? "bg-red-500/15 border border-red-500/30 text-red-400"
+                          : "bg-amber-500/15 border border-amber-500/30 text-amber-400"
+                      }`}
+                    >
+                      {browserNotificationsPermission === "granted"
+                        ? browserNotificationsEnabled
+                          ? "Active"
+                          : "Muted"
+                        : browserNotificationsPermission === "denied"
+                        ? "Blocked"
+                        : "Permission Required"}
+                    </span>
+                  </div>
+
+                  <p className="text-[11px] text-muted-foreground leading-relaxed">
+                    Receive native operating system desktop alerts and audio chimes whenever repeated errors or critical telemetry anomalies occur.
+                  </p>
+
+                  <div className="flex items-center gap-2 pt-1">
+                    {browserNotificationsPermission !== "granted" ? (
+                      <button
+                        type="button"
+                        onClick={requestBrowserNotificationPermission}
+                        className="px-3 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs transition cursor-pointer"
+                      >
+                        Enable Desktop Alerts
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={toggleBrowserNotifications}
+                        className={`px-3 py-1.5 rounded-lg font-bold text-xs transition cursor-pointer ${
+                          browserNotificationsEnabled
+                            ? "bg-white/[0.08] hover:bg-white/[0.14] text-slate-200"
+                            : "bg-cyan-500 hover:bg-cyan-400 text-slate-950"
+                        }`}
+                      >
+                        {browserNotificationsEnabled ? "Mute Desktop Alerts" : "Unmute Desktop Alerts"}
+                      </button>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={() => sendTestBrowserNotification()}
+                      className="px-3 py-1.5 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] text-slate-300 hover:text-white font-bold text-xs transition cursor-pointer"
+                    >
+                      Send Test Notification
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {settingsSavedMessage && (
                 <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-[11px] text-emerald-400 text-center font-bold">

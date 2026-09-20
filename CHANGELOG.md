@@ -2,6 +2,18 @@
 
 All notable changes to the Open Analytics platform are documented in this file.
 
+## [3.5.2] - 2026-09-20
+
+### Added
+- **Native Browser Desktop Notification Alerts (`lib/browserNotifications.ts`, `components/PlatformContext.tsx`)**:
+  - Implemented native operating system desktop notifications using the HTML5 Web Notification API for repeated error spikes (>= 5 occurrences), error storms, and critical telemetry anomalies.
+  - Synthesized dual-tone audio chime using the Web Audio API for audible alerts without external audio files.
+  - Implemented 45-second background synchronization in `PlatformContext` to deliver desktop alerts even when the dashboard tab is in the background.
+  - Configured notification click action to focus the browser tab and navigate directly to the incident route (`/errors`, `/seo`, `/notifications`).
+- **Desktop Alert Controls (`components/NotificationCenterPopover.tsx`, `app/notifications/page.tsx`)**:
+  - Added desktop alert banner in `NotificationCenterPopover` with permission prompt, active/muted status indicator, mute/unmute toggle, and instant sample test notification button.
+  - Added desktop browser alerts configuration and test trigger inside the Alert Rules modal and action bar on the `/notifications` page.
+
 ## [3.5.1] - 2026-09-20
 
 ### Fixed

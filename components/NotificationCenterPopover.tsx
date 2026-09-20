@@ -18,6 +18,7 @@ import {
   SlidersHorizontal,
   ChevronRight,
   ShieldCheck,
+  Radio,
 } from "lucide-react";
 import { usePlatform, NotificationItem } from "@/components/PlatformContext";
 
@@ -78,6 +79,12 @@ export default function NotificationCenterPopover({
     markAllNotificationsAsRead,
     dismissNotification,
     triggerOptimizationScan,
+    browserNotificationsSupported,
+    browserNotificationsPermission,
+    browserNotificationsEnabled,
+    requestBrowserNotificationPermission,
+    toggleBrowserNotifications,
+    sendTestBrowserNotification,
   } = usePlatform();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -216,6 +223,70 @@ export default function NotificationCenterPopover({
               <button onClick={() => setScanMessage(null)} className="text-cyan-400 hover:text-white">
                 <X size={12} />
               </button>
+            </div>
+          )}
+
+          {/* Desktop Browser Notification Alert Bar */}
+          {browserNotificationsSupported && (
+            <div className="px-3.5 py-2 bg-gradient-to-r from-cyan-500/10 via-indigo-500/5 to-transparent border-b border-white/[0.06] flex items-center justify-between gap-2 text-xs">
+              {browserNotificationsPermission === "default" && (
+                <>
+                  <div className="flex items-center gap-2 min-w-0">
+                    <Radio size={13} className="text-cyan-400 shrink-0 animate-pulse" />
+                    <span className="text-[11px] text-slate-200 truncate">Enable browser alerts for repeated errors</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => requestBrowserNotificationPermission()}
+                    className="px-2.5 py-1 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-[10px] shrink-0 transition cursor-pointer"
+                  >
+                    Enable
+                  </button>
+                </>
+              )}
+
+              {browserNotificationsPermission === "granted" && (
+                <>
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <span
+                      className={`w-2 h-2 rounded-full shrink-0 ${
+                        browserNotificationsEnabled ? "bg-emerald-400 animate-glow" : "bg-slate-500"
+                      }`}
+                    />
+                    <span className="text-[11px] text-slate-300 font-medium truncate">
+                      Desktop Alerts {browserNotificationsEnabled ? "Active" : "Muted"}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => sendTestBrowserNotification()}
+                      className="text-[10px] font-bold text-cyan-400 hover:text-cyan-300 hover:underline cursor-pointer"
+                      title="Send sample native notification"
+                    >
+                      Test
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => toggleBrowserNotifications()}
+                      className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-md transition cursor-pointer ${
+                        browserNotificationsEnabled
+                          ? "bg-white/[0.08] hover:bg-white/[0.14] text-slate-300"
+                          : "bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30"
+                      }`}
+                    >
+                      {browserNotificationsEnabled ? "Mute" : "Unmute"}
+                    </button>
+                  </div>
+                </>
+              )}
+
+              {browserNotificationsPermission === "denied" && (
+                <div className="flex items-center gap-1.5 text-[10px] text-amber-300">
+                  <AlertTriangle size={12} className="shrink-0 text-amber-400" />
+                  <span>Desktop alerts blocked in browser settings</span>
+                </div>
+              )}
             </div>
           )}
 
