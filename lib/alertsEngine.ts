@@ -13,7 +13,7 @@ export async function evaluateErrorAlerts(projectId: string, errorLog: any) {
     if (!projectId || !errorLog) return;
     await connectDB();
 
-    const project = await Project.findOne({ projectId }).lean();
+    const project = await (Project as any).findOne({ projectId }).lean();
     const alertSettings = (project as any)?.settings?.alertSettings || {};
 
     const repeatThreshold = Number(alertSettings.errorRepeatThreshold) || 5;
@@ -120,7 +120,7 @@ export async function runOptimizationScan(projectId: string): Promise<{ createdC
     if (!projectId) return { createdCount: 0 };
     await connectDB();
 
-    const project = await Project.findOne({ projectId }).lean();
+    const project = await (Project as any).findOne({ projectId }).lean();
     if (!project) return { createdCount: 0 };
 
     const plan = (project as any).plan || "pro";

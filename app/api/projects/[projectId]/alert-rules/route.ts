@@ -11,7 +11,7 @@ export async function GET(req: Request, { params }: { params: { projectId: strin
       return NextResponse.json({ error: auth.error }, { status: auth.status || 403 });
     }
 
-    const project = await Project.findOne({ projectId: params.projectId }).lean();
+    const project = auth.project || (await (Project as any).findOne({ projectId: params.projectId }).lean());
     if (!project) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
@@ -53,7 +53,7 @@ export async function POST(req: Request, { params }: { params: { projectId: stri
       rageClicksAlerts,
     } = body;
 
-    const project = await Project.findOne({ projectId: params.projectId });
+    const project = await (Project as any).findOne({ projectId: params.projectId });
     if (!project) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
