@@ -8,6 +8,7 @@ import {
   Bot,
   Flame,
   Bug,
+  Bell,
   Globe,
   CheckCircle2,
   ArrowRight,
@@ -111,6 +112,12 @@ const featureListSchema = {
       position: 5,
       name: "Sub-3.2KB Cookieless Telemetry Beacon",
       description: "Zero cookie banners required, 100% GDPR, CCPA, and PECR compliant with zero tracking cookies.",
+    },
+    {
+      "@type": "SoftwareApplication",
+      position: 6,
+      name: "Autonomous Incident Alerts & OS Desktop Notifications",
+      description: "Real-time repeated error surge alerts (5x+), error velocity storm detection, native OS desktop notifications, and granular pattern suppression rules.",
     },
   ],
 };
@@ -282,6 +289,39 @@ export default function FeaturesPage() {
         { label: "Consent Banner", value: "Not Required" },
         { label: "Salt Rotation", value: "Every 24 Hours" },
         { label: "PII Storage", value: "0 Bytes" },
+      ],
+    },
+    {
+      id: "alerts",
+      badge: "Real-Time Incident Triage",
+      title: "Autonomous Anomaly Alerts & OS Desktop Notifications",
+      tagline: "Instant incident detection for repeated crash spikes, error storms, and SEO degradation.",
+      icon: Bell,
+      color: "text-rose-400",
+      bgGradient: "from-rose-500/10 via-pink-500/5 to-transparent",
+      borderColor: "border-rose-500/30",
+      points: [
+        {
+          title: "Repeated Crash Spikes (5x+)",
+          desc: "Alerts engineering teams immediately when an identical runtime exception occurs 5 or more times.",
+        },
+        {
+          title: "Velocity Error Storm Detection",
+          desc: "Detects rapid error surges (>10 errors / 5 min), instantly warning DevOps of breaking deployments.",
+        },
+        {
+          title: "Native OS Desktop Notifications",
+          desc: "Dispatches native desktop alerts with synthesized Web Audio chimes even when the dashboard tab is minimized.",
+        },
+        {
+          title: "Granular Ignore & Suppression Rules",
+          desc: "Mute entire notification types or create regex and pathname pattern rules to eliminate non-actionable alert noise.",
+        },
+      ],
+      stats: [
+        { label: "Trigger Latency", value: "< 500 ms" },
+        { label: "Audio Synthesis", value: "Web Audio API" },
+        { label: "Suppression", value: "7 Types + Regex" },
       ],
     },
   ];

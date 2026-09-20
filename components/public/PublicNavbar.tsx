@@ -54,7 +54,7 @@ export default function PublicNavbar() {
         {/* Desktop Navigation Links */}
         <nav className="hidden md:flex items-center gap-1">
           {navLinks.map((link) => {
-            const isActive = pathname === link.href;
+            const isActive = pathname === link.href || (link.href === "/docs" && pathname.startsWith("/docs"));
             return (
               <Link
                 key={link.href}
@@ -105,21 +105,26 @@ export default function PublicNavbar() {
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
         <div className="md:hidden border-b border-white/[0.08] bg-[#070b16] px-4 py-4 space-y-2 animate-fadeIn">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-bold text-slate-200 hover:bg-white/[0.05]"
-            >
-              <span>{link.label}</span>
-              {link.badge && (
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300">
-                  {link.badge}
-                </span>
-              )}
-            </Link>
-          ))}
+          {navLinks.map((link) => {
+            const isActive = pathname === link.href || (link.href === "/docs" && pathname.startsWith("/docs"));
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-bold transition ${
+                  isActive ? "text-cyan-300 bg-white/[0.08]" : "text-slate-200 hover:bg-white/[0.05]"
+                }`}
+              >
+                <span>{link.label}</span>
+                {link.badge && (
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300">
+                    {link.badge}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
 
           <div className="pt-3 border-t border-white/[0.08] flex flex-col gap-2">
             <a

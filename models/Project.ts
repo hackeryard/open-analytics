@@ -130,9 +130,34 @@ const ProjectSchema = new mongoose.Schema(
       alertSettings: {
         errorRepeatThreshold: { type: Number, default: 5 },
         errorStormThreshold: { type: Number, default: 10 },
+        errorRepeatedAlerts: { type: Boolean, default: true },
+        errorStormAlerts: { type: Boolean, default: true },
         seoOptimizationAlerts: { type: Boolean, default: true },
+        aeoOptimizationAlerts: { type: Boolean, default: true },
+        geoRadarAlerts: { type: Boolean, default: true },
         webVitalsAlerts: { type: Boolean, default: true },
         rageClicksAlerts: { type: Boolean, default: true },
+        ignoredTypes: { type: [String], default: [] },
+        ignoredRules: [
+          {
+            id: { type: String, required: true },
+            name: { type: String, default: "" },
+            type: { type: String, default: "all" },
+            matchField: {
+              type: String,
+              enum: ["pathname", "message", "title", "fingerprint", "type"],
+              default: "pathname",
+            },
+            matchType: {
+              type: String,
+              enum: ["contains", "exact", "starts_with", "regex"],
+              default: "contains",
+            },
+            pattern: { type: String, required: true },
+            enabled: { type: Boolean, default: true },
+            createdAt: { type: Date, default: Date.now },
+          },
+        ],
       },
       errorRules: [
         {

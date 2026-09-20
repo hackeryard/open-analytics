@@ -34,6 +34,9 @@ import {
   Terminal,
   MousePointerClick,
   Bug,
+  Bell,
+  Volume2,
+  BellOff,
 } from "lucide-react";
 import { getDashboardUrl } from "@/lib/subdomain";
 
@@ -43,7 +46,7 @@ export default function LandingHero() {
   const [copiedSnippet, setCopiedSnippet] = useState(false);
 
   // Simulated live demo state
-  const [activeTab, setActiveTab] = useState<"pulse" | "vitals" | "airadar">("pulse");
+  const [activeTab, setActiveTab] = useState<"pulse" | "vitals" | "airadar" | "alerts">("pulse");
 
   const snippets = {
     html: `<!-- 1-Minute Universal Quickstart -->\n<script defer src="https://api.openanalytics.org.in/open.js" data-project-id="YOUR_PROJECT_ID"></script>`,
@@ -193,6 +196,16 @@ export default function LandingHero() {
                 >
                   AI Search Radar
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("alerts")}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
+                    activeTab === "alerts" ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30" : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  <Bell size={12} className="text-rose-400" />
+                  <span>Incident Alerts</span>
+                </button>
               </div>
             </div>
 
@@ -314,6 +327,55 @@ export default function LandingHero() {
                     <div className="text-xs text-slate-400">Google Gemini Visits</div>
                     <div className="text-xl font-bold text-white mt-1">237</div>
                     <div className="text-[10px] text-cyan-300 font-mono">AEO direct citation</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Tab 4: Autonomous Incident Alerts */}
+            {activeTab === "alerts" && (
+              <div className="space-y-4 animate-fadeIn">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                  <div className="p-4 rounded-xl bg-white/[0.02] border border-rose-500/25 space-y-2">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-slate-400 font-medium">Repeated Crash Spike</span>
+                      <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30">
+                        CRITICAL
+                      </span>
+                    </div>
+                    <div className="text-base font-bold text-white">5x Error Surge</div>
+                    <p className="text-[11px] text-slate-400 font-mono">/checkout • TypeError: Cannot read null</p>
+                    <div className="text-[10px] text-rose-400 font-semibold flex items-center gap-1">
+                      <Flame size={12} /> Milestone bracket: 5x threshold triggered
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-white/[0.02] border border-amber-500/25 space-y-2">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-slate-400 font-medium">SEO & AEO Audit</span>
+                      <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                        WARNING
+                      </span>
+                    </div>
+                    <div className="text-base font-bold text-white">Missing &lt;title&gt;</div>
+                    <p className="text-[11px] text-slate-400 font-mono">/pricing/enterprise • Blank document title</p>
+                    <div className="text-[10px] text-amber-400 font-semibold flex items-center gap-1">
+                      <Search size={12} /> Automated site optimization scan
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-white/[0.02] border border-cyan-500/25 space-y-2">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-slate-400 font-medium">Desktop Alerts & Audio</span>
+                      <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                        ACTIVE
+                      </span>
+                    </div>
+                    <div className="text-base font-bold text-white">Web Notifications</div>
+                    <p className="text-[11px] text-slate-400">Synthesized 587Hz audio chime + 45s background sync</p>
+                    <div className="text-[10px] text-cyan-300 font-semibold flex items-center gap-1">
+                      <Volume2 size={12} /> 0 external MP3 asset dependency
+                    </div>
                   </div>
                 </div>
               </div>
@@ -443,6 +505,28 @@ export default function LandingHero() {
             <h3 className="text-lg font-black text-white">24h Rotating Cryptographic Salts</h3>
             <p className="text-xs text-slate-400 leading-relaxed">
               Daily visitor hashes use HMAC-SHA-256 with an ephemeral salt purged every night at midnight UTC. Raw IP addresses are truncated in RAM and never written to disk or database logs.
+            </p>
+          </div>
+
+          {/* Pillar 7 */}
+          <div className="p-7 rounded-3xl bg-white/[0.02] border border-white/[0.07] hover:border-rose-500/40 transition-all space-y-3">
+            <div className="w-11 h-11 rounded-2xl bg-rose-500/10 border border-rose-500/25 text-rose-400 flex items-center justify-center">
+              <Bell className="w-5 h-5" />
+            </div>
+            <h3 className="text-lg font-black text-white">Autonomous Incident Alerts</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Real-time repeated error spikes (5x+), error velocity storm detection, SEO missing title audits, and native OS desktop alerts with Web Audio chimes and granular suppression rules.
+            </p>
+          </div>
+
+          {/* Pillar 8 */}
+          <div className="p-7 rounded-3xl bg-white/[0.02] border border-white/[0.07] hover:border-cyan-500/40 transition-all space-y-3">
+            <div className="w-11 h-11 rounded-2xl bg-cyan-500/10 border border-cyan-500/25 text-cyan-400 flex items-center justify-center">
+              <Smartphone className="w-5 h-5" />
+            </div>
+            <h3 className="text-lg font-black text-white">Mobile-First Workspace & Switcher</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Seamless mobile navigation with a responsive drawer, interactive one-tap project switcher directly in the mobile navbar, and solid zero-transparency high-contrast popover surfaces.
             </p>
           </div>
         </div>

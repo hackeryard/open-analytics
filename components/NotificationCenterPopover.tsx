@@ -19,6 +19,7 @@ import {
   ChevronRight,
   ShieldCheck,
   Radio,
+  BellOff,
 } from "lucide-react";
 import { usePlatform, NotificationItem } from "@/components/PlatformContext";
 
@@ -79,6 +80,8 @@ export default function NotificationCenterPopover({
     markAllNotificationsAsRead,
     dismissNotification,
     triggerOptimizationScan,
+    ignoreNotificationType,
+    addNotificationIgnoreRule,
     browserNotificationsSupported,
     browserNotificationsPermission,
     browserNotificationsEnabled,
@@ -91,6 +94,7 @@ export default function NotificationCenterPopover({
   const [filterTab, setFilterTab] = useState<"all" | "unread" | "errors" | "optimizations">("all");
   const [scanning, setScanning] = useState(false);
   const [scanMessage, setScanMessage] = useState<string | null>(null);
+  const [popoverIgnoreMenuId, setPopoverIgnoreMenuId] = useState<string | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -173,10 +177,10 @@ export default function NotificationCenterPopover({
           <div
             className={`fixed inset-x-3 top-16 sm:inset-x-auto sm:top-full sm:mt-2 ${
               align === "right" ? "sm:right-0" : "sm:left-0"
-            } sm:w-96 glass-card rounded-2xl shadow-2xl z-50 animate-fadeIn border border-white/[0.12] flex flex-col max-h-[80vh] sm:max-h-[85vh] overflow-hidden`}
+            } sm:w-96 bg-[#080d1a] rounded-2xl shadow-2xl z-50 animate-fadeIn border border-white/[0.12] flex flex-col max-h-[80vh] sm:max-h-[85vh] overflow-hidden`}
           >
           {/* Header */}
-          <div className="p-3.5 border-b border-white/[0.08] bg-[#080d19]/80 flex items-center justify-between">
+          <div className="p-3.5 border-b border-white/[0.08] bg-[#0b1120] flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
                 <Bell size={14} />
@@ -421,26 +425,81 @@ export default function NotificationCenterPopover({
                             <span />
                           )}
 
-                          <div className="flex items-center gap-1">
-                            {!notif.read && (
+                            <div className="flex items-center gap-1">
+                              {!notif.read && (
+                                <button
+                                  type="button"
+                                  onClick={() => markNotificationAsRead(notif._id)}
+                                  className="p-1 rounded-md text-slate-400 hover:text-white hover:bg-white/[0.08] transition cursor-pointer"
+                                  title="Mark as read"
+                                >
+                                  <Check size={12} />
+                                </button>
+                              )}
+
+                              {/* Quick ignore menu */}
+                              <div className="relative">
+                                <button
+                                  type="button"
+                                  onClick={() => setPopoverIgnoreMenuId(popoverIgnoreMenuId === notif._id ? null : notif._id)}
+                                  className="p-1 rounded-md text-slate-400 hover:text-amber-300 hover:bg-amber-500/10 transition cursor-pointer"
+                                  title="Mute or ignore alert"
+                                >
+                                  <BellOff size={12} />
+                                </button>
+
+                                {popoverIgnoreMenuId === notif._id && (
+                                  <>
+                                    <div
+                                      className="fixed inset-0 z-40"
+                                      onClick={() => setPopoverIgnoreMenuId(null)}
+                                    />
+                                    <div className="absolute right-0 top-full mt-1 w-56 bg-[#080d1a] border border-white/[0.12] rounded-xl shadow-2xl p-1.5 z-50 animate-fadeIn space-y-1 text-left">
+                                      <div className="px-2 py-1 border-b border-white/[0.08] text-[9px] font-mono text-muted-foreground uppercase tracking-wider">
+                                        Mute Alert
+                                      </div>
+                                      <button
+                                        type="button"
+                                        onClick={async () => {
+                                          await ignoreNotificationType(notif.type);
+                                          setPopoverIgnoreMenuId(null);
+                                        }}
+                                        className="w-full px-2 py-1 rounded-lg text-left text-[11px] text-slate-300 hover:text-white hover:bg-white/[0.06] transition cursor-pointer"
+                                      >
+                                        Mute this alert type
+                                      </button>
+                                      {notif.metadata?.pathname && (
+                                        <button
+                                          type="button"
+                                          onClick={async () => {
+                                            await addNotificationIgnoreRule({
+                                              name: `Ignore route: ${notif.metadata.pathname}`,
+                                              matchField: "pathname",
+                                              matchType: "exact",
+                                              pattern: notif.metadata.pathname,
+                                              type: "all",
+                                            });
+                                            setPopoverIgnoreMenuId(null);
+                                          }}
+                                          className="w-full px-2 py-1 rounded-lg text-left text-[11px] text-slate-300 hover:text-white hover:bg-white/[0.06] transition truncate cursor-pointer"
+                                        >
+                                          Ignore route &quot;{notif.metadata.pathname}&quot;
+                                        </button>
+                                      )}
+                                    </div>
+                                  </>
+                                )}
+                              </div>
+
                               <button
                                 type="button"
-                                onClick={() => markNotificationAsRead(notif._id)}
-                                className="p-1 rounded-md text-slate-400 hover:text-white hover:bg-white/[0.08] transition cursor-pointer"
-                                title="Mark as read"
+                                onClick={() => dismissNotification(notif._id)}
+                                className="p-1 rounded-md text-slate-400 hover:text-red-400 hover:bg-white/[0.08] transition cursor-pointer"
+                                title="Dismiss"
                               >
-                                <Check size={12} />
+                                <X size={12} />
                               </button>
-                            )}
-                            <button
-                              type="button"
-                              onClick={() => dismissNotification(notif._id)}
-                              className="p-1 rounded-md text-slate-400 hover:text-red-400 hover:bg-white/[0.08] transition cursor-pointer"
-                              title="Dismiss"
-                            >
-                              <X size={12} />
-                            </button>
-                          </div>
+                            </div>
                         </div>
                       </div>
                     </div>
@@ -451,7 +510,7 @@ export default function NotificationCenterPopover({
           </div>
 
           {/* Footer */}
-          <div className="p-2.5 border-t border-white/[0.08] bg-[#080d19]/80 flex items-center justify-between text-xs">
+          <div className="p-2.5 border-t border-white/[0.08] bg-[#0b1120] flex items-center justify-between text-xs">
             <Link
               href="/notifications"
               onClick={() => setIsOpen(false)}

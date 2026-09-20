@@ -56,6 +56,7 @@ import NotificationCenterPopover from "@/components/NotificationCenterPopover";
 import CreateProjectModal from "@/components/CreateProjectModal";
 import LimitReachedModal from "@/components/LimitReachedModal";
 import ActiveProjectSelectionModal from "@/components/ActiveProjectSelectionModal";
+import BrowserNotificationPrompt from "@/components/BrowserNotificationPrompt";
 import PublicNavbar from "@/components/public/PublicNavbar";
 import PublicFooter from "@/components/public/PublicFooter";
 import { isDashboardClient, getMainDomainUrl } from "@/lib/subdomain";
@@ -1260,6 +1261,9 @@ export default function App() {
         isOpen={showActiveProjectModal}
         onClose={() => setShowActiveProjectModal(false)}
       />
+
+      {/* Browser Notification Permission Floating Banner */}
+      {isDashboard && <BrowserNotificationPrompt />}
     </div>
   );
 }
