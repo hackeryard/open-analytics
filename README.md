@@ -33,6 +33,7 @@ It provides complete insight into user experience, performance bottlenecks, rage
 - **Quota Enforcement & Modal Guarding**: Automated enforcement of website ceilings (1 Free, 10 Pro) blocking project creation wizards when limits are reached with proactive upgrade prompts.
 - **Expired Plan Multi-Project Locking**: Seamless active website selection for expired users, locking 1 active tracking property and pausing unselected properties on Free tier while preserving historical data.
 - **Developer Profile Hub (`/profile`)**: Manage user profile details, role assignments, subscription tier status, and associated workspaces.
+- **World-Class Obsidian & Precision Dark Design System**: Human-crafted developer aesthetics inspired by Linear, Vercel, and Raycast. Built with native Google `Inter` font typography, tabular numbers (`tabular-nums`), solid obsidian dark surfaces (`#090a0f`, `#111218`), clutter-free navigation, a 5-card Bento Grid Showcase, and an ergonomic 2-tier executive overview grid.
 - **Privacy & Security by Design**: Built-in IP address anonymization (masking the last octet for GDPR compliance) and automated PII redaction (scrubbing emails, passwords, tokens from URL query parameters and error payloads).
 
 ---

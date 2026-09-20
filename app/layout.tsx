@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Script from "next/script";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { PlatformProvider } from "@/components/PlatformContext";
 import AppShell from "@/components/AppShell";
 import JsonLd from "@/components/JsonLd";
 import { isDashboardHost } from "@/lib/subdomain";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
 
 const baseUrl = "https://openanalytics.org.in";
 
@@ -153,7 +160,7 @@ export default function RootLayout({
       : isDashboardHost(host, undefined, headersList.get("x-subdomain"));
 
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className={`dark ${inter.variable}`}>
       <head>
         <JsonLd data={organizationSchema} />
         <Script
@@ -182,7 +189,7 @@ export default function RootLayout({
           data-endpoint={process.env.NEXT_PUBLIC_API_URL || "https://api.openanalytics.org.in"}
         />
       </head>
-      <body className="min-h-screen bg-background text-foreground antialiased selection:bg-cyan-500/30 selection:text-cyan-200">
+      <body className="min-h-screen bg-background text-foreground font-sans antialiased selection:bg-cyan-500/20 selection:text-cyan-200">
         <PlatformProvider initialIsDashboard={isDashboard}>
           <AppShell initialIsDashboard={isDashboard}>{children}</AppShell>
         </PlatformProvider>

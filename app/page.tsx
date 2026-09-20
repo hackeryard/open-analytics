@@ -141,74 +141,61 @@ export default function ExecutiveOverviewDashboard() {
         {/* Header Shimmer */}
         <div className="mb-5 sm:mb-6 flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4">
           <div className="space-y-2">
-            <div className="h-7 w-64 sm:w-80 rounded-xl bg-white/[0.05] shimmer" />
+            <div className="h-7 w-64 sm:w-80 rounded-lg bg-white/[0.05] shimmer" />
             <div className="h-4 w-48 sm:w-96 rounded-lg bg-white/[0.03] shimmer" />
           </div>
           <div className="flex items-center gap-2">
-            <div className="h-8 w-32 rounded-xl bg-white/[0.04] shimmer" />
-            <div className="h-8 w-24 rounded-xl bg-white/[0.04] shimmer" />
+            <div className="h-8 w-32 rounded-lg bg-white/[0.04] shimmer" />
+            <div className="h-8 w-24 rounded-lg bg-white/[0.04] shimmer" />
           </div>
         </div>
 
-        {/* Top 7 KPI Cards Shimmer Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-2.5 sm:gap-3.5">
-          {[...Array(7)].map((_, i) => (
-            <div
-              key={i}
-              className={`p-3.5 sm:p-4 glass-card rounded-2xl space-y-3 ${
-                i === 6 ? "col-span-2 sm:col-span-1 lg:col-span-1" : ""
-              }`}
-            >
+        {/* Primary 4 KPI Shimmer Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="p-5 bg-[#111218] border border-white/[0.08] rounded-xl space-y-3">
               <div className="flex items-center justify-between">
-                <div className="h-3 w-16 rounded bg-white/[0.06] shimmer" />
-                <div className="h-3 w-8 rounded bg-white/[0.06] shimmer" />
+                <div className="h-3.5 w-24 rounded bg-white/[0.06] shimmer" />
+                <div className="h-4 w-4 rounded bg-white/[0.06] shimmer" />
               </div>
-              <div className="h-7 w-20 rounded-lg bg-white/[0.08] shimmer" />
-              <div className="h-2.5 w-full rounded bg-white/[0.04] shimmer" />
+              <div className="h-8 w-28 rounded bg-white/[0.08] shimmer" />
+              <div className="h-3 w-36 rounded bg-white/[0.04] shimmer" />
+            </div>
+          ))}
+        </div>
+
+        {/* Secondary 3 KPI Shimmer Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="p-5 bg-[#111218] border border-white/[0.08] rounded-xl space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="h-3.5 w-24 rounded bg-white/[0.06] shimmer" />
+                <div className="h-4 w-4 rounded bg-white/[0.06] shimmer" />
+              </div>
+              <div className="h-8 w-28 rounded bg-white/[0.08] shimmer" />
+              <div className="h-3 w-36 rounded bg-white/[0.04] shimmer" />
             </div>
           ))}
         </div>
 
         {/* Primary Chart Shimmer */}
-        <div className="glass-card rounded-3xl p-5 sm:p-6 space-y-5">
+        <div className="bg-[#111218] border border-white/[0.08] rounded-xl p-5 sm:p-6 space-y-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-2">
-              <div className="h-5 w-56 rounded-lg bg-white/[0.06] shimmer" />
+              <div className="h-5 w-56 rounded bg-white/[0.06] shimmer" />
               <div className="h-3.5 w-72 rounded bg-white/[0.03] shimmer" />
             </div>
             <div className="flex items-center gap-2">
-              <div className="h-8 w-44 rounded-xl bg-white/[0.05] shimmer" />
-              <div className="h-8 w-20 rounded-xl bg-white/[0.05] shimmer" />
+              <div className="h-8 w-44 rounded-lg bg-white/[0.05] shimmer" />
+              <div className="h-8 w-20 rounded-lg bg-white/[0.05] shimmer" />
             </div>
           </div>
-          <div className="h-14 w-full rounded-2xl bg-white/[0.02] border border-white/[0.05] p-3 flex items-center justify-around">
-            <div className="h-4 w-28 rounded bg-white/[0.05] shimmer" />
-            <div className="h-4 w-32 rounded bg-white/[0.05] shimmer" />
-            <div className="h-4 w-28 rounded bg-white/[0.05] shimmer" />
-          </div>
-          <div className="h-72 w-full rounded-2xl bg-white/[0.02] border border-white/[0.04] shimmer flex items-center justify-center">
-            <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
-              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+          <div className="h-72 w-full rounded-lg bg-white/[0.02] border border-white/[0.04] shimmer flex items-center justify-center">
+            <div className="flex items-center gap-2 text-xs font-medium text-zinc-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-pulse" />
               <span>Streaming analytical telemetry...</span>
             </div>
           </div>
-        </div>
-
-        {/* 2-Column Widgets Shimmer */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="glass-card rounded-3xl p-5 sm:p-6 space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="h-4 w-40 rounded bg-white/[0.06] shimmer" />
-                <div className="h-3 w-16 rounded bg-white/[0.04] shimmer" />
-              </div>
-              <div className="space-y-3 pt-2">
-                {[...Array(4)].map((_, j) => (
-                  <div key={j} className="h-10 w-full rounded-xl bg-white/[0.02] border border-white/[0.04] shimmer" />
-                ))}
-              </div>
-            </div>
-          ))}
         </div>
       </div>
     );
@@ -218,19 +205,19 @@ export default function ExecutiveOverviewDashboard() {
   if (!projectsLoading && projects.length === 0) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center p-6">
-        <div className="max-w-md w-full glass-card border border-white/[0.1] rounded-3xl p-8 text-center space-y-6 shadow-2xl">
-          <div className="w-14 h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center mx-auto shadow-lg shadow-cyan-500/10">
-            <Plus size={28} />
+        <div className="max-w-md w-full bg-[#111218] border border-white/[0.08] rounded-2xl p-8 text-center space-y-6 shadow-2xl">
+          <div className="w-12 h-12 rounded-xl bg-[#181922] border border-white/[0.08] text-white flex items-center justify-center mx-auto">
+            <Plus size={24} />
           </div>
-          <div className="space-y-1">
-            <h2 className="text-xl font-black text-white">Welcome to Open Analytics</h2>
-            <p className="text-xs text-muted-foreground">
+          <div className="space-y-2">
+            <h2 className="text-xl font-semibold text-white tracking-tight">Welcome to Open Analytics</h2>
+            <p className="text-xs text-zinc-400 leading-relaxed">
               You don&apos;t have any projects in your workspace yet. Create your first project to begin tracking live web traffic and Real User Monitoring telemetry.
             </p>
           </div>
           <button
             onClick={() => openCreateProject()}
-            className="w-full py-3 px-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer"
+            className="w-full py-2.5 px-4 bg-white text-zinc-950 hover:bg-zinc-200 font-medium text-xs rounded-lg transition cursor-pointer"
           >
             + Create First Project
           </button>
@@ -257,25 +244,25 @@ export default function ExecutiveOverviewDashboard() {
           {/* Real-time Live Visitors Pill */}
           <Link
             href="/live-feed"
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold font-mono transition hover:bg-emerald-500/20 shadow-2xs"
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium font-mono transition hover:bg-emerald-500/15"
           >
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
             <span>{liveVisitorCount} Active Visitors</span>
           </Link>
 
           {/* Direct Live Stream Link */}
           <Link
             href="/live-feed"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-card border border-border text-foreground hover:bg-muted text-xs font-bold transition shadow-2xs"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-300 hover:text-white text-xs font-medium transition"
           >
-            <Radio size={13} className="text-primary" />
+            <Radio size={13} className="text-zinc-400" />
             <span>Live Feed</span>
           </Link>
 
           {/* Quick SDK Installation Link */}
           <Link
             href={`/projects/${activeProjectId || "prj_openlabs"}/install`}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary text-primary-foreground text-xs font-bold transition shadow-2xs hover:opacity-90"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white text-zinc-950 hover:bg-zinc-200 text-xs font-medium transition"
           >
             <Code2 size={13} />
             <span>Install SDK</span>
@@ -284,40 +271,39 @@ export default function ExecutiveOverviewDashboard() {
       </PlatformHeader>
 
       {error && (
-        <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/25 text-rose-300 text-xs flex items-center justify-between gap-3">
+        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <AlertCircle size={16} className="text-rose-400 shrink-0" />
             <span>{error}</span>
           </div>
-          <span className="text-[11px] text-muted-foreground">Database reconnecting in background</span>
+          <span className="text-[11px] text-zinc-400">Database reconnecting in background</span>
         </div>
       )}
 
       {/* ============================================================ */}
-      {/* 1. TOP EXECUTIVE KPI STAT CARDS STRIP                         */}
+      {/* 1. PRIMARY EXECUTIVE KPI STAT CARDS (4-COL HERO ROW)         */}
       {/* ============================================================ */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-2.5 sm:gap-3.5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Pageviews */}
         <Link
           href="/live-feed"
-          className="p-3.5 sm:p-4 glass-card glass-card-hover rounded-2xl space-y-1.5 sm:space-y-2 group block relative overflow-hidden"
+          className="p-5 bg-[#111218] border border-white/[0.08] hover:border-white/[0.16] rounded-xl space-y-2 group block transition-all"
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground group-hover:text-cyan-400 transition-colors">
-              Pageviews
+            <span className="text-xs font-medium text-zinc-400 group-hover:text-zinc-200 transition-colors">
+              Total Pageviews
             </span>
-            <span className="text-[10px] font-bold text-emerald-400 flex items-center gap-0.5 font-mono">
-              <TrendingUp size={11} />
-              Live
-            </span>
+            <div className="w-7 h-7 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-400 group-hover:text-zinc-200 transition">
+              <Layers size={14} />
+            </div>
           </div>
-          <div className="text-xl sm:text-2xl font-black font-mono text-white tracking-tight truncate">
+          <div className="text-2xl sm:text-3xl font-semibold tracking-tight text-white tabular-nums">
             {overview.totalViews.toLocaleString()}
           </div>
-          <div className="text-[10px] text-muted-foreground font-mono flex items-center justify-between">
-            <span className="truncate">All hits</span>
-            <span className="text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity font-bold shrink-0">
-              Feed &rarr;
+          <div className="text-[11px] text-zinc-500 flex items-center justify-between">
+            <span>All inbound hits</span>
+            <span className="text-zinc-400 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 font-medium">
+              Feed <ArrowRight size={11} />
             </span>
           </div>
         </Link>
@@ -325,49 +311,51 @@ export default function ExecutiveOverviewDashboard() {
         {/* Unique Visitors */}
         <Link
           href="/acquisition"
-          className="p-3.5 sm:p-4 glass-card glass-card-hover rounded-2xl space-y-1.5 sm:space-y-2 group block relative overflow-hidden"
+          className="p-5 bg-[#111218] border border-white/[0.08] hover:border-white/[0.16] rounded-xl space-y-2 group block transition-all"
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground group-hover:text-blue-400 transition-colors">
-              Visitors
+            <span className="text-xs font-medium text-zinc-400 group-hover:text-zinc-200 transition-colors">
+              Unique Visitors
             </span>
-            <span className="text-[10px] font-bold text-emerald-400 flex items-center gap-0.5 font-mono">
-              <Users size={11} />
-              Unique
-            </span>
+            <div className="w-7 h-7 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-400 group-hover:text-zinc-200 transition">
+              <Users size={14} />
+            </div>
           </div>
-          <div className="text-xl sm:text-2xl font-black font-mono text-white tracking-tight truncate">
+          <div className="text-2xl sm:text-3xl font-semibold tracking-tight text-white tabular-nums">
             {overview.uniqueVisitors.toLocaleString()}
           </div>
-          <div className="text-[10px] text-muted-foreground font-mono flex items-center justify-between">
-            <span className="truncate">Clients</span>
-            <span className="text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity font-bold shrink-0">
-              Sources &rarr;
+          <div className="text-[11px] text-zinc-500 flex items-center justify-between">
+            <span>Identified clients</span>
+            <span className="text-zinc-400 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 font-medium">
+              Sources <ArrowRight size={11} />
             </span>
           </div>
         </Link>
 
-        {/* Returning Users Rate */}
+        {/* Realtime Live Active Visitors */}
         <Link
-          href="/audience"
-          className="p-3.5 sm:p-4 glass-card glass-card-hover rounded-2xl space-y-1.5 sm:space-y-2 group block relative overflow-hidden"
+          href="/live-feed"
+          className="p-5 bg-[#111218] border border-white/[0.08] hover:border-white/[0.16] rounded-xl space-y-2 group block transition-all"
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground group-hover:text-purple-400 transition-colors">
-              Retention
+            <span className="text-xs font-medium text-zinc-400 group-hover:text-zinc-200 transition-colors">
+              Live Visitors
             </span>
-            <span className="text-[10px] font-bold text-emerald-400 flex items-center gap-0.5 font-mono">
-              <Repeat size={11} />
-              {(data?.retention?.returnRate ?? overview.returnRate ?? 0) > 0 ? "Active" : "New"}
+            <div className="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+              <Radio size={14} />
+            </div>
+          </div>
+          <div className="text-2xl sm:text-3xl font-semibold tracking-tight text-white tabular-nums flex items-baseline gap-2">
+            <span>{liveVisitorCount.toLocaleString()}</span>
+            <span className="text-xs font-normal text-emerald-400 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              Live
             </span>
           </div>
-          <div className="text-xl sm:text-2xl font-black font-mono text-white tracking-tight truncate">
-            {data?.retention?.returnRate ?? overview.returnRate ?? 0}%
-          </div>
-          <div className="text-[10px] text-muted-foreground font-mono flex items-center justify-between">
-            <span className="truncate">Loyalty rate</span>
-            <span className="text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity font-bold shrink-0">
-              Cohorts &rarr;
+          <div className="text-[11px] text-zinc-500 flex items-center justify-between">
+            <span>Past 5-min window</span>
+            <span className="text-zinc-400 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 font-medium">
+              Stream <ArrowRight size={11} />
             </span>
           </div>
         </Link>
@@ -375,24 +363,52 @@ export default function ExecutiveOverviewDashboard() {
         {/* Average Dwell Time */}
         <Link
           href="/engagement"
-          className="p-3.5 sm:p-4 glass-card glass-card-hover rounded-2xl space-y-1.5 sm:space-y-2 group block relative overflow-hidden"
+          className="p-5 bg-[#111218] border border-white/[0.08] hover:border-white/[0.16] rounded-xl space-y-2 group block transition-all"
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground group-hover:text-teal-400 transition-colors">
-              Avg Dwell
+            <span className="text-xs font-medium text-zinc-400 group-hover:text-zinc-200 transition-colors">
+              Average Dwell Time
             </span>
-            <span className="text-[10px] font-bold text-emerald-400 flex items-center gap-0.5 font-mono">
-              <Clock size={11} />
-              Session
-            </span>
+            <div className="w-7 h-7 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-400 group-hover:text-zinc-200 transition">
+              <Clock size={14} />
+            </div>
           </div>
-          <div className="text-xl sm:text-2xl font-black font-mono text-white tracking-tight truncate">
+          <div className="text-2xl sm:text-3xl font-semibold tracking-tight text-white tabular-nums">
             {formatDuration(overview.avgDuration || 0)}
           </div>
-          <div className="text-[10px] text-muted-foreground font-mono flex items-center justify-between">
-            <span className="truncate">Active read</span>
-            <span className="text-teal-400 opacity-0 group-hover:opacity-100 transition-opacity font-bold shrink-0">
-              Dwell &rarr;
+          <div className="text-[11px] text-zinc-500 flex items-center justify-between">
+            <span>Active session duration</span>
+            <span className="text-zinc-400 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 font-medium">
+              Dwell <ArrowRight size={11} />
+            </span>
+          </div>
+        </Link>
+      </div>
+
+      {/* ============================================================ */}
+      {/* 2. SECONDARY TELEMETRY & HEALTH CARDS (3-COL ROW)            */}
+      {/* ============================================================ */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {/* Returning Users Rate */}
+        <Link
+          href="/audience"
+          className="p-4 sm:p-5 bg-[#111218] border border-white/[0.08] hover:border-white/[0.16] rounded-xl space-y-1.5 group block transition-all"
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-zinc-400 group-hover:text-zinc-200 transition-colors">
+              Audience Loyalty
+            </span>
+            <div className="w-6 h-6 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-400">
+              <Repeat size={13} />
+            </div>
+          </div>
+          <div className="text-xl sm:text-2xl font-semibold tracking-tight text-white tabular-nums">
+            {data?.retention?.returnRate ?? overview.returnRate ?? 0}%
+          </div>
+          <div className="text-[11px] text-zinc-500 flex items-center justify-between">
+            <span>Returning visitor cohort</span>
+            <span className="text-zinc-400 opacity-0 group-hover:opacity-100 transition-opacity font-medium">
+              Audience &rarr;
             </span>
           </div>
         </Link>
@@ -400,47 +416,23 @@ export default function ExecutiveOverviewDashboard() {
         {/* Core Web Vitals RUM */}
         <Link
           href="/vitals"
-          className="p-3.5 sm:p-4 glass-card glass-card-hover rounded-2xl space-y-1.5 sm:space-y-2 group block relative overflow-hidden"
+          className="p-4 sm:p-5 bg-[#111218] border border-white/[0.08] hover:border-white/[0.16] rounded-xl space-y-1.5 group block transition-all"
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground group-hover:text-emerald-400 transition-colors">
-              Web Vitals
+            <span className="text-xs font-medium text-zinc-400 group-hover:text-zinc-200 transition-colors">
+              Core Web Vitals (LCP)
             </span>
-            <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 font-mono">
-              RUM
-            </span>
+            <div className="w-6 h-6 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-400">
+              <Activity size={13} />
+            </div>
           </div>
-          <div className="text-xl sm:text-2xl font-black font-mono text-emerald-400 tracking-tight truncate">
+          <div className="text-xl sm:text-2xl font-semibold tracking-tight text-white tabular-nums">
             {data?.webVitals?.overall?.lcp ? `${(data.webVitals.overall.lcp / 1000).toFixed(2)}s` : "—"}
           </div>
-          <div className="text-[10px] text-muted-foreground font-mono flex items-center justify-between">
-            <span className="truncate">{data?.webVitals?.overall?.lcp ? "LCP speed" : "No vitals yet"}</span>
-            <span className="text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity font-bold shrink-0">
-              Audit &rarr;
-            </span>
-          </div>
-        </Link>
-
-        {/* AI & LLM Crawlers */}
-        <Link
-          href="/ai-visibility"
-          className="p-3.5 sm:p-4 glass-card glass-card-hover rounded-2xl space-y-1.5 sm:space-y-2 group block relative overflow-hidden"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground group-hover:text-pink-400 transition-colors">
-              AI Radar
-            </span>
-            <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-pink-500/20 text-pink-300 font-mono">
-              {data?.aiVisibility?.overview?.activeAiBotsCount ?? 0} LLMs
-            </span>
-          </div>
-          <div className="text-xl sm:text-2xl font-black font-mono text-pink-400 tracking-tight truncate">
-            {(data?.aiVisibility?.overview?.totalAiCrawlerHits ?? 0).toLocaleString()}
-          </div>
-          <div className="text-[10px] text-muted-foreground font-mono flex items-center justify-between">
-            <span className="truncate">LLM scrapers</span>
-            <span className="text-pink-400 opacity-0 group-hover:opacity-100 transition-opacity font-bold shrink-0">
-              Radar &rarr;
+          <div className="text-[11px] text-zinc-500 flex items-center justify-between">
+            <span>{data?.webVitals?.overall?.lcp ? "Real User Monitoring (RUM)" : "No vitals data yet"}</span>
+            <span className="text-zinc-400 opacity-0 group-hover:opacity-100 transition-opacity font-medium">
+              Vitals &rarr;
             </span>
           </div>
         </Link>
@@ -448,24 +440,24 @@ export default function ExecutiveOverviewDashboard() {
         {/* Crash Free Sessions */}
         <Link
           href="/errors"
-          className="p-3.5 sm:p-4 glass-card glass-card-hover rounded-2xl space-y-1.5 sm:space-y-2 group block relative overflow-hidden col-span-2 sm:col-span-1 lg:col-span-1"
+          className="p-4 sm:p-5 bg-[#111218] border border-white/[0.08] hover:border-white/[0.16] rounded-xl space-y-1.5 group block transition-all"
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground group-hover:text-rose-400 transition-colors">
-              Crash Free
+            <span className="text-xs font-medium text-zinc-400 group-hover:text-zinc-200 transition-colors">
+              Crash-Free Rate
             </span>
-            <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded-full font-mono ${(data?.errorStats?.totalErrors || 0) === 0 ? "bg-emerald-500/20 text-emerald-300" : "bg-rose-500/20 text-rose-300"}`}>
-              {(data?.errorStats?.totalErrors || 0) === 0 ? "100%" : "Alert"}
-            </span>
+            <div className="w-6 h-6 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-400">
+              <ShieldCheck size={13} />
+            </div>
           </div>
-          <div className="text-xl sm:text-2xl font-black font-mono text-white tracking-tight truncate">
+          <div className="text-xl sm:text-2xl font-semibold tracking-tight text-white tabular-nums">
             {overview.totalViews > 0
               ? `${Math.max(0, Math.min(100, Math.round(((overview.totalViews - (data?.errorStats?.totalErrors || 0)) / overview.totalViews) * 1000) / 10))}%`
               : "100%"}
           </div>
-          <div className="text-[10px] text-muted-foreground font-mono flex items-center justify-between">
-            <span className="truncate">{data?.errorStats?.totalErrors || 0} exceptions</span>
-            <span className="text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity font-bold shrink-0">
+          <div className="text-[11px] text-zinc-500 flex items-center justify-between">
+            <span>{data?.errorStats?.totalErrors || 0} exceptions logged</span>
+            <span className="text-zinc-400 opacity-0 group-hover:opacity-100 transition-opacity font-medium">
               Triage &rarr;
             </span>
           </div>
@@ -473,7 +465,7 @@ export default function ExecutiveOverviewDashboard() {
       </div>
 
       {/* ============================================================ */}
-      {/* 2. PRIMARY INTERACTIVE CHART.JS TIME-SERIES VISUALIZATION    */}
+      {/* 3. PRIMARY INTERACTIVE TIME-SERIES VISUALIZATION             */}
       {/* ============================================================ */}
       <PrimaryAnalyticsChart
         timeseries={data?.timeseries || []}
@@ -481,7 +473,7 @@ export default function ExecutiveOverviewDashboard() {
       />
 
       {/* ============================================================ */}
-      {/* 3. DUAL-COLUMN ANALYTICAL INTELLIGENCE GRID                  */}
+      {/* 4. DUAL-COLUMN ANALYTICAL INTELLIGENCE GRID                  */}
       {/* ============================================================ */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Top Pages & Routes */}
@@ -498,7 +490,7 @@ export default function ExecutiveOverviewDashboard() {
       </div>
 
       {/* ============================================================ */}
-      {/* 4. REAL-TIME TELEMETRY & GEO WORLD ATLAS                     */}
+      {/* 5. REAL-TIME TELEMETRY & GEO WORLD ATLAS                     */}
       {/* ============================================================ */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Live Event Stream Snapshot */}
@@ -515,7 +507,7 @@ export default function ExecutiveOverviewDashboard() {
       </div>
 
       {/* ============================================================ */}
-      {/* 5. CORE WEB VITALS RUM & DEVICE BREAKDOWN                    */}
+      {/* 6. CORE WEB VITALS RUM & DEVICE BREAKDOWN                    */}
       {/* ============================================================ */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <WebVitalsRadarWidget webVitals={data?.webVitals} />
@@ -526,7 +518,7 @@ export default function ExecutiveOverviewDashboard() {
       </div>
 
       {/* ============================================================ */}
-      {/* 6. AI RADAR & CRASH TRIAGE                                   */}
+      {/* 7. AI RADAR & CRASH TRIAGE                                   */}
       {/* ============================================================ */}
       <AiAndErrorWidget
         aiVisibility={data?.aiVisibility}
@@ -535,17 +527,17 @@ export default function ExecutiveOverviewDashboard() {
       />
 
       {/* ============================================================ */}
-      {/* 7. QUICK SETUP, INGESTION DIAGNOSTIC & SDK DECK              */}
+      {/* 8. QUICK SETUP, INGESTION DIAGNOSTIC & SDK DECK              */}
       {/* ============================================================ */}
-      <div className="glass-card rounded-3xl p-5 sm:p-7 border border-cyan-500/20 bg-gradient-to-br from-cyan-950/20 via-blue-950/10 to-transparent flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+      <div className="bg-[#111218] rounded-xl p-5 sm:p-7 border border-white/[0.08] flex flex-col lg:flex-row lg:items-center justify-between gap-5">
         <div className="space-y-1.5 max-w-xl">
           <div className="flex items-center gap-2">
-            <span className="p-1.5 rounded-lg bg-cyan-500/15 text-cyan-400 border border-cyan-500/30 shrink-0">
+            <span className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-zinc-300 shrink-0">
               <Code2 size={16} />
             </span>
-            <h3 className="text-sm sm:text-base font-black text-white">Embed Telemetry in Your App in 30 Seconds</h3>
+            <h3 className="text-sm sm:text-base font-semibold text-white">Embed Telemetry in Your App in 30 Seconds</h3>
           </div>
-          <p className="text-xs text-muted-foreground leading-relaxed">
+          <p className="text-xs text-zinc-400 leading-relaxed">
             Copy the lightweight (&lt; 3.2 KB), cookieless tracking snippet into your HTML &lt;head&gt; or Next.js layout to stream real-time events, Core Web Vitals, and autonomous error triage.
           </p>
         </div>
@@ -555,15 +547,15 @@ export default function ExecutiveOverviewDashboard() {
           <button
             onClick={handleSendTestSignal}
             disabled={testSignalSending}
-            className="flex-1 sm:flex-initial px-3 sm:px-3.5 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.1] text-white text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-50"
+            className="flex-1 sm:flex-initial px-3.5 py-2 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-200 hover:text-white text-xs font-medium transition cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-50"
             title="Send a sample telemetry event to verify pipeline"
           >
             {testSignalSending ? (
-              <RefreshCw size={13} className="animate-spin text-cyan-400" />
+              <RefreshCw size={13} className="animate-spin text-zinc-300" />
             ) : testSignalSuccess ? (
               <Check size={13} className="text-emerald-400" />
             ) : (
-              <Send size={13} className="text-cyan-400" />
+              <Send size={13} className="text-zinc-300" />
             )}
             <span>{testSignalSuccess ? "Ingested!" : "Test Signal"}</span>
           </button>
@@ -571,16 +563,16 @@ export default function ExecutiveOverviewDashboard() {
           {/* Copy Script Tag Button */}
           <button
             onClick={copyScript}
-            className="flex-1 sm:flex-initial px-3.5 sm:px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black text-xs font-black shadow-lg shadow-cyan-500/20 transition cursor-pointer flex items-center justify-center gap-2"
+            className="flex-1 sm:flex-initial px-4 py-2 rounded-lg bg-white text-zinc-950 hover:bg-zinc-200 text-xs font-medium transition cursor-pointer flex items-center justify-center gap-2"
           >
             {copiedSnippet ? <Check size={14} /> : <Copy size={14} />}
-            <span>{copiedSnippet ? "Copied!" : "Copy Snippet"}</span>
+            <span>{copiedSnippet ? "Copied" : "Copy Snippet"}</span>
           </button>
 
           {/* SDK Documentation Link */}
           <Link
             href={`/projects/${activeProjectId || "prj_openlabs"}/install`}
-            className="w-full sm:w-auto text-center px-4 py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] text-white text-xs font-bold transition"
+            className="w-full sm:w-auto text-center px-4 py-2 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-300 hover:text-white text-xs font-medium transition"
           >
             SDK Guides &rarr;
           </Link>

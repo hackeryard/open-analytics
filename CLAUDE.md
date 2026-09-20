@@ -11,6 +11,13 @@
 - **Do NOT use emojis anywhere in the codebase**: Avoid emojis in UI components, AI prompts, console logs, toast messages, status dropdowns, empty states, or documentation.
 - Use clean, professional **Lucide React** icons (`<Activity />`, `<Check />`, `<Shield />`, `<Crown />`, etc.) and refined typography instead.
 
+### 1.1 World-Class Obsidian & Precision Design System
+- **No generic AI aesthetics**: Avoid muddy navy blue, blurry semi-transparent blue cards, and loud rainbow neon gradients.
+- **Obsidian Palette**: Solid `#090a0f` canvas, `#111218` solid cards, `#0e0f15` sidebars, `#20222c` / `rgba(255,255,255,0.08)` hairline borders with inset top bevels (`inset 0 1px 0 rgba(255,255,255,0.05)`).
+- **Typography**: Google's `Inter` font (`--font-inter`) with tabular numbers (`tabular-nums font-semibold text-white`) for all metrics and KPIs.
+- **Tactile High-Contrast CTAs**: Use crisp white buttons (`bg-white text-zinc-950 hover:bg-zinc-200`) for primary actions.
+- **Clutter-Free Navigation**: Reserve sidebar badges strictly for actionable signals (unread alerts, active crash errors). Do not clutter navigation with vanity numbers.
+
 ### 2. Multi-Tenant Project Isolation & RBAC
 - Every analytical collection (`PageView`, `CustomEvent`, `ErrorLogItem`, etc.) is strictly indexed and isolated by `projectId`.
 - Always wrap project-specific route handlers with the appropriate auth guard from `lib/auth.ts`:

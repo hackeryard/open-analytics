@@ -2,6 +2,26 @@
 
 All notable changes to the Open Analytics platform are documented in this file.
 
+## [3.6.0] - 2026-09-20
+
+### Changed
+- **Obsidian & Precision Design System Overhaul (`app/globals.css`, `tailwind.config.ts`, `app/layout.tsx`)**:
+  - Replaced generic AI-template aesthetics (muddy navy-blue `#080c14`, blurry cards, rainbow neon gradients) with a world-class, human-crafted Obsidian & Precision dark design system inspired by Linear, Vercel, and Raycast.
+  - Loaded Google's `Inter` font via `next/font/google` with full font-sans variable integration for crisp typography.
+  - Rewrote color tokens to solid obsidian surfaces (`--background: #090a0f`, `--card: #111218`, `--border: #20222c`, `--muted: #181922`) with razor-thin borders (`rgba(255,255,255,0.08)`) and inset top bevels.
+- **Main Domain & Landing Page Redesign (`components/public/LandingHero.tsx`, `components/public/PublicNavbar.tsx`, `components/public/PublicFooter.tsx`)**:
+  - Removed spammy above-the-fold "GEO & AEO Direct Answer Box".
+  - Replaced generic 8-pillar repetitive cards with a rich 5-card Bento Grid Showcase highlighting Core Web Vitals gauges, sub-3.2KB payload bar vs GA4, autonomous AI crawler radar stream, incident & crash triage, and 100% cookieless privacy.
+  - Refined the interactive telemetry simulator into an obsidian laboratory card with tactile segment controls.
+  - Modernized `PublicNavbar` and `PublicFooter` with high-contrast tactile white CTAs, clean badge emblems, and muted zinc typography.
+- **Dashboard Workspace & Navigation Declutter (`components/AppShell.tsx`, `components/PlatformHeader.tsx`, `components/PrimaryAnalyticsChart.tsx`)**:
+  - Stripped out 10+ noisy, non-actionable badges from the sidebar navigation (`% return`, `topPages.length`, `lcp`, `rage clicks`, etc.), reserving badges strictly for actionable signals (unread alerts, active crash errors).
+  - Modernized sidebar active states to clean obsidian zinc highlights (`bg-white/[0.08] text-white font-medium`) and overhauled workspace switcher popovers on both desktop and mobile.
+  - Refined `PrimaryAnalyticsChart` controls, metric switcher pills, and micro-KPI summary row to match the obsidian aesthetic.
+- **Executive Overview 2-Tier KPI Architecture (`app/page.tsx`)**:
+  - Replaced the cramped 7-column stat row with an ergonomic 2-tier executive grid: 4 Hero KPI cards (Total Pageviews, Unique Visitors, Realtime Live Visitors, Avg Dwell Time) with `tabular-nums` typography and 3 Telemetry Health cards (Audience Loyalty, CWV LCP speed, Crash-Free Rate).
+  - Updated shimmer loading states and empty project setup wizard to match the obsidian card layout.
+
 ## [3.5.3] - 2026-09-20
 
 ### Added

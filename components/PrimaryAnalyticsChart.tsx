@@ -207,61 +207,61 @@ export default function PrimaryAnalyticsChart({
   }, [timeseries, selectedMetric]);
 
   return (
-    <div className="glass-card rounded-3xl p-5 sm:p-6 space-y-5">
+    <div className="bg-[#111218] border border-white/[0.08] rounded-xl p-5 sm:p-6 space-y-5">
       {/* Chart Header & Controls */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-cyan-400" />
-            <h2 className="text-base font-black text-white tracking-tight">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            <h2 className="text-sm sm:text-base font-semibold text-white tracking-tight">
               Traffic Volume &amp; Audience Trajectory
             </h2>
           </div>
-          <p className="text-xs text-muted-foreground mt-0.5">
+          <p className="text-xs text-zinc-400 mt-0.5">
             Real-time telemetry stream with multi-metric comparative curves
           </p>
         </div>
 
         {/* Metric Selector Pills & Chart Type */}
         <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
-          <div className="flex items-center bg-white/[0.04] p-1 rounded-xl border border-white/[0.08] text-xs font-bold flex-wrap">
+          <div className="flex items-center bg-[#14161f] p-1 rounded-lg border border-white/[0.06] text-xs font-medium flex-wrap">
             <button
               onClick={() => setSelectedMetric("views")}
-              className={`px-2.5 sm:px-3 py-1.5 rounded-lg transition cursor-pointer text-xs ${
+              className={`px-3 py-1 rounded-md transition cursor-pointer text-xs ${
                 selectedMetric === "views"
-                  ? "bg-cyan-500 text-white shadow-sm shadow-cyan-500/30"
-                  : "text-slate-400 hover:text-white"
+                  ? "bg-white/[0.1] text-white shadow-xs"
+                  : "text-zinc-400 hover:text-white"
               }`}
             >
               Pageviews
             </button>
             <button
               onClick={() => setSelectedMetric("visitors")}
-              className={`px-2.5 sm:px-3 py-1.5 rounded-lg transition cursor-pointer text-xs ${
+              className={`px-3 py-1 rounded-md transition cursor-pointer text-xs ${
                 selectedMetric === "visitors"
-                  ? "bg-blue-600 text-white shadow-sm shadow-blue-500/30"
-                  : "text-slate-400 hover:text-white"
+                  ? "bg-white/[0.1] text-white shadow-xs"
+                  : "text-zinc-400 hover:text-white"
               }`}
             >
               Visitors
             </button>
             <button
               onClick={() => setSelectedMetric("returning")}
-              className={`px-2.5 sm:px-3 py-1.5 rounded-lg transition cursor-pointer text-xs ${
+              className={`px-3 py-1 rounded-md transition cursor-pointer text-xs ${
                 selectedMetric === "returning"
-                  ? "bg-purple-600 text-white shadow-sm shadow-purple-500/30"
-                  : "text-slate-400 hover:text-white"
+                  ? "bg-white/[0.1] text-white shadow-xs"
+                  : "text-zinc-400 hover:text-white"
               }`}
             >
               Returning
             </button>
           </div>
 
-          <div className="flex items-center bg-white/[0.04] p-1 rounded-xl border border-white/[0.08] text-xs shrink-0">
+          <div className="flex items-center bg-[#14161f] p-1 rounded-lg border border-white/[0.06] text-xs shrink-0">
             <button
               onClick={() => setChartType("area")}
-              className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
-                chartType === "area" ? "bg-white/[0.1] text-white" : "text-slate-400 hover:text-white"
+              className={`px-2.5 py-1 rounded-md text-xs font-medium transition cursor-pointer ${
+                chartType === "area" ? "bg-white/[0.1] text-white" : "text-zinc-400 hover:text-white"
               }`}
               title="Area Line Chart"
             >
@@ -269,8 +269,8 @@ export default function PrimaryAnalyticsChart({
             </button>
             <button
               onClick={() => setChartType("bar")}
-              className={`px-2.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
-                chartType === "bar" ? "bg-white/[0.1] text-white" : "text-slate-400 hover:text-white"
+              className={`px-2.5 py-1 rounded-md text-xs font-medium transition cursor-pointer ${
+                chartType === "bar" ? "bg-white/[0.1] text-white" : "text-zinc-400 hover:text-white"
               }`}
               title="Bar Chart"
             >
@@ -281,28 +281,28 @@ export default function PrimaryAnalyticsChart({
       </div>
 
       {/* Peak and Volume Micro-KPI Strip */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 rounded-2xl bg-white/[0.02] border border-white/[0.05] text-xs">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 rounded-lg bg-[#14161f] border border-white/[0.06] text-xs">
         <div className="min-w-0">
-          <span className="text-[10px] font-extrabold uppercase text-muted-foreground tracking-wider block">
+          <span className="text-[10px] font-semibold uppercase text-zinc-500 tracking-wider block">
             Total in Range
           </span>
-          <span className="text-base font-black font-mono text-white mt-0.5 block truncate">
+          <span className="text-base font-semibold font-mono text-white mt-0.5 block truncate tabular-nums">
             {totalInPeriod.toLocaleString()}
           </span>
         </div>
         <div className="min-w-0">
-          <span className="text-[10px] font-extrabold uppercase text-muted-foreground tracking-wider block truncate">
+          <span className="text-[10px] font-semibold uppercase text-zinc-500 tracking-wider block truncate">
             Peak Interval ({peakPoint.label})
           </span>
-          <span className="text-base font-black font-mono text-cyan-400 mt-0.5 block truncate">
+          <span className="text-base font-semibold font-mono text-zinc-200 mt-0.5 block truncate tabular-nums">
             {peakPoint.value.toLocaleString()}
           </span>
         </div>
         <div className="min-w-0 sm:col-span-1">
-          <span className="text-[10px] font-extrabold uppercase text-muted-foreground tracking-wider block">
+          <span className="text-[10px] font-semibold uppercase text-zinc-500 tracking-wider block">
             Average per Bucket
           </span>
-          <span className="text-base font-black font-mono text-slate-300 mt-0.5 block truncate">
+          <span className="text-base font-semibold font-mono text-zinc-400 mt-0.5 block truncate tabular-nums">
             {timeseries.length > 0 ? Math.round(totalInPeriod / timeseries.length).toLocaleString() : "0"}
           </span>
         </div>
@@ -317,8 +317,8 @@ export default function PrimaryAnalyticsChart({
             <Bar data={chartData as any} options={options} />
           )
         ) : (
-          <div className="h-full flex flex-col items-center justify-center text-muted-foreground text-xs space-y-2">
-            <BarChart2 size={28} className="text-slate-600" />
+          <div className="h-full flex flex-col items-center justify-center text-zinc-500 text-xs space-y-2">
+            <BarChart2 size={28} className="text-zinc-600" />
             <span>No telemetry recorded for this timeframe yet</span>
           </div>
         )}

@@ -200,3 +200,22 @@
 - `captureError(err: Error | string, context?: object)`: Forwards manual errors, stack traces, and component stacks to error triage.
 - `track404(pathname?: string, referrer?: string)`: Records broken link/not-found occurrences.
 - `page(pathname?: string)`: Manually triggers pageview transitions for custom routing architectures.
+
+---
+
+## 7. Frontend Design System & Typography Specification
+
+1. **Obsidian Dark Color Palette**:
+   - Canvas Background: `#090a0f` (`--background`)
+   - Card / Panel Surface: `#111218` (`--card`)
+   - Secondary / Header Surface: `#0e0f15` (`--secondary`)
+   - Muted Controls / Modals: `#181922` (`--muted`)
+   - Razor-Thin Borders: `#20222c` / `rgba(255, 255, 255, 0.08)` (`--border`)
+2. **Typography**:
+   - Typeface: Google `Inter` loaded via `next/font/google` (`--font-inter`).
+   - Numerical Data & Metrics: Strictly formatted with tabular figures (`tabular-nums font-semibold text-white`).
+3. **Component Aesthetics**:
+   - Zero generic AI neon rainbow gradients on cards or body text.
+   - High-contrast tactile white CTAs (`bg-white text-zinc-950 hover:bg-zinc-200 font-medium`).
+   - Clean obsidian workspace switchers with solid non-transparent popovers.
+   - Strictly zero emojis across all code, UI components, badges, and documentation. Lucide React icons only.

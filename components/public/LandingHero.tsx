@@ -12,13 +12,11 @@ import {
   Copy,
   Flame,
   Globe,
-  HelpCircle,
   Laptop,
   Lock,
   Radio,
   Server,
   ShieldCheck,
-  Smartphone,
   Sparkles,
   TrendingUp,
   X,
@@ -26,17 +24,14 @@ import {
   Gauge,
   Cpu,
   Layers,
-  BarChart3,
   Search,
   Users,
-  EyeOff,
   Clock,
   Terminal,
   MousePointerClick,
   Bug,
   Bell,
   Volume2,
-  BellOff,
 } from "lucide-react";
 import { getDashboardUrl } from "@/lib/subdomain";
 
@@ -64,573 +59,559 @@ export default function LandingHero() {
   };
 
   return (
-    <div className="w-full text-slate-100 selection:bg-cyan-500/30 selection:text-cyan-200">
+    <div className="w-full text-zinc-100 selection:bg-sky-500/20 selection:text-sky-200">
       {/* ============================================================ */}
       {/* HERO SECTION                                                 */}
       {/* ============================================================ */}
-      <section className="relative pt-24 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center overflow-hidden">
-        {/* Glow ambient background */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[720px] h-[460px] bg-gradient-to-tr from-cyan-500/20 via-blue-600/15 to-indigo-600/10 blur-[130px] -z-10 pointer-events-none" />
+      <section className="relative pt-20 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
+        {/* Subtle top ambient vignette */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-sky-500/5 blur-[100px] -z-10 pointer-events-none" />
 
         {/* Top Tag Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/25 text-cyan-400 text-xs font-semibold tracking-wide uppercase mb-6 backdrop-blur-md shadow-xs">
-          <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-          <span>Next-Generation Cookieless Web Observability</span>
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-300 text-xs font-medium mb-6 shadow-xs">
+          <Sparkles className="w-3.5 h-3.5 text-sky-400" />
+          <span>Cookieless Web Telemetry &amp; RUM</span>
         </div>
 
         {/* H1 Heading */}
-        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white mb-6 max-w-5xl mx-auto leading-[1.08]">
-          Analytics That Won&apos;t Slow You Down Or{" "}
-          <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400 bg-clip-text text-transparent">
-            Invade Visitor Privacy.
-          </span>
+        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-6 max-w-4xl mx-auto leading-[1.08]">
+          Web Analytics Built for Modern Speed &amp; Privacy
         </h1>
 
         {/* Subtitle */}
-        <p className="max-w-3xl mx-auto text-base sm:text-lg text-slate-300 leading-relaxed mb-10">
-          The privacy-first Google Analytics 4 alternative for engineering teams. Sub-3.2KB featherweight script, zero cookie consent banners, real-time sub-second telemetry, and autonomous AI search radar.
+        <p className="max-w-2xl mx-auto text-base sm:text-lg text-zinc-400 leading-relaxed mb-8">
+          The privacy-first Google Analytics 4 alternative for engineering teams. Sub-3.2KB featherweight script, zero cookie banners, real-time Core Web Vitals RUM, and autonomous AI search radar.
         </p>
 
         {/* Primary CTA Button Group */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-10">
           <a
             href={dashboardUrl}
-            className="w-full sm:w-auto py-3.5 px-8 rounded-xl bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-400 hover:from-cyan-300 hover:via-sky-300 hover:to-indigo-300 text-slate-950 font-black text-sm transition-all shadow-xl shadow-cyan-500/25 flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.02]"
+            className="w-full sm:w-auto py-3 px-6 rounded-xl bg-white hover:bg-zinc-200 text-zinc-950 font-semibold text-sm transition shadow-sm flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
           >
             <span>Launch Dashboard</span>
             <ArrowRight className="w-4 h-4" />
           </a>
           <Link
             href="/vs-google-analytics"
-            className="w-full sm:w-auto py-3.5 px-6 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 font-semibold text-sm transition border border-white/[0.1] flex items-center justify-center gap-2 backdrop-blur-sm"
+            className="w-full sm:w-auto py-3 px-5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-medium text-sm transition border border-zinc-800 flex items-center justify-center gap-2"
           >
-            <span>Compare vs Google Analytics 4</span>
+            <span>Compare vs GA4</span>
           </Link>
         </div>
 
         {/* Trust & Metric Pill Bar */}
-        <div className="flex flex-wrap items-center justify-center gap-6 text-xs text-slate-400 max-w-3xl mx-auto mb-14">
+        <div className="flex flex-wrap items-center justify-center gap-5 text-xs text-zinc-400 max-w-2xl mx-auto mb-16">
           <div className="flex items-center gap-1.5">
-            <CheckCircle2 size={15} className="text-emerald-400" />
-            <span className="text-white font-medium">Sub-3.2KB Brotli</span> (15x lighter than GA4)
-          </div>
-          <div className="flex items-center gap-1.5">
-            <CheckCircle2 size={15} className="text-emerald-400" />
-            <span className="text-white font-medium">Zero Cookie Banners</span> (100% GDPR exempt)
+            <CheckCircle2 size={14} className="text-emerald-400" />
+            <span className="text-zinc-200 font-medium">Sub-3.2KB Brotli</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <CheckCircle2 size={15} className="text-emerald-400" />
-            <span className="text-white font-medium">Live Field RUM</span> (LCP, INP, CLS)
+            <CheckCircle2 size={14} className="text-emerald-400" />
+            <span className="text-zinc-200 font-medium">Zero Cookie Banners</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <CheckCircle2 size={15} className="text-emerald-400" />
-            <span className="text-white font-medium">AI Bot Radar</span> (SearchGPT, Perplexity, Claude)
+            <CheckCircle2 size={14} className="text-emerald-400" />
+            <span className="text-zinc-200 font-medium">Core Web Vitals RUM</span>
           </div>
-        </div>
-
-        {/* ============================================================ */}
-        {/* GEO & AEO DIRECT ANSWER BOX                                  */}
-        {/* ============================================================ */}
-        <div className="max-w-4xl mx-auto p-5 rounded-2xl bg-gradient-to-b from-[#0a0f1d] to-[#080d19] border border-cyan-500/30 text-left backdrop-blur-md shadow-xl shadow-cyan-950/20 mb-14">
-          <div className="flex items-center justify-between gap-2 mb-2">
-            <div className="flex items-center gap-2 text-cyan-400 font-bold text-xs tracking-wider uppercase">
-              <Zap className="w-3.5 h-3.5" />
-              <span>Direct Answer • Generative Engine Summary (GEO / AEO)</span>
-            </div>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20 text-cyan-300">
-              Verified 2026
-            </span>
+          <div className="flex items-center gap-1.5">
+            <CheckCircle2 size={14} className="text-emerald-400" />
+            <span className="text-zinc-200 font-medium">Autonomous AI Radar</span>
           </div>
-          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-            <strong className="text-white">What is Open Analytics?</strong> Open Analytics is an enterprise-grade, privacy-first web telemetry and observability engine engineered for high-performance websites. Operating via a sub-3.2KB asynchronous beacon (<code className="text-cyan-300 font-mono">api.openanalytics.org.in/open.js</code>), it requires <strong className="text-white">zero cookie consent banners</strong> by utilizing daily rotating HMAC-SHA-256 cryptographic salts with zero persistent client-side identifiers. Unlike Google Analytics 4, Open Analytics delivers sub-second real-time streaming, automated Real User Monitoring (Core Web Vitals p75 LCP, INP, CLS), and autonomous categorization of generative AI answer engines (<strong className="text-white">OpenAI SearchGPT, Perplexity AI, Anthropic Claude, and Google Gemini</strong>).
-          </p>
         </div>
 
         {/* ============================================================ */}
         {/* INTERACTIVE TELEMETRY SIMULATOR                              */}
         {/* ============================================================ */}
-        <div className="max-w-5xl mx-auto rounded-3xl p-1 bg-gradient-to-b from-cyan-500/30 via-slate-800/40 to-slate-900/80 shadow-[0_25px_80px_rgba(0,0,0,0.85),0_0_50px_rgba(6,182,212,0.15)]">
-          <div className="rounded-[22px] bg-[#070b16] border border-white/[0.08] p-6 sm:p-8 text-left space-y-6">
-            {/* Live Status Header */}
-            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/[0.08] pb-5">
-              <div className="flex items-center gap-3">
-                <div className="w-3 h-3 rounded-full bg-emerald-400 animate-ping" />
-                <div>
-                  <div className="text-xs font-mono text-emerald-400 uppercase tracking-wider font-bold flex items-center gap-1.5">
-                    <span>Live Telemetry Engine Active</span>
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                    <span className="text-slate-500">api.openanalytics.org.in</span>
-                  </div>
-                  <div className="text-xl sm:text-2xl font-black text-white mt-0.5">
-                    1,428 Visitors Active Online Right Now
-                  </div>
+        <div className="max-w-5xl mx-auto rounded-2xl bg-[#111218] border border-white/[0.08] shadow-2xl p-5 sm:p-7 text-left space-y-5">
+          {/* Live Status Header */}
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/[0.08] pb-4">
+            <div className="flex items-center gap-3">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+              <div>
+                <div className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider font-semibold flex items-center gap-1.5">
+                  <span className="text-emerald-400">Live Telemetry Active</span>
+                  <span>•</span>
+                  <span>api.openanalytics.org.in</span>
                 </div>
-              </div>
-
-              {/* Tab Selector */}
-              <div className="flex items-center p-1 rounded-xl bg-white/[0.04] border border-white/[0.08]">
-                <button
-                  type="button"
-                  onClick={() => setActiveTab("pulse")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
-                    activeTab === "pulse" ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30" : "text-slate-400 hover:text-white"
-                  }`}
-                >
-                  Live Feed
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab("vitals")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
-                    activeTab === "vitals" ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30" : "text-slate-400 hover:text-white"
-                  }`}
-                >
-                  Core Web Vitals
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab("airadar")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
-                    activeTab === "airadar" ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30" : "text-slate-400 hover:text-white"
-                  }`}
-                >
-                  AI Search Radar
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab("alerts")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
-                    activeTab === "alerts" ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30" : "text-slate-400 hover:text-white"
-                  }`}
-                >
-                  <Bell size={12} className="text-rose-400" />
-                  <span>Incident Alerts</span>
-                </button>
+                <div className="text-xl font-bold text-white mt-0.5">
+                  1,428 Visitors Active Online
+                </div>
               </div>
             </div>
 
-            {/* Tab 1: Live Pulse Feed */}
-            {activeTab === "pulse" && (
-              <div className="space-y-4 animate-fadeIn">
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
-                  <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-                    <div className="text-[11px] text-slate-400">Total Pageviews Today</div>
-                    <div className="text-2xl font-black text-white mt-1">184,920</div>
-                    <div className="text-[11px] text-emerald-400 mt-1 flex items-center gap-1 font-semibold">
-                      <TrendingUp size={13} /> +24.8% vs last week
-                    </div>
-                  </div>
+            {/* Segment Control Tab Selector */}
+            <div className="flex items-center gap-1 bg-zinc-900/80 p-1 rounded-xl border border-zinc-800 text-xs">
+              <button
+                type="button"
+                onClick={() => setActiveTab("pulse")}
+                className={`px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
+                  activeTab === "pulse" ? "bg-white/[0.1] text-white shadow-xs" : "text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                Live Feed
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("vitals")}
+                className={`px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
+                  activeTab === "vitals" ? "bg-white/[0.1] text-white shadow-xs" : "text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                Web Vitals
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("airadar")}
+                className={`px-3 py-1.5 rounded-lg font-medium transition cursor-pointer ${
+                  activeTab === "airadar" ? "bg-white/[0.1] text-white shadow-xs" : "text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                AI Search Radar
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("alerts")}
+                className={`px-3 py-1.5 rounded-lg font-medium transition cursor-pointer flex items-center gap-1.5 ${
+                  activeTab === "alerts" ? "bg-white/[0.1] text-white shadow-xs" : "text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                <Bell size={12} className="text-rose-400" />
+                <span>Incident Alerts</span>
+              </button>
+            </div>
+          </div>
 
-                  <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-                    <div className="text-[11px] text-slate-400">Largest Contentful Paint</div>
-                    <div className="text-2xl font-black text-emerald-400 mt-1">0.82 s</div>
-                    <div className="text-[11px] text-slate-400 mt-1">p75 Field (Target: &lt; 2.5s)</div>
-                  </div>
-
-                  <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-                    <div className="text-[11px] text-slate-400">Interaction to Next Paint</div>
-                    <div className="text-2xl font-black text-emerald-400 mt-1">38 ms</div>
-                    <div className="text-[11px] text-slate-400 mt-1">p75 Field (Target: &lt; 200ms)</div>
-                  </div>
-
-                  <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-                    <div className="text-[11px] text-slate-400">AI Search Referrals</div>
-                    <div className="text-2xl font-black text-cyan-400 mt-1">3,812</div>
-                    <div className="text-[11px] text-cyan-300 mt-1">Perplexity, SearchGPT, Claude</div>
+          {/* Tab 1: Live Pulse Feed */}
+          {activeTab === "pulse" && (
+            <div className="space-y-3.5 animate-fadeIn">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="p-3.5 rounded-xl bg-zinc-900/50 border border-zinc-800">
+                  <div className="text-[11px] text-zinc-400">Total Pageviews Today</div>
+                  <div className="text-xl font-bold text-white mt-1 tabular-nums">184,920</div>
+                  <div className="text-[11px] text-emerald-400 mt-1 flex items-center gap-1 font-medium">
+                    <TrendingUp size={12} /> +24.8% vs last week
                   </div>
                 </div>
 
-                {/* Micro Live Feed Stream */}
-                <div className="space-y-1.5 pt-2 font-mono text-xs">
-                  <div className="p-2.5 rounded-xl bg-white/[0.015] border border-white/[0.04] flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-slate-300">
-                      <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-                      <span className="text-white font-bold">/pricing</span>
-                      <span className="text-slate-500">•</span>
-                      <span className="text-slate-400">Referred by perplexity.ai</span>
-                    </div>
-                    <span className="text-slate-500 text-[11px]">2s ago</span>
-                  </div>
-                  <div className="p-2.5 rounded-xl bg-white/[0.015] border border-white/[0.04] flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-slate-300">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                      <span className="text-white font-bold">/docs/installation</span>
-                      <span className="text-slate-500">•</span>
-                      <span className="text-slate-400">Direct • Chrome Windows</span>
-                    </div>
-                    <span className="text-slate-500 text-[11px]">5s ago</span>
-                  </div>
+                <div className="p-3.5 rounded-xl bg-zinc-900/50 border border-zinc-800">
+                  <div className="text-[11px] text-zinc-400">Largest Contentful Paint</div>
+                  <div className="text-xl font-bold text-emerald-400 mt-1 tabular-nums">0.82 s</div>
+                  <div className="text-[11px] text-zinc-500 mt-1">p75 Field (Target: &lt; 2.5s)</div>
                 </div>
-              </div>
-            )}
 
-            {/* Tab 2: Core Web Vitals RUM */}
-            {activeTab === "vitals" && (
-              <div className="space-y-4 animate-fadeIn">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="p-4 rounded-2xl bg-white/[0.02] border border-emerald-500/20 space-y-2">
-                    <div className="flex items-center justify-between text-xs text-slate-400">
-                      <span>LCP (Loading)</span>
-                      <span className="text-emerald-400 font-bold font-mono">0.82s (Good)</span>
-                    </div>
-                    <div className="w-full h-2 bg-white/[0.06] rounded-full overflow-hidden">
-                      <div className="w-[94%] h-full bg-emerald-400 rounded-full" />
-                    </div>
-                    <p className="text-[11px] text-slate-400">94% of visitors experience sub-1.2s hero paint.</p>
-                  </div>
-
-                  <div className="p-4 rounded-2xl bg-white/[0.02] border border-emerald-500/20 space-y-2">
-                    <div className="flex items-center justify-between text-xs text-slate-400">
-                      <span>INP (Responsiveness)</span>
-                      <span className="text-emerald-400 font-bold font-mono">38ms (Good)</span>
-                    </div>
-                    <div className="w-full h-2 bg-white/[0.06] rounded-full overflow-hidden">
-                      <div className="w-[98%] h-full bg-emerald-400 rounded-full" />
-                    </div>
-                    <p className="text-[11px] text-slate-400">Zero main-thread blocking during click events.</p>
-                  </div>
-
-                  <div className="p-4 rounded-2xl bg-white/[0.02] border border-emerald-500/20 space-y-2">
-                    <div className="flex items-center justify-between text-xs text-slate-400">
-                      <span>CLS (Visual Stability)</span>
-                      <span className="text-emerald-400 font-bold font-mono">0.01 (Good)</span>
-                    </div>
-                    <div className="w-full h-2 bg-white/[0.06] rounded-full overflow-hidden">
-                      <div className="w-[99%] h-full bg-emerald-400 rounded-full" />
-                    </div>
-                    <p className="text-[11px] text-slate-400">No unexpected layout jumps or shifting banners.</p>
-                  </div>
+                <div className="p-3.5 rounded-xl bg-zinc-900/50 border border-zinc-800">
+                  <div className="text-[11px] text-zinc-400">Interaction to Next Paint</div>
+                  <div className="text-xl font-bold text-emerald-400 mt-1 tabular-nums">38 ms</div>
+                  <div className="text-[11px] text-zinc-500 mt-1">p75 Field (Target: &lt; 200ms)</div>
                 </div>
-              </div>
-            )}
 
-            {/* Tab 3: AI Search Radar */}
-            {activeTab === "airadar" && (
-              <div className="space-y-4 animate-fadeIn">
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-                    <div className="text-xs text-slate-400">Perplexity Citations</div>
-                    <div className="text-xl font-bold text-white mt-1">1,940</div>
-                    <div className="text-[10px] text-cyan-300 font-mono">Top route: /features</div>
-                  </div>
-                  <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-                    <div className="text-xs text-slate-400">OpenAI SearchGPT</div>
-                    <div className="text-xl font-bold text-white mt-1">1,215</div>
-                    <div className="text-[10px] text-cyan-300 font-mono">Top route: /vs-google-analytics</div>
-                  </div>
-                  <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-                    <div className="text-xs text-slate-400">ClaudeBot Scrapes</div>
-                    <div className="text-xl font-bold text-white mt-1">420</div>
-                    <div className="text-[10px] text-emerald-400 font-mono">Indexed: /llms.txt</div>
-                  </div>
-                  <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-                    <div className="text-xs text-slate-400">Google Gemini Visits</div>
-                    <div className="text-xl font-bold text-white mt-1">237</div>
-                    <div className="text-[10px] text-cyan-300 font-mono">AEO direct citation</div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Tab 4: Autonomous Incident Alerts */}
-            {activeTab === "alerts" && (
-              <div className="space-y-4 animate-fadeIn">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-                  <div className="p-4 rounded-xl bg-white/[0.02] border border-rose-500/25 space-y-2">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-slate-400 font-medium">Repeated Crash Spike</span>
-                      <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30">
-                        CRITICAL
-                      </span>
-                    </div>
-                    <div className="text-base font-bold text-white">5x Error Surge</div>
-                    <p className="text-[11px] text-slate-400 font-mono">/checkout • TypeError: Cannot read null</p>
-                    <div className="text-[10px] text-rose-400 font-semibold flex items-center gap-1">
-                      <Flame size={12} /> Milestone bracket: 5x threshold triggered
-                    </div>
-                  </div>
-
-                  <div className="p-4 rounded-xl bg-white/[0.02] border border-amber-500/25 space-y-2">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-slate-400 font-medium">SEO & AEO Audit</span>
-                      <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                        WARNING
-                      </span>
-                    </div>
-                    <div className="text-base font-bold text-white">Missing &lt;title&gt;</div>
-                    <p className="text-[11px] text-slate-400 font-mono">/pricing/enterprise • Blank document title</p>
-                    <div className="text-[10px] text-amber-400 font-semibold flex items-center gap-1">
-                      <Search size={12} /> Automated site optimization scan
-                    </div>
-                  </div>
-
-                  <div className="p-4 rounded-xl bg-white/[0.02] border border-cyan-500/25 space-y-2">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-slate-400 font-medium">Desktop Alerts & Audio</span>
-                      <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
-                        ACTIVE
-                      </span>
-                    </div>
-                    <div className="text-base font-bold text-white">Web Notifications</div>
-                    <p className="text-[11px] text-slate-400">Synthesized 587Hz audio chime + 45s background sync</p>
-                    <div className="text-[10px] text-cyan-300 font-semibold flex items-center gap-1">
-                      <Volume2 size={12} /> 0 external MP3 asset dependency
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Interactive Code Snippet Tabs */}
-            <div className="space-y-2 pt-2 border-t border-white/[0.08]">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center gap-1.5">
-                  <Code2 size={15} className="text-cyan-400" />
-                  <span className="text-xs font-bold text-white uppercase tracking-wider">Universal 1-Line Embed</span>
-                </div>
-                <div className="flex items-center gap-1 text-[11px] font-mono">
-                  {(["html", "nextjs", "react", "nuxt"] as const).map((tab) => (
-                    <button
-                      key={tab}
-                      type="button"
-                      onClick={() => setActiveSnippetTab(tab)}
-                      className={`px-2.5 py-1 rounded-lg transition uppercase cursor-pointer ${
-                        activeSnippetTab === tab
-                          ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-bold"
-                          : "text-slate-400 hover:text-white"
-                      }`}
-                    >
-                      {tab}
-                    </button>
-                  ))}
+                <div className="p-3.5 rounded-xl bg-zinc-900/50 border border-zinc-800">
+                  <div className="text-[11px] text-zinc-400">AI Search Referrals</div>
+                  <div className="text-xl font-bold text-sky-400 mt-1 tabular-nums">3,812</div>
+                  <div className="text-[11px] text-zinc-500 mt-1">Perplexity, SearchGPT, Claude</div>
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-[#04060c] border border-white/[0.08] flex items-center justify-between gap-3 overflow-x-auto">
-                <code className="text-xs font-mono text-cyan-300 whitespace-pre-wrap select-all">
-                  {currentSnippet}
-                </code>
-                <button
-                  type="button"
-                  onClick={copySnippet}
-                  className="p-2 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-slate-300 hover:text-white transition shrink-0 cursor-pointer"
-                  title="Copy code snippet"
-                >
-                  {copiedSnippet ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
-                </button>
+              {/* Micro Live Feed Stream */}
+              <div className="space-y-1.5 font-mono text-xs">
+                <div className="p-2.5 rounded-xl bg-zinc-900/30 border border-zinc-800/60 flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-zinc-300">
+                    <span className="w-1.5 h-1.5 rounded-full bg-sky-400" />
+                    <span className="text-white font-semibold">/pricing</span>
+                    <span className="text-zinc-600">•</span>
+                    <span className="text-zinc-400">Referred by perplexity.ai</span>
+                  </div>
+                  <span className="text-zinc-500 text-[11px]">2s ago</span>
+                </div>
+                <div className="p-2.5 rounded-xl bg-zinc-900/30 border border-zinc-800/60 flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-zinc-300">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                    <span className="text-white font-semibold">/docs/installation</span>
+                    <span className="text-zinc-600">•</span>
+                    <span className="text-zinc-400">Direct • Chrome Windows</span>
+                  </div>
+                  <span className="text-zinc-500 text-[11px]">5s ago</span>
+                </div>
               </div>
+            </div>
+          )}
+
+          {/* Tab 2: Core Web Vitals RUM */}
+          {activeTab === "vitals" && (
+            <div className="space-y-4 animate-fadeIn">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="p-4 rounded-xl bg-zinc-900/50 border border-zinc-800 space-y-2">
+                  <div className="flex items-center justify-between text-xs text-zinc-400">
+                    <span>LCP (Loading)</span>
+                    <span className="text-emerald-400 font-semibold font-mono">0.82s (Good)</span>
+                  </div>
+                  <div className="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                    <div className="w-[94%] h-full bg-emerald-400 rounded-full" />
+                  </div>
+                  <p className="text-[11px] text-zinc-500">94% of visitors experience sub-1.2s hero paint.</p>
+                </div>
+
+                <div className="p-4 rounded-xl bg-zinc-900/50 border border-zinc-800 space-y-2">
+                  <div className="flex items-center justify-between text-xs text-zinc-400">
+                    <span>INP (Responsiveness)</span>
+                    <span className="text-emerald-400 font-semibold font-mono">38ms (Good)</span>
+                  </div>
+                  <div className="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                    <div className="w-[98%] h-full bg-emerald-400 rounded-full" />
+                  </div>
+                  <p className="text-[11px] text-zinc-500">Zero main-thread blocking during click events.</p>
+                </div>
+
+                <div className="p-4 rounded-xl bg-zinc-900/50 border border-zinc-800 space-y-2">
+                  <div className="flex items-center justify-between text-xs text-zinc-400">
+                    <span>CLS (Visual Stability)</span>
+                    <span className="text-emerald-400 font-semibold font-mono">0.01 (Good)</span>
+                  </div>
+                  <div className="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                    <div className="w-[99%] h-full bg-emerald-400 rounded-full" />
+                  </div>
+                  <p className="text-[11px] text-zinc-500">No unexpected layout jumps or shifting banners.</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Tab 3: AI Search Radar */}
+          {activeTab === "airadar" && (
+            <div className="space-y-4 animate-fadeIn">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="p-3.5 rounded-xl bg-zinc-900/50 border border-zinc-800">
+                  <div className="text-xs text-zinc-400">Perplexity Citations</div>
+                  <div className="text-lg font-bold text-white mt-1 tabular-nums">1,940</div>
+                  <div className="text-[10px] text-sky-400 font-mono">Top: /features</div>
+                </div>
+                <div className="p-3.5 rounded-xl bg-zinc-900/50 border border-zinc-800">
+                  <div className="text-xs text-zinc-400">OpenAI SearchGPT</div>
+                  <div className="text-lg font-bold text-white mt-1 tabular-nums">1,215</div>
+                  <div className="text-[10px] text-sky-400 font-mono">Top: /vs-google-analytics</div>
+                </div>
+                <div className="p-3.5 rounded-xl bg-zinc-900/50 border border-zinc-800">
+                  <div className="text-xs text-zinc-400">ClaudeBot Scrapes</div>
+                  <div className="text-lg font-bold text-white mt-1 tabular-nums">420</div>
+                  <div className="text-[10px] text-emerald-400 font-mono">Indexed: /llms.txt</div>
+                </div>
+                <div className="p-3.5 rounded-xl bg-zinc-900/50 border border-zinc-800">
+                  <div className="text-xs text-zinc-400">Google Gemini Visits</div>
+                  <div className="text-lg font-bold text-white mt-1 tabular-nums">237</div>
+                  <div className="text-[10px] text-sky-400 font-mono">AEO direct citation</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Tab 4: Autonomous Incident Alerts */}
+          {activeTab === "alerts" && (
+            <div className="space-y-4 animate-fadeIn">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="p-3.5 rounded-xl bg-zinc-900/50 border border-rose-500/20 space-y-1.5">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-zinc-400 font-medium">Crash Spike</span>
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                      CRITICAL
+                    </span>
+                  </div>
+                  <div className="text-sm font-bold text-white">5x Error Surge</div>
+                  <p className="text-[11px] text-zinc-400 font-mono truncate">/checkout • TypeError: null</p>
+                  <div className="text-[10px] text-rose-400 flex items-center gap-1">
+                    <Flame size={11} /> Milestone bracket triggered
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-zinc-900/50 border border-amber-500/20 space-y-1.5">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-zinc-400 font-medium">SEO &amp; AEO Audit</span>
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                      WARNING
+                    </span>
+                  </div>
+                  <div className="text-sm font-bold text-white">Missing &lt;title&gt;</div>
+                  <p className="text-[11px] text-zinc-400 font-mono truncate">/pricing/enterprise • Blank title</p>
+                  <div className="text-[10px] text-amber-400 flex items-center gap-1">
+                    <Search size={11} /> Automated optimization scan
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-zinc-900/50 border border-sky-500/20 space-y-1.5">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-zinc-400 font-medium">Desktop Alerts</span>
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-sky-500/10 text-sky-400 border border-sky-500/20">
+                      ACTIVE
+                    </span>
+                  </div>
+                  <div className="text-sm font-bold text-white">Web Notifications</div>
+                  <p className="text-[11px] text-zinc-400">Synthesized 587Hz chime</p>
+                  <div className="text-[10px] text-sky-400 flex items-center gap-1">
+                    <Volume2 size={11} /> 0 external asset dependency
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Interactive Code Snippet Tabs */}
+          <div className="space-y-2 pt-2 border-t border-white/[0.08]">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-1.5">
+                <Code2 size={14} className="text-sky-400" />
+                <span className="text-xs font-semibold text-zinc-300">Universal 1-Line Embed</span>
+              </div>
+              <div className="flex items-center gap-1 text-[11px] font-mono">
+                {(["html", "nextjs", "react", "nuxt"] as const).map((tab) => (
+                  <button
+                    key={tab}
+                    type="button"
+                    onClick={() => setActiveSnippetTab(tab)}
+                    className={`px-2 py-0.5 rounded-md transition uppercase cursor-pointer ${
+                      activeSnippetTab === tab
+                        ? "bg-white/[0.1] text-white font-medium"
+                        : "text-zinc-500 hover:text-zinc-300"
+                    }`}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="p-3 rounded-xl bg-black/50 border border-white/[0.08] flex items-center justify-between gap-3 overflow-x-auto">
+              <code className="text-xs font-mono text-sky-300 whitespace-pre-wrap select-all">
+                {currentSnippet}
+              </code>
+              <button
+                type="button"
+                onClick={copySnippet}
+                className="p-1.5 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 hover:text-white transition shrink-0 cursor-pointer"
+                title="Copy code snippet"
+              >
+                {copiedSnippet ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
+              </button>
             </div>
           </div>
         </div>
       </section>
 
       {/* ============================================================ */}
-      {/* 6 CORE PILLARS GRID                                          */}
+      {/* BENTO GRID SHOWCASE (CRAFTED OBSIDIAN ARCHITECTURE)           */}
       {/* ============================================================ */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="text-center mb-16 space-y-3">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/25 text-cyan-400 text-xs font-semibold tracking-wide uppercase">
+        <div className="text-center mb-14 space-y-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-300 text-xs font-medium">
             <Layers size={13} />
-            <span>Built From The Ground Up</span>
+            <span>Platform Capabilities</span>
           </div>
-          <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
-            Engineered For The Privacy-First Web
+          <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
+            Engineered For Precision Web Observability
           </h2>
-          <p className="text-sm sm:text-base text-slate-400 max-w-2xl mx-auto leading-relaxed">
-            Eliminate bulky scripts, frustrating cookie banners, and delayed reporting with an observability engine built for modern speed.
+          <p className="text-sm text-zinc-400 max-w-2xl mx-auto">
+            Eliminate bulky vendor libraries, annoying cookie banners, and delayed reporting with an observability engine built for modern speed.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Pillar 1 */}
-          <div className="p-7 rounded-3xl bg-white/[0.02] border border-white/[0.07] hover:border-cyan-500/40 transition-all space-y-3">
-            <div className="w-11 h-11 rounded-2xl bg-cyan-500/10 border border-cyan-500/25 text-cyan-400 flex items-center justify-center">
-              <Zap className="w-5 h-5" />
+        {/* Bento Grid Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Bento Card 1 (Large 2-column span): Real User Monitoring */}
+          <div className="md:col-span-2 p-6 rounded-2xl bg-[#111218] border border-white/[0.08] space-y-4 hover:border-white/[0.14] transition">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-sky-400">
+                  <Gauge className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-base font-semibold text-white">Real User Monitoring (RUM)</h3>
+                  <p className="text-xs text-zinc-400">Continuous field measurement of Google Core Web Vitals at the 75th percentile.</p>
+                </div>
+              </div>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
+                p75 Field Telemetry
+              </span>
             </div>
-            <h3 className="text-lg font-black text-white">Sub-3.2KB Brotli Beacon</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              15x lighter than Google Analytics 4. Executes asynchronously in under 2ms on mobile CPUs with zero DOM blocking and zero penalty to Google Lighthouse or PageSpeed scores.
-            </p>
+
+            <div className="grid grid-cols-3 gap-3 pt-2">
+              <div className="p-3.5 rounded-xl bg-zinc-900/60 border border-zinc-800/80 space-y-1">
+                <div className="text-[10px] text-zinc-500 uppercase font-mono font-medium">LCP (Loading)</div>
+                <div className="text-xl font-bold text-emerald-400 tabular-nums">0.82 s</div>
+                <div className="text-[10px] text-zinc-400">Good (&lt; 2.5s)</div>
+              </div>
+              <div className="p-3.5 rounded-xl bg-zinc-900/60 border border-zinc-800/80 space-y-1">
+                <div className="text-[10px] text-zinc-500 uppercase font-mono font-medium">INP (Response)</div>
+                <div className="text-xl font-bold text-emerald-400 tabular-nums">38 ms</div>
+                <div className="text-[10px] text-zinc-400">Good (&lt; 200ms)</div>
+              </div>
+              <div className="p-3.5 rounded-xl bg-zinc-900/60 border border-zinc-800/80 space-y-1">
+                <div className="text-[10px] text-zinc-500 uppercase font-mono font-medium">CLS (Stability)</div>
+                <div className="text-xl font-bold text-emerald-400 tabular-nums">0.01</div>
+                <div className="text-[10px] text-zinc-400">Good (&lt; 0.1)</div>
+              </div>
+            </div>
           </div>
 
-          {/* Pillar 2 */}
-          <div className="p-7 rounded-3xl bg-white/[0.02] border border-white/[0.07] hover:border-emerald-500/40 transition-all space-y-3">
-            <div className="w-11 h-11 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 flex items-center justify-center">
-              <ShieldCheck className="w-5 h-5" />
+          {/* Bento Card 2: Sub-3.2KB Brotli Beacon */}
+          <div className="p-6 rounded-2xl bg-[#111218] border border-white/[0.08] space-y-4 hover:border-white/[0.14] transition">
+            <div className="w-9 h-9 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-emerald-400">
+              <Zap className="w-4 h-4" />
             </div>
-            <h3 className="text-lg font-black text-white">Zero Cookie Consent Banners</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              No tracking cookies, no LocalStorage keys, and zero cross-site device fingerprinting. Fully exempt from ePrivacy Directive and GDPR cookie popup mandates by architecture.
-            </p>
+            <div>
+              <h3 className="text-base font-semibold text-white">Sub-3.2KB Beacon</h3>
+              <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                15x lighter than Google Analytics 4. Executes asynchronously in under 2ms with zero DOM blocking.
+              </p>
+            </div>
+            <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/80 space-y-2 text-xs font-mono">
+              <div className="flex justify-between text-zinc-400">
+                <span>GA4 Payload</span>
+                <span className="text-rose-400">48.5 KB</span>
+              </div>
+              <div className="flex justify-between font-semibold">
+                <span className="text-white">Open Analytics</span>
+                <span className="text-emerald-400">3.1 KB</span>
+              </div>
+            </div>
           </div>
 
-          {/* Pillar 3 */}
-          <div className="p-7 rounded-3xl bg-white/[0.02] border border-white/[0.07] hover:border-indigo-500/40 transition-all space-y-3">
-            <div className="w-11 h-11 rounded-2xl bg-indigo-500/10 border border-indigo-500/25 text-indigo-400 flex items-center justify-center">
-              <Bot className="w-5 h-5" />
+          {/* Bento Card 3: Autonomous AI Search Radar */}
+          <div className="p-6 rounded-2xl bg-[#111218] border border-white/[0.08] space-y-4 hover:border-white/[0.14] transition">
+            <div className="w-9 h-9 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-sky-400">
+              <Bot className="w-4 h-4" />
             </div>
-            <h3 className="text-lg font-black text-white">Autonomous AI Search Radar</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Real-time classification of citations, referrals, and crawler requests from OpenAI SearchGPT, Perplexity AI, Claude (Anthropic), and Google Gemini with dedicated visibility feeds.
-            </p>
+            <div>
+              <h3 className="text-base font-semibold text-white">Autonomous AI Radar</h3>
+              <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                Real-time classification of citations, referrals, and crawler requests from OpenAI SearchGPT, Perplexity, Claude, and Gemini.
+              </p>
+            </div>
+            <div className="space-y-1.5 text-[11px] font-mono">
+              <div className="p-2 rounded-lg bg-zinc-900/60 border border-zinc-800/80 flex items-center justify-between text-zinc-300">
+                <span>PerplexityBot</span>
+                <span className="text-sky-400">2s ago</span>
+              </div>
+              <div className="p-2 rounded-lg bg-zinc-900/60 border border-zinc-800/80 flex items-center justify-between text-zinc-300">
+                <span>OAI-SearchBot</span>
+                <span className="text-emerald-400">14s ago</span>
+              </div>
+            </div>
           </div>
 
-          {/* Pillar 4 */}
-          <div className="p-7 rounded-3xl bg-white/[0.02] border border-white/[0.07] hover:border-sky-500/40 transition-all space-y-3">
-            <div className="w-11 h-11 rounded-2xl bg-sky-500/10 border border-sky-500/25 text-sky-400 flex items-center justify-center">
-              <Gauge className="w-5 h-5" />
+          {/* Bento Card 4: Incident Triage & Alerts */}
+          <div className="p-6 rounded-2xl bg-[#111218] border border-white/[0.08] space-y-4 hover:border-white/[0.14] transition">
+            <div className="w-9 h-9 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-rose-400">
+              <Bell className="w-4 h-4" />
             </div>
-            <h3 className="text-lg font-black text-white">Real User Monitoring (RUM)</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Measure real visitor field experience metrics: Largest Contentful Paint (LCP), Interaction to Next Paint (INP), and Cumulative Layout Shift (CLS) with 75th-percentile accuracy.
-            </p>
+            <div>
+              <h3 className="text-base font-semibold text-white">Incident &amp; Crash Alerts</h3>
+              <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                Repeated error detection (5x+), error velocity storm spikes, and native OS desktop alerts with Web Audio chimes.
+              </p>
+            </div>
+            <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/80 flex items-center justify-between text-xs">
+              <span className="text-zinc-400 font-medium">Alert Threshold</span>
+              <span className="text-rose-400 font-mono font-semibold">&gt;= 5 occurrences</span>
+            </div>
           </div>
 
-          {/* Pillar 5 */}
-          <div className="p-7 rounded-3xl bg-white/[0.02] border border-white/[0.07] hover:border-rose-500/40 transition-all space-y-3">
-            <div className="w-11 h-11 rounded-2xl bg-rose-500/10 border border-rose-500/25 text-rose-400 flex items-center justify-center">
-              <MousePointerClick className="w-5 h-5" />
+          {/* Bento Card 5: 100% Cookieless Cryptographic Privacy */}
+          <div className="p-6 rounded-2xl bg-[#111218] border border-white/[0.08] space-y-4 hover:border-white/[0.14] transition">
+            <div className="w-9 h-9 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-indigo-400">
+              <ShieldCheck className="w-4 h-4" />
             </div>
-            <h3 className="text-lg font-black text-white">Behavioral Rage & Dead Clicks</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Detect rapid frontend frustration when visitors tap unresponsive UI elements or broken action buttons, enabling engineering teams to eliminate UX bugs immediately.
-            </p>
-          </div>
-
-          {/* Pillar 6 */}
-          <div className="p-7 rounded-3xl bg-white/[0.02] border border-white/[0.07] hover:border-purple-500/40 transition-all space-y-3">
-            <div className="w-11 h-11 rounded-2xl bg-purple-500/10 border border-purple-500/25 text-purple-400 flex items-center justify-center">
-              <Lock className="w-5 h-5" />
+            <div>
+              <h3 className="text-base font-semibold text-white">Cookieless Privacy</h3>
+              <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                Daily visitor hashes use HMAC-SHA-256 with an ephemeral salt purged every night at midnight UTC. Zero tracking cookies.
+              </p>
             </div>
-            <h3 className="text-lg font-black text-white">24h Rotating Cryptographic Salts</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Daily visitor hashes use HMAC-SHA-256 with an ephemeral salt purged every night at midnight UTC. Raw IP addresses are truncated in RAM and never written to disk or database logs.
-            </p>
-          </div>
-
-          {/* Pillar 7 */}
-          <div className="p-7 rounded-3xl bg-white/[0.02] border border-white/[0.07] hover:border-rose-500/40 transition-all space-y-3">
-            <div className="w-11 h-11 rounded-2xl bg-rose-500/10 border border-rose-500/25 text-rose-400 flex items-center justify-center">
-              <Bell className="w-5 h-5" />
+            <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/80 flex items-center justify-between text-xs">
+              <span className="text-zinc-400 font-medium">Cookie Banners</span>
+              <span className="text-emerald-400 font-medium">100% Exempt</span>
             </div>
-            <h3 className="text-lg font-black text-white">Autonomous Incident Alerts</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Real-time repeated error spikes (5x+), error velocity storm detection, SEO missing title audits, and native OS desktop alerts with Web Audio chimes and granular suppression rules.
-            </p>
-          </div>
-
-          {/* Pillar 8 */}
-          <div className="p-7 rounded-3xl bg-white/[0.02] border border-white/[0.07] hover:border-cyan-500/40 transition-all space-y-3">
-            <div className="w-11 h-11 rounded-2xl bg-cyan-500/10 border border-cyan-500/25 text-cyan-400 flex items-center justify-center">
-              <Smartphone className="w-5 h-5" />
-            </div>
-            <h3 className="text-lg font-black text-white">Mobile-First Workspace & Switcher</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Seamless mobile navigation with a responsive drawer, interactive one-tap project switcher directly in the mobile navbar, and solid zero-transparency high-contrast popover surfaces.
-            </p>
           </div>
         </div>
       </section>
 
       {/* ============================================================ */}
-      {/* HEAD-TO-HEAD BENCHMARK                                        */}
+      {/* HEAD-TO-HEAD BENCHMARK TABLE                                 */}
       {/* ============================================================ */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
         <div className="text-center mb-10 space-y-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Head-to-Head Benchmark</span>
-          </div>
-          <h2 className="text-2xl sm:text-4xl font-black text-white">
-            Why Teams Choose Open Analytics Over GA4
+          <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+            How Open Analytics Compares
           </h2>
+          <p className="text-xs sm:text-sm text-zinc-400 max-w-xl mx-auto">
+            Architectural benchmark against legacy analytics providers.
+          </p>
         </div>
 
-        <div className="overflow-x-auto rounded-3xl border border-white/[0.08] bg-[#070b16]/80 backdrop-blur-md">
-          <table className="w-full text-left border-collapse text-xs sm:text-sm">
-            <thead>
-              <tr className="border-b border-white/[0.08] bg-white/[0.02] text-slate-300">
-                <th className="py-4 px-6 font-bold">Criteria</th>
-                <th className="py-4 px-6 font-bold text-cyan-400">Open Analytics</th>
-                <th className="py-4 px-6 font-bold text-rose-400">Google Analytics 4 (GA4)</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/[0.06] text-slate-300">
-              <tr>
-                <td className="py-3.5 px-6 font-semibold text-white">Script Payload (Brotli)</td>
-                <td className="py-3.5 px-6 text-emerald-400 font-bold">&lt; 3.2 KB</td>
-                <td className="py-3.5 px-6 text-rose-400">45 KB to 120 KB+</td>
-              </tr>
-              <tr>
-                <td className="py-3.5 px-6 font-semibold text-white">Cookie Consent Banner Required</td>
-                <td className="py-3.5 px-6 text-emerald-400 font-bold">No (100% Cookieless)</td>
-                <td className="py-3.5 px-6 text-rose-400">Mandatory by Law</td>
-              </tr>
-              <tr>
-                <td className="py-3.5 px-6 font-semibold text-white">Data Ingestion Latency</td>
-                <td className="py-3.5 px-6 text-emerald-400 font-bold">Sub-second Real-time</td>
-                <td className="py-3.5 px-6 text-rose-400">24 to 48 hour processing delay</td>
-              </tr>
-              <tr>
-                <td className="py-3.5 px-6 font-semibold text-white">Autonomous AI Search Radar</td>
-                <td className="py-3.5 px-6 text-emerald-400 font-bold">Native (SearchGPT, Perplexity, Claude)</td>
-                <td className="py-3.5 px-6 text-rose-400">Not supported (grouped in Direct)</td>
-              </tr>
-              <tr>
-                <td className="py-3.5 px-6 font-semibold text-white">Core Web Vitals RUM</td>
-                <td className="py-3.5 px-6 text-emerald-400 font-bold">Native p75 LCP, INP, CLS</td>
-                <td className="py-3.5 px-6 text-rose-400">Requires manual BigQuery pipelines</td>
-              </tr>
-              <tr>
-                <td className="py-3.5 px-6 font-semibold text-white">Behavioral Rage &amp; Dead Clicks</td>
-                <td className="py-3.5 px-6 text-emerald-400 font-bold">Included Out-of-the-Box</td>
-                <td className="py-3.5 px-6 text-rose-400">Not available</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div className="text-center mt-6">
-          <Link
-            href="/vs-google-analytics"
-            className="inline-flex items-center gap-2 text-xs font-bold text-cyan-400 hover:text-cyan-300 transition"
-          >
-            <span>Read the complete head-to-head comparison</span>
-            <ArrowRight size={13} />
-          </Link>
+        <div className="rounded-2xl border border-white/[0.08] overflow-hidden bg-[#111218] shadow-lg">
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs text-left">
+              <thead>
+                <tr className="border-b border-white/[0.08] bg-zinc-900/50">
+                  <th className="p-3.5 sm:p-4 text-zinc-400 font-semibold">Capability</th>
+                  <th className="p-3.5 sm:p-4 text-white font-bold bg-white/[0.04]">Open Analytics</th>
+                  <th className="p-3.5 sm:p-4 text-zinc-400 font-medium">Google Analytics 4</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/[0.05]">
+                <tr>
+                  <td className="p-3.5 sm:p-4 font-medium text-zinc-200">Script Payload Size</td>
+                  <td className="p-3.5 sm:p-4 text-emerald-400 font-semibold bg-white/[0.02]">3.1 KB (Brotli)</td>
+                  <td className="p-3.5 sm:p-4 text-zinc-400">48.5 KB (15x heavier)</td>
+                </tr>
+                <tr>
+                  <td className="p-3.5 sm:p-4 font-medium text-zinc-200">Cookie Consent Popups</td>
+                  <td className="p-3.5 sm:p-4 text-emerald-400 font-semibold bg-white/[0.02]">Zero required (100% exempt)</td>
+                  <td className="p-3.5 sm:p-4 text-zinc-400">Mandatory cookie banner</td>
+                </tr>
+                <tr>
+                  <td className="p-3.5 sm:p-4 font-medium text-zinc-200">Real User Monitoring (RUM)</td>
+                  <td className="p-3.5 sm:p-4 text-emerald-400 font-semibold bg-white/[0.02]">Native p75 LCP, INP, CLS</td>
+                  <td className="p-3.5 sm:p-4 text-zinc-400">Not included natively</td>
+                </tr>
+                <tr>
+                  <td className="p-3.5 sm:p-4 font-medium text-zinc-200">AI Search Crawler Attribution</td>
+                  <td className="p-3.5 sm:p-4 text-emerald-400 font-semibold bg-white/[0.02]">Autonomous AI Crawler Radar</td>
+                  <td className="p-3.5 sm:p-4 text-zinc-400">Unclassified or ignored</td>
+                </tr>
+                <tr>
+                  <td className="p-3.5 sm:p-4 font-medium text-zinc-200">Incident &amp; Error Alerts</td>
+                  <td className="p-3.5 sm:p-4 text-emerald-400 font-semibold bg-white/[0.02]">Autonomous 5x Crash Alerts + OS Desktop Chimes</td>
+                  <td className="p-3.5 sm:p-4 text-zinc-400">No error tracking</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
 
       {/* ============================================================ */}
-      {/* FINAL HIGH-IMPACT CALL TO ACTION                             */}
+      {/* FINAL CALL TO ACTION                                         */}
       {/* ============================================================ */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center">
-        <div className="p-8 sm:p-14 rounded-3xl bg-gradient-to-r from-cyan-950/40 via-slate-900 to-indigo-950/40 border border-cyan-500/30 relative overflow-hidden space-y-6">
-          <div className="w-14 h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center mx-auto shadow-lg shadow-cyan-500/20">
-            <Activity className="w-7 h-7 animate-glow" />
-          </div>
-
-          <div className="space-y-2">
-            <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
-              Ready For Faster, Honest Web Observability?
-            </h2>
-            <p className="text-sm sm:text-base text-slate-300 max-w-lg mx-auto">
-              Install in 60 seconds. Say goodbye to bloated scripts, delayed reports, and intrusive cookie consent banners forever.
-            </p>
-          </div>
-
+      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto text-center">
+        <div className="p-8 sm:p-12 rounded-3xl bg-[#111218] border border-white/[0.08] space-y-6 shadow-2xl">
+          <h2 className="text-2xl sm:text-4xl font-bold text-white tracking-tight">
+            Ready for Faster, Privacy-First Analytics?
+          </h2>
+          <p className="text-sm text-zinc-400 max-w-lg mx-auto">
+            Get complete visibility into web traffic, Core Web Vitals, and incident alerts with a single line of code.
+          </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
             <a
               href={dashboardUrl}
-              className="w-full sm:w-auto py-3.5 px-8 rounded-xl bg-gradient-to-r from-cyan-400 to-indigo-400 hover:from-cyan-300 hover:to-indigo-300 text-slate-950 font-black text-sm transition-all shadow-xl shadow-cyan-500/25 cursor-pointer hover:scale-[1.02]"
+              className="w-full sm:w-auto py-3 px-6 rounded-xl bg-white hover:bg-zinc-200 text-zinc-950 font-semibold text-sm transition shadow-sm flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
             >
-              Launch Dashboard
+              <span>Launch Dashboard Free</span>
+              <ArrowRight className="w-4 h-4" />
             </a>
             <Link
-              href="/pricing"
-              className="w-full sm:w-auto py-3.5 px-8 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-slate-200 font-bold text-sm transition border border-white/[0.1]"
+              href="/docs"
+              className="w-full sm:w-auto py-3 px-5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-medium text-sm transition border border-zinc-800 flex items-center justify-center gap-2"
             >
-              View Transparent Pricing
+              <span>Read Documentation</span>
             </Link>
           </div>
         </div>
