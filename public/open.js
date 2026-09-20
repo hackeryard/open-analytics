@@ -297,13 +297,6 @@
         scrollMilestones.add(m);
         addBreadcrumb("scroll", { depth: m });
         evaluateEventRules("scroll_depth", { depth: m });
-        sendBeacon("/api/v1/collect", {
-          type: "event",
-          eventName: "autotrack_scroll_" + m + "pct",
-          category: "autotrack",
-          pathname: currentPath,
-          properties: { depth: m },
-        });
       }
     }
   }, { passive: true });
@@ -681,12 +674,7 @@
   document.addEventListener("mouseleave", function(e) {
     if (e.clientY <= 0 && !exitIntentFired) {
       exitIntentFired = true;
-      sendBeacon("/api/v1/collect", {
-        type: "event",
-        eventName: "ux_exit_intent",
-        category: "ux",
-        pathname: currentPath,
-      });
+      addBreadcrumb("exit_intent", { pathname: currentPath });
     }
   });
 

@@ -18,9 +18,10 @@ import {
 } from "lucide-react";
 import { usePlatform } from "@/components/PlatformContext";
 import { AnalyticsData, formatDuration } from "@/lib/analyticsTypes";
+import { getTrackedUrl } from "@/lib/urlHelper";
 
 export default function WebVitalsSection({ data: propData }: { data?: AnalyticsData }) {
-  const { data: platformData } = usePlatform();
+  const { data: platformData, activeProject } = usePlatform();
   const data = propData || platformData;
 
   if (!data) return null;
@@ -277,7 +278,7 @@ export default function WebVitalsSection({ data: propData }: { data?: AnalyticsD
                     data.webVitals.pages.map((p, idx) => (
                       <tr key={idx} className="hover:bg-muted/20 transition">
                         <td className="p-3.5 font-bold text-foreground">
-                          <a href={p.pathname} target="_blank" rel="noopener noreferrer" className="hover:text-primary flex items-center gap-1.5">
+                          <a href={getTrackedUrl(p.pathname, activeProject)} target="_blank" rel="noopener noreferrer" className="hover:text-primary flex items-center gap-1.5">
                             <span>{p.pathname}</span>
                             <ExternalLink size={10} className="text-muted-foreground" />
                           </a>

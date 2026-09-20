@@ -40,9 +40,10 @@ import {
 } from "@/lib/analyticsTypes";
 import { getFullCountryName, getCountryFlag } from "@/lib/countries";
 import { usePlatform } from "@/components/PlatformContext";
+import { getTrackedUrl } from "@/lib/urlHelper";
 
 export default function AudienceSection({ data: propData }: { data?: AnalyticsData }) {
-  const { data: platformData, setPvQuery, setPvUserType } = usePlatform();
+  const { data: platformData, setPvQuery, setPvUserType, activeProject } = usePlatform();
   const data = propData || platformData;
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -869,7 +870,7 @@ export default function AudienceSection({ data: propData }: { data?: AnalyticsDa
                     >
                       <span className="text-foreground font-bold truncate">{path}</span>
                       <a
-                        href={path}
+                        href={getTrackedUrl(path, activeProject)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-muted-foreground hover:text-primary shrink-0"

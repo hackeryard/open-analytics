@@ -50,11 +50,37 @@ interface Project {
   createdAt?: string | Date;
 }
 
+export interface NotificationItem {
+  _id: string;
+  projectId: string;
+  userId?: string | null;
+  title: string;
+  message: string;
+  type:
+    | "error_repeated"
+    | "error_storm"
+    | "seo_unoptimized"
+    | "aeo_unoptimized"
+    | "geo_radar"
+    | "web_vitals"
+    | "rage_clicks"
+    | "quota_warning"
+    | "system";
+  severity: "critical" | "warning" | "info";
+  metadata?: Record<string, any>;
+  actionUrl?: string;
+  actionLabel?: string;
+  read: boolean;
+  readAt?: string | null;
+  dismissed: boolean;
+  createdAt: string;
+}
 
 interface PlatformContextType {
   currentUser: User | null;
   authChecked: boolean;
   projects: Project[];
+  projectsLoading: boolean;
   activeProjectId: string;
   setActiveProjectId: (id: string) => void;
   activeProject: Project | undefined;
@@ -130,6 +156,17 @@ interface PlatformContextType {
   updateUserPlan: (plan: "free" | "pro" | "enterprise", billingCycle?: "monthly" | "annual", extraProjects?: number) => Promise<boolean>;
   handleLogout: () => Promise<void>;
   isDashboard: boolean;
+
+  // Notification & Alert Center
+  notifications: NotificationItem[];
+  unreadNotificationsCount: number;
+  criticalNotificationsCount: number;
+  notificationsLoading: boolean;
+  fetchNotifications: (projectId?: string) => Promise<void>;
+  markNotificationAsRead: (notificationId: string) => Promise<boolean>;
+  markAllNotificationsAsRead: (projectId?: string) => Promise<boolean>;
+  dismissNotification: (notificationId: string) => Promise<boolean>;
+  triggerOptimizationScan: (projectId?: string) => Promise<{ success: boolean; newAlertsCount?: number; message?: string }>;
 }
 
 const PlatformContext = createContext<PlatformContextType | undefined>(undefined);
@@ -149,12 +186,19 @@ export function PlatformProvider({
     setIsDashboard(isDashboardClient());
   }, []);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [projectsLoading, setProjectsLoading] = useState<boolean>(true);
   const [activeProjectId, setActiveProjectIdState] = useState<string>("");
   const [timeRange, setTimeRangeState] = useState<string>("7d");
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [liveVisitorCount, setLiveVisitorCount] = useState<number>(0);
+
+  // Notification State
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [unreadNotificationsCount, setUnreadNotificationsCount] = useState<number>(0);
+  const [criticalNotificationsCount, setCriticalNotificationsCount] = useState<number>(0);
+  const [notificationsLoading, setNotificationsLoading] = useState<boolean>(false);
 
   // Live stream & pagination
   const [paginatedPageviews, setPaginatedPageviews] = useState<PageViewItem[]>([]);
@@ -361,6 +405,8 @@ export function PlatformProvider({
         window.location.href = "/login";
       }
       return false;
+    } finally {
+      setProjectsLoading(false);
     }
   }, []);
 
@@ -565,12 +611,123 @@ export function PlatformProvider({
     }
   }, [checkAuth]);
 
+  // Notifications API handlers
+  const fetchNotifications = useCallback(async (projectId?: string) => {
+    const prj = projectId || activeProjectId;
+    if (!prj) return;
+    setNotificationsLoading(true);
+    try {
+      const res = await fetch(`/api/notifications?projectId=${prj}&status=active`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success) {
+          setNotifications(json.notifications || []);
+          setUnreadNotificationsCount(json.unreadCount || 0);
+          setCriticalNotificationsCount(json.criticalCount || 0);
+        }
+      }
+    } catch (err) {
+      console.error("fetchNotifications error:", err);
+    } finally {
+      setNotificationsLoading(false);
+    }
+  }, [activeProjectId]);
+
+  const markNotificationAsRead = useCallback(async (notificationId: string): Promise<boolean> => {
+    try {
+      setNotifications((prev) =>
+        prev.map((n) => (n._id === notificationId ? { ...n, read: true } : n))
+      );
+      setUnreadNotificationsCount((prev) => Math.max(0, prev - 1));
+
+      const res = await fetch("/api/notifications", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "markAsRead", notificationId }),
+      });
+      return res.ok;
+    } catch (err) {
+      console.error("markNotificationAsRead error:", err);
+      return false;
+    }
+  }, []);
+
+  const markAllNotificationsAsRead = useCallback(async (projectId?: string): Promise<boolean> => {
+    const prj = projectId || activeProjectId;
+    if (!prj) return false;
+    try {
+      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+      setUnreadNotificationsCount(0);
+
+      const res = await fetch("/api/notifications", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "markAllAsRead", projectId: prj }),
+      });
+      return res.ok;
+    } catch (err) {
+      console.error("markAllNotificationsAsRead error:", err);
+      return false;
+    }
+  }, [activeProjectId]);
+
+  const dismissNotification = useCallback(async (notificationId: string): Promise<boolean> => {
+    try {
+      const target = notifications.find((n) => n._id === notificationId);
+      if (target && !target.read) {
+        setUnreadNotificationsCount((prev) => Math.max(0, prev - 1));
+      }
+      setNotifications((prev) => prev.filter((n) => n._id !== notificationId));
+
+      const res = await fetch("/api/notifications", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "dismiss", notificationId }),
+      });
+      return res.ok;
+    } catch (err) {
+      console.error("dismissNotification error:", err);
+      return false;
+    }
+  }, [notifications]);
+
+  const triggerOptimizationScan = useCallback(
+    async (projectId?: string): Promise<{ success: boolean; newAlertsCount?: number; message?: string }> => {
+      const prj = projectId || activeProjectId;
+      if (!prj) return { success: false, message: "No active project" };
+      try {
+        const res = await fetch("/api/notifications/scan", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ projectId: prj }),
+        });
+        const json = await res.json();
+        if (res.ok && json.success) {
+          await fetchNotifications(prj);
+          return { success: true, newAlertsCount: json.newAlertsCount, message: json.message };
+        }
+        return { success: false, message: json.error || "Scan failed" };
+      } catch (err: any) {
+        console.error("triggerOptimizationScan error:", err);
+        return { success: false, message: err.message || "Network error" };
+      }
+    },
+    [activeProjectId, fetchNotifications]
+  );
+
+  useEffect(() => {
+    if (activeProjectId) {
+      fetchNotifications(activeProjectId);
+    }
+  }, [activeProjectId, fetchNotifications]);
+
   return (
     <PlatformContext.Provider
       value={{
         currentUser,
         authChecked,
         projects,
+        projectsLoading,
         activeProjectId,
         setActiveProjectId,
         activeProject,
@@ -625,6 +782,15 @@ export function PlatformProvider({
         updateUserPlan,
         handleLogout,
         isDashboard,
+        notifications,
+        unreadNotificationsCount,
+        criticalNotificationsCount,
+        notificationsLoading,
+        fetchNotifications,
+        markNotificationAsRead,
+        markAllNotificationsAsRead,
+        dismissNotification,
+        triggerOptimizationScan,
       }}
     >
       {children}

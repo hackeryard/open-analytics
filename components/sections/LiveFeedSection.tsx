@@ -67,6 +67,7 @@ import {
   formatExactDate,
 } from "@/lib/analyticsTypes";
 import { getFullCountryName } from "@/lib/countries";
+import { getTrackedUrl } from "@/lib/urlHelper";
 
 // Web Audio API chime generator for live event arrival
 function playLiveChime(volume = 0.08) {
@@ -98,6 +99,7 @@ function playLiveChime(volume = 0.08) {
 export default function LiveFeedSection() {
   const {
     activeProjectId,
+    activeProject,
     paginatedPageviews,
     pvPagination,
     pvLoading,
@@ -959,7 +961,7 @@ export default function LiveFeedSection() {
                               </button>
 
                               <a
-                                href={pv.pathname}
+                                href={getTrackedUrl(pv.pathname, activeProject)}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={(e) => e.stopPropagation()}
@@ -1815,7 +1817,7 @@ export default function LiveFeedSection() {
             {/* Modal Footer */}
             <div className="p-4 border-t border-border bg-card flex items-center justify-between gap-2">
               <a
-                href={selectedPv.pathname}
+                href={getTrackedUrl(selectedPv.pathname, activeProject)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-background hover:bg-muted border border-border text-foreground text-xs font-bold transition"

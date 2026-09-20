@@ -54,9 +54,9 @@ export default function DeviceBreakdownWidget({
           </div>
         ) : (
           <div className="space-y-1.5">
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>Platform Form Factors</span>
-              <span className="font-mono text-white text-[11px]">
+            <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-1 text-xs text-muted-foreground">
+              <span className="font-semibold text-slate-300">Platform Form Factors</span>
+              <span className="font-mono text-white text-[11px] truncate">
                 {safeDevices.map((d) => `${d.percentage}% ${d.device}`).join(" • ")}
               </span>
             </div>

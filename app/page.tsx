@@ -58,6 +58,7 @@ export default function ExecutiveOverviewDashboard() {
     currentUser,
     authChecked,
     projects,
+    projectsLoading,
     activeProjectId,
     data,
     loading,
@@ -133,23 +134,88 @@ export default function ExecutiveOverviewDashboard() {
     );
   }
 
-  if (loading && !data) {
+  // 3. Shimmer Skeleton state while projects or analytical telemetry are loading from DB
+  if (projectsLoading || (!authChecked && !currentUser) || (loading && !data && projects.length > 0)) {
     return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center space-y-4">
-        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 via-blue-600 to-violet-600 p-[1.5px] shadow-lg shadow-cyan-500/20 animate-glow">
-          <div className="w-full h-full bg-[#0d121f] rounded-[14px] flex items-center justify-center">
-            <Activity className="w-6 h-6 text-cyan-400" />
+      <div className="space-y-6 pb-16 animate-fadeIn">
+        {/* Header Shimmer */}
+        <div className="mb-5 sm:mb-6 flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4">
+          <div className="space-y-2">
+            <div className="h-7 w-64 sm:w-80 rounded-xl bg-white/[0.05] shimmer" />
+            <div className="h-4 w-48 sm:w-96 rounded-lg bg-white/[0.03] shimmer" />
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-32 rounded-xl bg-white/[0.04] shimmer" />
+            <div className="h-8 w-24 rounded-xl bg-white/[0.04] shimmer" />
           </div>
         </div>
-        <div className="text-sm font-semibold tracking-wide text-slate-400 flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-          Loading analytics telemetry...
+
+        {/* Top 7 KPI Cards Shimmer Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-2.5 sm:gap-3.5">
+          {[...Array(7)].map((_, i) => (
+            <div
+              key={i}
+              className={`p-3.5 sm:p-4 glass-card rounded-2xl space-y-3 ${
+                i === 6 ? "col-span-2 sm:col-span-1 lg:col-span-1" : ""
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <div className="h-3 w-16 rounded bg-white/[0.06] shimmer" />
+                <div className="h-3 w-8 rounded bg-white/[0.06] shimmer" />
+              </div>
+              <div className="h-7 w-20 rounded-lg bg-white/[0.08] shimmer" />
+              <div className="h-2.5 w-full rounded bg-white/[0.04] shimmer" />
+            </div>
+          ))}
+        </div>
+
+        {/* Primary Chart Shimmer */}
+        <div className="glass-card rounded-3xl p-5 sm:p-6 space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-2">
+              <div className="h-5 w-56 rounded-lg bg-white/[0.06] shimmer" />
+              <div className="h-3.5 w-72 rounded bg-white/[0.03] shimmer" />
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-44 rounded-xl bg-white/[0.05] shimmer" />
+              <div className="h-8 w-20 rounded-xl bg-white/[0.05] shimmer" />
+            </div>
+          </div>
+          <div className="h-14 w-full rounded-2xl bg-white/[0.02] border border-white/[0.05] p-3 flex items-center justify-around">
+            <div className="h-4 w-28 rounded bg-white/[0.05] shimmer" />
+            <div className="h-4 w-32 rounded bg-white/[0.05] shimmer" />
+            <div className="h-4 w-28 rounded bg-white/[0.05] shimmer" />
+          </div>
+          <div className="h-72 w-full rounded-2xl bg-white/[0.02] border border-white/[0.04] shimmer flex items-center justify-center">
+            <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
+              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+              <span>Streaming analytical telemetry...</span>
+            </div>
+          </div>
+        </div>
+
+        {/* 2-Column Widgets Shimmer */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="glass-card rounded-3xl p-5 sm:p-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="h-4 w-40 rounded bg-white/[0.06] shimmer" />
+                <div className="h-3 w-16 rounded bg-white/[0.04] shimmer" />
+              </div>
+              <div className="space-y-3 pt-2">
+                {[...Array(4)].map((_, j) => (
+                  <div key={j} className="h-10 w-full rounded-xl bg-white/[0.02] border border-white/[0.04] shimmer" />
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     );
   }
 
-  if (projects.length === 0 && !loading) {
+  // 4. Only display "Create First Project" when projects have finished loading from DB and confirmed empty
+  if (!projectsLoading && projects.length === 0) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center p-6">
         <div className="max-w-md w-full glass-card border border-white/[0.1] rounded-3xl p-8 text-center space-y-6 shadow-2xl">
@@ -230,11 +296,11 @@ export default function ExecutiveOverviewDashboard() {
       {/* ============================================================ */}
       {/* 1. TOP EXECUTIVE KPI STAT CARDS STRIP                         */}
       {/* ============================================================ */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-2.5 sm:gap-3.5">
         {/* Total Pageviews */}
         <Link
           href="/live-feed"
-          className="p-4 glass-card glass-card-hover rounded-2xl space-y-2 group block relative overflow-hidden"
+          className="p-3.5 sm:p-4 glass-card glass-card-hover rounded-2xl space-y-1.5 sm:space-y-2 group block relative overflow-hidden"
         >
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground group-hover:text-cyan-400 transition-colors">
@@ -245,12 +311,12 @@ export default function ExecutiveOverviewDashboard() {
               Live
             </span>
           </div>
-          <div className="text-2xl font-black font-mono text-white tracking-tight">
+          <div className="text-xl sm:text-2xl font-black font-mono text-white tracking-tight truncate">
             {overview.totalViews.toLocaleString()}
           </div>
           <div className="text-[10px] text-muted-foreground font-mono flex items-center justify-between">
-            <span>All recorded hits</span>
-            <span className="text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity font-bold">
+            <span className="truncate">All hits</span>
+            <span className="text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity font-bold shrink-0">
               Feed &rarr;
             </span>
           </div>
@@ -259,7 +325,7 @@ export default function ExecutiveOverviewDashboard() {
         {/* Unique Visitors */}
         <Link
           href="/acquisition"
-          className="p-4 glass-card glass-card-hover rounded-2xl space-y-2 group block relative overflow-hidden"
+          className="p-3.5 sm:p-4 glass-card glass-card-hover rounded-2xl space-y-1.5 sm:space-y-2 group block relative overflow-hidden"
         >
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground group-hover:text-blue-400 transition-colors">
@@ -270,12 +336,12 @@ export default function ExecutiveOverviewDashboard() {
               Unique
             </span>
           </div>
-          <div className="text-2xl font-black font-mono text-white tracking-tight">
+          <div className="text-xl sm:text-2xl font-black font-mono text-white tracking-tight truncate">
             {overview.uniqueVisitors.toLocaleString()}
           </div>
           <div className="text-[10px] text-muted-foreground font-mono flex items-center justify-between">
-            <span>Distinct clients</span>
-            <span className="text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity font-bold">
+            <span className="truncate">Clients</span>
+            <span className="text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity font-bold shrink-0">
               Sources &rarr;
             </span>
           </div>
@@ -284,7 +350,7 @@ export default function ExecutiveOverviewDashboard() {
         {/* Returning Users Rate */}
         <Link
           href="/audience"
-          className="p-4 glass-card glass-card-hover rounded-2xl space-y-2 group block relative overflow-hidden"
+          className="p-3.5 sm:p-4 glass-card glass-card-hover rounded-2xl space-y-1.5 sm:space-y-2 group block relative overflow-hidden"
         >
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground group-hover:text-purple-400 transition-colors">
@@ -295,12 +361,12 @@ export default function ExecutiveOverviewDashboard() {
               {(data?.retention?.returnRate ?? overview.returnRate ?? 0) > 0 ? "Active" : "New"}
             </span>
           </div>
-          <div className="text-2xl font-black font-mono text-white tracking-tight">
+          <div className="text-xl sm:text-2xl font-black font-mono text-white tracking-tight truncate">
             {data?.retention?.returnRate ?? overview.returnRate ?? 0}%
           </div>
           <div className="text-[10px] text-muted-foreground font-mono flex items-center justify-between">
-            <span>Loyalty cohort rate</span>
-            <span className="text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity font-bold">
+            <span className="truncate">Loyalty rate</span>
+            <span className="text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity font-bold shrink-0">
               Cohorts &rarr;
             </span>
           </div>
@@ -309,7 +375,7 @@ export default function ExecutiveOverviewDashboard() {
         {/* Average Dwell Time */}
         <Link
           href="/engagement"
-          className="p-4 glass-card glass-card-hover rounded-2xl space-y-2 group block relative overflow-hidden"
+          className="p-3.5 sm:p-4 glass-card glass-card-hover rounded-2xl space-y-1.5 sm:space-y-2 group block relative overflow-hidden"
         >
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground group-hover:text-teal-400 transition-colors">
@@ -320,12 +386,12 @@ export default function ExecutiveOverviewDashboard() {
               Session
             </span>
           </div>
-          <div className="text-2xl font-black font-mono text-white tracking-tight">
+          <div className="text-xl sm:text-2xl font-black font-mono text-white tracking-tight truncate">
             {formatDuration(overview.avgDuration || 0)}
           </div>
           <div className="text-[10px] text-muted-foreground font-mono flex items-center justify-between">
-            <span>Active session read</span>
-            <span className="text-teal-400 opacity-0 group-hover:opacity-100 transition-opacity font-bold">
+            <span className="truncate">Active read</span>
+            <span className="text-teal-400 opacity-0 group-hover:opacity-100 transition-opacity font-bold shrink-0">
               Dwell &rarr;
             </span>
           </div>
@@ -334,7 +400,7 @@ export default function ExecutiveOverviewDashboard() {
         {/* Core Web Vitals RUM */}
         <Link
           href="/vitals"
-          className="p-4 glass-card glass-card-hover rounded-2xl space-y-2 group block relative overflow-hidden"
+          className="p-3.5 sm:p-4 glass-card glass-card-hover rounded-2xl space-y-1.5 sm:space-y-2 group block relative overflow-hidden"
         >
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground group-hover:text-emerald-400 transition-colors">
@@ -344,12 +410,12 @@ export default function ExecutiveOverviewDashboard() {
               RUM
             </span>
           </div>
-          <div className="text-2xl font-black font-mono text-emerald-400 tracking-tight">
+          <div className="text-xl sm:text-2xl font-black font-mono text-emerald-400 tracking-tight truncate">
             {data?.webVitals?.overall?.lcp ? `${(data.webVitals.overall.lcp / 1000).toFixed(2)}s` : "—"}
           </div>
           <div className="text-[10px] text-muted-foreground font-mono flex items-center justify-between">
-            <span>{data?.webVitals?.overall?.lcp ? "Measured LCP speed" : "No vitals yet"}</span>
-            <span className="text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity font-bold">
+            <span className="truncate">{data?.webVitals?.overall?.lcp ? "LCP speed" : "No vitals yet"}</span>
+            <span className="text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity font-bold shrink-0">
               Audit &rarr;
             </span>
           </div>
@@ -358,7 +424,7 @@ export default function ExecutiveOverviewDashboard() {
         {/* AI & LLM Crawlers */}
         <Link
           href="/ai-visibility"
-          className="p-4 glass-card glass-card-hover rounded-2xl space-y-2 group block relative overflow-hidden"
+          className="p-3.5 sm:p-4 glass-card glass-card-hover rounded-2xl space-y-1.5 sm:space-y-2 group block relative overflow-hidden"
         >
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground group-hover:text-pink-400 transition-colors">
@@ -368,12 +434,12 @@ export default function ExecutiveOverviewDashboard() {
               {data?.aiVisibility?.overview?.activeAiBotsCount ?? 0} LLMs
             </span>
           </div>
-          <div className="text-2xl font-black font-mono text-pink-400 tracking-tight">
+          <div className="text-xl sm:text-2xl font-black font-mono text-pink-400 tracking-tight truncate">
             {(data?.aiVisibility?.overview?.totalAiCrawlerHits ?? 0).toLocaleString()}
           </div>
           <div className="text-[10px] text-muted-foreground font-mono flex items-center justify-between">
-            <span>LLM scraper visits</span>
-            <span className="text-pink-400 opacity-0 group-hover:opacity-100 transition-opacity font-bold">
+            <span className="truncate">LLM scrapers</span>
+            <span className="text-pink-400 opacity-0 group-hover:opacity-100 transition-opacity font-bold shrink-0">
               Radar &rarr;
             </span>
           </div>
@@ -382,7 +448,7 @@ export default function ExecutiveOverviewDashboard() {
         {/* Crash Free Sessions */}
         <Link
           href="/errors"
-          className="p-4 glass-card glass-card-hover rounded-2xl space-y-2 group block relative overflow-hidden"
+          className="p-3.5 sm:p-4 glass-card glass-card-hover rounded-2xl space-y-1.5 sm:space-y-2 group block relative overflow-hidden col-span-2 sm:col-span-1 lg:col-span-1"
         >
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground group-hover:text-rose-400 transition-colors">
@@ -392,14 +458,14 @@ export default function ExecutiveOverviewDashboard() {
               {(data?.errorStats?.totalErrors || 0) === 0 ? "100%" : "Alert"}
             </span>
           </div>
-          <div className="text-2xl font-black font-mono text-white tracking-tight">
+          <div className="text-xl sm:text-2xl font-black font-mono text-white tracking-tight truncate">
             {overview.totalViews > 0
               ? `${Math.max(0, Math.min(100, Math.round(((overview.totalViews - (data?.errorStats?.totalErrors || 0)) / overview.totalViews) * 1000) / 10))}%`
               : "100%"}
           </div>
           <div className="text-[10px] text-muted-foreground font-mono flex items-center justify-between">
-            <span>{data?.errorStats?.totalErrors || 0} exceptions</span>
-            <span className="text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity font-bold">
+            <span className="truncate">{data?.errorStats?.totalErrors || 0} exceptions</span>
+            <span className="text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity font-bold shrink-0">
               Triage &rarr;
             </span>
           </div>
@@ -471,25 +537,25 @@ export default function ExecutiveOverviewDashboard() {
       {/* ============================================================ */}
       {/* 7. QUICK SETUP, INGESTION DIAGNOSTIC & SDK DECK              */}
       {/* ============================================================ */}
-      <div className="glass-card rounded-3xl p-6 sm:p-7 border border-cyan-500/20 bg-gradient-to-br from-cyan-950/20 via-blue-950/10 to-transparent flex flex-col md:flex-row md:items-center justify-between gap-5">
+      <div className="glass-card rounded-3xl p-5 sm:p-7 border border-cyan-500/20 bg-gradient-to-br from-cyan-950/20 via-blue-950/10 to-transparent flex flex-col lg:flex-row lg:items-center justify-between gap-5">
         <div className="space-y-1.5 max-w-xl">
           <div className="flex items-center gap-2">
-            <span className="p-1.5 rounded-lg bg-cyan-500/15 text-cyan-400 border border-cyan-500/30">
+            <span className="p-1.5 rounded-lg bg-cyan-500/15 text-cyan-400 border border-cyan-500/30 shrink-0">
               <Code2 size={16} />
             </span>
-            <h3 className="text-base font-black text-white">Embed Telemetry in Your App in 30 Seconds</h3>
+            <h3 className="text-sm sm:text-base font-black text-white">Embed Telemetry in Your App in 30 Seconds</h3>
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">
             Copy the lightweight (&lt; 3.2 KB), cookieless tracking snippet into your HTML &lt;head&gt; or Next.js layout to stream real-time events, Core Web Vitals, and autonomous error triage.
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
+        <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 flex-wrap w-full lg:w-auto">
           {/* Send Test Event Button */}
           <button
             onClick={handleSendTestSignal}
             disabled={testSignalSending}
-            className="px-3.5 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.1] text-white text-xs font-bold transition cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+            className="flex-1 sm:flex-initial px-3 sm:px-3.5 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.1] text-white text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-50"
             title="Send a sample telemetry event to verify pipeline"
           >
             {testSignalSending ? (
@@ -499,22 +565,22 @@ export default function ExecutiveOverviewDashboard() {
             ) : (
               <Send size={13} className="text-cyan-400" />
             )}
-            <span>{testSignalSuccess ? "Signal Ingested!" : "Test Signal"}</span>
+            <span>{testSignalSuccess ? "Ingested!" : "Test Signal"}</span>
           </button>
 
           {/* Copy Script Tag Button */}
           <button
             onClick={copyScript}
-            className="px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black text-xs font-black shadow-lg shadow-cyan-500/20 transition cursor-pointer flex items-center gap-2"
+            className="flex-1 sm:flex-initial px-3.5 sm:px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black text-xs font-black shadow-lg shadow-cyan-500/20 transition cursor-pointer flex items-center justify-center gap-2"
           >
             {copiedSnippet ? <Check size={14} /> : <Copy size={14} />}
-            <span>{copiedSnippet ? "Snippet Copied!" : "Copy Script Tag"}</span>
+            <span>{copiedSnippet ? "Copied!" : "Copy Snippet"}</span>
           </button>
 
           {/* SDK Documentation Link */}
           <Link
             href={`/projects/${activeProjectId || "prj_openlabs"}/install`}
-            className="px-4 py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] text-white text-xs font-bold transition"
+            className="w-full sm:w-auto text-center px-4 py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] text-white text-xs font-bold transition"
           >
             SDK Guides &rarr;
           </Link>

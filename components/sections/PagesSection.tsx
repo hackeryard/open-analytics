@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { usePlatform } from "@/components/PlatformContext";
 import { AnalyticsData, formatDuration } from "@/lib/analyticsTypes";
+import { getTrackedUrl } from "@/lib/urlHelper";
 
 interface TopPageItem {
   pathname: string;
@@ -43,7 +44,7 @@ interface TopPageItem {
 type FilterCategory = "all" | "high_traffic" | "high_dwell" | "deep_scroll" | "quick_exit";
 
 export default function PagesSection({ data: propData }: { data?: AnalyticsData }) {
-  const { data: platformData, setPvQuery } = usePlatform();
+  const { data: platformData, setPvQuery, activeProject } = usePlatform();
   const data = propData || platformData;
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -533,7 +534,7 @@ export default function PagesSection({ data: propData }: { data?: AnalyticsData 
                             </button>
 
                             <a
-                              href={String(page.pathname)}
+                              href={getTrackedUrl(page.pathname, activeProject)}
                               target="_blank"
                               rel="noopener noreferrer"
                               onClick={(e) => e.stopPropagation()}
@@ -824,7 +825,7 @@ export default function PagesSection({ data: propData }: { data?: AnalyticsData 
 
               <div className="flex items-center gap-2">
                 <a
-                  href={selectedPage.pathname}
+                  href={getTrackedUrl(selectedPage.pathname, activeProject)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-3 py-1.5 bg-background hover:bg-muted border border-border text-foreground rounded-xl text-xs font-bold transition flex items-center gap-1"
