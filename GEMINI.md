@@ -9,7 +9,7 @@
 ### 1.1 World-Class Obsidian & Precision Design System
 - Avoid generic AI template clichés (muddy navy-blue `#080c14`, blurry cards, rainbow neon gradients, vanity sidebar badges).
 - Use the solid Obsidian Dark palette: `#090a0f` background, `#111218` solid cards, `#0e0f15` sidebar/secondary, `#181922` muted, `#20222c` / `rgba(255,255,255,0.08)` hairline borders with inset bevel highlights.
-- Use Google `Inter` typography (`--font-inter`) with tabular numerals (`tabular-nums font-semibold text-white`) for analytical metrics.
+- Use Plus Jakarta Sans typography (`--font-sans`) paired with JetBrains Mono (`--font-mono`) with tabular numerals (`tabular-nums font-semibold text-white`) for analytical metrics.
 - Use tactile high-contrast white CTAs (`bg-white text-zinc-950 hover:bg-zinc-200`) and decluttered navigation.
 
 ### 2. 3-Tier Domain Architecture & Subdomain Isolation

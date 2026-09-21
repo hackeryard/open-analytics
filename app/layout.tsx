@@ -1,18 +1,27 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Script from "next/script";
-import { Inter } from "next/font/google";
+import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { PlatformProvider } from "@/components/PlatformContext";
 import AppShell from "@/components/AppShell";
 import JsonLd from "@/components/JsonLd";
 import { isDashboardHost } from "@/lib/subdomain";
 
-const inter = Inter({
+const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-sans",
   display: "swap",
+  weight: ["300", "400", "500", "600", "700", "800"],
 });
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
+});
+
 
 const baseUrl = "https://openanalytics.org.in";
 
@@ -160,7 +169,7 @@ export default function RootLayout({
       : isDashboardHost(host, undefined, headersList.get("x-subdomain"));
 
   return (
-    <html lang="en" className={`dark ${inter.variable}`}>
+    <html lang="en" className={`dark ${plusJakarta.variable} ${jetbrainsMono.variable}`}>
       <head>
         <JsonLd data={organizationSchema} />
         <Script

@@ -8,7 +8,7 @@ No emojis anywhere in code, comments, UI strings, documentation, or commit messa
 ## 1.1 World-Class Obsidian & Precision Design System
 - Strictly avoid generic AI template clichés (muddy navy blue, blurry semi-transparent blue cards, rainbow neon gradients, vanity sidebar badges).
 - Use solid Obsidian Dark palette: `#090a0f` background, `#111218` solid cards, `#0e0f15` sidebars, `#20222c` / `rgba(255,255,255,0.08)` hairline borders with subtle bevel highlights.
-- Google `Inter` font typography with tabular numbers (`tabular-nums font-semibold text-white`) for all metrics and stats.
+- Plus Jakarta Sans typography (`--font-sans`) paired with JetBrains Mono (`--font-mono`) with tabular numbers (`tabular-nums font-semibold text-white`) for all metrics and stats.
 - Tactile high-contrast white CTAs (`bg-white text-zinc-950 hover:bg-zinc-200`) and decluttered, actionable navigation.
 
 ## 2. 3-Tier Domain Isolation

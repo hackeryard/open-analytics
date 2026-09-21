@@ -14,7 +14,7 @@
 ### 1.1 World-Class Obsidian & Precision Design System
 - **No generic AI aesthetics**: Avoid muddy navy blue, blurry semi-transparent blue cards, and loud rainbow neon gradients.
 - **Obsidian Palette**: Solid `#090a0f` canvas, `#111218` solid cards, `#0e0f15` sidebars, `#20222c` / `rgba(255,255,255,0.08)` hairline borders with inset top bevels (`inset 0 1px 0 rgba(255,255,255,0.05)`).
-- **Typography**: Google's `Inter` font (`--font-inter`) with tabular numbers (`tabular-nums font-semibold text-white`) for all metrics and KPIs.
+- **Typography**: Plus Jakarta Sans (`--font-sans`) paired with JetBrains Mono (`--font-mono`), with tabular numbers (`tabular-nums font-semibold text-white`) for all metrics and KPIs.
 - **Tactile High-Contrast CTAs**: Use crisp white buttons (`bg-white text-zinc-950 hover:bg-zinc-200`) for primary actions.
 - **Clutter-Free Navigation**: Reserve sidebar badges strictly for actionable signals (unread alerts, active crash errors). Do not clutter navigation with vanity numbers.
 

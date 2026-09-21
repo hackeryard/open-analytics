@@ -105,7 +105,7 @@ To build the most developer-friendly, high-performance, and visually stunning an
 
 ### Phase 12: World-Class Obsidian & Precision Design System (Completed)
 - [x] Full UI/UX visual overhaul from generic AI template clichés to Obsidian & Precision developer aesthetic (inspired by Linear, Vercel, Raycast).
-- [x] Native `Inter` typography integration via `next/font/google` with tabular numbers across all KPI metrics.
+- [x] Plus Jakarta Sans (`--font-sans`) and JetBrains Mono (`--font-mono`) typography integration via `next/font/google` with tabular numbers across all KPI metrics.
 - [x] Solid obsidian dark surfaces (`#090a0f`, `#111218`, `#0e0f15`, `#181922`) with razor-thin borders (`rgba(255,255,255,0.08)`) and inset bevel highlights.
 - [x] Complete eradication of legacy `bg-card` classes across 100% of codebase files.
 - [x] 5-card Bento Grid Showcase on main domain landing page with telemetry simulator, CWV gauges, AI crawler radar, and crash triage.

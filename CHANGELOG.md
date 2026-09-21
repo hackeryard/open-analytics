@@ -7,7 +7,7 @@ All notable changes to the Open Analytics platform are documented in this file.
 ### Changed
 - **Obsidian & Precision Design System Overhaul (`app/globals.css`, `tailwind.config.ts`, `app/layout.tsx`)**:
   - Replaced generic AI-template aesthetics (muddy navy-blue `#080c14`, blurry cards, rainbow neon gradients) with a world-class, human-crafted Obsidian & Precision dark design system inspired by Linear, Vercel, and Raycast.
-  - Loaded Google's `Inter` font via `next/font/google` with full font-sans variable integration for crisp typography.
+  - Loaded Plus Jakarta Sans (`--font-sans`) paired with JetBrains Mono (`--font-mono`) via `next/font/google` for ultra-premium typography and precision tabular telemetry.
   - Rewrote color tokens to solid obsidian surfaces (`--background: #090a0f`, `--card: #111218`, `--border: #20222c`, `--muted: #181922`) with razor-thin borders (`rgba(255,255,255,0.08)`) and inset top bevels.
   - Completely eliminated all legacy `bg-card` classes across every `.tsx`, `.ts`, and `.css` file in the codebase.
 - **Main Domain & Landing Page Redesign (`components/public/LandingHero.tsx`, `components/public/PublicNavbar.tsx`, `components/public/PublicFooter.tsx`)**:

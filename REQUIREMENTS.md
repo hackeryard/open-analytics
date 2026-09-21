@@ -213,7 +213,7 @@
    - Razor-Thin Borders: `#20222c` / `rgba(255, 255, 255, 0.08)` (`--border` / `border-white/[0.08]`)
    - Accent & Primary CTA: Solid high-contrast white `#ffffff` (`bg-white text-zinc-950 hover:bg-zinc-200`)
 2. **Typography**:
-   - Typeface: Google `Inter` loaded via `next/font/google` (`--font-inter`).
+   - Typeface: Plus Jakarta Sans (`--font-sans`) paired with JetBrains Mono (`--font-mono`) loaded via `next/font/google`.
    - Numerical Data & Metrics: Strictly formatted with tabular numerals (`tabular-nums font-semibold text-white`).
 3. **Component Architecture & Surface Rules**:
    - **Zero-Template Mandate**: Zero generic AI neon rainbow gradients, zero muddy navy blue cards, and complete eradication of legacy `bg-card` classes across all components.
