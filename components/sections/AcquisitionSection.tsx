@@ -9,6 +9,8 @@ import {
   ExternalLink,
   TrendingUp,
   BarChart3,
+  Share2,
+  Filter,
 } from "lucide-react";
 import { usePlatform } from "@/components/PlatformContext";
 import { AnalyticsData, formatDuration } from "@/lib/analyticsTypes";
@@ -19,77 +21,196 @@ export default function AcquisitionSection({ data: propData }: { data?: Analytic
 
   if (!data) return null;
 
-  return (
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* Referring Domains */}
-            <div className="bg-card border border-border rounded-3xl p-5 shadow-sm space-y-4">
-              <h3 className="text-xs font-black uppercase tracking-wider text-muted-foreground">
-                Top Referring Domains & Sources
-              </h3>
-              {data.topReferrers.length === 0 ? (
-                <p className="text-xs text-muted-foreground py-6 text-center">
-                  No referring domains recorded yet. Direct or referral traffic will appear here.
-                </p>
-              ) : (
-                <div className="space-y-3">
-                  {data.topReferrers.map((ref, idx) => (
-                    <div key={idx} className="space-y-1">
-                      <div className="flex items-center justify-between text-xs font-bold">
-                        <span className="font-mono text-foreground">{ref.domain}</span>
-                        <span className="text-muted-foreground">
-                          {ref.count} views ({ref.percentage}%)
-                        </span>
-                      </div>
-                      <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
-                        <div
-                          style={{ width: `${ref.percentage}%` }}
-                          className="h-full bg-primary rounded-full"
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+  const topReferrers = data.topReferrers || [];
+  const utmCampaigns = data.utmCampaigns || [];
+  const totalReferralViews = topReferrers.reduce((acc, r) => acc + (r.count || 0), 0);
+  const totalCampaignViews = utmCampaigns.reduce((acc, u) => acc + (u.views || 0), 0);
+  const topReferrer = topReferrers[0] || null;
 
-            {/* UTM Campaigns Table */}
-            <div className="bg-card border border-border rounded-3xl p-5 shadow-sm space-y-4">
-              <h3 className="text-xs font-black uppercase tracking-wider text-muted-foreground">
-                UTM Marketing Campaigns
-              </h3>
-              {data.utmCampaigns.length === 0 ? (
-                <p className="text-xs text-muted-foreground py-6 text-center">
-                  No UTM campaign traffic recorded yet. Add ?utm_source=... to your share links.
-                </p>
-              ) : (
-                <div className="space-y-2.5">
-                  {data.utmCampaigns.map((u, idx) => (
-                    <div
-                      key={idx}
-                      className="p-3 bg-muted/20 border border-border rounded-2xl flex items-center justify-between text-xs"
-                    >
-                      <div className="space-y-0.5">
-                        <span className="font-bold text-foreground block font-mono">
-                          {u.campaign}
-                        </span>
-                        <span className="text-[10px] text-muted-foreground font-mono">
-                          {u.source} &bull; {u.medium}
-                        </span>
-                      </div>
-                      <div className="text-right font-mono">
-                        <span className="font-black text-foreground">{u.views} views</span>
-                        <span className="block text-[10px] text-muted-foreground">
-                          {u.visitors} visitors ({formatDuration(u.avgDuration)})
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+  return (
+    <div className="space-y-6 pb-16">
+      {/* ── Top Summary KPI Cards ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="p-5 bg-[#111218] border border-white/[0.08] rounded-xl space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-zinc-400">Referring Domains</span>
+            <div className="w-7 h-7 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-400">
+              <Globe size={14} />
             </div>
+          </div>
+          <div className="text-2xl sm:text-3xl font-semibold text-white tracking-tight tabular-nums">
+            {topReferrers.length}
+          </div>
+          <div className="text-[11px] text-zinc-500">
+            {totalReferralViews.toLocaleString()} inbound referral hits
           </div>
         </div>
 
+        <div className="p-5 bg-[#111218] border border-white/[0.08] rounded-xl space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-zinc-400">Top Inbound Anchor</span>
+            <div className="w-7 h-7 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-400">
+              <Compass size={14} />
+            </div>
+          </div>
+          <div className="text-sm sm:text-base font-semibold text-white truncate font-mono" title={topReferrer?.domain || "Direct / Internal"}>
+            {topReferrer?.domain || "Direct"}
+          </div>
+          <div className="text-[11px] text-zinc-500 tabular-nums">
+            {topReferrer ? `${topReferrer.count.toLocaleString()} views (${topReferrer.percentage}%)` : "No external referrers"}
+          </div>
+        </div>
+
+        <div className="p-5 bg-[#111218] border border-white/[0.08] rounded-xl space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-zinc-400">Active Campaigns</span>
+            <div className="w-7 h-7 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-400">
+              <Tag size={14} />
+            </div>
+          </div>
+          <div className="text-2xl sm:text-3xl font-semibold text-white tracking-tight tabular-nums">
+            {utmCampaigns.length}
+          </div>
+          <div className="text-[11px] text-zinc-500">
+            Tracked UTM marketing channels
+          </div>
+        </div>
+
+        <div className="p-5 bg-[#111218] border border-white/[0.08] rounded-xl space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-zinc-400">Campaign Attribution</span>
+            <div className="w-7 h-7 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-400">
+              <BarChart3 size={14} />
+            </div>
+          </div>
+          <div className="text-2xl sm:text-3xl font-semibold text-white tracking-tight tabular-nums">
+            {totalCampaignViews.toLocaleString()}
+          </div>
+          <div className="text-[11px] text-zinc-500">
+            Tagged marketing conversions
+          </div>
+        </div>
+      </div>
+
+      {/* ── Main Dual Columns ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        {/* Referring Domains */}
+        <div className="bg-[#111218] border border-white/[0.08] rounded-xl p-5 sm:p-6 space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-semibold text-white tracking-tight flex items-center gap-2">
+                <Globe size={15} className="text-zinc-400" />
+                <span>Top Referring Domains &amp; Inbound Sources</span>
+              </h3>
+              <p className="text-xs text-zinc-500 mt-0.5">
+                External websites and search engines sending visitor traffic
+              </p>
+            </div>
+            <span className="text-xs font-mono text-zinc-500 tabular-nums">
+              {topReferrers.length} sources
+            </span>
+          </div>
+
+          {topReferrers.length === 0 ? (
+            <div className="py-12 text-center rounded-lg bg-[#0e0f15] border border-white/[0.04] p-6 space-y-2">
+              <div className="w-10 h-10 rounded-lg bg-white/[0.04] text-zinc-400 flex items-center justify-center mx-auto">
+                <Globe size={18} />
+              </div>
+              <p className="text-xs font-medium text-zinc-300">No Referring Domains Yet</p>
+              <p className="text-[11px] text-zinc-500 max-w-sm mx-auto">
+                Direct traffic and external referrers will automatically populate as visitors arrive.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3.5">
+              {topReferrers.map((ref, idx) => (
+                <div key={idx} className="space-y-1.5 group">
+                  <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="w-5 text-[11px] font-mono text-zinc-500 tabular-nums">
+                        #{idx + 1}
+                      </span>
+                      <span className="font-mono text-zinc-200 group-hover:text-white transition truncate" title={ref.domain}>
+                        {ref.domain}
+                      </span>
+                    </div>
+                    <div className="text-right font-mono text-xs tabular-nums shrink-0 ml-2">
+                      <span className="font-medium text-white">{ref.count.toLocaleString()}</span>
+                      <span className="text-zinc-500 text-[11px] ml-1.5">({ref.percentage}%)</span>
+                    </div>
+                  </div>
+                  <div className="w-full h-1.5 bg-[#181922] rounded-full overflow-hidden">
+                    <div
+                      style={{ width: `${Math.max(2, ref.percentage)}%` }}
+                      className="h-full bg-white rounded-full transition-all"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* UTM Campaigns Table */}
+        <div className="bg-[#111218] border border-white/[0.08] rounded-xl p-5 sm:p-6 space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-semibold text-white tracking-tight flex items-center gap-2">
+                <Tag size={15} className="text-zinc-400" />
+                <span>UTM Marketing Campaigns</span>
+              </h3>
+              <p className="text-xs text-zinc-500 mt-0.5">
+                Tracking tags attached via utm_source, utm_medium, and utm_campaign
+              </p>
+            </div>
+            <span className="text-xs font-mono text-zinc-500 tabular-nums">
+              {utmCampaigns.length} campaigns
+            </span>
+          </div>
+
+          {utmCampaigns.length === 0 ? (
+            <div className="py-12 text-center rounded-lg bg-[#0e0f15] border border-white/[0.04] p-6 space-y-2">
+              <div className="w-10 h-10 rounded-lg bg-white/[0.04] text-zinc-400 flex items-center justify-center mx-auto">
+                <Tag size={18} />
+              </div>
+              <p className="text-xs font-medium text-zinc-300">No Campaign Traffic Tagged</p>
+              <p className="text-[11px] text-zinc-500 max-w-sm mx-auto">
+                Append <code className="text-zinc-300 font-mono">?utm_source=...&amp;utm_campaign=...</code> to your share URLs to measure campaign ROI.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-2.5">
+              {utmCampaigns.map((u, idx) => (
+                <div
+                  key={idx}
+                  className="p-3.5 bg-[#0e0f15] border border-white/[0.06] hover:border-white/[0.12] rounded-lg flex items-center justify-between text-xs transition"
+                >
+                  <div className="space-y-1 min-w-0 pr-3">
+                    <span className="font-medium text-white block font-mono truncate" title={u.campaign}>
+                      {u.campaign}
+                    </span>
+                    <div className="flex items-center gap-2 text-[10px] font-mono text-zinc-400 flex-wrap">
+                      <span className="px-1.5 py-0.5 rounded bg-white/[0.04] border border-white/[0.08] text-zinc-300">
+                        {u.source || "direct"}
+                      </span>
+                      <span className="text-zinc-500">&bull;</span>
+                      <span>{u.medium || "organic"}</span>
+                    </div>
+                  </div>
+                  <div className="text-right font-mono shrink-0">
+                    <span className="font-semibold text-white tabular-nums block">
+                      {u.views.toLocaleString()} views
+                    </span>
+                    <span className="text-[11px] text-zinc-500 tabular-nums block">
+                      {u.visitors.toLocaleString()} users &bull; {formatDuration(u.avgDuration)}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }

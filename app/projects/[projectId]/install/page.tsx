@@ -468,22 +468,22 @@ if (typeof window !== "undefined" && window.OpenAnalytics) {
 
   if (accessDenied) {
     return (
-      <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-6">
-        <div className="max-w-md w-full bg-card border border-rose-500/20 rounded-3xl p-8 text-center space-y-4 shadow-2xl">
-          <div className="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center mx-auto">
+      <div className="min-h-screen bg-[#090a0f] text-foreground flex flex-col items-center justify-center p-6">
+        <div className="max-w-md w-full bg-[#111218] border border-rose-500/20 rounded-2xl p-8 text-center space-y-4 shadow-2xl">
+          <div className="w-12 h-12 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center mx-auto">
             <AlertCircle size={24} />
           </div>
-          <h2 className="text-xl font-black text-foreground">Access Restricted</h2>
-          <p className="text-xs text-muted-foreground">
-            You do not have permission to view installation keys for project <span className="font-mono text-foreground font-bold">{projectId}</span>.
+          <h2 className="text-xl font-semibold text-white">Access Restricted</h2>
+          <p className="text-xs text-zinc-400">
+            You do not have permission to view installation keys for project <span className="font-mono text-white font-semibold">{projectId}</span>.
           </p>
           <div className="pt-2">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-bold shadow-md hover:bg-primary/90 transition"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-white text-zinc-950 hover:bg-zinc-200 text-xs font-medium transition-colors"
             >
               <ArrowLeft size={14} />
-              Return to Workspace
+              <span>Return to Workspace</span>
             </Link>
           </div>
         </div>
@@ -492,37 +492,37 @@ if (typeof window !== "undefined" && window.OpenAnalytics) {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-8">
+    <div className="min-h-screen bg-[#090a0f] text-foreground p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto space-y-8">
       {/* ── Top Navigation & Header ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.08] pb-6">
         <div className="flex items-center gap-3">
           <Link
             href="/"
-            className="p-2.5 rounded-2xl bg-card hover:bg-muted border border-border text-muted-foreground hover:text-foreground transition shadow-xs"
+            className="p-2.5 rounded-xl bg-[#111218] hover:bg-white/[0.06] border border-white/[0.08] text-zinc-400 hover:text-white transition-colors shadow-xs"
           >
             <ArrowLeft size={18} />
           </Link>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl sm:text-2xl font-black text-foreground tracking-tight flex items-center gap-2">
-                <Zap size={22} className="text-primary" />
+              <h1 className="text-xl sm:text-2xl font-semibold text-white tracking-tight flex items-center gap-2">
+                <Zap size={20} className="text-white" />
                 Installation &amp; SDK Guide
               </h1>
               {projectName && (
-                <span className="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 text-[11px] font-bold">
+                <span className="px-2.5 py-0.5 rounded-full bg-white/[0.06] text-zinc-300 border border-white/[0.08] text-[11px] font-medium">
                   {projectName}
                 </span>
               )}
             </div>
             <div className="flex items-center gap-2 mt-1">
-              <span className="text-xs text-muted-foreground">Measurement ID:</span>
+              <span className="text-xs text-zinc-400">Measurement ID:</span>
               <button
                 onClick={copyProjectId}
-                className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-muted border border-border text-xs font-mono font-bold text-primary hover:bg-muted/80 transition"
+                className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-[#111218] border border-white/[0.08] text-xs font-mono font-semibold text-white hover:bg-white/[0.06] transition-colors"
                 title="Click to copy Measurement ID"
               >
                 <span>{activeMeasurementId || projectId}</span>
-                {copiedProjectId ? <Check size={12} className="text-emerald-500" /> : <Copy size={12} />}
+                {copiedProjectId ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
               </button>
             </div>
           </div>
@@ -531,41 +531,41 @@ if (typeof window !== "undefined" && window.OpenAnalytics) {
         <div className="flex items-center gap-2">
           <Link
             href={`/projects/${projectId}/settings`}
-            className="flex items-center gap-2 px-3.5 py-2 bg-card hover:bg-muted border border-border text-foreground text-xs font-bold rounded-xl transition shadow-xs"
+            className="flex items-center gap-2 px-3.5 py-2 bg-[#111218] hover:bg-white/[0.06] border border-white/[0.08] text-zinc-300 hover:text-white text-xs font-medium rounded-lg transition-colors shadow-xs"
           >
-            <Settings size={14} className="text-muted-foreground" />
-            Project Settings
+            <Settings size={14} className="text-zinc-400" />
+            <span>Project Settings</span>
           </Link>
           <Link
             href="/"
-            className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-xl transition shadow-xs"
+            className="flex items-center gap-2 px-4 py-2 bg-white text-zinc-950 hover:bg-zinc-200 text-xs font-medium rounded-lg transition-colors shadow-xs"
           >
             <BarChart3 size={15} />
-            Live Dashboard
+            <span>Live Dashboard</span>
           </Link>
         </div>
       </div>
 
       {/* ── Security & CORS Whitelist Reminder ── */}
-      <div className="bg-card border border-border rounded-3xl p-5 sm:p-6 relative overflow-hidden shadow-xs">
+      <div className="bg-[#111218] border border-white/[0.08] rounded-xl p-5 sm:p-6 relative overflow-hidden shadow-xs">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-start gap-3.5">
-            <div className="p-2.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-500 shrink-0 mt-0.5">
-              <Shield size={20} />
+            <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 shrink-0 mt-0.5">
+              <Shield size={18} />
             </div>
             <div className="space-y-1">
-              <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-white flex items-center gap-2">
                 Allowed Origins &amp; CORS Domain Security
               </h3>
-              <p className="text-xs text-muted-foreground max-w-2xl leading-relaxed">
-                By default, your project accepts events from any origin (<code className="px-1.5 py-0.2 rounded bg-muted text-primary font-mono text-[11px]">*</code>).
-                To restrict telemetry collection strictly to your production domains (e.g. <code className="px-1.5 py-0.2 rounded bg-muted text-primary font-mono text-[11px]">app.yourdomain.com</code>), configure Allowed Domains in Project Settings.
+              <p className="text-xs text-zinc-400 max-w-2xl leading-relaxed">
+                By default, your project accepts events from any origin (<code className="px-1.5 py-0.5 rounded bg-[#181922] text-zinc-300 font-mono text-[11px] border border-white/[0.06]">*</code>).
+                To restrict telemetry collection strictly to your production domains (e.g. <code className="px-1.5 py-0.5 rounded bg-[#181922] text-zinc-300 font-mono text-[11px] border border-white/[0.06]">app.yourdomain.com</code>), configure Allowed Domains in Project Settings.
               </p>
             </div>
           </div>
           <Link
             href={`/projects/${projectId}/settings`}
-            className="px-3.5 py-2 rounded-xl bg-muted hover:bg-muted/80 border border-border text-foreground text-xs font-bold transition shrink-0 inline-flex items-center gap-1.5"
+            className="px-3.5 py-2 rounded-lg bg-[#181922] hover:bg-white/[0.06] border border-white/[0.08] text-white text-xs font-medium transition-colors shrink-0 inline-flex items-center gap-1.5"
           >
             Configure Domains
           </Link>
@@ -573,28 +573,28 @@ if (typeof window !== "undefined" && window.OpenAnalytics) {
       </div>
 
       {/* ── Framework Quickstart Tabs ── */}
-      <div className="bg-card border border-border rounded-3xl p-6 sm:p-8 space-y-6 shadow-xs relative">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-border pb-5">
+      <div className="bg-[#111218] border border-white/[0.08] rounded-xl p-6 sm:p-8 space-y-6 shadow-xs relative">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-white/[0.08] pb-5">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-[10px] font-black uppercase tracking-wider mb-1.5">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-semibold uppercase tracking-wider mb-1.5">
               <Sparkles size={12} />
               Zero-Dependency Integration
             </div>
-            <h2 className="text-lg sm:text-xl font-black text-foreground">
+            <h2 className="text-lg sm:text-xl font-semibold text-white">
               Choose Your Platform or Framework
             </h2>
-            <p className="text-xs text-muted-foreground mt-0.5">
+            <p className="text-xs text-zinc-400 mt-0.5">
               Copy and paste the snippet into your project. Open Analytics automatically tracks pageviews, Core Web Vitals, hardware, UX signals, and crashes.
             </p>
           </div>
         </div>
 
         {/* Host Endpoint Configuration Bar */}
-        <div className="p-4 bg-muted/40 border border-border/70 rounded-2xl space-y-2.5">
+        <div className="p-4 bg-[#0e0f15] border border-white/[0.08] rounded-xl space-y-2.5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <SlidersHorizontal size={15} className="text-primary" />
-              <label className="text-xs font-bold text-foreground">
+              <SlidersHorizontal size={15} className="text-zinc-400" />
+              <label className="text-xs font-semibold text-white">
                 Hosted Script Domain / CDN URL:
               </label>
             </div>
@@ -602,7 +602,7 @@ if (typeof window !== "undefined" && window.OpenAnalytics) {
               <button
                 type="button"
                 onClick={() => setHostUrl("https://openanalytics.org.in")}
-                className="px-2.5 py-1 rounded-lg bg-card hover:bg-muted border border-border text-[11px] font-medium text-muted-foreground hover:text-foreground transition"
+                className="px-2.5 py-1 rounded-lg bg-[#111218] hover:bg-white/[0.06] border border-white/[0.08] text-[11px] font-medium text-zinc-400 hover:text-white transition-colors"
               >
                 Use Production URL (openanalytics.org.in)
               </button>
@@ -610,7 +610,7 @@ if (typeof window !== "undefined" && window.OpenAnalytics) {
                 <button
                   type="button"
                   onClick={() => setHostUrl(localOrigin)}
-                  className="px-2.5 py-1 rounded-lg bg-card hover:bg-muted border border-border text-[11px] font-medium text-muted-foreground hover:text-foreground transition"
+                  className="px-2.5 py-1 rounded-lg bg-[#111218] hover:bg-white/[0.06] border border-white/[0.08] text-[11px] font-medium text-zinc-400 hover:text-white transition-colors"
                 >
                   Use Current Server URL
                 </button>
@@ -625,15 +625,15 @@ if (typeof window !== "undefined" && window.OpenAnalytics) {
               setIsCustomHost(true);
             }}
             placeholder="https://openanalytics.org.in"
-            className="w-full px-3.5 py-2 rounded-xl bg-background border border-border font-mono text-xs text-primary focus:outline-none focus:border-primary shadow-2xs"
+            className="w-full px-3.5 py-2 rounded-lg bg-[#090a0f] border border-white/[0.08] font-mono text-xs text-white focus:outline-none focus:border-white/20 shadow-2xs"
           />
-          <p className="text-[11px] text-muted-foreground">
+          <p className="text-[11px] text-zinc-400">
             The snippets below will automatically update with this domain. Replace with your hosted Open Analytics domain.
           </p>
         </div>
 
         {/* Framework Selector Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 scrollbar-none border-b border-border/60">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 scrollbar-none border-b border-white/[0.08]">
           {(
             [
               { id: "html", label: "HTML5 / Vanilla JS", icon: Code2 },
@@ -652,10 +652,10 @@ if (typeof window !== "undefined" && window.OpenAnalytics) {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition shrink-0 ${
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-colors shrink-0 ${
                   isSelected
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
+                    ? "bg-white text-zinc-950 shadow-xs"
+                    : "bg-[#0e0f15] text-zinc-400 hover:bg-white/[0.06] hover:text-white border border-white/[0.06]"
                 }`}
               >
                 <Icon size={14} />
@@ -669,27 +669,27 @@ if (typeof window !== "undefined" && window.OpenAnalytics) {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <FileCode size={16} className="text-primary" />
-              <span className="text-xs font-mono font-bold text-foreground">
+              <FileCode size={16} className="text-zinc-400" />
+              <span className="text-xs font-mono font-semibold text-white">
                 {snippets[activeTab].filename}
               </span>
             </div>
-            <span className="text-[11px] text-muted-foreground hidden sm:inline-block">
+            <span className="text-[11px] text-zinc-400 hidden sm:inline-block">
               {snippets[activeTab].description}
             </span>
           </div>
 
-          <div className="relative group bg-muted/80 border border-border rounded-2xl p-4 sm:p-5 font-mono text-xs overflow-x-auto">
-            <pre className="text-primary-foreground dark:text-cyan-200 pr-12 leading-relaxed">
+          <div className="relative group bg-[#090a0f] border border-white/[0.08] rounded-xl p-4 sm:p-5 font-mono text-xs overflow-x-auto">
+            <pre className="text-zinc-300 pr-12 leading-relaxed">
               {snippets[activeTab].code}
             </pre>
             <button
               onClick={() => copyToClipboard(snippets[activeTab].code, `tab_${activeTab}`)}
-              className="absolute top-3 right-3 p-2 bg-card hover:bg-muted border border-border rounded-xl text-muted-foreground hover:text-foreground transition shadow-xs"
+              className="absolute top-3 right-3 p-2 bg-[#111218] hover:bg-white/[0.06] border border-white/[0.08] rounded-lg text-zinc-400 hover:text-white transition-colors shadow-xs"
               title="Copy snippet"
             >
               {copiedKey === `tab_${activeTab}` ? (
-                <Check size={16} className="text-emerald-500" />
+                <Check size={16} className="text-emerald-400" />
               ) : (
                 <Copy size={16} />
               )}
@@ -698,41 +698,41 @@ if (typeof window !== "undefined" && window.OpenAnalytics) {
         </div>
 
         {/* What gets auto-tracked */}
-        <div className="pt-2 border-t border-border/60">
-          <span className="text-xs font-bold text-foreground block mb-3">
+        <div className="pt-2 border-t border-white/[0.08]">
+          <span className="text-xs font-semibold text-white block mb-3">
             Automatic Observability &amp; Telemetry Signals:
           </span>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 text-xs">
-            <div className="flex items-center gap-2 text-muted-foreground bg-muted/40 p-2.5 rounded-xl border border-border/50">
-              <CheckCircle2 size={14} className="text-emerald-500 shrink-0" />
+            <div className="flex items-center gap-2 text-zinc-300 bg-[#0e0f15] p-2.5 rounded-lg border border-white/[0.06]">
+              <CheckCircle2 size={14} className="text-emerald-400 shrink-0" />
               <span>Pageviews &amp; Dwell Times</span>
             </div>
-            <div className="flex items-center gap-2 text-muted-foreground bg-muted/40 p-2.5 rounded-xl border border-border/50">
-              <CheckCircle2 size={14} className="text-emerald-500 shrink-0" />
+            <div className="flex items-center gap-2 text-zinc-300 bg-[#0e0f15] p-2.5 rounded-lg border border-white/[0.06]">
+              <CheckCircle2 size={14} className="text-emerald-400 shrink-0" />
               <span>Core Web Vitals (RUM)</span>
             </div>
-            <div className="flex items-center gap-2 text-muted-foreground bg-muted/40 p-2.5 rounded-xl border border-border/50">
-              <CheckCircle2 size={14} className="text-emerald-500 shrink-0" />
+            <div className="flex items-center gap-2 text-zinc-300 bg-[#0e0f15] p-2.5 rounded-lg border border-white/[0.06]">
+              <CheckCircle2 size={14} className="text-emerald-400 shrink-0" />
               <span>Hardware &amp; GPU Diagnostics</span>
             </div>
-            <div className="flex items-center gap-2 text-muted-foreground bg-muted/40 p-2.5 rounded-xl border border-border/50">
-              <CheckCircle2 size={14} className="text-emerald-500 shrink-0" />
+            <div className="flex items-center gap-2 text-zinc-300 bg-[#0e0f15] p-2.5 rounded-lg border border-white/[0.06]">
+              <CheckCircle2 size={14} className="text-emerald-400 shrink-0" />
               <span>Network Type (4G/5G/WiFi)</span>
             </div>
-            <div className="flex items-center gap-2 text-muted-foreground bg-muted/40 p-2.5 rounded-xl border border-border/50">
-              <CheckCircle2 size={14} className="text-emerald-500 shrink-0" />
+            <div className="flex items-center gap-2 text-zinc-300 bg-[#0e0f15] p-2.5 rounded-lg border border-white/[0.06]">
+              <CheckCircle2 size={14} className="text-emerald-400 shrink-0" />
               <span>Vertical Scroll Milestones</span>
             </div>
-            <div className="flex items-center gap-2 text-muted-foreground bg-muted/40 p-2.5 rounded-xl border border-border/50">
-              <CheckCircle2 size={14} className="text-emerald-500 shrink-0" />
+            <div className="flex items-center gap-2 text-zinc-300 bg-[#0e0f15] p-2.5 rounded-lg border border-white/[0.06]">
+              <CheckCircle2 size={14} className="text-emerald-400 shrink-0" />
               <span>Rage Clicks &amp; Exit Intent</span>
             </div>
-            <div className="flex items-center gap-2 text-muted-foreground bg-muted/40 p-2.5 rounded-xl border border-border/50">
-              <CheckCircle2 size={14} className="text-emerald-500 shrink-0" />
+            <div className="flex items-center gap-2 text-zinc-300 bg-[#0e0f15] p-2.5 rounded-lg border border-white/[0.06]">
+              <CheckCircle2 size={14} className="text-emerald-400 shrink-0" />
               <span>Runtime JS Crash Triage</span>
             </div>
-            <div className="flex items-center gap-2 text-muted-foreground bg-muted/40 p-2.5 rounded-xl border border-border/50">
-              <CheckCircle2 size={14} className="text-emerald-500 shrink-0" />
+            <div className="flex items-center gap-2 text-zinc-300 bg-[#0e0f15] p-2.5 rounded-lg border border-white/[0.06]">
+              <CheckCircle2 size={14} className="text-emerald-400 shrink-0" />
               <span>User Journey Flows</span>
             </div>
           </div>
@@ -740,24 +740,24 @@ if (typeof window !== "undefined" && window.OpenAnalytics) {
       </div>
 
       {/* ── JavaScript SDK Reference (window.OpenAnalytics) ── */}
-      <div className="bg-card border border-border rounded-3xl p-6 sm:p-8 space-y-6 shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-5">
+      <div className="bg-[#111218] border border-white/[0.08] rounded-xl p-6 sm:p-8 space-y-6 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/[0.08] pb-5">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 text-[10px] font-black uppercase tracking-wider mb-1.5">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[10px] font-semibold uppercase tracking-wider mb-1.5">
               <Terminal size={12} />
               Client SDK API
             </div>
-            <h2 className="text-lg sm:text-xl font-black text-foreground">
-              JavaScript SDK Reference (<code className="font-mono text-primary">window.OpenAnalytics</code>)
+            <h2 className="text-lg sm:text-xl font-semibold text-white">
+              JavaScript SDK Reference (<code className="font-mono text-white">window.OpenAnalytics</code>)
             </h2>
-            <p className="text-xs text-muted-foreground mt-0.5">
+            <p className="text-xs text-zinc-400 mt-0.5">
               Use programmatic methods to record business conversions, identify users, log custom errors, and monitor not-found pages.
             </p>
           </div>
         </div>
 
         {/* SDK Tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 scrollbar-none border-b border-border/60">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 scrollbar-none border-b border-white/[0.08]">
           {(
             [
               { id: "events", label: "1. Custom Events (.track)", icon: Activity },
@@ -773,10 +773,10 @@ if (typeof window !== "undefined" && window.OpenAnalytics) {
               <button
                 key={tab.id}
                 onClick={() => setActiveSdkTab(tab.id)}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition shrink-0 ${
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-colors shrink-0 ${
                   isSelected
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
+                    ? "bg-white text-zinc-950 shadow-xs"
+                    : "bg-[#0e0f15] text-zinc-400 hover:bg-white/[0.06] hover:text-white border border-white/[0.06]"
                 }`}
               >
                 <Icon size={14} />
@@ -789,51 +789,51 @@ if (typeof window !== "undefined" && window.OpenAnalytics) {
         {/* SDK Active Tab View */}
         <div className="space-y-3">
           <div className="space-y-1">
-            <h4 className="text-sm font-bold text-foreground">
+            <h4 className="text-sm font-semibold text-white">
               {sdkSnippets[activeSdkTab].title}
             </h4>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-zinc-400">
               {sdkSnippets[activeSdkTab].subtitle}
             </p>
           </div>
 
-          <div className="relative group bg-muted/80 border border-border rounded-2xl p-4 sm:p-5 font-mono text-xs overflow-x-auto">
-            <pre className="text-blue-300 dark:text-cyan-200 pr-12 leading-relaxed">
+          <div className="relative group bg-[#090a0f] border border-white/[0.08] rounded-xl p-4 sm:p-5 font-mono text-xs overflow-x-auto">
+            <pre className="text-zinc-300 pr-12 leading-relaxed">
               {sdkSnippets[activeSdkTab].code}
             </pre>
             <button
               onClick={() => copyToClipboard(sdkSnippets[activeSdkTab].code, `sdk_${activeSdkTab}`)}
-              className="absolute top-3 right-3 p-2 bg-card hover:bg-muted border border-border rounded-xl text-muted-foreground hover:text-foreground transition shadow-xs"
+              className="absolute top-3 right-3 p-2 bg-[#111218] hover:bg-white/[0.06] border border-white/[0.08] rounded-lg text-zinc-400 hover:text-white transition-colors shadow-xs"
               title="Copy SDK snippet"
             >
               {copiedKey === `sdk_${activeSdkTab}` ? (
-                <Check size={16} className="text-emerald-500" />
+                <Check size={16} className="text-emerald-400" />
               ) : (
                 <Copy size={16} />
               )}
             </button>
           </div>
 
-          <div className="p-3 bg-muted/40 border border-border/50 rounded-xl text-xs text-muted-foreground">
-            <span className="font-bold text-foreground mr-1.5">Note:</span>
+          <div className="p-3 bg-[#0e0f15] border border-white/[0.06] rounded-xl text-xs text-zinc-400">
+            <span className="font-semibold text-white mr-1.5">Note:</span>
             {sdkSnippets[activeSdkTab].note}
           </div>
         </div>
       </div>
 
       {/* ── Live Ingestion Diagnostic & Verification Tester ── */}
-      <div className="bg-card border border-border rounded-3xl p-6 sm:p-8 space-y-5 shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-5">
+      <div className="bg-[#111218] border border-white/[0.08] rounded-xl p-6 sm:p-8 space-y-5 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/[0.08] pb-5">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 text-[10px] font-black uppercase tracking-wider mb-1.5">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-[10px] font-semibold uppercase tracking-wider mb-1.5">
               <Globe size={12} />
               Live Ingestion Diagnostic
             </div>
-            <h2 className="text-lg sm:text-xl font-black text-foreground">
+            <h2 className="text-lg sm:text-xl font-semibold text-white">
               Test &amp; Verify Telemetry Pipeline
             </h2>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Send a test telemetry signal directly from this browser to verify backend ingestion for <span className="font-mono text-primary font-bold">{projectId}</span>.
+            <p className="text-xs text-zinc-400 mt-0.5">
+              Send a test telemetry signal directly from this browser to verify backend ingestion for <span className="font-mono text-white font-semibold">{projectId}</span>.
             </p>
           </div>
         </div>
@@ -843,12 +843,12 @@ if (typeof window !== "undefined" && window.OpenAnalytics) {
           <button
             onClick={() => runDiagnosticPing("pageview")}
             disabled={testingType !== null}
-            className="flex items-center justify-center gap-2 p-3.5 bg-muted hover:bg-muted/80 border border-border rounded-2xl text-foreground font-bold text-xs transition shadow-xs disabled:opacity-50"
+            className="flex items-center justify-center gap-2 p-3.5 bg-[#0e0f15] hover:bg-white/[0.06] border border-white/[0.08] rounded-xl text-white font-semibold text-xs transition-colors shadow-xs disabled:opacity-50 cursor-pointer"
           >
             {testingType === "pageview" ? (
-              <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
-              <Zap size={15} className="text-primary" />
+              <Zap size={15} className="text-white" />
             )}
             <span>Send Test Pageview</span>
           </button>
@@ -856,12 +856,12 @@ if (typeof window !== "undefined" && window.OpenAnalytics) {
           <button
             onClick={() => runDiagnosticPing("event")}
             disabled={testingType !== null}
-            className="flex items-center justify-center gap-2 p-3.5 bg-muted hover:bg-muted/80 border border-border rounded-2xl text-foreground font-bold text-xs transition shadow-xs disabled:opacity-50"
+            className="flex items-center justify-center gap-2 p-3.5 bg-[#0e0f15] hover:bg-white/[0.06] border border-white/[0.08] rounded-xl text-white font-semibold text-xs transition-colors shadow-xs disabled:opacity-50 cursor-pointer"
           >
             {testingType === "event" ? (
-              <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
-              <Activity size={15} className="text-blue-500" />
+              <Activity size={15} className="text-blue-400" />
             )}
             <span>Send Custom Event</span>
           </button>
@@ -869,12 +869,12 @@ if (typeof window !== "undefined" && window.OpenAnalytics) {
           <button
             onClick={() => runDiagnosticPing("error")}
             disabled={testingType !== null}
-            className="flex items-center justify-center gap-2 p-3.5 bg-muted hover:bg-muted/80 border border-border rounded-2xl text-foreground font-bold text-xs transition shadow-xs disabled:opacity-50"
+            className="flex items-center justify-center gap-2 p-3.5 bg-[#0e0f15] hover:bg-white/[0.06] border border-white/[0.08] rounded-xl text-white font-semibold text-xs transition-colors shadow-xs disabled:opacity-50 cursor-pointer"
           >
             {testingType === "error" ? (
-              <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
-              <AlertCircle size={15} className="text-rose-500" />
+              <AlertCircle size={15} className="text-rose-400" />
             )}
             <span>Send Test Error Crash</span>
           </button>
@@ -883,26 +883,26 @@ if (typeof window !== "undefined" && window.OpenAnalytics) {
         {/* Diagnostic Response Output */}
         {testResult && (
           <div
-            className={`p-4 rounded-2xl border ${
+            className={`p-4 rounded-xl border ${
               testResult.ok
-                ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400"
-                : "bg-rose-500/10 border-rose-500/20 text-rose-600 dark:text-rose-400"
+                ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
+                : "bg-rose-500/10 border-rose-500/20 text-rose-400"
             } space-y-2`}
           >
-            <div className="flex items-center justify-between text-xs font-bold">
+            <div className="flex items-center justify-between text-xs font-semibold">
               <div className="flex items-center gap-2">
                 {testResult.ok ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
                 <span>{testResult.message}</span>
               </div>
-              <div className="flex items-center gap-2 font-mono text-[11px] opacity-80">
+              <div className="flex items-center gap-2 font-mono text-[11px] opacity-80 tabular-nums">
                 <span>HTTP {testResult.status}</span>
-                <span>•</span>
+                <span>&bull;</span>
                 <span>{testResult.duration}ms</span>
               </div>
             </div>
 
             {testResult.payload && (
-              <pre className="mt-2 p-3 bg-card/70 border border-border rounded-xl font-mono text-[11px] text-foreground overflow-x-auto">
+              <pre className="mt-2 p-3 bg-[#090a0f] border border-white/[0.08] rounded-lg font-mono text-[11px] text-zinc-300 overflow-x-auto">
                 {JSON.stringify(testResult.payload, null, 2)}
               </pre>
             )}
@@ -911,21 +911,21 @@ if (typeof window !== "undefined" && window.OpenAnalytics) {
       </div>
 
       {/* ── React SDK Helper Component ── */}
-      <div className="bg-card border border-border rounded-3xl p-6 sm:p-8 space-y-4 shadow-xs">
+      <div className="bg-[#111218] border border-white/[0.08] rounded-xl p-6 sm:p-8 space-y-4 shadow-xs">
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-            <Code2 size={18} className="text-primary" />
+          <h2 className="text-base font-semibold text-white flex items-center gap-2">
+            <Code2 size={18} className="text-white" />
             React SDK Component Helper
           </h2>
-          <span className="text-xs text-muted-foreground">Available at <code className="font-mono text-primary">lib/sdk/OpenAnalyticsTracker.tsx</code></span>
+          <span className="text-xs text-zinc-400">Available at <code className="font-mono text-zinc-300">lib/sdk/OpenAnalyticsTracker.tsx</code></span>
         </div>
 
-        <p className="text-xs text-muted-foreground leading-relaxed">
-          For Next.js App Router projects, you can import the provided helper component directly—only <code className="font-mono text-primary">projectId</code> is required:
+        <p className="text-xs text-zinc-400 leading-relaxed">
+          For Next.js App Router projects, you can import the provided helper component directly—only <code className="font-mono text-zinc-300">projectId</code> is required:
         </p>
 
-        <div className="relative group bg-muted/80 border border-border rounded-2xl p-4 font-mono text-xs overflow-x-auto">
-          <pre className="text-primary-foreground dark:text-cyan-200 pr-12 leading-relaxed">
+        <div className="relative group bg-[#090a0f] border border-white/[0.08] rounded-xl p-4 font-mono text-xs overflow-x-auto">
+          <pre className="text-zinc-300 pr-12 leading-relaxed">
 {`import OpenAnalyticsTracker from "@/lib/sdk/OpenAnalyticsTracker";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -946,11 +946,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 "react_helper"
               )
             }
-            className="absolute top-3 right-3 p-2 bg-card hover:bg-muted border border-border rounded-xl text-muted-foreground hover:text-foreground transition shadow-xs"
+            className="absolute top-3 right-3 p-2 bg-[#111218] hover:bg-white/[0.06] border border-white/[0.08] rounded-lg text-zinc-400 hover:text-white transition-colors shadow-xs"
             title="Copy component snippet"
           >
             {copiedKey === "react_helper" ? (
-              <Check size={16} className="text-emerald-500" />
+              <Check size={16} className="text-emerald-400" />
             ) : (
               <Copy size={16} />
             )}

@@ -4,7 +4,6 @@ import React from "react";
 import PlatformHeader from "@/components/PlatformHeader";
 import BehavioralUxSection from "@/components/sections/BehavioralUxSection";
 import { usePlatform } from "@/components/PlatformContext";
-
 import { Flame } from "lucide-react";
 import ProFeatureGate from "@/components/ProFeatureGate";
 
@@ -22,7 +21,7 @@ export default function DedicatedPage() {
         {/* 4 Key UX Metric Cards Shimmer */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="p-4 bg-card border border-border rounded-2xl space-y-3">
+            <div key={i} className="p-5 bg-[#111218] border border-white/[0.08] rounded-xl space-y-3">
               <div className="h-3 w-20 rounded bg-white/[0.06] shimmer" />
               <div className="h-7 w-16 rounded-lg bg-white/[0.08] shimmer" />
               <div className="h-2.5 w-full rounded bg-white/[0.03] shimmer" />
@@ -31,14 +30,14 @@ export default function DedicatedPage() {
         </div>
 
         {/* Rage Clicks Radar Card Shimmer */}
-        <div className="bg-card border border-border rounded-3xl overflow-hidden space-y-4 p-5">
-          <div className="flex items-center justify-between border-b border-border pb-4">
+        <div className="bg-[#111218] border border-white/[0.08] rounded-2xl overflow-hidden space-y-4 p-5">
+          <div className="flex items-center justify-between border-b border-white/[0.06] pb-4">
             <div className="h-4 w-48 rounded bg-white/[0.06] shimmer" />
             <div className="h-4 w-24 rounded bg-white/[0.04] shimmer" />
           </div>
           <div className="space-y-3 pt-2">
             {[...Array(3)].map((_, j) => (
-              <div key={j} className="h-12 w-full rounded-xl bg-muted/20 border border-border shimmer" />
+              <div key={j} className="h-12 w-full rounded-xl bg-[#0e0f15] border border-white/[0.06] shimmer" />
             ))}
           </div>
         </div>

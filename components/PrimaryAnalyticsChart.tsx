@@ -70,24 +70,24 @@ export default function PrimaryAnalyticsChart({
     const metricConfig = {
       views: {
         label: "Total Pageviews",
-        borderColor: "#06b6d4", // Cyan
-        gradientStart: "rgba(6, 182, 212, 0.35)",
-        gradientEnd: "rgba(6, 182, 212, 0.0)",
-        barColor: "rgba(6, 182, 212, 0.8)",
+        borderColor: "#10b981", // Emerald
+        gradientStart: "rgba(16, 185, 129, 0.20)",
+        gradientEnd: "rgba(16, 185, 129, 0.0)",
+        barColor: "rgba(16, 185, 129, 0.75)",
       },
       visitors: {
         label: "Unique Visitors",
-        borderColor: "#3b82f6", // Blue
-        gradientStart: "rgba(59, 130, 246, 0.35)",
-        gradientEnd: "rgba(59, 130, 246, 0.0)",
-        barColor: "rgba(59, 130, 246, 0.8)",
+        borderColor: "#ffffff", // Pure White
+        gradientStart: "rgba(255, 255, 255, 0.16)",
+        gradientEnd: "rgba(255, 255, 255, 0.0)",
+        barColor: "rgba(255, 255, 255, 0.8)",
       },
       returning: {
         label: "Returning Visitors",
-        borderColor: "#8b5cf6", // Purple
-        gradientStart: "rgba(139, 92, 246, 0.35)",
-        gradientEnd: "rgba(139, 92, 246, 0.0)",
-        barColor: "rgba(139, 92, 246, 0.8)",
+        borderColor: "#a1a1aa", // Zinc
+        gradientStart: "rgba(161, 161, 170, 0.16)",
+        gradientEnd: "rgba(161, 161, 170, 0.0)",
+        barColor: "rgba(161, 161, 170, 0.75)",
       },
     }[selectedMetric];
 
@@ -107,17 +107,17 @@ export default function PrimaryAnalyticsChart({
             gradient.addColorStop(1, metricConfig.gradientEnd);
             return gradient;
           },
-          borderWidth: 2.5,
-          tension: 0.38,
+          borderWidth: 2,
+          tension: 0.35,
           fill: true,
           pointBackgroundColor: metricConfig.borderColor,
-          pointBorderColor: "#080c14",
+          pointBorderColor: "#090a0f",
           pointBorderWidth: 2,
-          pointRadius: timeseries.length > 20 ? 1 : 3.5,
-          pointHoverRadius: 6,
+          pointRadius: timeseries.length > 20 ? 1 : 3,
+          pointHoverRadius: 5,
           pointHoverBackgroundColor: "#ffffff",
           pointHoverBorderColor: metricConfig.borderColor,
-          pointHoverBorderWidth: 3,
+          pointHoverBorderWidth: 2.5,
         },
       ],
     };
@@ -158,7 +158,7 @@ export default function PrimaryAnalyticsChart({
             color: "rgba(255, 255, 255, 0.04)",
           },
           ticks: {
-            color: "#64748b",
+            color: "#71717a",
             font: { size: 10, family: "monospace" },
             maxRotation: 0,
             autoSkip: true,
@@ -171,7 +171,7 @@ export default function PrimaryAnalyticsChart({
             color: "rgba(255, 255, 255, 0.04)",
           },
           ticks: {
-            color: "#64748b",
+            color: "#71717a",
             font: { size: 10, family: "monospace" },
             callback: (val: any) => {
               if (val >= 1000) return `${(val / 1000).toFixed(1)}k`;

@@ -9,18 +9,44 @@ All notable changes to the Open Analytics platform are documented in this file.
   - Replaced generic AI-template aesthetics (muddy navy-blue `#080c14`, blurry cards, rainbow neon gradients) with a world-class, human-crafted Obsidian & Precision dark design system inspired by Linear, Vercel, and Raycast.
   - Loaded Google's `Inter` font via `next/font/google` with full font-sans variable integration for crisp typography.
   - Rewrote color tokens to solid obsidian surfaces (`--background: #090a0f`, `--card: #111218`, `--border: #20222c`, `--muted: #181922`) with razor-thin borders (`rgba(255,255,255,0.08)`) and inset top bevels.
+  - Completely eliminated all legacy `bg-card` classes across every `.tsx`, `.ts`, and `.css` file in the codebase.
 - **Main Domain & Landing Page Redesign (`components/public/LandingHero.tsx`, `components/public/PublicNavbar.tsx`, `components/public/PublicFooter.tsx`)**:
   - Removed spammy above-the-fold "GEO & AEO Direct Answer Box".
   - Replaced generic 8-pillar repetitive cards with a rich 5-card Bento Grid Showcase highlighting Core Web Vitals gauges, sub-3.2KB payload bar vs GA4, autonomous AI crawler radar stream, incident & crash triage, and 100% cookieless privacy.
   - Refined the interactive telemetry simulator into an obsidian laboratory card with tactile segment controls.
   - Modernized `PublicNavbar` and `PublicFooter` with high-contrast tactile white CTAs, clean badge emblems, and muted zinc typography.
-- **Dashboard Workspace & Navigation Declutter (`components/AppShell.tsx`, `components/PlatformHeader.tsx`, `components/PrimaryAnalyticsChart.tsx`)**:
+- **All Public Marketing & Auth Pages Redesign**:
+  - **Features (`app/features/page.tsx`, `components/public/FeaturesClientView.tsx`)**: Overhauled into obsidian precision cards with category filter pills, capability specs, and zero generic gradients.
+  - **Pricing (`components/public/PricingInteractive.tsx`)**: Redesigned monthly and annual plan cards with tactile white CTAs, transparent quota comparisons, and savings badges.
+  - **VS Google Analytics (`app/vs-google-analytics/page.tsx`)**: Transformed into an obsidian comparison matrix contrasting payload size (3.2KB vs 45KB), GDPR compliance, and cookieless tracking.
+  - **Privacy & FAQ (`app/privacy/page.tsx`, `app/faq/page.tsx`)**: Restyled with crisp obsidian reading surfaces and tactile accordion elements.
+  - **Documentation Hub & All Subpages (`components/docs/DocsClientShell.tsx`, `app/docs/page.tsx`, `app/docs/web-vitals/page.tsx`, `app/docs/verification/page.tsx`, `app/docs/seo-aeo/page.tsx`, `app/docs/installation/page.tsx`, `app/docs/alerts/page.tsx`)**: Unified documentation layout with sticky sidebar navigation, code block copy bars, and precision badge metadata.
+  - **Authentication Screens (`app/login/page.tsx`, `app/register/page.tsx`, `app/profile/page.tsx`)**: Restructured auth and profile cards into solid obsidian panels with high-contrast input controls.
+- **Dashboard Workspace & Navigation Declutter (`components/AppShell.tsx`, `components/PlatformHeader.tsx`, `components/PrimaryAnalyticsChart.tsx`, `components/DateRangeNavigator.tsx`)**:
   - Stripped out 10+ noisy, non-actionable badges from the sidebar navigation (`% return`, `topPages.length`, `lcp`, `rage clicks`, etc.), reserving badges strictly for actionable signals (unread alerts, active crash errors).
   - Modernized sidebar active states to clean obsidian zinc highlights (`bg-white/[0.08] text-white font-medium`) and overhauled workspace switcher popovers on both desktop and mobile.
   - Refined `PrimaryAnalyticsChart` controls, metric switcher pills, and micro-KPI summary row to match the obsidian aesthetic.
-- **Executive Overview 2-Tier KPI Architecture (`app/page.tsx`)**:
-  - Replaced the cramped 7-column stat row with an ergonomic 2-tier executive grid: 4 Hero KPI cards (Total Pageviews, Unique Visitors, Realtime Live Visitors, Avg Dwell Time) with `tabular-nums` typography and 3 Telemetry Health cards (Audience Loyalty, CWV LCP speed, Crash-Free Rate).
-  - Updated shimmer loading states and empty project setup wizard to match the obsidian card layout.
+  - Polished `DateRangeNavigator` with solid obsidian dropdown popovers, tactile calendar buttons, and precise hover highlights.
+- **Executive Overview 2-Tier KPI Architecture & All 7 Dashboard Widgets (`app/page.tsx`, `components/dashboard/*`)**:
+  - Replaced cramped 7-column stat row with an ergonomic 2-tier executive grid: 4 Hero KPI cards (Total Pageviews, Unique Visitors, Realtime Live Visitors, Avg Dwell Time) with `tabular-nums font-semibold text-white` typography and 3 Telemetry Health cards (Audience Loyalty, CWV LCP speed, Crash-Free Rate).
+  - Modernized all 7 core dashboard widgets to obsidian precision styling: `TopPagesWidget`, `WebVitalsRadarWidget`, `AiAndErrorWidget`, `TrafficChannelsWidget`, `LiveStreamWidget`, `GeoWidget`, and `DeviceBreakdownWidget`.
+- **All Dedicated Analytics & Observability Workspace Sections (`components/sections/*`, `components/*`)**:
+  - **Live Feed (`components/sections/LiveFeedSection.tsx`)**: Fully overhauled all 1839 lines including real-time gauge monitors, segment filter ribbon, tabular event stream, NOC card view, and the 6-tab telemetry inspector modal.
+  - **Errors & Crash Triage (`components/sections/ErrorsSection.tsx`)**: Solid obsidian incident cards, error velocity counters, stack trace viewers, and triage action bars.
+  - **Custom Events (`components/sections/EventsSection.tsx`)**: Transformed custom events table, filter bars, and event payload viewers into precision cards.
+  - **Core Web Vitals (`components/sections/WebVitalsSection.tsx`)**: Rebuilt LCP, INP, CLS, FCP, and TTFB metric distribution gauges with tabular thresholds.
+  - **Behavioral UX (`components/sections/BehavioralUxSection.tsx`, `app/ux/page.tsx`)**: Redesigned rage click analysis, desktop exit intent, scroll depth milestones, and dwell ratio monitors.
+  - **AI Visibility & LLM Crawlers (`components/AiVisibilityModule.tsx`)**: Redesigned AI crawler radar (GPTBot, ClaudeBot, PerplexityBot, etc.) and GEO citation readiness scoring.
+  - **Pages & Routes (`components/sections/PagesSection.tsx`)**: Overhauled top route performance tables, route transition breakdown, and CSV export controls.
+  - **Acquisition & UTM Channels (`components/sections/AcquisitionSection.tsx`)**: Transformed channel breakdowns, referrer domains, and campaign tables into obsidian cards.
+  - **Audience & Loyalty (`components/sections/AudienceSection.tsx`)**: Rebuilt loyalty score dial, visitor tier breakdown, and cohort retention tables.
+  - **Technology & Hardware (`components/sections/TechSection.tsx`)**: Upgraded GPU renderers, device RAM, CPU cores, screen DPR, and network telemetry views.
+  - **User Journeys (`components/sections/UserJourneysSection.tsx`, `app/journeys/page.tsx`)**: Modernized multi-step navigation flow cards and transition matrices.
+  - **Geo Analytics (`components/GeoAnalyticsModule.tsx`, `components/WorldMapAnalytics.tsx`)**: Overhauled interactive SVG World Atlas with obsidian tooltips and country drilldowns.
+  - **Virtual Labs (`components/VirtualLabsModule.tsx`, `app/labs/page.tsx`)**: Redesigned experimental telemetry sandbox and simulated event generators.
+  - **SEO Monitoring (`components/SeoAnalyticsModule.tsx`)**: Redesigned organic search engine crawler audits, keyword rankings, and SERP CTR metrics.
+  - **Script Installation (`app/projects/[projectId]/install/page.tsx`)**: Polished code snippet displays, one-click copy buttons, and framework installation guides.
+
 
 ## [3.5.3] - 2026-09-20
 

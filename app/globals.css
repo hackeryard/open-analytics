@@ -10,12 +10,12 @@
     --card: #111218;
     --card-surface: #151722;
     --card-foreground: #ffffff;
-    --primary: #0ea5e9;
-    --primary-foreground: #ffffff;
-    --secondary: #6366f1;
+    --primary: #ffffff;
+    --primary-foreground: #090a0f;
+    --secondary: #27272a;
     --secondary-foreground: #ffffff;
     --muted: #181922;
-    --muted-foreground: #9497a1;
+    --muted-foreground: #a1a1aa;
     --accent: #1e202b;
     --accent-foreground: #ffffff;
     --border: #20222c;
@@ -31,8 +31,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
-  background-image: radial-gradient(ellipse 60% 40% at 50% -10%, rgba(56, 189, 248, 0.05), transparent 70%);
-  background-attachment: fixed;
 }
 
 /* Crafted Obsidian Card Surfaces */

@@ -1,25 +1,14 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import type { Metadata } from "next";
 import Link from "next/link";
 import {
   HelpCircle,
-  Sparkles,
   Search,
-  ShieldCheck,
-  Zap,
-  Server,
-  Code2,
-  Bot,
-  ArrowRight,
   ChevronDown,
   ChevronUp,
-  Layers,
+  ArrowRight,
   Activity,
-  MousePointerClick,
-  Bug,
-  Lock,
 } from "lucide-react";
 import { getDashboardUrl } from "@/lib/subdomain";
 
@@ -58,13 +47,13 @@ const FAQ_ITEMS: FaqItem[] = [
     category: "Privacy & Legal Compliance",
     question: "How does Open Analytics count unique visitors without cookies or persistent tracking?",
     answer:
-      "Open Analytics generates an ephemeral session hash using HMAC-SHA-256 combining the visitor's masked IP address (/16 for IPv4, /64 for IPv6), User-Agent string, and a daily cryptographic salt. Every night at 00:00:00 UTC, the daily salt is permanently purged from memory and replaced, making it mathematically impossible to track or correlate visitors across multiple days.",
+      "Open Analytics computes a pseudo-anonymous daily hash using HMAC-SHA-256 combining the visitor's masked IP address, User-Agent string, and a cryptographic daily salt. At 00:00:00 UTC every night, this salt is permanently erased and regenerated in memory. This allows accurate daily unique visitor counting while making multi-day tracking mathematically impossible.",
   },
   {
     category: "Privacy & Legal Compliance",
-    question: "Is Open Analytics compliant with the Schrems II ruling on EU-US data transfers?",
+    question: "Where is analytics data stored and processed?",
     answer:
-      "Yes. All European customer traffic is processed and stored exclusively in EU-based data centers (Frankfurt and Amsterdam) with zero transfer of telemetry to US servers. Open Analytics uses strictly pseudonymous 24-hour rotating cryptographic salts and zero persistent client identifiers, fully aligning with GDPR and Schrems II requirements.",
+      "All European telemetry is processed and stored exclusively within EU-based data centers (Frankfurt and Amsterdam). We strictly comply with GDPR and the Schrems II ruling, ensuring your visitors' telemetry is never transferred to non-compliant jurisdictions.",
   },
   {
     category: "AI & Behavioral Telemetry",
@@ -128,41 +117,46 @@ export default function FaqPage() {
   }, [searchQuery, selectedCategory]);
 
   return (
-    <div className="min-h-screen bg-[#050811] text-slate-100 selection:bg-cyan-500/30 selection:text-cyan-200">
-      {/* Hero Header */}
-      <section className="relative pt-24 pb-12 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center">
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[320px] bg-gradient-to-tr from-cyan-500/15 via-blue-600/10 to-transparent blur-[120px] -z-10 pointer-events-none" />
+    <div className="w-full text-zinc-100 selection:bg-white/[0.15] selection:text-white">
+      {/* ============================================================ */}
+      {/* 1. HERO SECTION & SEARCH                                     */}
+      {/* ============================================================ */}
+      <section className="relative pt-24 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
+        {/* Ambient top vignette */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-white/[0.02] blur-[120px] -z-10 pointer-events-none" />
 
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/25 text-cyan-400 text-xs font-semibold tracking-wide uppercase mb-6 backdrop-blur-md">
-          <HelpCircle className="w-3.5 h-3.5" />
+        {/* Release Pill */}
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#111218] border border-white/[0.08] text-zinc-300 text-xs font-medium mb-8 shadow-xs">
+          <HelpCircle size={13} />
           <span>Frequently Asked Questions</span>
+          <span className="text-zinc-500">•</span>
+          <span className="font-mono text-zinc-400 text-[11px]">Knowledgebase</span>
         </div>
 
-        <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white mb-6 leading-[1.1]">
-          Everything You Need To Know About{" "}
-          <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400 bg-clip-text text-transparent">
-            Open Analytics
-          </span>
+        {/* Hero Title */}
+        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-6 max-w-5xl mx-auto leading-[1.06]">
+          Everything you need to know about Open Analytics.
         </h1>
 
-        <p className="max-w-2xl mx-auto text-base sm:text-lg text-slate-300 leading-relaxed mb-8">
+        {/* Subtitle */}
+        <p className="max-w-2xl mx-auto text-base sm:text-lg text-zinc-400 leading-relaxed mb-8">
           Clear, authoritative answers about cookieless privacy, Core Web Vitals RUM, AI Search Radar, adblock bypassing, and setup.
         </p>
 
         {/* Live Search Input */}
         <div className="relative max-w-xl mx-auto">
-          <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+          <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search questions by keyword (e.g. cookies, next.js, gdpr, vitals)..."
-            className="w-full py-3.5 pl-12 pr-4 rounded-2xl bg-white/[0.04] border border-white/[0.1] text-white text-xs sm:text-sm placeholder-slate-500 focus:outline-hidden focus:border-cyan-400 transition shadow-lg"
+            placeholder="Search questions (e.g. cookies, next.js, gdpr, vitals)..."
+            className="w-full py-3 pl-11 pr-4 rounded-xl bg-[#111218] border border-white/[0.08] text-white text-xs sm:text-sm placeholder-zinc-500 focus:outline-hidden focus:border-white/30 transition shadow-sm"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-white"
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-zinc-400 hover:text-white"
             >
               Clear
             </button>
@@ -170,17 +164,19 @@ export default function FaqPage() {
         </div>
       </section>
 
-      {/* Category Pills */}
-      <section className="px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto mb-8">
+      {/* ============================================================ */}
+      {/* 2. CATEGORY SELECTOR PILLS                                   */}
+      {/* ============================================================ */}
+      <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-10">
         <div className="flex flex-wrap items-center justify-center gap-2">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-medium transition cursor-pointer ${
                 selectedCategory === cat
-                  ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-xs"
-                  : "bg-white/[0.03] text-slate-400 hover:text-white border border-white/[0.06]"
+                  ? "bg-white/[0.1] text-white border border-white/[0.15] shadow-xs"
+                  : "bg-[#111218] text-zinc-400 hover:text-white border border-white/[0.08] hover:bg-[#181922]"
               }`}
             >
               {cat}
@@ -189,17 +185,19 @@ export default function FaqPage() {
         </div>
       </section>
 
-      {/* FAQ Accordion List */}
-      <section className="px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto space-y-3 pb-20">
+      {/* ============================================================ */}
+      {/* 3. FAQ ACCORDION LIST                                        */}
+      {/* ============================================================ */}
+      <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-3 pb-20">
         {filteredFaqs.length === 0 ? (
-          <div className="p-12 text-center rounded-3xl bg-white/[0.02] border border-white/[0.06] text-slate-400 space-y-3">
+          <div className="p-12 text-center rounded-2xl bg-[#111218] border border-white/[0.08] text-zinc-400 space-y-3">
             <p className="text-sm">No matching questions found for &ldquo;{searchQuery}&rdquo;.</p>
             <button
               onClick={() => {
                 setSearchQuery("");
                 setSelectedCategory("All");
               }}
-              className="text-xs font-bold text-cyan-400 hover:underline"
+              className="text-xs font-semibold text-white hover:underline cursor-pointer"
             >
               Reset Search Filters
             </button>
@@ -211,28 +209,28 @@ export default function FaqPage() {
             return (
               <div
                 key={faq.question}
-                className="rounded-2xl border border-white/[0.07] bg-white/[0.02] hover:border-white/[0.12] transition-all overflow-hidden"
+                className="rounded-2xl border border-white/[0.08] bg-[#111218] hover:border-white/[0.14] transition-all overflow-hidden shadow-sm"
               >
                 <button
                   type="button"
                   onClick={() => setOpenIndex(isOpen ? null : idx)}
-                  className="w-full p-5 text-left flex items-center justify-between gap-4 cursor-pointer"
+                  className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-white/[0.02]"
                 >
                   <div className="space-y-1 min-w-0">
-                    <div className="text-[10px] font-mono uppercase tracking-wider text-cyan-400 font-bold">
+                    <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 font-semibold">
                       {faq.category}
                     </div>
-                    <div className="text-sm font-bold text-white leading-snug">
+                    <div className="text-sm sm:text-base font-semibold text-white leading-snug">
                       {faq.question}
                     </div>
                   </div>
-                  <div className="shrink-0 p-1.5 rounded-lg bg-white/[0.04] text-slate-400">
-                    {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  <div className="shrink-0 p-1.5 rounded-lg bg-[#181922] text-zinc-400">
+                    {isOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                   </div>
                 </button>
 
                 {isOpen && (
-                  <div className="px-5 pb-5 pt-1 text-xs sm:text-sm text-slate-300 leading-relaxed border-t border-white/[0.04] animate-fadeIn">
+                  <div className="px-5 pb-5 sm:px-6 sm:pb-6 text-xs sm:text-sm text-zinc-400 leading-relaxed border-t border-white/[0.04] pt-4 animate-fadeIn">
                     {faq.answer}
                   </div>
                 )}
@@ -242,27 +240,36 @@ export default function FaqPage() {
         )}
       </section>
 
-      {/* Bottom CTA */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center">
-        <div className="p-8 sm:p-14 rounded-3xl bg-gradient-to-r from-cyan-950/40 via-slate-900 to-indigo-950/40 border border-cyan-500/30 relative overflow-hidden space-y-6">
-          <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
-            Still Have Questions?
+      {/* ============================================================ */}
+      {/* 4. BOTTOM CTA CONSOLE                                        */}
+      {/* ============================================================ */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
+        <div className="p-8 sm:p-14 rounded-2xl bg-[#111218] border border-white/[0.08] space-y-6 shadow-2xl">
+          <div className="w-12 h-12 rounded-xl bg-[#181922] border border-white/[0.08] flex items-center justify-center text-white mx-auto">
+            <Activity size={24} />
+          </div>
+
+          <h2 className="text-3xl sm:text-5xl font-bold text-white tracking-tight max-w-2xl mx-auto">
+            Still have questions?
           </h2>
-          <p className="text-sm sm:text-base text-slate-300 max-w-lg mx-auto leading-relaxed">
+
+          <p className="text-sm sm:text-base text-zinc-400 max-w-lg mx-auto leading-relaxed">
             Our comprehensive developer documentation and quickstart guides provide copy-paste snippets for all major web frameworks.
           </p>
+
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
             <a
               href={dashboardUrl}
-              className="w-full sm:w-auto py-3.5 px-8 rounded-xl bg-gradient-to-r from-cyan-400 to-indigo-400 hover:from-cyan-300 hover:to-indigo-300 text-slate-950 font-black text-sm transition-all shadow-xl shadow-cyan-500/25 cursor-pointer hover:scale-[1.02]"
+              className="w-full sm:w-auto py-3 px-8 rounded-xl bg-white hover:bg-zinc-200 text-zinc-950 font-semibold text-sm transition shadow-sm cursor-pointer active:scale-[0.98] flex items-center justify-center gap-2"
             >
-              Launch Dashboard
+              <span>Launch Dashboard</span>
+              <ArrowRight size={14} />
             </a>
             <Link
               href="/docs/installation"
-              className="w-full sm:w-auto py-3.5 px-8 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-slate-200 font-bold text-sm transition border border-white/[0.1]"
+              className="w-full sm:w-auto py-3 px-6 rounded-xl bg-[#14161f] hover:bg-[#181922] text-zinc-300 hover:text-white font-medium text-sm transition border border-white/[0.08] hover:border-white/[0.16] flex items-center justify-center gap-2"
             >
-              View Installation Guides
+              <span>View Installation Guides</span>
             </Link>
           </div>
         </div>

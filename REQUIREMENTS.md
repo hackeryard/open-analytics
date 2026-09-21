@@ -209,13 +209,21 @@
    - Canvas Background: `#090a0f` (`--background`)
    - Card / Panel Surface: `#111218` (`--card`)
    - Secondary / Header Surface: `#0e0f15` (`--secondary`)
-   - Muted Controls / Modals: `#181922` (`--muted`)
-   - Razor-Thin Borders: `#20222c` / `rgba(255, 255, 255, 0.08)` (`--border`)
+   - Muted Controls / Interactive Tracks / Popovers: `#181922` (`--muted`)
+   - Razor-Thin Borders: `#20222c` / `rgba(255, 255, 255, 0.08)` (`--border` / `border-white/[0.08]`)
+   - Accent & Primary CTA: Solid high-contrast white `#ffffff` (`bg-white text-zinc-950 hover:bg-zinc-200`)
 2. **Typography**:
    - Typeface: Google `Inter` loaded via `next/font/google` (`--font-inter`).
-   - Numerical Data & Metrics: Strictly formatted with tabular figures (`tabular-nums font-semibold text-white`).
-3. **Component Aesthetics**:
-   - Zero generic AI neon rainbow gradients on cards or body text.
-   - High-contrast tactile white CTAs (`bg-white text-zinc-950 hover:bg-zinc-200 font-medium`).
-   - Clean obsidian workspace switchers with solid non-transparent popovers.
-   - Strictly zero emojis across all code, UI components, badges, and documentation. Lucide React icons only.
+   - Numerical Data & Metrics: Strictly formatted with tabular numerals (`tabular-nums font-semibold text-white`).
+3. **Component Architecture & Surface Rules**:
+   - **Zero-Template Mandate**: Zero generic AI neon rainbow gradients, zero muddy navy blue cards, and complete eradication of legacy `bg-card` classes across all components.
+   - **Tactile High-Contrast CTAs**: Primary action buttons must use `bg-white text-zinc-950 hover:bg-zinc-200 font-medium`.
+   - **Non-Transparent Surfaces**: Solid opaque backgrounds for all popovers, dropdowns, dialogs, and modals (`#111218`, `#0e0f15`, `#181922`) to eliminate visual bleed-through.
+   - **Decluttered Sidebar Navigation**: Badges restricted strictly to actionable notifications (unread alerts, active crash errors).
+   - **Executive Cockpit (2-Tier)**: 4 Hero KPI cards (Pageviews, Visitors, Realtime, Dwell) and 3 Telemetry Health cards (Loyalty, CWV LCP, Crash-Free Rate).
+   - **All 7 Cockpit Widgets**: `TopPagesWidget`, `WebVitalsRadarWidget`, `AiAndErrorWidget`, `TrafficChannelsWidget`, `LiveStreamWidget`, `GeoWidget`, and `DeviceBreakdownWidget` standardized to obsidian precision cards.
+   - **All 15+ Workspace Sections**: Live Feed, Errors, Events, Web Vitals, Behavioral UX, AI Visibility, Pages, Acquisition, Audience, Tech, User Journeys, Geo Analytics, Virtual Labs, SEO, and Project Settings must use solid `#111218` cards and hairline borders.
+   - **Public Domain Presentation**: Clean 5-card Bento Grid showcase on landing page, precision marketing cards on `/features`, `/pricing`, `/vs-google-analytics`, `/privacy`, `/faq`, and unified sticky sidebar layout for all `/docs/*` guides.
+4. **Zero-Emoji Rule**:
+   - Strictly zero emojis across all code, UI components, status badges, and documentation. Lucide React icons only.
+

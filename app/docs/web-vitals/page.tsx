@@ -48,44 +48,44 @@ export default function WebVitalsDocsPage() {
   ];
 
   return (
-    <div className="space-y-8 max-w-4xl">
+    <div className="space-y-8 max-w-7xl">
       <div className="space-y-2">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.06] border border-white/[0.08] text-zinc-300 text-xs font-semibold">
           <Activity size={13} />
           <span>Real User Monitoring (RUM) Standards</span>
         </div>
-        <h1 className="text-3xl font-black text-foreground tracking-tight">
-          Core Web Vitals & Diagnostics
+        <h1 className="text-3xl font-semibold text-white tracking-tight">
+          Core Web Vitals &amp; Diagnostics
         </h1>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-zinc-400">
           Open Analytics automatically instruments Google Core Web Vitals using the native PerformanceObserver API without slowing down your user experience.
         </p>
       </div>
 
       <div className="space-y-4">
         {metrics.map((m) => (
-          <div key={m.abbr} className="p-5 bg-card border border-border rounded-2xl space-y-3 shadow-xs">
+          <div key={m.abbr} className="p-5 bg-[#111218] border border-white/[0.08] rounded-xl space-y-3 shadow-xs">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div className="flex items-center gap-3">
-                <span className="px-2.5 py-1 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 font-mono font-bold text-xs">
+                <span className="px-2.5 py-1 rounded-lg bg-white/[0.06] border border-white/[0.08] text-white font-mono font-semibold text-xs">
                   {m.abbr}
                 </span>
-                <h3 className="text-sm font-bold text-foreground">{m.name}</h3>
+                <h3 className="text-sm font-semibold text-white">{m.name}</h3>
               </div>
             </div>
-            <p className="text-xs text-muted-foreground leading-relaxed">{m.desc}</p>
-            <div className="grid grid-cols-3 gap-2 pt-2 border-t border-border/50 text-[11px] font-mono">
-              <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-between">
+            <p className="text-xs text-zinc-400 leading-relaxed">{m.desc}</p>
+            <div className="grid grid-cols-3 gap-2 pt-2 border-t border-white/[0.06] text-[11px] font-mono">
+              <div className="p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-between">
                 <span>Good</span>
-                <span className="font-bold">{m.good}</span>
+                <span className="font-semibold tabular-nums">{m.good}</span>
               </div>
-              <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-between">
+              <div className="p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-between">
                 <span>Needs Imp.</span>
-                <span className="font-bold">{m.needs}</span>
+                <span className="font-semibold tabular-nums">{m.needs}</span>
               </div>
-              <div className="p-2 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-between">
+              <div className="p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-between">
                 <span>Poor</span>
-                <span className="font-bold">{m.poor}</span>
+                <span className="font-semibold tabular-nums">{m.poor}</span>
               </div>
             </div>
           </div>

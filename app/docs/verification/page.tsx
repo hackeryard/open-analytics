@@ -9,7 +9,7 @@ export default function VerificationDocsPage() {
   const [copied, setCopied] = useState(false);
   const projectId = activeProjectId || "open_prj_your_key";
 
-  const curlCommand = `curl -X POST https://openanalytics.org.in/api/v1/collect \\\n  -H "Content-Type: application/json" \\\n  -d '{"projectId": "${projectId}", "pathname": "/test-page", "title": "Test Verification", "device": "desktop"}'`;
+  const curlCommand = `curl -X POST https://api.openanalytics.org.in/v1/collect \\\n  -H "Content-Type: application/json" \\\n  -d '{"projectId": "${projectId}", "pathname": "/test-page", "title": "Test Verification", "device": "desktop"}'`;
 
   const onCopy = () => {
     navigator.clipboard.writeText(curlCommand);
@@ -18,40 +18,40 @@ export default function VerificationDocsPage() {
   };
 
   return (
-    <div className="space-y-8 max-w-4xl">
+    <div className="space-y-8 max-w-7xl">
       <div className="space-y-2">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.06] border border-white/[0.08] text-zinc-300 text-xs font-semibold">
           <Terminal size={13} />
-          <span>Telemetry Auditing & Diagnostics</span>
+          <span>Telemetry Auditing &amp; Diagnostics</span>
         </div>
-        <h1 className="text-3xl font-black text-foreground tracking-tight">
-          Testing & Verification Guide
+        <h1 className="text-3xl font-semibold text-white tracking-tight">
+          Testing &amp; Verification Guide
         </h1>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-zinc-400">
           Confirm your Open Analytics installation is actively recording events and diagnosing telemetry with these verification steps.
         </p>
       </div>
 
-      <div className="p-6 bg-card border border-border rounded-3xl space-y-4 shadow-sm">
-        <h2 className="text-base font-bold text-foreground">1. Browser Network Tab Audit</h2>
-        <ol className="space-y-3 text-xs text-muted-foreground list-decimal list-inside leading-relaxed">
+      <div className="p-6 bg-[#111218] border border-white/[0.08] rounded-xl space-y-4 shadow-xs">
+        <h2 className="text-base font-semibold text-white">1. Browser Network Tab Audit</h2>
+        <ol className="space-y-3 text-xs text-zinc-400 list-decimal list-inside leading-relaxed">
           <li>Open your website in Google Chrome, Edge, or Safari.</li>
-          <li>Open Developer Tools by pressing <kbd className="font-mono bg-muted px-1.5 py-0.5 rounded">F12</kbd> or <kbd className="font-mono bg-muted px-1.5 py-0.5 rounded">Cmd + Option + I</kbd>.</li>
-          <li>Switch to the <strong>Network</strong> tab and filter by <code className="text-cyan-400 font-mono">collect</code> or <code className="text-cyan-400 font-mono">open.js</code>.</li>
-          <li>Reload your page. You should see an HTTP 200 request to <code className="text-cyan-400 font-mono">/open.js</code> followed by periodic beacon calls to <code className="text-cyan-400 font-mono">/api/v1/collect</code>.</li>
+          <li>Open Developer Tools by pressing <kbd className="font-mono bg-[#181922] text-zinc-300 px-1.5 py-0.5 rounded border border-white/[0.06]">F12</kbd> or <kbd className="font-mono bg-[#181922] text-zinc-300 px-1.5 py-0.5 rounded border border-white/[0.06]">Cmd + Option + I</kbd>.</li>
+          <li>Switch to the <strong className="text-white">Network</strong> tab and filter by <code className="text-zinc-200 font-mono bg-[#181922] px-1 py-0.5 rounded">collect</code> or <code className="text-zinc-200 font-mono bg-[#181922] px-1 py-0.5 rounded">open.js</code>.</li>
+          <li>Reload your page. You should see an HTTP 200 request to <code className="text-zinc-200 font-mono bg-[#181922] px-1 py-0.5 rounded">/open.js</code> followed by periodic beacon calls to <code className="text-zinc-200 font-mono bg-[#181922] px-1 py-0.5 rounded">/v1/collect</code>.</li>
         </ol>
       </div>
 
-      <div className="p-6 bg-card border border-border rounded-3xl space-y-4 shadow-sm">
-        <h2 className="text-base font-bold text-foreground">2. Terminal Ingestion Test (cURL)</h2>
-        <p className="text-xs text-muted-foreground">
+      <div className="p-6 bg-[#111218] border border-white/[0.08] rounded-xl space-y-4 shadow-xs">
+        <h2 className="text-base font-semibold text-white">2. Terminal Ingestion Test (cURL)</h2>
+        <p className="text-xs text-zinc-400">
           You can simulate a client event directly from your terminal using this cURL command:
         </p>
-        <div className="relative bg-[#07090e] border border-border rounded-2xl p-4 font-mono text-xs text-slate-200 overflow-x-auto">
+        <div className="relative bg-[#090a0f] border border-white/[0.08] rounded-xl p-4 font-mono text-xs text-zinc-300 overflow-x-auto">
           <pre className="pr-12"><code>{curlCommand}</code></pre>
           <button
             onClick={onCopy}
-            className="absolute right-3 top-3 p-2 rounded-xl bg-muted/60 hover:bg-muted text-slate-300 hover:text-white transition cursor-pointer"
+            className="absolute right-3 top-3 p-2 rounded-lg bg-[#111218] hover:bg-white/[0.06] border border-white/[0.08] text-zinc-400 hover:text-white transition-colors cursor-pointer"
             title="Copy curl command"
           >
             {copied ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}

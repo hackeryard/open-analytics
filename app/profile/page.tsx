@@ -32,7 +32,7 @@ export default function ProfilePage() {
   const isEnterprise = effectivePlan === "enterprise";
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto pb-16 animate-fadeIn">
+    <div className="space-y-8 max-w-7xl mx-auto pb-16 animate-fadeIn">
       <PlatformHeader
         title="Account & Profile"
         subtitle="Manage your personal developer profile, active plan tier, authentication credentials, and workspace memberships."

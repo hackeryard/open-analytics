@@ -38,9 +38,6 @@ export default function PublicNavbar() {
             <span className="font-semibold text-sm tracking-tight text-white group-hover:text-zinc-200 transition">
               Open Analytics
             </span>
-            <span className="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded bg-zinc-800/80 border border-zinc-700/60 text-zinc-400">
-              v3.5
-            </span>
           </div>
         </Link>
 
@@ -52,11 +49,10 @@ export default function PublicNavbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-1.5 ${
-                  isActive
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-1.5 ${isActive
                     ? "text-white bg-white/[0.08]"
                     : "text-zinc-400 hover:text-white hover:bg-white/[0.04]"
-                }`}
+                  }`}
               >
                 <span>{link.label}</span>
                 {link.badge && (
@@ -105,9 +101,8 @@ export default function PublicNavbar() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition ${
-                  isActive ? "text-white bg-white/[0.08]" : "text-zinc-300 hover:bg-white/[0.04]"
-                }`}
+                className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition ${isActive ? "text-white bg-white/[0.08]" : "text-zinc-300 hover:bg-white/[0.04]"
+                  }`}
               >
                 <span>{link.label}</span>
                 {link.badge && (

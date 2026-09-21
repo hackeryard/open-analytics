@@ -15,14 +15,14 @@ export default function DedicatedPage() {
         subtitle="Interactive simulation telemetry, experiment completions, parameter tweaks, and learner progression"
       />
       {loading && !data ? (
-        <div className="p-16 text-center text-xs font-semibold text-muted-foreground flex items-center justify-center gap-2">
-          <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-          Loading analytics...
+        <div className="p-16 text-center text-xs font-medium text-zinc-400 flex items-center justify-center gap-2">
+          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          <span>Loading analytics...</span>
         </div>
       ) : data?.labIntelligence ? (
         <VirtualLabsModule data={data.labIntelligence} />
       ) : (
-        <div className="p-12 text-center text-xs font-semibold text-muted-foreground bg-card border border-border rounded-3xl">
+        <div className="p-12 text-center text-xs font-medium text-zinc-400 bg-[#111218] border border-white/[0.08] rounded-xl">
           No simulation or virtual lab telemetry recorded yet.
         </div>
       )}

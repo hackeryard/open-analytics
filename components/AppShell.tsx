@@ -287,7 +287,7 @@ export default function AppShell({
   // On the dashboard subdomain, render the analytics platform workspace
   if (!isDashboard) {
     return (
-      <div className="min-h-screen flex flex-col bg-[#050811] text-slate-100 selection:bg-cyan-500/30 selection:text-cyan-200">
+      <div className="min-h-screen flex flex-col bg-[#090a0f] text-zinc-100 selection:bg-white/[0.15] selection:text-white">
         <PublicNavbar />
         <main className="flex-1">{children}</main>
         <PublicFooter />

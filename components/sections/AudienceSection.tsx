@@ -145,95 +145,95 @@ export default function AudienceSection({ data: propData }: { data?: AnalyticsDa
   const getLoyaltyBadgeClass = (tier?: string) => {
     switch (tier) {
       case "Brand Champion":
-        return "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20";
+        return "bg-white/[0.08] text-white border-white/[0.16]";
       case "Loyal Advocate":
-        return "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20";
+        return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
       case "Returning":
-        return "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20";
+        return "bg-white/[0.04] text-zinc-300 border-white/[0.08]";
       default:
-        return "bg-muted text-muted-foreground border-border";
+        return "bg-white/[0.03] text-zinc-400 border-white/[0.06]";
     }
   };
 
   return (
     <div className="space-y-6 pb-20">
       {/* ── Top Sleek KPI Gauges Grid ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* 1. Total Audience */}
-        <div className="p-4 bg-card border border-border rounded-2xl shadow-xs space-y-2">
+        <div className="p-5 bg-[#111218] border border-white/[0.08] rounded-xl space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
+            <span className="text-xs font-medium text-zinc-400">
               Total Visitors
             </span>
-            <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-primary/10 text-primary border border-primary/20">
+            <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-white/[0.04] text-zinc-300 border border-white/[0.08]">
               {allUsers.length} Profiles
             </span>
           </div>
           <div>
-            <span className="text-2xl font-black font-mono text-foreground">
+            <span className="text-2xl sm:text-3xl font-semibold text-white tracking-tight tabular-nums">
               {totalVisitorsCount.toLocaleString()}
             </span>
-            <span className="block text-[10px] text-muted-foreground mt-0.5">
+            <span className="block text-[11px] text-zinc-500 mt-1">
               {registeredCount} identified accounts &bull; {guestsCount} guests
             </span>
           </div>
         </div>
 
         {/* 2. New Explorers */}
-        <div className="p-4 bg-card border border-border rounded-2xl shadow-xs space-y-2">
+        <div className="p-5 bg-[#111218] border border-white/[0.08] rounded-xl space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
+            <span className="text-xs font-medium text-zinc-400">
               New Visitors (Visit #1)
             </span>
-            <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20">
+            <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-white/[0.04] text-zinc-300 border border-white/[0.08]">
               {totalVisitorsCount > 0 ? Math.round((newCount / totalVisitorsCount) * 100) : 0}% of Total
             </span>
           </div>
           <div>
-            <span className="text-2xl font-black font-mono text-sky-500">
+            <span className="text-2xl sm:text-3xl font-semibold text-white tracking-tight tabular-nums">
               {newCount.toLocaleString()}
             </span>
-            <span className="block text-[10px] text-muted-foreground mt-0.5">
+            <span className="block text-[11px] text-zinc-500 mt-1">
               First-time discovery visitors
             </span>
           </div>
         </div>
 
         {/* 3. Returning & Retention */}
-        <div className="p-4 bg-card border border-border rounded-2xl shadow-xs space-y-2">
+        <div className="p-5 bg-[#111218] border border-white/[0.08] rounded-xl space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
+            <span className="text-xs font-medium text-zinc-400">
               Returning Audience
             </span>
-            <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+            <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
               {returnRate}% Return Rate
             </span>
           </div>
           <div>
-            <span className="text-2xl font-black font-mono text-blue-500">
+            <span className="text-2xl sm:text-3xl font-semibold text-white tracking-tight tabular-nums">
               {returningCount.toLocaleString()}
             </span>
-            <span className="block text-[10px] text-muted-foreground mt-0.5">
+            <span className="block text-[11px] text-zinc-500 mt-1">
               Repeat visitors with multiple visits
             </span>
           </div>
         </div>
 
         {/* 4. Loyalty Index & Champions */}
-        <div className="p-4 bg-card border border-border rounded-2xl shadow-xs space-y-2">
+        <div className="p-5 bg-[#111218] border border-white/[0.08] rounded-xl space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
+            <span className="text-xs font-medium text-zinc-400">
               Loyalty Index
             </span>
-            <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+            <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-white/[0.04] text-zinc-300 border border-white/[0.08]">
               {championsCount + loyalAdvocatesCount} Champions
             </span>
           </div>
           <div>
-            <span className="text-2xl font-black font-mono text-purple-500">
+            <span className="text-2xl sm:text-3xl font-semibold text-white tracking-tight tabular-nums">
               {avgLoyaltyScore}/100
             </span>
-            <span className="block text-[10px] text-muted-foreground mt-0.5">
+            <span className="block text-[11px] text-zinc-500 mt-1">
               Average audience engagement score
             </span>
           </div>
@@ -243,74 +243,74 @@ export default function AudienceSection({ data: propData }: { data?: AnalyticsDa
       {/* ── Audience Loyalty & Frequency Breakdown ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         {/* 4 Loyalty Tiers */}
-        <div className="lg:col-span-7 bg-card border border-border rounded-3xl p-5 shadow-sm space-y-4">
+        <div className="lg:col-span-7 bg-[#111218] border border-white/[0.08] rounded-xl p-5 space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs font-black uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-              <Award size={15} className="text-purple-500" />
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
+              <Award size={15} className="text-zinc-300" />
               <span>Audience Loyalty Tiers</span>
             </h3>
-            <span className="text-xs font-mono font-bold text-muted-foreground">
+            <span className="text-xs font-mono text-zinc-400 tabular-nums">
               {allUsers.length} Analyzed Profiles
             </span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {/* Brand Champions */}
-            <div className="p-3.5 bg-muted/20 border border-border rounded-2xl space-y-1.5 hover:border-purple-500/40 transition">
+            <div className="p-3.5 bg-[#0e0f15] border border-white/[0.06] hover:border-white/[0.12] rounded-lg space-y-1.5 transition">
               <div className="flex items-center justify-between">
-                <span className="px-2 py-0.5 bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 rounded-md font-mono text-[10px] font-black uppercase">
+                <span className="px-2 py-0.5 bg-white/[0.08] text-white border border-white/[0.16] rounded-md font-mono text-[10px] font-medium uppercase">
                   Brand Champions
                 </span>
-                <span className="text-xs font-mono font-bold text-foreground">
+                <span className="text-xs font-mono font-medium text-white tabular-nums">
                   {championsCount} users
                 </span>
               </div>
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-[11px] text-zinc-500">
                 Superfans with 10+ visits and deepest recurring dwell times.
               </p>
             </div>
 
             {/* Loyal Advocates */}
-            <div className="p-3.5 bg-muted/20 border border-border rounded-2xl space-y-1.5 hover:border-emerald-500/40 transition">
+            <div className="p-3.5 bg-[#0e0f15] border border-white/[0.06] hover:border-white/[0.12] rounded-lg space-y-1.5 transition">
               <div className="flex items-center justify-between">
-                <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 rounded-md font-mono text-[10px] font-black uppercase">
+                <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-md font-mono text-[10px] font-medium uppercase">
                   Loyal Advocates
                 </span>
-                <span className="text-xs font-mono font-bold text-foreground">
+                <span className="text-xs font-mono font-medium text-white tabular-nums">
                   {loyalAdvocatesCount} users
                 </span>
               </div>
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-[11px] text-zinc-500">
                 Consistent returnees with 4–9 visits exploring multiple features.
               </p>
             </div>
 
             {/* Returning Users */}
-            <div className="p-3.5 bg-muted/20 border border-border rounded-2xl space-y-1.5 hover:border-blue-500/40 transition">
+            <div className="p-3.5 bg-[#0e0f15] border border-white/[0.06] hover:border-white/[0.12] rounded-lg space-y-1.5 transition">
               <div className="flex items-center justify-between">
-                <span className="px-2 py-0.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 rounded-md font-mono text-[10px] font-black uppercase">
+                <span className="px-2 py-0.5 bg-white/[0.04] text-zinc-300 border border-white/[0.08] rounded-md font-mono text-[10px] font-medium uppercase">
                   Returning Users
                 </span>
-                <span className="text-xs font-mono font-bold text-foreground">
+                <span className="text-xs font-mono font-medium text-white tabular-nums">
                   {returningStandardCount} users
                 </span>
               </div>
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-[11px] text-zinc-500">
                 Users validating your product with 2–3 repeat visits.
               </p>
             </div>
 
             {/* New Explorers */}
-            <div className="p-3.5 bg-muted/20 border border-border rounded-2xl space-y-1.5 hover:border-sky-500/40 transition">
+            <div className="p-3.5 bg-[#0e0f15] border border-white/[0.06] hover:border-white/[0.12] rounded-lg space-y-1.5 transition">
               <div className="flex items-center justify-between">
-                <span className="px-2 py-0.5 bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20 rounded-md font-mono text-[10px] font-black uppercase">
+                <span className="px-2 py-0.5 bg-white/[0.04] text-zinc-400 border border-white/[0.08] rounded-md font-mono text-[10px] font-medium uppercase">
                   New Explorers
                 </span>
-                <span className="text-xs font-mono font-bold text-foreground">
+                <span className="text-xs font-mono font-medium text-white tabular-nums">
                   {newExplorersCount} users
                 </span>
               </div>
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-[11px] text-zinc-500">
                 First-time visitors evaluating your product.
               </p>
             </div>
@@ -318,42 +318,42 @@ export default function AudienceSection({ data: propData }: { data?: AnalyticsDa
         </div>
 
         {/* Visit Frequency Cohort Distribution */}
-        <div className="lg:col-span-5 bg-card border border-border rounded-3xl p-5 shadow-sm space-y-3 flex flex-col justify-between">
+        <div className="lg:col-span-5 bg-[#111218] border border-white/[0.08] rounded-xl p-5 space-y-3 flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs font-black uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-              <Activity size={15} className="text-blue-500" />
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
+              <Activity size={15} className="text-zinc-300" />
               <span>Visit Frequency Distribution</span>
             </h3>
-            <span className="text-xs font-mono text-muted-foreground font-bold">
+            <span className="text-xs font-mono text-zinc-500 tabular-nums">
               {data.retention?.frequency?.length || 0} Cohorts
             </span>
           </div>
 
-          <div className="space-y-2.5">
+          <div className="space-y-3">
             {(data.retention?.frequency || [
               { label: "1 visit", count: newCount, percentage: totalVisitorsCount > 0 ? Math.round((newCount / totalVisitorsCount) * 100) : 100 },
               { label: "2-3 visits", count: returningStandardCount, percentage: totalVisitorsCount > 0 ? Math.round((returningStandardCount / totalVisitorsCount) * 100) : 0 },
               { label: "4-7 visits", count: loyalAdvocatesCount, percentage: totalVisitorsCount > 0 ? Math.round((loyalAdvocatesCount / totalVisitorsCount) * 100) : 0 },
               { label: "8+ visits", count: championsCount, percentage: totalVisitorsCount > 0 ? Math.round((championsCount / totalVisitorsCount) * 100) : 0 },
             ]).map((freq, idx) => (
-              <div key={idx} className="space-y-1">
+              <div key={idx} className="space-y-1.5">
                 <div className="flex justify-between text-xs font-mono">
-                  <span className="font-bold text-foreground">{freq.label}</span>
-                  <span className="text-muted-foreground">
-                    <strong className="text-foreground">{freq.count}</strong> visitors ({freq.percentage}%)
+                  <span className="text-zinc-300">{freq.label}</span>
+                  <span className="text-zinc-500 tabular-nums">
+                    <strong className="text-white font-medium">{freq.count}</strong> visitors ({freq.percentage}%)
                   </span>
                 </div>
-                <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                <div className="h-1.5 w-full bg-[#181922] rounded-full overflow-hidden">
                   <div
                     style={{ width: `${Math.max(4, freq.percentage)}%` }}
                     className={`h-full rounded-full transition-all ${
                       idx === 0
-                        ? "bg-sky-500"
+                        ? "bg-zinc-400"
                         : idx === 1
-                          ? "bg-blue-500"
+                          ? "bg-zinc-200"
                           : idx === 2
-                            ? "bg-emerald-500"
-                            : "bg-purple-500"
+                            ? "bg-emerald-400"
+                            : "bg-white"
                     }`}
                   />
                 </div>
@@ -361,17 +361,17 @@ export default function AudienceSection({ data: propData }: { data?: AnalyticsDa
             ))}
           </div>
 
-          <div className="pt-2 border-t border-border flex items-center justify-between text-[11px] text-muted-foreground">
+          <div className="pt-3 border-t border-white/[0.08] flex items-center justify-between text-[11px] text-zinc-500">
             <span>Overall Repeat Rate:</span>
-            <span className="font-mono font-bold text-foreground">{returnRate}%</span>
+            <span className="font-mono font-medium text-white tabular-nums">{returnRate}%</span>
           </div>
         </div>
       </div>
 
       {/* ── All Visitors Directory Table Container ── */}
-      <div className="bg-card border border-border rounded-3xl shadow-sm overflow-hidden space-y-0">
+      <div className="bg-[#111218] border border-white/[0.08] rounded-xl overflow-hidden space-y-0">
         {/* Header Filters */}
-        <div className="p-4 sm:p-5 border-b border-border bg-muted/10 space-y-3.5">
+        <div className="p-4 sm:p-5 border-b border-white/[0.08] bg-[#0e0f15] space-y-3.5">
           {/* Top Row: Segment Tabs */}
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
             <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 lg:pb-0">
@@ -390,18 +390,18 @@ export default function AudienceSection({ data: propData }: { data?: AnalyticsDa
                     setSegmentFilter(tab.id as any);
                     setCurrentPage(1);
                   }}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
                     segmentFilter === tab.id
-                      ? "bg-primary text-primary-foreground shadow-xs"
-                      : "bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground"
+                      ? "bg-white text-zinc-950"
+                      : "bg-white/[0.04] hover:bg-white/[0.08] text-zinc-400 hover:text-white border border-white/[0.08]"
                   }`}
                 >
                   <span>{tab.label}</span>
                   <span
-                    className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold ${
+                    className={`px-1.5 py-0.5 rounded text-[10px] font-mono tabular-nums ${
                       segmentFilter === tab.id
-                        ? "bg-primary-foreground/20 text-primary-foreground"
-                        : "bg-background text-foreground"
+                        ? "bg-zinc-200 text-zinc-950 font-semibold"
+                        : "bg-white/[0.06] text-zinc-300"
                     }`}
                   >
                     {tab.count}
@@ -410,9 +410,9 @@ export default function AudienceSection({ data: propData }: { data?: AnalyticsDa
               ))}
             </div>
 
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <div className="flex items-center gap-2 text-xs text-zinc-400">
               <span className="font-mono">
-                Showing <strong className="text-foreground">{sortedUsers.length}</strong> matching profiles
+                Showing <strong className="text-white font-medium tabular-nums">{sortedUsers.length}</strong> profiles
               </span>
             </div>
           </div>
@@ -423,7 +423,7 @@ export default function AudienceSection({ data: propData }: { data?: AnalyticsDa
             <div className="sm:col-span-8 relative">
               <Search
                 size={13}
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none"
               />
               <input
                 type="text"
@@ -433,7 +433,7 @@ export default function AudienceSection({ data: propData }: { data?: AnalyticsDa
                   setCurrentPage(1);
                 }}
                 placeholder="Search visitor ID, name, email, country, city, or visited URL..."
-                className="w-full pl-9 pr-8 py-2 bg-background border border-border rounded-xl text-xs font-mono text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary shadow-2xs transition"
+                className="w-full pl-9 pr-8 py-2 bg-[#111218] border border-white/[0.08] focus:border-white/20 rounded-lg text-xs font-mono text-white placeholder:text-zinc-500 focus:outline-none transition"
               />
               {searchQuery && (
                 <button
@@ -442,7 +442,7 @@ export default function AudienceSection({ data: propData }: { data?: AnalyticsDa
                     setSearchQuery("");
                     setCurrentPage(1);
                   }}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground text-xs p-1"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white text-xs p-1"
                 >
                   <X size={12} />
                 </button>
@@ -458,7 +458,7 @@ export default function AudienceSection({ data: propData }: { data?: AnalyticsDa
                   setCurrentPage(1);
                 }}
                 aria-label="Sort visitor profiles"
-                className="w-full px-3 py-2 bg-background border border-border rounded-xl text-xs font-bold text-foreground focus:outline-none focus:border-primary shadow-2xs cursor-pointer [&>option]:bg-card [&>option]:text-foreground [&>option]:dark:bg-slate-900 [&>option]:dark:text-slate-100"
+                className="w-full px-3 py-2 bg-[#111218] border border-white/[0.08] focus:border-white/20 rounded-lg text-xs font-medium text-zinc-200 focus:outline-none cursor-pointer"
               >
                 <option value="loyalty_desc">Highest Loyalty Score</option>
                 <option value="visits_desc">Most Visits</option>
@@ -474,7 +474,7 @@ export default function AudienceSection({ data: propData }: { data?: AnalyticsDa
         {/* ── High-Density Visitor Directory Table ── */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-muted/40 border-b border-border text-[10px] font-black uppercase tracking-wider text-muted-foreground select-none">
+            <thead className="bg-[#0e0f15] border-b border-white/[0.08] text-[11px] font-medium text-zinc-400 select-none">
               <tr>
                 <th className="p-3.5">Visitor / User Account</th>
                 <th className="p-3.5">Loyalty Tier &amp; Score</th>
@@ -487,15 +487,15 @@ export default function AudienceSection({ data: propData }: { data?: AnalyticsDa
                 <th className="p-3.5 text-right">Inspect</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody className="divide-y divide-white/[0.04]">
               {paginatedUsers.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="p-16 text-center text-muted-foreground">
-                    <div className="w-12 h-12 rounded-2xl bg-muted text-muted-foreground flex items-center justify-center mx-auto mb-2">
-                      <Users size={24} />
+                  <td colSpan={9} className="p-16 text-center text-zinc-500">
+                    <div className="w-12 h-12 rounded-xl bg-white/[0.04] border border-white/[0.08] text-zinc-400 flex items-center justify-center mx-auto mb-2">
+                      <Users size={22} />
                     </div>
-                    <h4 className="text-sm font-bold text-foreground">No Visitor Profiles Found</h4>
-                    <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
+                    <h4 className="text-sm font-medium text-white">No Visitor Profiles Found</h4>
+                    <p className="text-xs text-zinc-500 mt-1 max-w-sm mx-auto">
                       No visitors matched your search query or segment filters.
                     </p>
                   </td>
@@ -513,16 +513,16 @@ export default function AudienceSection({ data: propData }: { data?: AnalyticsDa
                     <tr
                       key={u.visitorId}
                       onClick={() => setSelectedUser(u)}
-                      className="hover:bg-muted/20 transition cursor-pointer group"
+                      className="hover:bg-white/[0.02] transition cursor-pointer group"
                     >
                       {/* 1. Profile Avatar & User Info */}
                       <td className="p-3.5 max-w-xs">
                         <div className="flex items-center gap-2.5">
                           <div
-                            className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 ${
+                            className={`w-8 h-8 rounded-lg flex items-center justify-center font-medium text-xs shrink-0 ${
                               isRegistered
-                                ? "bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-500/30"
-                                : "bg-muted text-muted-foreground border border-border"
+                                ? "bg-white/[0.08] text-white border border-white/[0.16]"
+                                : "bg-white/[0.04] text-zinc-400 border border-white/[0.06]"
                             }`}
                           >
                             {initial}
@@ -531,27 +531,27 @@ export default function AudienceSection({ data: propData }: { data?: AnalyticsDa
                           <div className="min-w-0 flex-1 space-y-0.5">
                             {isRegistered ? (
                               <div className="flex items-center gap-1.5 flex-wrap">
-                                <span className="font-bold text-foreground truncate text-xs">
+                                <span className="font-medium text-white truncate text-xs">
                                   {u.user?.name || u.user?.email}
                                 </span>
                                 {u.user?.level && (
-                                  <span className="px-1.5 py-0.2 rounded bg-purple-500/10 text-purple-600 dark:text-purple-400 text-[9px] font-mono font-bold">
+                                  <span className="px-1.5 py-0.5 rounded bg-white/[0.04] text-zinc-300 border border-white/[0.08] text-[9px] font-mono">
                                     Lvl {u.user.level}
                                   </span>
                                 )}
                               </div>
                             ) : (
                               <div className="flex items-center gap-1.5">
-                                <span className="font-bold font-mono text-foreground text-xs truncate">
+                                <span className="font-mono text-zinc-200 text-xs truncate">
                                   Guest {u.visitorId.slice(-6)}
                                 </span>
-                                <span className="px-1.5 py-0.2 rounded bg-muted text-muted-foreground text-[9px] font-mono">
+                                <span className="px-1.5 py-0.5 rounded bg-white/[0.04] text-zinc-400 border border-white/[0.06] text-[9px] font-mono">
                                   Anonymous
                                 </span>
                               </div>
                             )}
 
-                            <div className="flex items-center gap-1 text-[10px] font-mono text-muted-foreground">
+                            <div className="flex items-center gap-1 text-[10px] font-mono text-zinc-500">
                               <span className="truncate max-w-[120px]" title={u.visitorId}>
                                 ID: {u.visitorId.slice(0, 10)}...
                               </span>
@@ -561,11 +561,11 @@ export default function AudienceSection({ data: propData }: { data?: AnalyticsDa
                                   e.stopPropagation();
                                   handleCopy(u.visitorId, u.visitorId);
                                 }}
-                                className="text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition p-0.5"
+                                className="text-zinc-500 hover:text-white opacity-0 group-hover:opacity-100 transition p-0.5"
                                 title="Copy Full Visitor ID"
                               >
                                 {copiedId === u.visitorId ? (
-                                  <Check size={10} className="text-emerald-500" />
+                                  <Check size={10} className="text-emerald-400" />
                                 ) : (
                                   <Copy size={10} />
                                 )}
@@ -580,27 +580,27 @@ export default function AudienceSection({ data: propData }: { data?: AnalyticsDa
                         <div className="space-y-1">
                           <div className="flex items-center gap-1.5">
                             <span
-                              className={`px-2 py-0.5 rounded-md font-bold font-mono text-[10px] uppercase border inline-flex items-center gap-1 ${getLoyaltyBadgeClass(
+                              className={`px-2 py-0.5 rounded-md font-medium font-mono text-[10px] uppercase border inline-flex items-center gap-1 ${getLoyaltyBadgeClass(
                                 u.loyaltyTier
                               )}`}
                             >
                               <span>{u.loyaltyTier || "Newcomer"}</span>
                             </span>
-                            <span className="text-[11px] font-mono font-bold text-foreground">
+                            <span className="text-[11px] font-mono font-medium text-zinc-300 tabular-nums">
                               {u.loyaltyScore || 10}/100
                             </span>
                           </div>
-                          <div className="h-1.5 w-24 bg-muted rounded-full overflow-hidden">
+                          <div className="h-1.5 w-24 bg-[#181922] rounded-full overflow-hidden">
                             <div
                               style={{ width: `${u.loyaltyScore || 10}%` }}
                               className={`h-full rounded-full ${
                                 (u.loyaltyScore || 10) >= 80
-                                  ? "bg-purple-500"
+                                  ? "bg-white"
                                   : (u.loyaltyScore || 10) >= 50
-                                    ? "bg-emerald-500"
+                                    ? "bg-emerald-400"
                                     : (u.loyaltyScore || 10) >= 30
-                                      ? "bg-blue-500"
-                                      : "bg-muted-foreground"
+                                      ? "bg-zinc-400"
+                                      : "bg-zinc-600"
                               }`}
                             />
                           </div>
@@ -609,38 +609,38 @@ export default function AudienceSection({ data: propData }: { data?: AnalyticsDa
 
                       {/* 3. Visits */}
                       <td className="p-3.5 text-center whitespace-nowrap">
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-muted/80 rounded-md font-mono text-xs font-bold text-foreground">
-                          {u.visitCount > 1 && <Flame size={11} className="text-amber-500 shrink-0" />}
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-white/[0.04] border border-white/[0.06] rounded-md font-mono text-xs font-medium text-zinc-200 tabular-nums">
+                          {u.visitCount > 1 && <Flame size={11} className="text-amber-400 shrink-0" />}
                           <span>{u.visitCount || 1}x</span>
                         </span>
                       </td>
 
                       {/* 4. Sessions */}
-                      <td className="p-3.5 text-center whitespace-nowrap font-mono text-xs font-bold text-foreground">
+                      <td className="p-3.5 text-center whitespace-nowrap font-mono text-xs font-medium text-zinc-300 tabular-nums">
                         {u.sessionCount || 1}
                       </td>
 
                       {/* 5. Views */}
-                      <td className="p-3.5 text-center whitespace-nowrap font-mono text-xs font-bold text-foreground">
+                      <td className="p-3.5 text-center whitespace-nowrap font-mono text-xs font-medium text-white tabular-nums">
                         {u.totalViews || 0}
                       </td>
 
                       {/* 6. Total Dwell Time */}
-                      <td className="p-3.5 whitespace-nowrap font-mono text-xs font-bold text-foreground">
+                      <td className="p-3.5 whitespace-nowrap font-mono text-xs font-medium text-zinc-300 tabular-nums">
                         <div className="flex items-center gap-1">
-                          <Clock size={11} className="text-primary shrink-0" />
+                          <Clock size={11} className="text-zinc-400 shrink-0" />
                           <span>{formatDuration(u.totalDuration)}</span>
                         </div>
                       </td>
 
                       {/* 7. Geo & Tech */}
                       <td className="p-3.5 whitespace-nowrap">
-                        <div className="space-y-0.5 text-[11px] font-mono text-muted-foreground">
-                          <div className="flex items-center gap-1 text-foreground font-bold">
-                            <Globe size={11} className="text-muted-foreground shrink-0" />
+                        <div className="space-y-0.5 text-[11px] font-mono text-zinc-400">
+                          <div className="flex items-center gap-1 text-zinc-200 font-medium">
+                            <Globe size={11} className="text-zinc-500 shrink-0" />
                             <span className="truncate max-w-[120px]">{u.country}</span>
                           </div>
-                          <div className="text-[10px]">
+                          <div className="text-[10px] text-zinc-500">
                             {u.browser} &bull; {u.os}
                           </div>
                         </div>
@@ -648,10 +648,10 @@ export default function AudienceSection({ data: propData }: { data?: AnalyticsDa
 
                       {/* 8. Last Active */}
                       <td className="p-3.5 whitespace-nowrap">
-                        <div className="font-mono text-xs text-foreground font-bold">
+                        <div className="font-mono text-xs text-zinc-200 font-medium">
                           {timeAgo(u.lastSeen)}
                         </div>
-                        <div className="text-[10px] font-mono text-muted-foreground mt-0.5">
+                        <div className="text-[10px] font-mono text-zinc-500 mt-0.5">
                           {formatExactDate(u.lastSeen)}
                         </div>
                       </td>
@@ -664,7 +664,7 @@ export default function AudienceSection({ data: propData }: { data?: AnalyticsDa
                         <button
                           type="button"
                           onClick={() => setSelectedUser(u)}
-                          className="px-2.5 py-1 rounded-lg bg-background hover:bg-muted border border-border text-foreground font-bold text-xs transition cursor-pointer shadow-2xs inline-flex items-center gap-1"
+                          className="px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-300 hover:text-white font-medium text-xs transition cursor-pointer inline-flex items-center gap-1"
                         >
                           <Eye size={12} />
                           <span>Inspect</span>
@@ -680,35 +680,35 @@ export default function AudienceSection({ data: propData }: { data?: AnalyticsDa
 
         {/* ── Table Footer Navigation & Pagination ── */}
         {sortedUsers.length > 0 && (
-          <div className="p-4 border-t border-border bg-muted/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-muted-foreground">
+          <div className="p-4 border-t border-white/[0.08] bg-[#0e0f15] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-zinc-400">
             <span className="font-mono">
               Showing{" "}
-              <strong className="text-foreground font-bold">
+              <strong className="text-white font-medium tabular-nums">
                 {(currentPage - 1) * pageSize + 1}–
                 {Math.min(currentPage * pageSize, sortedUsers.length)}
               </strong>{" "}
-              of <strong className="text-foreground font-bold">{sortedUsers.length}</strong> profiles
+              of <strong className="text-white font-medium tabular-nums">{sortedUsers.length}</strong> profiles
             </span>
 
             {/* Pagination controls */}
             {totalPages > 1 && (
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 font-mono">
                 <button
                   type="button"
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                   disabled={currentPage <= 1}
-                  className="px-2.5 py-1 rounded-lg bg-background border border-border text-xs font-bold text-foreground hover:bg-muted disabled:opacity-40 disabled:pointer-events-none transition cursor-pointer"
+                  className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/[0.08] text-xs font-medium text-zinc-300 hover:text-white hover:bg-white/[0.08] disabled:opacity-40 disabled:pointer-events-none transition cursor-pointer"
                 >
                   Prev
                 </button>
-                <span className="px-2 font-mono">
+                <span className="px-2 tabular-nums">
                   {currentPage} / {totalPages}
                 </span>
                 <button
                   type="button"
                   onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                   disabled={currentPage >= totalPages}
-                  className="px-2.5 py-1 rounded-lg bg-background border border-border text-xs font-bold text-foreground hover:bg-muted disabled:opacity-40 disabled:pointer-events-none transition cursor-pointer"
+                  className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/[0.08] text-xs font-medium text-zinc-300 hover:text-white hover:bg-white/[0.08] disabled:opacity-40 disabled:pointer-events-none transition cursor-pointer"
                 >
                   Next
                 </button>
@@ -720,17 +720,17 @@ export default function AudienceSection({ data: propData }: { data?: AnalyticsDa
 
       {/* ── Deep Visitor Profile Slide-Over / Modal (Inspector) ── */}
       {selectedUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-150">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs animate-in fade-in duration-150">
           <div className="fixed inset-0" onClick={() => setSelectedUser(null)} />
-          <div className="relative z-10 w-full max-w-2xl bg-card border border-border rounded-3xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-200">
+          <div className="relative z-10 w-full max-w-2xl bg-[#111218] border border-white/[0.12] rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-200">
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-5 border-b border-border bg-card">
+            <div className="flex items-center justify-between p-5 border-b border-white/[0.08] bg-[#0e0f15]">
               <div className="flex items-center gap-3">
                 <div
-                  className={`w-10 h-10 rounded-2xl flex items-center justify-center font-black text-sm shrink-0 ${
+                  className={`w-10 h-10 rounded-xl flex items-center justify-center font-medium text-sm shrink-0 ${
                     selectedUser.user
-                      ? "bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-500/30"
-                      : "bg-muted text-muted-foreground border border-border"
+                      ? "bg-white/[0.08] text-white border border-white/[0.16]"
+                      : "bg-white/[0.04] text-zinc-400 border border-white/[0.08]"
                   }`}
                 >
                   {selectedUser.user?.name
@@ -741,18 +741,18 @@ export default function AudienceSection({ data: propData }: { data?: AnalyticsDa
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="text-base font-black text-foreground">
+                    <h3 className="text-sm font-semibold text-white">
                       {selectedUser.user?.name || selectedUser.user?.email || `Visitor ${selectedUser.visitorId.slice(-6)}`}
                     </h3>
                     <span
-                      className={`px-2 py-0.5 rounded-md font-bold font-mono text-[9px] uppercase border ${getLoyaltyBadgeClass(
+                      className={`px-2 py-0.5 rounded-md font-medium font-mono text-[9px] uppercase border ${getLoyaltyBadgeClass(
                         selectedUser.loyaltyTier
                       )}`}
                     >
                       {selectedUser.loyaltyTier || "Newcomer"}
                     </span>
                   </div>
-                  <p className="text-xs font-mono text-muted-foreground mt-0.5">
+                  <p className="text-xs font-mono text-zinc-500 mt-0.5">
                     VID: {selectedUser.visitorId}
                   </p>
                 </div>
@@ -760,7 +760,7 @@ export default function AudienceSection({ data: propData }: { data?: AnalyticsDa
               <button
                 type="button"
                 onClick={() => setSelectedUser(null)}
-                className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl transition cursor-pointer"
+                className="p-2 text-zinc-400 hover:text-white hover:bg-white/[0.06] rounded-lg transition cursor-pointer"
               >
                 <X size={18} />
               </button>
@@ -770,110 +770,110 @@ export default function AudienceSection({ data: propData }: { data?: AnalyticsDa
             <div className="p-5 overflow-y-auto space-y-5 flex-1">
               {/* Engagement Stats Strip */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                <div className="p-3 bg-muted/20 border border-border rounded-2xl space-y-1">
-                  <span className="text-[10px] font-bold uppercase text-muted-foreground block">
+                <div className="p-3 bg-[#0e0f15] border border-white/[0.08] rounded-xl space-y-1">
+                  <span className="text-[10px] font-medium uppercase text-zinc-400 block">
                     Total Visits
                   </span>
-                  <span className="text-lg font-black font-mono text-foreground flex items-center gap-1">
-                    {selectedUser.visitCount > 1 && <Flame size={14} className="text-amber-500" />}
+                  <span className="text-lg font-semibold font-mono text-white flex items-center gap-1 tabular-nums">
+                    {selectedUser.visitCount > 1 && <Flame size={14} className="text-amber-400" />}
                     {selectedUser.visitCount || 1}
                   </span>
                 </div>
-                <div className="p-3 bg-muted/20 border border-border rounded-2xl space-y-1">
-                  <span className="text-[10px] font-bold uppercase text-muted-foreground block">
+                <div className="p-3 bg-[#0e0f15] border border-white/[0.08] rounded-xl space-y-1">
+                  <span className="text-[10px] font-medium uppercase text-zinc-400 block">
                     Sessions
                   </span>
-                  <span className="text-lg font-black font-mono text-foreground">
+                  <span className="text-lg font-semibold font-mono text-white tabular-nums">
                     {selectedUser.sessionCount || 1}
                   </span>
                 </div>
-                <div className="p-3 bg-muted/20 border border-border rounded-2xl space-y-1">
-                  <span className="text-[10px] font-bold uppercase text-muted-foreground block">
+                <div className="p-3 bg-[#0e0f15] border border-white/[0.08] rounded-xl space-y-1">
+                  <span className="text-[10px] font-medium uppercase text-zinc-400 block">
                     Total Views
                   </span>
-                  <span className="text-lg font-black font-mono text-foreground">
+                  <span className="text-lg font-semibold font-mono text-white tabular-nums">
                     {selectedUser.totalViews || 0}
                   </span>
                 </div>
-                <div className="p-3 bg-muted/20 border border-border rounded-2xl space-y-1">
-                  <span className="text-[10px] font-bold uppercase text-muted-foreground block">
+                <div className="p-3 bg-[#0e0f15] border border-white/[0.08] rounded-xl space-y-1">
+                  <span className="text-[10px] font-medium uppercase text-zinc-400 block">
                     Total Dwell
                   </span>
-                  <span className="text-lg font-black font-mono text-primary">
+                  <span className="text-lg font-semibold font-mono text-white tabular-nums">
                     {formatDuration(selectedUser.totalDuration)}
                   </span>
                 </div>
               </div>
 
               {/* Loyalty Score Card */}
-              <div className="p-4 bg-muted/30 border border-border rounded-2xl space-y-3">
+              <div className="p-4 bg-[#0e0f15] border border-white/[0.08] rounded-xl space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-black uppercase tracking-wider text-foreground flex items-center gap-1.5">
-                    <Award size={14} className="text-purple-500" />
+                  <span className="text-xs font-medium uppercase tracking-wider text-zinc-300 flex items-center gap-1.5">
+                    <Award size={14} className="text-zinc-400" />
                     <span>Loyalty &amp; Retention Profile</span>
                   </span>
-                  <span className="font-mono text-xs font-black text-purple-600 dark:text-purple-400">
+                  <span className="font-mono text-xs font-semibold text-white tabular-nums">
                     {selectedUser.loyaltyScore || 10}/100 Score
                   </span>
                 </div>
 
-                <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                <div className="h-1.5 w-full bg-[#181922] rounded-full overflow-hidden">
                   <div
                     style={{ width: `${selectedUser.loyaltyScore || 10}%` }}
-                    className="h-full bg-purple-500 rounded-full"
+                    className="h-full bg-white rounded-full"
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 text-xs font-mono text-muted-foreground">
+                <div className="grid grid-cols-2 gap-3 text-xs font-mono text-zinc-400">
                   <div>
-                    <span className="block text-[10px] uppercase font-bold text-muted-foreground">First Seen</span>
-                    <strong className="text-foreground">{formatExactDate(selectedUser.firstSeen)}</strong> ({timeAgo(selectedUser.firstSeen)})
+                    <span className="block text-[10px] uppercase font-medium text-zinc-500">First Seen</span>
+                    <strong className="text-zinc-200 font-medium">{formatExactDate(selectedUser.firstSeen)}</strong> ({timeAgo(selectedUser.firstSeen)})
                   </div>
                   <div>
-                    <span className="block text-[10px] uppercase font-bold text-muted-foreground">Last Active</span>
-                    <strong className="text-foreground">{formatExactDate(selectedUser.lastSeen)}</strong> ({timeAgo(selectedUser.lastSeen)})
+                    <span className="block text-[10px] uppercase font-medium text-zinc-500">Last Active</span>
+                    <strong className="text-zinc-200 font-medium">{formatExactDate(selectedUser.lastSeen)}</strong> ({timeAgo(selectedUser.lastSeen)})
                   </div>
                 </div>
               </div>
 
               {/* Geo & Environment Details */}
-              <div className="p-4 bg-muted/20 border border-border rounded-2xl space-y-2">
-                <span className="text-xs font-black uppercase tracking-wider text-foreground block">
+              <div className="p-4 bg-[#0e0f15] border border-white/[0.08] rounded-xl space-y-2">
+                <span className="text-xs font-medium uppercase tracking-wider text-zinc-300 block">
                   Environment &amp; Geolocation
                 </span>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs font-mono text-muted-foreground">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs font-mono text-zinc-400">
                   <div>
-                    <span className="text-[10px] block uppercase font-bold">Country &amp; City</span>
-                    <strong className="text-foreground">{selectedUser.country} ({selectedUser.city})</strong>
+                    <span className="text-[10px] block uppercase font-medium text-zinc-500">Country &amp; City</span>
+                    <strong className="text-zinc-200 font-medium">{selectedUser.country} ({selectedUser.city})</strong>
                   </div>
                   <div>
-                    <span className="text-[10px] block uppercase font-bold">Device Type</span>
-                    <strong className="text-foreground">{selectedUser.device}</strong>
+                    <span className="text-[10px] block uppercase font-medium text-zinc-500">Device Type</span>
+                    <strong className="text-zinc-200 font-medium">{selectedUser.device}</strong>
                   </div>
                   <div>
-                    <span className="text-[10px] block uppercase font-bold">OS &amp; Browser</span>
-                    <strong className="text-foreground">{selectedUser.os} / {selectedUser.browser}</strong>
+                    <span className="text-[10px] block uppercase font-medium text-zinc-500">OS &amp; Browser</span>
+                    <strong className="text-zinc-200 font-medium">{selectedUser.os} / {selectedUser.browser}</strong>
                   </div>
                 </div>
               </div>
 
               {/* Top Visited Routes */}
               <div className="space-y-2">
-                <span className="text-xs font-black uppercase tracking-wider text-muted-foreground block">
+                <span className="text-xs font-medium uppercase tracking-wider text-zinc-400 block">
                   Top Visited Pages &amp; Routes ({selectedUser.topPaths?.length || 0})
                 </span>
                 <div className="space-y-1.5">
                   {(selectedUser.topPaths || []).map((path, idx) => (
                     <div
                       key={idx}
-                      className="p-2.5 bg-background border border-border rounded-xl flex items-center justify-between gap-2 text-xs font-mono"
+                      className="p-2.5 bg-[#111218] border border-white/[0.06] rounded-lg flex items-center justify-between gap-2 text-xs font-mono"
                     >
-                      <span className="text-foreground font-bold truncate">{path}</span>
+                      <span className="text-zinc-300 font-medium truncate">{path}</span>
                       <a
                         href={getTrackedUrl(path, activeProject)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-muted-foreground hover:text-primary shrink-0"
+                        className="text-zinc-500 hover:text-white shrink-0"
                       >
                         <ExternalLink size={12} />
                       </a>
@@ -884,14 +884,14 @@ export default function AudienceSection({ data: propData }: { data?: AnalyticsDa
             </div>
 
             {/* Modal Footer */}
-            <div className="p-4 border-t border-border bg-card flex items-center justify-between gap-2">
+            <div className="p-4 border-t border-white/[0.08] bg-[#0e0f15] flex items-center justify-between gap-2">
               <Link
                 href="/live-feed"
                 onClick={() => {
                   setPvQuery(selectedUser.visitorId);
                   setSelectedUser(null);
                 }}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary text-primary-foreground text-xs font-bold shadow-xs hover:bg-primary/90 transition cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white text-zinc-950 text-xs font-medium hover:bg-zinc-200 transition cursor-pointer"
               >
                 <Radio size={12} />
                 <span>Filter in Live Telemetry</span>
@@ -900,7 +900,7 @@ export default function AudienceSection({ data: propData }: { data?: AnalyticsDa
               <button
                 type="button"
                 onClick={() => setSelectedUser(null)}
-                className="px-4 py-1.5 bg-muted hover:bg-accent text-foreground rounded-xl text-xs font-bold transition cursor-pointer"
+                className="px-4 py-1.5 bg-white/[0.06] hover:bg-white/[0.1] text-white rounded-lg text-xs font-medium transition cursor-pointer"
               >
                 Close
               </button>

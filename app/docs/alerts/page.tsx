@@ -144,49 +144,49 @@ const { alertSettings } = await res.json();`;
   };
 
   return (
-    <div className="space-y-12 max-w-5xl">
+    <div className="space-y-12 max-w-7xl">
       {/* Header */}
       <div className="space-y-3">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.06] border border-white/[0.08] text-zinc-300 text-xs font-semibold">
           <Bell size={13} />
-          <span>Real-Time Incident Triage & Observability</span>
+          <span>Real-Time Incident Triage &amp; Observability</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight">
-          Alerts & Incident Engine
+        <h1 className="text-3xl sm:text-4xl font-semibold text-white tracking-tight">
+          Alerts &amp; Incident Engine
         </h1>
-        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+        <p className="text-sm sm:text-base text-zinc-400 leading-relaxed">
           Open Analytics incorporates an autonomous, real-time telemetry anomaly engine that automatically monitors crash spikes, Core Web Vitals degradation, search crawler readiness, and user frustration without requiring manual query configurations.
         </p>
       </div>
 
       {/* Quick Links / Highlights */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="p-4 rounded-2xl bg-card border border-border space-y-2 shadow-xs">
-          <div className="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center">
+        <div className="p-4 rounded-xl bg-[#111218] border border-white/[0.08] space-y-2 shadow-xs">
+          <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center">
             <Flame size={16} />
           </div>
-          <h2 className="text-sm font-bold text-foreground">Autonomous Anomaly Radar</h2>
-          <p className="text-xs text-muted-foreground leading-relaxed">
+          <h2 className="text-sm font-semibold text-white">Autonomous Anomaly Radar</h2>
+          <p className="text-xs text-zinc-400 leading-relaxed">
             Continuously evaluates inbound telemetry streams to trigger alerts on repeated crashes (5x+), error storms, and dead ends.
           </p>
         </div>
 
-        <div className="p-4 rounded-2xl bg-card border border-border space-y-2 shadow-xs">
-          <div className="w-8 h-8 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center">
+        <div className="p-4 rounded-xl bg-[#111218] border border-white/[0.08] space-y-2 shadow-xs">
+          <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center">
             <Volume2 size={16} />
           </div>
-          <h2 className="text-sm font-bold text-foreground">Native OS Desktop Alerts</h2>
-          <p className="text-xs text-muted-foreground leading-relaxed">
+          <h2 className="text-sm font-semibold text-white">Native OS Desktop Alerts</h2>
+          <p className="text-xs text-zinc-400 leading-relaxed">
             Browser Notifications API with dual-tone Web Audio synthesized chimes and 45-second background tab synchronization.
           </p>
         </div>
 
-        <div className="p-4 rounded-2xl bg-card border border-border space-y-2 shadow-xs">
-          <div className="w-8 h-8 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center">
+        <div className="p-4 rounded-xl bg-[#111218] border border-white/[0.08] space-y-2 shadow-xs">
+          <div className="w-8 h-8 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center">
             <BellOff size={16} />
           </div>
-          <h2 className="text-sm font-bold text-foreground">Granular Ignore Rules</h2>
-          <p className="text-xs text-muted-foreground leading-relaxed">
+          <h2 className="text-sm font-semibold text-white">Granular Ignore Rules</h2>
+          <p className="text-xs text-zinc-400 leading-relaxed">
             Mute entire notification types or define regex and substring pattern rules across error messages, titles, and route paths.
           </p>
         </div>
@@ -195,11 +195,11 @@ const { alertSettings } = await res.json();`;
       {/* Section 1: The 7 Autonomous Incident Detection Categories */}
       <section className="space-y-5">
         <div className="space-y-1">
-          <div className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-400">
+          <div className="text-xs font-mono font-semibold uppercase tracking-wider text-zinc-400">
             Telemetry Heuristics
           </div>
-          <h2 className="text-2xl font-black text-foreground">7 Autonomous Incident Types</h2>
-          <p className="text-xs text-muted-foreground">
+          <h2 className="text-2xl font-semibold text-white">7 Autonomous Incident Types</h2>
+          <p className="text-xs text-zinc-400">
             Each anomaly is evaluated against verified historical baselines and assigned an automated severity level:
           </p>
         </div>
@@ -210,39 +210,37 @@ const { alertSettings } = await res.json();`;
             return (
               <div
                 key={cat.id}
-                className="p-5 rounded-2xl bg-card border border-border space-y-3 hover:border-border/80 transition shadow-xs"
+                className="p-5 rounded-xl bg-[#111218] border border-white/[0.08] space-y-3 hover:border-white/[0.14] transition-colors shadow-xs"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-2.5">
-                    <div className={`w-9 h-9 rounded-xl ${cat.bgColor} border ${cat.borderColor} flex items-center justify-center ${cat.color}`}>
+                    <div className={`w-9 h-9 rounded-lg ${cat.bgColor} border ${cat.borderColor} flex items-center justify-center ${cat.color}`}>
                       <Icon size={18} />
                     </div>
                     <div>
-                      <h3 className="text-sm font-bold text-foreground">{cat.name}</h3>
-                      <span className="text-[11px] font-mono text-muted-foreground">{cat.type}</span>
+                      <h3 className="text-sm font-semibold text-white">{cat.name}</h3>
+                      <span className="text-[11px] text-zinc-500 font-mono">{cat.type}</span>
                     </div>
                   </div>
                   <span
-                    className={`text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-full border ${
+                    className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide border ${
                       cat.severity === "critical"
-                        ? "bg-rose-500/15 text-rose-400 border-rose-500/30"
+                        ? "bg-rose-500/10 text-rose-400 border-rose-500/20"
                         : cat.severity === "warning"
-                        ? "bg-amber-500/15 text-amber-400 border-amber-500/30"
-                        : "bg-cyan-500/15 text-cyan-400 border-cyan-500/30"
+                        ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                        : "bg-blue-500/10 text-blue-400 border-blue-500/20"
                     }`}
                   >
                     {cat.severity}
                   </span>
                 </div>
 
-                <div className="p-2 rounded-xl bg-muted/30 border border-border/50 text-[11px] font-mono text-cyan-300">
-                  <span className="text-muted-foreground">Trigger: </span>
-                  {cat.threshold}
-                </div>
+                <p className="text-xs text-zinc-400 leading-relaxed">{cat.desc}</p>
 
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {cat.desc}
-                </p>
+                <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-[11px] font-mono">
+                  <span className="text-zinc-500">Threshold:</span>
+                  <span className="text-zinc-300 font-medium">{cat.threshold}</span>
+                </div>
               </div>
             );
           })}
@@ -250,57 +248,57 @@ const { alertSettings } = await res.json();`;
       </section>
 
       {/* Section 2: Native OS Desktop Notifications & Web Audio Chimes */}
-      <section className="p-6 sm:p-8 rounded-3xl bg-card border border-border space-y-6 shadow-sm">
+      <section className="p-6 sm:p-8 rounded-xl bg-[#111218] border border-white/[0.08] space-y-6 shadow-xs">
         <div className="space-y-2">
-          <div className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-indigo-400">
+          <div className="inline-flex items-center gap-1.5 text-xs font-mono font-semibold uppercase tracking-wider text-zinc-400">
             <Laptop size={13} />
             <span>Native Operating System Integration</span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-black text-foreground">
-            Desktop Notifications & Synthesized Audio Chimes
+          <h2 className="text-xl sm:text-2xl font-semibold text-white">
+            Desktop Notifications &amp; Synthesized Audio Chimes
           </h2>
-          <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+          <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
             Engineering and DevOps teams cannot afford to stare at an open browser tab 24/7. Open Analytics integrates directly with the native operating system desktop notification center:
           </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="p-4 rounded-2xl bg-muted/20 border border-border space-y-2">
-            <div className="text-xs font-bold text-foreground flex items-center gap-2">
+          <div className="p-4 rounded-lg bg-[#0e0f15] border border-white/[0.06] space-y-2">
+            <div className="text-xs font-semibold text-white flex items-center gap-2">
               <CheckCircle2 size={14} className="text-emerald-400" />
               <span>Background Tab Synchronization</span>
             </div>
-            <p className="text-xs text-muted-foreground leading-relaxed">
+            <p className="text-xs text-zinc-400 leading-relaxed">
               PlatformContext executes an automated 45-second background sync poll. If a repeated error spike or storm occurs while your dashboard tab is minimized, an OS desktop alert appears instantly.
             </p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-muted/20 border border-border space-y-2">
-            <div className="text-xs font-bold text-foreground flex items-center gap-2">
+          <div className="p-4 rounded-lg bg-[#0e0f15] border border-white/[0.06] space-y-2">
+            <div className="text-xs font-semibold text-white flex items-center gap-2">
               <CheckCircle2 size={14} className="text-emerald-400" />
               <span>Synthesized Web Audio Engine</span>
             </div>
-            <p className="text-xs text-muted-foreground leading-relaxed">
+            <p className="text-xs text-zinc-400 leading-relaxed">
               Dual-tone audible chimes (D5 587.33 Hz transitioning smoothly to A5 880.00 Hz) are generated dynamically using the native browser Web Audio API oscillator, requiring 0 external MP3 downloads.
             </p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-muted/20 border border-border space-y-2">
-            <div className="text-xs font-bold text-foreground flex items-center gap-2">
+          <div className="p-4 rounded-lg bg-[#0e0f15] border border-white/[0.06] space-y-2">
+            <div className="text-xs font-semibold text-white flex items-center gap-2">
               <CheckCircle2 size={14} className="text-emerald-400" />
               <span>1-Click Deep Navigation</span>
             </div>
-            <p className="text-xs text-muted-foreground leading-relaxed">
+            <p className="text-xs text-zinc-400 leading-relaxed">
               Clicking any desktop alert immediately focuses your browser window and routes directly to the affected crash trace (`/errors`), SEO report (`/seo`), or incident summary (`/notifications`).
             </p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-muted/20 border border-border space-y-2">
-            <div className="text-xs font-bold text-foreground flex items-center gap-2">
+          <div className="p-4 rounded-lg bg-[#0e0f15] border border-white/[0.06] space-y-2">
+            <div className="text-xs font-semibold text-white flex items-center gap-2">
               <CheckCircle2 size={14} className="text-emerald-400" />
               <span>Automated Permission Prompt Banner</span>
             </div>
-            <p className="text-xs text-muted-foreground leading-relaxed">
+            <p className="text-xs text-zinc-400 leading-relaxed">
               The floating in-app prompt banner (`BrowserNotificationPrompt.tsx`) seamlessly handles browser gesture requirements, requesting permissions politely with instant session snooze options.
             </p>
           </div>
@@ -310,38 +308,38 @@ const { alertSettings } = await res.json();`;
       {/* Section 3: Granular Ignore & Suppression Rules Engine */}
       <section className="space-y-5">
         <div className="space-y-1">
-          <div className="text-xs font-mono font-bold uppercase tracking-wider text-rose-400">
+          <div className="text-xs font-mono font-semibold uppercase tracking-wider text-rose-400">
             Alert Noise Reduction
           </div>
-          <h2 className="text-2xl font-black text-foreground">Granular Ignore & Suppression Rules</h2>
-          <p className="text-xs text-muted-foreground leading-relaxed">
+          <h2 className="text-2xl font-semibold text-white">Granular Ignore &amp; Suppression Rules</h2>
+          <p className="text-xs text-zinc-400 leading-relaxed">
             Eliminate alert fatigue by suppressing known staging issues, benign third-party analytics script warnings, or specific development routes before notifications are written to the database:
           </p>
         </div>
 
-        <div className="p-6 rounded-3xl bg-card border border-border space-y-5 shadow-xs">
+        <div className="p-6 rounded-xl bg-[#111218] border border-white/[0.08] space-y-5 shadow-xs">
           <div className="space-y-3">
-            <h3 className="text-sm font-bold text-foreground">Two-Tier Suppression Architecture</h3>
+            <h3 className="text-sm font-semibold text-white">Two-Tier Suppression Architecture</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-              <div className="p-4 rounded-2xl bg-muted/30 border border-border space-y-2">
-                <span className="font-bold text-cyan-400 block">1. General Type Muting</span>
-                <p className="text-muted-foreground leading-relaxed">
+              <div className="p-4 rounded-lg bg-[#0e0f15] border border-white/[0.06] space-y-2">
+                <span className="font-semibold text-white block">1. General Type Muting</span>
+                <p className="text-zinc-400 leading-relaxed">
                   Toggle on or off any of the 7 general notification categories across the entire project. For example, turn off SEO title audits during initial site construction.
                 </p>
               </div>
-              <div className="p-4 rounded-2xl bg-muted/30 border border-border space-y-2">
-                <span className="font-bold text-indigo-400 block">2. Custom Pattern Rules</span>
-                <p className="text-muted-foreground leading-relaxed">
-                  Match against specific route pathnames (e.g., <code className="text-cyan-300 font-mono">/staging</code>), error messages, or alert titles using contains, exact, prefix, or regular expressions.
+              <div className="p-4 rounded-lg bg-[#0e0f15] border border-white/[0.06] space-y-2">
+                <span className="font-semibold text-white block">2. Custom Pattern Rules</span>
+                <p className="text-zinc-400 leading-relaxed">
+                  Match against specific route pathnames (e.g., <code className="text-zinc-300 font-mono bg-[#181922] px-1 py-0.5 rounded border border-white/[0.06]">/staging</code>), error messages, or alert titles using contains, exact, prefix, or regular expressions.
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="space-y-2 pt-2 border-t border-border">
-            <h3 className="text-sm font-bold text-foreground">1-Click Inline Mute Menus</h3>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Every alert card in the Notification Center popover and `/notifications` dashboard features an interactive <code className="text-cyan-300 font-mono">BellOff</code> menu. With a single click, engineers can mute the notification type, silence all alerts on the affected route, or suppress the specific incident signature permanently.
+          <div className="space-y-2 pt-2 border-t border-white/[0.06]">
+            <h3 className="text-sm font-semibold text-white">1-Click Inline Mute Menus</h3>
+            <p className="text-xs text-zinc-400 leading-relaxed">
+              Every alert card in the Notification Center popover and `/notifications` dashboard features an interactive <code className="text-zinc-300 font-mono bg-[#181922] px-1 py-0.5 rounded border border-white/[0.06]">BellOff</code> menu. With a single click, engineers can mute the notification type, silence all alerts on the affected route, or suppress the specific incident signature permanently.
             </p>
           </div>
         </div>
@@ -350,37 +348,37 @@ const { alertSettings } = await res.json();`;
       {/* Section 4: REST API Reference & Configuration */}
       <section className="space-y-4">
         <div className="space-y-1">
-          <div className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-400">
+          <div className="text-xs font-mono font-semibold uppercase tracking-wider text-zinc-400">
             Developer Integration
           </div>
-          <h2 className="text-2xl font-black text-foreground">Alert Rules REST API</h2>
-          <p className="text-xs text-muted-foreground">
+          <h2 className="text-2xl font-semibold text-white">Alert Rules REST API</h2>
+          <p className="text-xs text-zinc-400">
             Programmatically configure thresholds and manage ignore rules via the project API:
           </p>
         </div>
 
-        <div className="relative bg-[#07090e] border border-border rounded-2xl p-4 font-mono text-xs text-slate-200 overflow-x-auto">
+        <div className="relative bg-[#090a0f] border border-white/[0.08] rounded-xl p-4 font-mono text-xs text-zinc-300 overflow-x-auto">
           <pre className="pr-12"><code>{apiSnippet}</code></pre>
           <button
             type="button"
             onClick={copyCode}
-            className="absolute right-3 top-3 p-2 rounded-xl bg-muted/60 hover:bg-muted text-slate-300 hover:text-white transition cursor-pointer"
+            className="absolute right-3 top-3 p-2 rounded-lg bg-[#111218] hover:bg-white/[0.06] border border-white/[0.08] text-zinc-400 hover:text-white transition-colors cursor-pointer"
             title="Copy API snippet"
           >
             {copiedCode ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
           </button>
         </div>
 
-        <div className="p-4 rounded-2xl bg-card border border-border flex items-center justify-between flex-wrap gap-3">
+        <div className="p-4 rounded-xl bg-[#111218] border border-white/[0.08] flex items-center justify-between flex-wrap gap-3">
           <div className="space-y-0.5">
-            <div className="text-xs font-bold text-foreground">Explore Notifications Dashboard</div>
-            <p className="text-[11px] text-muted-foreground">
+            <div className="text-xs font-semibold text-white">Explore Notifications Dashboard</div>
+            <p className="text-[11px] text-zinc-400">
               View active incidents, run optimization scans, and manage project alert rules in real time.
             </p>
           </div>
           <a
             href="https://dashboard.openanalytics.org.in/notifications"
-            className="px-3.5 py-1.5 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/30 text-cyan-300 text-xs font-bold transition flex items-center gap-1.5"
+            className="px-3.5 py-1.5 rounded-lg bg-white text-zinc-950 hover:bg-zinc-200 text-xs font-medium transition-colors flex items-center gap-1.5"
           >
             <span>Open Notification Hub</span>
             <ExternalLink size={12} />
