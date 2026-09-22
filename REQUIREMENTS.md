@@ -182,7 +182,7 @@
 1. **Cookieless Tracking**: The client script (`open.js`) operates without storing tracking cookies, using `localStorage` and `sessionStorage` strictly for pseudo-anonymous session coherence.
 2. **GDPR/CCPA IP Anonymization**: When enabled, the last octet of IPv4 addresses is masked (`192.168.1.0`) and IPv6 addresses are truncated.
 3. **Automated PII Sanitization**: URL query parameters containing tokens, password fields, or email identifiers are stripped before ingestion.
-4. **CORS Origin Whitelisting**: Public endpoints validate `Origin` / `Referer` headers against `project.allowedDomains`.
+4. **CORS Origin Whitelisting**: Public endpoints validate `Origin` / `Referer` headers against `project.allowedDomains` with automatic apex and `www` subdomain equivalence matching.
 
 ---
 

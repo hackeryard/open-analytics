@@ -2,6 +2,21 @@
 
 All notable changes to the Open Analytics platform are documented in this file.
 
+## [3.7.1] - 2026-09-22
+
+### Fixed
+- **Telemetry Time-Range Normalization & Query Synchronization (`app/api/projects/[projectId]/analytics/route.ts`, `app/api/projects/[projectId]/pageviews/route.ts`, `components/PlatformContext.tsx`)**:
+  - Unified `timeRange` and `range` search parameter handling across analytics and pageview route handlers, resolving an issue where date filter selections defaulted to `"7d"`.
+  - Synchronized `pvTimeRange` with `timeRangeState` in `PlatformContext.tsx` to ensure live feeds and background polling query matching windows.
+- **Continuous Timeline Intervals & Zero-Filled Buckets (`lib/analyticsDb.ts`, `lib/analyticsTypes.ts`, `components/PrimaryAnalyticsChart.tsx`)**:
+  - Implemented continuous gapless timeline backfilling for timeseries charts (hourly for single-day/24h spans, daily for multi-day ranges) so metrics never flatline or skip empty hours.
+  - Aligned date filter boundaries (`todayStart`, `yesterday`) with UTC midnight (`setUTCHours(0,0,0,0)`), matching MongoDB aggregation timezone formats.
+  - Formatted chart tooltips and x-axis labels with UTC synchronization.
+- **Apex & WWW Ingestion Equivalence (`lib/projectAuth.ts`)**:
+  - Normalized domain validation in `authenticateProjectRequest` by stripping `www.` prefixes, allowing visitors on both apex domains and `www` subdomains to ingest telemetry without HTTP 403 authorization rejections.
+- **Date Range Window Navigation (`components/DateRangeNavigator.tsx`, `components/AppShell.tsx`)**:
+  - Added multi-day window shifting on `<ChevronLeft />` and `<ChevronRight />` for preset ranges (`7d`, `30d`) with clamping at the current date.
+
 ## [3.7.0] - 2026-09-21
 
 ### Added

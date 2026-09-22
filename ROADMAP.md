@@ -125,12 +125,19 @@ To build the most developer-friendly, high-performance, and visually stunning an
 - [x] Full JSON-LD structured schemas (`WebSite`, `SoftwareApplication`, `Product`, `TechArticle`, `HowTo`, `FAQPage`, `BreadcrumbList`, `ItemList`) for AI search answer engines (SearchGPT, Perplexity, Claude, Gemini).
 - [x] Updated `robots.ts` and `sitemap.ts` with explicit allow rules for major LLM bot user-agents and full docs subroute indexing.
 
-### Phase 14: Session Replay & Visual Heatmaps (Q1 2027)
+### Phase 14: Telemetry Synchronization & Ingestion Resilience (Completed)
+- [x] Unified `timeRange` and `range` query parameter handling across analytics and pageview routes.
+- [x] Continuous timeline backfilling (hourly zero-fill for 1-day windows, daily zero-fill for multi-day spans).
+- [x] Aligned date filter boundaries with UTC midnight for MongoDB aggregation parity.
+- [x] Multi-day window shifting on preset ranges (`7d`, `30d`) in DateRangeNavigator.
+- [x] Apex & WWW domain equivalence matching in project authentication to eliminate 403 errors.
+
+### Phase 15: Session Replay & Visual Heatmaps (Q1 2027)
 - [ ] Lightweight, DOM-sanitized session recording playback engine.
 - [ ] Click & scroll aggregate heatmaps on rendered pages.
 - [ ] Privacy masking for sensitive user input fields during replay capture.
 
-### Phase 15: Enterprise Private Cloud & Global Edge (Q2 2027)
+### Phase 16: Enterprise Private Cloud & Global Edge (Q2 2027)
 - [ ] Dedicated Enterprise VPC deployments with custom SLAs.
 - [ ] Cloudflare Workers / Vercel Edge middleware ingestion adapters.
 - [ ] ClickHouse database driver support for ultra-high throughput event streaming (100M+ events/mo).

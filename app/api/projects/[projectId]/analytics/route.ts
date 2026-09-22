@@ -14,7 +14,7 @@ export async function GET(req: Request, { params }: { params: { projectId: strin
     }
 
     const { searchParams } = new URL(req.url);
-    const timeRange = searchParams.get("timeRange") || "7d";
+    const timeRange = searchParams.get("timeRange") || searchParams.get("range") || "7d";
     const startDate = searchParams.get("startDate") || null;
     const endDate = searchParams.get("endDate") || null;
 

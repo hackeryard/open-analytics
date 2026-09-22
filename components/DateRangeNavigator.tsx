@@ -129,8 +129,25 @@ export default function DateRangeNavigator({
 
   const isToday = activeSingleDate >= today;
   const isSingleDayMode = value.startsWith("date:") || value === "today" || value === "yesterday";
+  const isAtPresent = isSingleDayMode
+    ? isToday
+    : isCustomRange
+    ? (customParts[1] || "") >= today
+    : true;
 
   const handlePrevDay = () => {
+    if (value === "7d") {
+      const newStart = offsetDateString(today, -13);
+      const newEnd = offsetDateString(today, -7);
+      onChange(`custom:${newStart}_${newEnd}`);
+      return;
+    }
+    if (value === "30d") {
+      const newStart = offsetDateString(today, -59);
+      const newEnd = offsetDateString(today, -30);
+      onChange(`custom:${newStart}_${newEnd}`);
+      return;
+    }
     if (isCustomRange && customParts.length === 2) {
       const t1 = new Date(customParts[0]).getTime();
       const t2 = new Date(customParts[1]).getTime();
@@ -149,14 +166,22 @@ export default function DateRangeNavigator({
   };
 
   const handleNextDay = () => {
-    if (isToday && isSingleDayMode) return;
+    if (isAtPresent) return;
     if (isCustomRange && customParts.length === 2) {
       const t1 = new Date(customParts[0]).getTime();
       const t2 = new Date(customParts[1]).getTime();
       const spanDays = Math.max(1, Math.round(Math.abs(t2 - t1) / (1000 * 60 * 60 * 24)));
       let newStart = offsetDateString(customParts[0], spanDays);
       let newEnd = offsetDateString(customParts[1], spanDays);
-      if (newEnd > today) {
+      if (newEnd >= today) {
+        if (spanDays === 6 || spanDays === 7) {
+          onChange("7d");
+          return;
+        }
+        if (spanDays === 29 || spanDays === 30) {
+          onChange("30d");
+          return;
+        }
         const diff = Math.round((new Date(newEnd).getTime() - new Date(today).getTime()) / (1000 * 60 * 60 * 24));
         newStart = offsetDateString(newStart, -diff);
         newEnd = today;
@@ -239,7 +264,7 @@ export default function DateRangeNavigator({
         <button
           type="button"
           onClick={handleNextDay}
-          disabled={isToday && isSingleDayMode}
+          disabled={isAtPresent}
           className="p-1 sm:p-1.5 text-zinc-400 hover:text-white transition cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
           title="Next Window"
         >

@@ -950,7 +950,11 @@ export default function App() {
           {/* Right: Date Picker & Quick Actions */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {/* Compact Date Range Navigator */}
-            <DateRangeNavigator value={timeRange} onChange={setTimeRange} plan={activeProject?.plan} />
+            <DateRangeNavigator
+              value={timeRange}
+              onChange={setTimeRange}
+              plan={activeProject?.effectivePlan || activeProject?.plan || currentUser?.effectivePlan || currentUser?.plan}
+            />
 
             {/* Notification Center Popover */}
             <NotificationCenterPopover />

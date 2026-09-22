@@ -361,6 +361,7 @@ export function PlatformProvider({
   // Set time range & persist
   const setTimeRange = useCallback((range: string) => {
     setTimeRangeState(range);
+    setPvTimeRange(range);
     if (typeof window !== "undefined") {
       localStorage.setItem("open_time_range", range);
     }
@@ -457,7 +458,10 @@ export function PlatformProvider({
     // Restore saved time range if exists
     if (typeof window !== "undefined") {
       const savedRange = localStorage.getItem("open_time_range");
-      if (savedRange) setTimeRangeState(savedRange);
+      if (savedRange) {
+        setTimeRangeState(savedRange);
+        setPvTimeRange(savedRange);
+      }
     }
   }, [checkAuth]);
 
@@ -499,7 +503,21 @@ export function PlatformProvider({
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`/api/projects/${prj}/analytics?range=${r}`);
+        const params = new URLSearchParams({
+          timeRange: r,
+          range: r,
+        });
+        if (r.startsWith("custom:")) {
+          const parts = r.replace(/^custom:/, "").split("_");
+          if (parts[0]) params.set("startDate", parts[0]);
+          if (parts[1]) params.set("endDate", parts[1]);
+        } else if (r.startsWith("date:")) {
+          const d = r.replace(/^date:/, "");
+          params.set("startDate", d);
+          params.set("endDate", d);
+        }
+
+        const res = await fetch(`/api/projects/${prj}/analytics?${params.toString()}`);
         if (!res.ok) {
           if (res.status === 403) {
             setError("Access denied: You do not have permission to view this project.");
@@ -542,7 +560,17 @@ export function PlatformProvider({
           query: search,
           sortBy: sort,
           timeRange: range,
+          range: range,
         });
+        if (range.startsWith("custom:")) {
+          const parts = range.replace(/^custom:/, "").split("_");
+          if (parts[0]) params.set("startDate", parts[0]);
+          if (parts[1]) params.set("endDate", parts[1]);
+        } else if (range.startsWith("date:")) {
+          const d = range.replace(/^date:/, "");
+          params.set("startDate", d);
+          params.set("endDate", d);
+        }
         if (pvDevice !== "all") params.set("device", pvDevice);
         if (pvVitals !== "all") params.set("vitals", pvVitals);
 
@@ -978,6 +1006,26 @@ export function PlatformProvider({
     }, 45000);
     return () => clearInterval(interval);
   }, [activeProjectId, fetchNotifications]);
+
+  // Background analytics polling every 30s — keeps aggregate stats and active user count fresh
+  // even when the user is not actively interacting with the dashboard
+  useEffect(() => {
+    if (!activeProjectId) return;
+    const interval = setInterval(() => {
+      fetchData(timeRange, activeProjectId);
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [activeProjectId, timeRange, fetchData]);
+
+  // Live pageview stream polling every 10s — only when live stream is active and on page 1
+  // This is what makes new events appear in the live feed without a manual refresh
+  useEffect(() => {
+    if (!activeProjectId || !liveStreamActive || pvPage !== 1) return;
+    const interval = setInterval(() => {
+      fetchPaginatedPageviews(1, pvLimit, pvUserType, pvQuery, pvSort, pvTimeRange, activeProjectId);
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [activeProjectId, liveStreamActive, pvPage, pvLimit, pvUserType, pvQuery, pvSort, pvTimeRange, fetchPaginatedPageviews]);
 
   useEffect(() => {
     if (activeProjectId) {
