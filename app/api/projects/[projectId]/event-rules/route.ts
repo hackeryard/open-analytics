@@ -4,6 +4,8 @@ import Project from "@/models/Project";
 import { verifyProjectAccess, verifyProjectEdit } from "@/lib/auth";
 import crypto from "crypto";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(
   req: Request,
   { params }: { params: { projectId: string } }

@@ -4,6 +4,8 @@ import Project from "@/models/Project";
 import User from "@/models/User";
 import { verifyProjectOwner } from "@/lib/auth";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: Request, { params }: { params: { projectId: string } }) {
   try {
     await connectDB();

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { getOAuthBaseUrl } from "@/lib/auth";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   const clientId = process.env.GITHUB_CLIENT_ID;
   const baseUrl = getOAuthBaseUrl(req);

@@ -3,6 +3,8 @@ import { connectDB } from "@/lib/mongodb";
 import { getCurrentUser } from "@/lib/auth";
 import { getRazorpayInstance, getRazorpayKeys, RAZORPAY_PLAN_PRICES } from "@/lib/razorpay";
 
+export const dynamic = "force-dynamic";
+
 /**
  * POST /api/billing/razorpay/order
  * Creates a Razorpay Order for a subscription plan upgrade.

@@ -3,6 +3,8 @@ import { connectDB } from "@/lib/mongodb";
 import { getCurrentUser } from "@/lib/auth";
 import { activateSubscriptionManually } from "@/lib/subscriptionService";
 
+export const dynamic = "force-dynamic";
+
 /**
  * POST /api/admin/subscriptions/activate
  * Administrator activates a user's subscription after authentic, verified funds have been confirmed.

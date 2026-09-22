@@ -6,6 +6,8 @@ import { hashPassword, verifyOtpChallengeToken } from "@/lib/auth";
 import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 import { generateOtpCode, sendLoginOtpEmail } from "@/lib/email";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   try {
     const clientIp = getClientIp(req);

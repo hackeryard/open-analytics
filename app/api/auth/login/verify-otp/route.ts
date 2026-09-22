@@ -5,6 +5,8 @@ import Otp from "@/models/Otp";
 import { comparePassword, signToken, verifyOtpChallengeToken, SESSION_COOKIE_NAME } from "@/lib/auth";
 import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   try {
     const clientIp = getClientIp(req);

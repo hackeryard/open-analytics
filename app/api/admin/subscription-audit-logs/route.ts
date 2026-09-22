@@ -3,6 +3,8 @@ import { connectDB } from "@/lib/mongodb";
 import { getCurrentUser } from "@/lib/auth";
 import SubscriptionAuditLog from "@/models/SubscriptionAuditLog";
 
+export const dynamic = "force-dynamic";
+
 /**
  * GET /api/admin/subscription-audit-logs
  * Retrieves immutable audit log entries for all subscription and payment actions.

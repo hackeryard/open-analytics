@@ -7,6 +7,8 @@ import { comparePassword, hashPassword, signOtpChallengeToken } from "@/lib/auth
 import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 import { generateOtpCode, sendLoginOtpEmail } from "@/lib/email";
 
+export const dynamic = "force-dynamic";
+
 function maskEmail(email: string): string {
   const [local, domain] = email.split("@");
   if (!domain) return email;

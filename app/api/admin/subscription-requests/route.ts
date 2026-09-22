@@ -3,6 +3,8 @@ import { connectDB } from "@/lib/mongodb";
 import { getCurrentUser } from "@/lib/auth";
 import SubscriptionRequest from "@/models/SubscriptionRequest";
 
+export const dynamic = "force-dynamic";
+
 /**
  * GET /api/admin/subscription-requests
  * Restricted to administrators. Lists subscription requests with filtering, pagination, and search.

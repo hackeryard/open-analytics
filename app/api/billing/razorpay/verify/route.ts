@@ -9,6 +9,8 @@ import {
 } from "@/lib/razorpay";
 import { getUserEffectivePlan, getMaxAllowedProjects, PLAN_LIMITS } from "@/lib/planLimits";
 
+export const dynamic = "force-dynamic";
+
 /**
  * POST /api/billing/razorpay/verify
  * Validates HMAC SHA-256 signature from client checkout and upgrades user subscription in DB.

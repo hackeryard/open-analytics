@@ -5,6 +5,8 @@ import { ensureDefaultProject } from "@/lib/seed";
 import { getCurrentUser, generateProjectId, generateApiKey } from "@/lib/auth";
 import { getMaxAllowedProjects, getProjectEffectivePlan, getUserEffectivePlan } from "@/lib/planLimits";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     await connectDB();
