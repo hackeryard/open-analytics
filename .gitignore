@@ -6,3 +6,5 @@ out
 .DS_Store
 *.log
 *.tsbuildinfo
+# Ignore npm lockfile — this project uses Yarn
+package-lock.json
