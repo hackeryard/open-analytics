@@ -4,6 +4,8 @@ import AnalyticsEvent from "@/models/AnalyticsEvent";
 import { authenticateProjectRequest } from "@/lib/projectAuth";
 import { corsJsonResponse, handleCorsPreflight } from "@/lib/cors";
 
+export const dynamic = "force-dynamic";
+
 export async function OPTIONS(req: Request) {
   return handleCorsPreflight(req);
 }

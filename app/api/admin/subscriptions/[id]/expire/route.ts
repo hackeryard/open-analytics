@@ -5,6 +5,8 @@ import Subscription from "@/models/Subscription";
 import User from "@/models/User";
 import SubscriptionAuditLog from "@/models/SubscriptionAuditLog";
 
+export const dynamic = "force-dynamic";
+
 /**
  * POST /api/admin/subscriptions/[id]/expire
  * Administrator manually expires or cancels an active subscription.

@@ -4,6 +4,8 @@ import User from "@/models/User";
 import Project from "@/models/Project";
 import { verifyRazorpayWebhookSignature } from "@/lib/razorpay";
 
+export const dynamic = "force-dynamic";
+
 /**
  * POST /api/billing/razorpay/webhook
  * Receives background asynchronous events from Razorpay (e.g. payment.captured, order.paid).

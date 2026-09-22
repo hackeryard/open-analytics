@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getActiveSubscriptionPlans } from "@/lib/subscriptionService";
 
+export const dynamic = "force-dynamic";
+
 /**
  * GET /api/subscription/plans
  * Publicly returns available active subscription plans with database prices and features.

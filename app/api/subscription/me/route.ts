@@ -5,6 +5,8 @@ import { getUserActiveSubscription } from "@/lib/subscriptionService";
 import SubscriptionRequest from "@/models/SubscriptionRequest";
 import Payment from "@/models/Payment";
 
+export const dynamic = "force-dynamic";
+
 /**
  * GET /api/subscription/me
  * Returns current authenticated user's active subscription, latest pending request, and payment history.

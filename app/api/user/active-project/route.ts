@@ -5,6 +5,8 @@ import Project from "@/models/Project";
 import { getCurrentUser } from "@/lib/auth";
 import { isPlanActive } from "@/lib/planLimits";
 
+export const dynamic = "force-dynamic";
+
 /**
  * POST /api/user/active-project
  * Allows a user whose plan expired (or Free user with multiple projects) to choose

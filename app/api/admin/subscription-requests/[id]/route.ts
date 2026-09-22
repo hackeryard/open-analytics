@@ -4,6 +4,8 @@ import { getCurrentUser } from "@/lib/auth";
 import SubscriptionRequest from "@/models/SubscriptionRequest";
 import SubscriptionAuditLog from "@/models/SubscriptionAuditLog";
 
+export const dynamic = "force-dynamic";
+
 /**
  * PATCH /api/admin/subscription-requests/[id]
  * Administrator updates request status (e.g. contacted, payment_pending, rejected) or attaches internal adminNotes.

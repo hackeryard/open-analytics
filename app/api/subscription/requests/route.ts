@@ -6,6 +6,8 @@ import SubscriptionRequest from "@/models/SubscriptionRequest";
 import SubscriptionAuditLog from "@/models/SubscriptionAuditLog";
 import { getUserActiveSubscription, seedSubscriptionPlansIfEmpty } from "@/lib/subscriptionService";
 
+export const dynamic = "force-dynamic";
+
 /**
  * POST /api/subscription/requests
  * Creates a new subscription request representing the user's intent to upgrade.

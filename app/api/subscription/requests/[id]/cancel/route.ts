@@ -4,6 +4,8 @@ import { getCurrentUser } from "@/lib/auth";
 import SubscriptionRequest from "@/models/SubscriptionRequest";
 import SubscriptionAuditLog from "@/models/SubscriptionAuditLog";
 
+export const dynamic = "force-dynamic";
+
 /**
  * POST /api/subscription/requests/[id]/cancel
  * Allows a user to cancel their pending subscription request.

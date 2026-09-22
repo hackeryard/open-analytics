@@ -4,6 +4,8 @@ import PageView from "@/models/PageView";
 import { parseDateFilter } from "@/lib/analyticsDb";
 import { verifyProjectAccess } from "@/lib/auth";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: Request, { params }: { params: { projectId: string } }) {
   try {
     await connectDB();

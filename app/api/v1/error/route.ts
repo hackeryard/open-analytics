@@ -4,6 +4,8 @@ import { authenticateProjectRequest } from "@/lib/projectAuth";
 import { corsJsonResponse, handleCorsPreflight } from "@/lib/cors";
 import { evaluateErrorAlerts } from "@/lib/alertsEngine";
 
+export const dynamic = "force-dynamic";
+
 export async function OPTIONS(req: Request) {
   return handleCorsPreflight(req);
 }

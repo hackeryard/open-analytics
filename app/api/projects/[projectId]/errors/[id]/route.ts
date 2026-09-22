@@ -3,6 +3,8 @@ import { connectDB } from "@/lib/mongodb";
 import ErrorLog from "@/models/ErrorLog";
 import { verifyProjectEdit } from "@/lib/auth";
 
+export const dynamic = "force-dynamic";
+
 export async function PATCH(req: Request, { params }: { params: { projectId: string; id: string } }) {
   try {
     await connectDB();

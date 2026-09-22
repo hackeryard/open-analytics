@@ -11,6 +11,7 @@ import {
   SubscriptionPlan,
 } from "@/lib/planLimits";
 
+export const dynamic = "force-dynamic";
 /**
  * GET /api/user/plan
  * Returns current user's subscription, expiry, limits, and usage metrics.
