@@ -2,6 +2,31 @@
 
 All notable changes to the Open Analytics platform are documented in this file.
 
+## [3.7.0] - 2026-09-21
+
+### Added
+- **Main Domain Comprehensive SEO, GEO & AEO Overhaul**:
+  - Systematic optimization of all 12 public main domain routes (`openanalytics.org.in`) for Google search indexing, Generative Engine Optimization (GEO), and Answer Engine Optimization (AEO).
+  - Decoupled client-side UI interactivity from metadata onto dedicated Server Components across `/faq`, `/docs`, `/docs/installation`, `/docs/verification`, `/docs/web-vitals`, `/docs/seo-aeo`, and `/docs/alerts`.
+  - Calibrated rendered HTML `<title>` tags across all 12 pages to fall strictly within the **50–60 character** sweet spot, eliminating duplicate branding (`| Open Analytics | Open Analytics`).
+  - Calibrated `<meta name="description">` strings across all 12 pages to fall strictly within the **140–160 character** standard.
+  - Injected complete, machine-readable JSON-LD Schema.org graphs across all pages:
+    - Root layout: Unified `WebSite` (with `SearchAction` potentialAction) and `SoftwareApplication` (version `3.7.0`, `aggregateRating` 4.9/5, multi-tier structured `offers`).
+    - Home: Injected `FAQPage` schema with 6 core Q&A items for generative search engine extraction.
+    - Features: Unified `BreadcrumbList`, `WebPage`, and `ItemList` of the 6 core platform capabilities.
+    - Pricing: Unified `BreadcrumbList`, `WebPage`, `Product` with 3 offers (Free, Pro $19/mo, Enterprise $79/mo), and pricing `FAQPage`.
+    - VS Google Analytics: Unified `BreadcrumbList`, `TechArticle`, and comparison `FAQPage`.
+    - Privacy: Unified `BreadcrumbList`, `TechArticle`, and privacy compliance `FAQPage`.
+    - FAQ: Decoupled into `FaqClientView.tsx` with server-rendered `BreadcrumbList`, `WebPage`, and full 12-question `FAQPage` schema.
+    - Docs Overview: Decoupled into `DocsOverviewClientView.tsx` with server-rendered `BreadcrumbList`, `TechArticle`, and `ItemList` of platform modules.
+    - Installation Docs: Decoupled into `InstallationClientView.tsx` with server-rendered `BreadcrumbList`, `TechArticle`, and multi-step `HowTo` schema.
+    - Verification Docs: Decoupled into `VerificationClientView.tsx` with server-rendered `BreadcrumbList`, `TechArticle`, and `HowTo` schema.
+    - Web Vitals Docs: Server-rendered `BreadcrumbList`, `TechArticle`, and `ItemList` of Core Web Vitals thresholds.
+    - SEO & AI Crawler Radar Docs: Server-rendered `BreadcrumbList`, `TechArticle`, and `ItemList` of detected LLM search crawlers.
+    - Alerts Docs: Decoupled into `AlertsDocsClientView.tsx` with server-rendered `BreadcrumbList`, `TechArticle`, and `ItemList` of 7 autonomous incident types.
+  - Updated `sitemap.ts` and `robots.ts` with `/docs/alerts` and explicit allow directives for AI search user agents (`GPTBot`, `PerplexityBot`, `ClaudeBot`, `Applebot-Extended`, `Bytespider`).
+  - Verified 100% compliance with zero-emoji standard and sub-domain isolation tests.
+
 ## [3.6.0] - 2026-09-20
 
 ### Changed

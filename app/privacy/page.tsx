@@ -26,9 +26,9 @@ import { getDashboardUrl } from "@/lib/subdomain";
 const baseUrl = "https://openanalytics.org.in";
 
 export const metadata: Metadata = {
-  title: "Privacy Architecture & GDPR Compliance Guide | Open Analytics",
+  title: "Privacy Architecture & GDPR Compliance",
   description:
-    "Technical documentation of Open Analytics privacy-first telemetry architecture: 100% GDPR, CCPA, and PECR compliant with zero cookie consent banners, 24-hour cryptographic rotating salts, and zero PII storage.",
+    "Technical overview of Open Analytics privacy architecture: 100% GDPR, CCPA, and PECR compliance, zero cookie consent banners, and daily rotating 256-bit salts.",
   keywords: [
     "gdpr compliant web analytics",
     "cookieless analytics privacy",
@@ -44,21 +44,30 @@ export const metadata: Metadata = {
     canonical: "https://openanalytics.org.in/privacy",
   },
   openGraph: {
-    title: "Privacy Policy & GDPR Compliance Architecture | Open Analytics",
+    title: "Privacy Architecture & GDPR Compliance",
     description:
-      "Why Open Analytics requires zero cookie banners, stores zero PII, and complies strictly with GDPR, CCPA, and PECR.",
+      "Technical overview of Open Analytics privacy architecture: 100% GDPR, CCPA, and PECR compliance, zero cookie consent banners, and daily rotating 256-bit salts.",
     url: `${baseUrl}/privacy`,
     type: "article",
+    images: [
+      {
+        url: `${baseUrl}/og-image.png`,
+        width: 1200,
+        height: 630,
+        alt: "Open Analytics Privacy Architecture",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Open Analytics Privacy & GDPR Compliance",
-    description: "Cryptographic rotating salts, zero cookies, and mathematical privacy protection.",
+    title: "Privacy Architecture & GDPR Compliance",
+    description:
+      "Technical overview of Open Analytics privacy architecture: 100% GDPR, CCPA, and PECR compliance, zero cookie consent banners, and daily rotating 256-bit salts.",
+    images: [`${baseUrl}/og-image.png`],
   },
 };
 
 const breadcrumbSchema = {
-  "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
     {
@@ -77,26 +86,23 @@ const breadcrumbSchema = {
 };
 
 const privacyArticleSchema = {
-  "@context": "https://schema.org",
   "@type": "TechArticle",
+  "@id": `${baseUrl}/privacy/#article`,
   headline: "Open Analytics Privacy & Data Protection Architecture",
   description: "Comprehensive engineering breakdown of cookieless telemetry, rotating daily cryptographic salts, and EU data sovereignty.",
   author: {
     "@type": "Organization",
     name: "Open Analytics Team",
+    url: baseUrl,
   },
   publisher: {
     "@type": "Organization",
     name: "Open Analytics",
-    logo: {
-      "@type": "ImageObject",
-      url: `${baseUrl}/icon.svg`,
-    },
+    url: baseUrl,
   },
 };
 
 const privacyFaqSchema = {
-  "@context": "https://schema.org",
   "@type": "FAQPage",
   mainEntity: [
     {
@@ -109,18 +115,10 @@ const privacyFaqSchema = {
     },
     {
       "@type": "Question",
-      name: "How does Open Analytics calculate unique visitors without tracking users across days?",
+      name: "How does Open Analytics protect visitor privacy with daily salts?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Open Analytics generates a pseudo-anonymous daily session identifier using HMAC-SHA-256 combining the truncated IP address, User-Agent string, and a daily cryptographic salt. At 00:00:00 UTC every night, this salt is permanently purged from memory and replaced, making it mathematically impossible to link a visitor across multiple days.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Does Open Analytics store raw IP addresses?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "No. Raw IP addresses are processed entirely in ephemeral RAM for geolocation lookup (country and city level) and immediately truncated (/16 for IPv4 and /64 for IPv6) before session hashing. Raw IP addresses are never written to disk, databases, or application log files.",
+        text: "Visitor IDs are computed by combining the masked IP address, User-Agent, and a 256-bit cryptographic salt rotated and purged every 24 hours. This makes cross-day profiling mathematically impossible.",
       },
     },
     {
@@ -134,6 +132,15 @@ const privacyFaqSchema = {
   ],
 };
 
+const privacyPageSchema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    breadcrumbSchema,
+    privacyArticleSchema,
+    privacyFaqSchema,
+  ],
+};
+
 export default function PrivacyPage() {
   const dashboardUrl = getDashboardUrl("/");
 
@@ -142,9 +149,7 @@ We use Open Analytics (https://openanalytics.org.in) for privacy-friendly web pe
 
   return (
     <div className="w-full text-zinc-100 selection:bg-white/[0.15] selection:text-white">
-      <JsonLd schema={breadcrumbSchema} />
-      <JsonLd schema={privacyArticleSchema} />
-      <JsonLd schema={privacyFaqSchema} />
+      <JsonLd data={privacyPageSchema} />
 
       {/* ============================================================ */}
       {/* 1. HERO SECTION                                              */}

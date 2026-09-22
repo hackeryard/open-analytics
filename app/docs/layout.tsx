@@ -3,9 +3,9 @@ import DocsClientShell from "@/components/docs/DocsClientShell";
 import JsonLd from "@/components/JsonLd";
 
 export const metadata: Metadata = {
-  title: "Documentation & Developer Architecture | Open Analytics",
+  title: "Developer Documentation & API Reference",
   description:
-    "Developer documentation for Open Analytics: universal 1-line script installation, Core Web Vitals RUM instrumentation, AI search crawler radar, and runtime error triage.",
+    "Technical documentation for Open Analytics: universal 1-line script, Core Web Vitals RUM monitoring, AI search crawler radar, and runtime error incident triage.",
   keywords: [
     "open analytics documentation",
     "web analytics developer guide",
@@ -16,19 +16,20 @@ export const metadata: Metadata = {
     "rage click tracking documentation",
   ],
   alternates: {
-    canonical: "https://openanalytics.org.in/docs",
+    canonical: "/docs",
   },
   openGraph: {
-    title: "Open Analytics Developer Documentation",
+    title: "Developer Documentation & API Reference | Open Analytics",
     description:
-      "Enterprise web observability documentation. Universal 1-line installation, Core Web Vitals, and AI Crawler Radar integration.",
+      "Technical documentation for Open Analytics: universal 1-line script, Core Web Vitals RUM monitoring, AI search crawler radar, and runtime error incident triage.",
     url: "https://openanalytics.org.in/docs",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Open Analytics Developer Documentation",
-    description: "Universal 1-line installation, Core Web Vitals, and AI Crawler Radar docs.",
+    title: "Developer Documentation & API Reference | Open Analytics",
+    description:
+      "Technical documentation for Open Analytics: universal 1-line script, Core Web Vitals RUM monitoring, AI search crawler radar, and runtime error incident triage.",
   },
 };
 

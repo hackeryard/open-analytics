@@ -25,9 +25,9 @@ import { getDashboardUrl } from "@/lib/subdomain";
 const baseUrl = "https://openanalytics.org.in";
 
 export const metadata: Metadata = {
-  title: "Open Analytics vs Google Analytics 4 (GA4) | Complete 2026 Comparison",
+  title: "Open Analytics vs Google Analytics 4 (GA4)",
   description:
-    "Comprehensive head-to-head comparison: Open Analytics vs Google Analytics 4 (GA4). Why modern engineering teams choose Open Analytics for sub-3.2KB script payload, zero cookie banners, real-time sub-second latency, and autonomous AI search radar.",
+    "Compare Open Analytics vs GA4: sub-3.2KB payload vs 45KB+, zero cookie consent banners, real-time sub-second telemetry, and autonomous AI search crawler radar.",
   keywords: [
     "open analytics vs google analytics",
     "ga4 alternative",
@@ -43,21 +43,30 @@ export const metadata: Metadata = {
     canonical: "https://openanalytics.org.in/vs-google-analytics",
   },
   openGraph: {
-    title: "Open Analytics vs Google Analytics 4 (GA4) | The Privacy-First Alternative",
+    title: "Open Analytics vs Google Analytics 4: Technical Comparison",
     description:
-      "Sub-3.2KB vs 45KB+ script, zero cookie banners vs mandatory consent popups, sub-second telemetry vs 24hr data lag. See the complete head-to-head comparison.",
+      "Compare Open Analytics vs GA4: sub-3.2KB payload vs 45KB+, zero cookie consent banners, real-time sub-second telemetry, and autonomous AI search crawler radar.",
     url: `${baseUrl}/vs-google-analytics`,
     type: "article",
+    images: [
+      {
+        url: `${baseUrl}/og-image.png`,
+        width: 1200,
+        height: 630,
+        alt: "Open Analytics vs Google Analytics 4 Comparison",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Open Analytics vs Google Analytics 4 (GA4) Comparison",
-    description: "Compare script payload, privacy compliance, AI bot radar, and real-time latency.",
+    title: "Open Analytics vs Google Analytics 4: Technical Comparison",
+    description:
+      "Compare Open Analytics vs GA4: sub-3.2KB payload vs 45KB+, zero cookie consent banners, real-time sub-second telemetry, and autonomous AI search crawler radar.",
+    images: [`${baseUrl}/og-image.png`],
   },
 };
 
 const breadcrumbSchema = {
-  "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
     {
@@ -75,8 +84,27 @@ const breadcrumbSchema = {
   ],
 };
 
+const articleSchema = {
+  "@type": "TechArticle",
+  "@id": `${baseUrl}/vs-google-analytics/#article`,
+  headline: "Open Analytics vs Google Analytics 4: Complete Technical Comparison",
+  description:
+    "Architectural and performance comparison between Open Analytics and Google Analytics 4 covering script payload, cookie consent, and real user monitoring.",
+  url: `${baseUrl}/vs-google-analytics`,
+  author: {
+    "@type": "Organization",
+    name: "Open Analytics Team",
+    url: baseUrl,
+  },
+  publisher: {
+    "@type": "Organization",
+    name: "Open Analytics",
+    url: baseUrl,
+  },
+  inLanguage: "en-US",
+};
+
 const faqSchema = {
-  "@context": "https://schema.org",
   "@type": "FAQPage",
   mainEntity: [
     {
@@ -104,6 +132,11 @@ const faqSchema = {
       },
     },
   ],
+};
+
+const comparisonPageSchema = {
+  "@context": "https://schema.org",
+  "@graph": [breadcrumbSchema, articleSchema, faqSchema],
 };
 
 export default function VsGoogleAnalyticsPage() {
@@ -174,8 +207,7 @@ export default function VsGoogleAnalyticsPage() {
 
   return (
     <div className="w-full text-zinc-100 selection:bg-white/[0.15] selection:text-white">
-      <JsonLd schema={breadcrumbSchema} />
-      <JsonLd schema={faqSchema} />
+      <JsonLd data={comparisonPageSchema} />
 
       {/* ============================================================ */}
       {/* 1. HERO SECTION                                              */}

@@ -6,9 +6,9 @@ import FeaturesClientView from "@/components/public/FeaturesClientView";
 const baseUrl = "https://openanalytics.org.in";
 
 export const metadata: Metadata = {
-  title: "Features | Modern Cookieless Web Observability & Telemetry Engine",
+  title: "Features: Cookieless Observability & RUM",
   description:
-    "Explore Open Analytics features: Real User Monitoring (Core Web Vitals p75 LCP, INP, CLS), autonomous AI search crawler radar, behavioral rage click intelligence, automated error triage, and sub-3.2KB cookieless telemetry.",
+    "Open Analytics features: sub-3.2KB cookieless telemetry, Core Web Vitals RUM, AI search crawler radar, behavioral rage clicks, and automated crash triage.",
   keywords: [
     "open analytics features",
     "core web vitals real user monitoring",
@@ -24,16 +24,26 @@ export const metadata: Metadata = {
     canonical: "https://openanalytics.org.in/features",
   },
   openGraph: {
-    title: "Open Analytics Features | Core Web Vitals, AI Radar & Cookieless Observability",
+    title: "Open Analytics Features: Cookieless Observability & RUM",
     description:
-      "All-in-one web analytics engine: sub-3.2KB beacon, Core Web Vitals, behavioral UX tracking, automated crash diagnosis, and AI bot radar.",
+      "Open Analytics features: sub-3.2KB cookieless telemetry, Core Web Vitals RUM, AI search crawler radar, behavioral rage clicks, and automated crash triage.",
     url: `${baseUrl}/features`,
     type: "website",
+    images: [
+      {
+        url: `${baseUrl}/og-image.png`,
+        width: 1200,
+        height: 630,
+        alt: "Open Analytics Features Overview",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Open Analytics Features | Web Observability & AI Radar",
-    description: "Sub-3.2KB beacon, Core Web Vitals, behavioral UX tracking, and AI bot radar.",
+    title: "Open Analytics Features: Cookieless Observability & RUM",
+    description:
+      "Open Analytics features: sub-3.2KB cookieless telemetry, Core Web Vitals RUM, AI search crawler radar, behavioral rage clicks, and automated crash triage.",
+    images: [`${baseUrl}/og-image.png`],
   },
 };
 
@@ -100,11 +110,34 @@ const featureListSchema = {
   ],
 };
 
+const pageSchema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    breadcrumbSchema,
+    {
+      "@type": "WebPage",
+      "@id": `${baseUrl}/features/#webpage`,
+      url: `${baseUrl}/features`,
+      name: "Open Analytics Features: Cookieless Observability & RUM",
+      description:
+        "Explore Open Analytics features: sub-3.2KB cookieless telemetry, Core Web Vitals RUM, AI search crawler radar, behavioral rage clicks, and automated crash triage.",
+      isPartOf: {
+        "@type": "WebSite",
+        "@id": `${baseUrl}/#website`,
+      },
+      about: {
+        "@type": "SoftwareApplication",
+        "@id": `${baseUrl}/#software`,
+      },
+    },
+    featureListSchema,
+  ],
+};
+
 export default function FeaturesPage() {
   return (
     <>
-      <JsonLd schema={breadcrumbSchema} />
-      <JsonLd schema={featureListSchema} />
+      <JsonLd data={pageSchema} />
       <FeaturesClientView />
     </>
   );

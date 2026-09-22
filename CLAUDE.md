@@ -18,6 +18,12 @@
 - **Tactile High-Contrast CTAs**: Use crisp white buttons (`bg-white text-zinc-950 hover:bg-zinc-200`) for primary actions.
 - **Clutter-Free Navigation**: Reserve sidebar badges strictly for actionable signals (unread alerts, active crash errors). Do not clutter navigation with vanity numbers.
 
+### 1.2 Main Domain SEO, GEO & AEO Standards
+- Rendered HTML `<title>` tags across all 12 public routes must strictly fall between **50 and 60 characters** (`%s | Open Analytics` root template).
+- `<meta name="description">` tags must strictly fall between **140 and 160 characters**.
+- Interactive client components must decouple state from `page.tsx` (`*ClientView.tsx`) to enable server-rendered static metadata.
+- Every public page must inject valid, rich JSON-LD Schema.org graphs (`WebSite`, `SoftwareApplication`, `Product`, `TechArticle`, `HowTo`, `FAQPage`, `BreadcrumbList`, `ItemList`).
+
 ### 2. Multi-Tenant Project Isolation & RBAC
 - Every analytical collection (`PageView`, `CustomEvent`, `ErrorLogItem`, etc.) is strictly indexed and isolated by `projectId`.
 - Always wrap project-specific route handlers with the appropriate auth guard from `lib/auth.ts`:

@@ -38,6 +38,7 @@ import {
   Lock,
 } from "lucide-react";
 import { getDashboardUrl } from "@/lib/subdomain";
+import JsonLd from "@/components/JsonLd";
 
 export default function LandingHero() {
   const dashboardUrl = getDashboardUrl("/");
@@ -98,8 +99,22 @@ export default function LandingHero() {
     },
   ];
 
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.q,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.a,
+      },
+    })),
+  };
+
   return (
     <div className="w-full text-zinc-100 selection:bg-white/[0.15] selection:text-white">
+      <JsonLd data={faqSchema} />
       {/* ============================================================ */}
       {/* 1. HERO SECTION                                              */}
       {/* ============================================================ */}

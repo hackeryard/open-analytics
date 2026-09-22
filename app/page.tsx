@@ -76,7 +76,7 @@ export default function ExecutiveOverviewDashboard() {
   const [testSignalSending, setTestSignalSending] = useState(false);
   const [testSignalSuccess, setTestSignalSuccess] = useState(false);
 
-  const scriptTag = `<script defer src="https://openanalytics.org.in/open.js" data-project-id="${activeProjectId || "prj_openlabs"}"></script>`;
+  const scriptTag = `<script defer src="https://api.openanalytics.org.in/open.js" data-project-id="${activeProjectId || "prj_openlabs"}"></script>`;
 
   const copyScript = () => {
     navigator.clipboard.writeText(scriptTag);

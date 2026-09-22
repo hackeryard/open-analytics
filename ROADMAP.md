@@ -117,12 +117,20 @@ To build the most developer-friendly, high-performance, and visually stunning an
 - [x] Redesigned authentication & profile interfaces (`/login`, `/register`, `/profile`) with solid obsidian panels and high-contrast inputs.
 - [x] High-contrast tactile white CTA buttons and clean obsidian workspace switcher popovers across desktop and mobile.
 
-### Phase 13: Session Replay & Visual Heatmaps (Q1 2027)
+### Phase 13: Main Domain Full SEO, GEO & AEO Optimization (Completed)
+- [x] Systematic optimization of all 12 main domain routes (`/`, `/features`, `/pricing`, `/vs-google-analytics`, `/privacy`, `/faq`, `/docs`, `/docs/installation`, `/docs/verification`, `/docs/web-vitals`, `/docs/seo-aeo`, `/docs/alerts`).
+- [x] Rendered HTML title tags calibrated strictly between 50 and 60 characters with zero duplicate branding (`%s | Open Analytics`).
+- [x] Meta description tags calibrated strictly between 140 and 160 characters.
+- [x] Client/Server component decoupling across all interactive public pages (`FaqClientView`, `DocsOverviewClientView`, `InstallationClientView`, `VerificationClientView`, `AlertsDocsClientView`) enabling static server metadata rendering.
+- [x] Full JSON-LD structured schemas (`WebSite`, `SoftwareApplication`, `Product`, `TechArticle`, `HowTo`, `FAQPage`, `BreadcrumbList`, `ItemList`) for AI search answer engines (SearchGPT, Perplexity, Claude, Gemini).
+- [x] Updated `robots.ts` and `sitemap.ts` with explicit allow rules for major LLM bot user-agents and full docs subroute indexing.
+
+### Phase 14: Session Replay & Visual Heatmaps (Q1 2027)
 - [ ] Lightweight, DOM-sanitized session recording playback engine.
 - [ ] Click & scroll aggregate heatmaps on rendered pages.
 - [ ] Privacy masking for sensitive user input fields during replay capture.
 
-### Phase 14: Enterprise Private Cloud & Global Edge (Q2 2027)
+### Phase 15: Enterprise Private Cloud & Global Edge (Q2 2027)
 - [ ] Dedicated Enterprise VPC deployments with custom SLAs.
 - [ ] Cloudflare Workers / Vercel Edge middleware ingestion adapters.
 - [ ] ClickHouse database driver support for ultra-high throughput event streaming (100M+ events/mo).

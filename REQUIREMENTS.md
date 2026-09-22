@@ -227,3 +227,24 @@
 4. **Zero-Emoji Rule**:
    - Strictly zero emojis across all code, UI components, status badges, and documentation. Lucide React icons only.
 
+---
+
+## 8. SEO, GEO & AEO Specification for Main Domain Pages
+
+1. **Title Tag Standards**:
+   - Every public main domain page must render an HTML `<title>` tag strictly between **50 and 60 characters**.
+   - With the root layout title template (`%s | Open Analytics`, 17 characters), child page titles must strictly be **33 to 43 characters long**.
+   - No child page title may include the brand suffix `| Open Analytics` to prevent duplicate branding.
+2. **Meta Description Standards**:
+   - Every public page must define a `<meta name="description">` strictly between **140 and 160 characters**.
+3. **Client/Server Decoupling Rule**:
+   - Next.js prohibits exporting `Metadata` from Client Components (`"use client"`).
+   - Any public page requiring interactive client state (search filters, copy buttons, tabs) must be decoupled into a Server Component `page.tsx` (for `Metadata` and `JsonLd` schemas) and a companion client component (e.g. `*ClientView.tsx`).
+4. **Structured Schema (JSON-LD) Graph Requirements**:
+   - Every page must inject contextual Schema.org data:
+     - Root Layout: `WebSite` (with `potentialAction: SearchAction`) and `SoftwareApplication` (with `aggregateRating`, `softwareVersion`, and multi-tier `offers`).
+     - Landing & Marketing Pages: `BreadcrumbList`, `WebPage`, `Product`, `ItemList`, and `FAQPage` (with real questions/answers for direct AI answer engine synthesis).
+     - Documentation & Technical Comparison Pages: `BreadcrumbList`, `TechArticle`, and `HowTo` schemas.
+5. **AI Search Crawler User-Agents Support**:
+   - `robots.ts` and `sitemap.ts` must explicitly allow and catalog all primary LLM crawler agents: `GPTBot`, `PerplexityBot`, `ClaudeBot`, `Applebot-Extended`, and `Bytespider`.
+

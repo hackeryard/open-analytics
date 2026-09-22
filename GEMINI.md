@@ -61,7 +61,13 @@ Never run ad-hoc raw commands for git pulls, port killing, or PRs. Always use pr
 - Always verify project permissions using `lib/auth.ts` (`verifyProjectAccess`, `verifyProjectEdit`, `verifyProjectManage`, `verifyProjectOwner`).
 - Roles: `owner`, `admin`, `editor`, `member`, `super_admin`.
 
-### 6. Project Documentation & Tracking Files Maintenance
+### 6. Main Domain SEO, GEO & AEO Standards
+- Rendered HTML `<title>` tags across all 12 public routes must strictly fall between **50 and 60 characters** (`%s | Open Analytics` root template).
+- `<meta name="description">` tags must strictly fall between **140 and 160 characters**.
+- Interactive client components must decouple state from `page.tsx` (`*ClientView.tsx`) to enable server-rendered static metadata.
+- Every public page must inject valid, rich JSON-LD Schema.org graphs (`WebSite`, `SoftwareApplication`, `Product`, `TechArticle`, `HowTo`, `FAQPage`, `BreadcrumbList`, `ItemList`).
+
+### 7. Project Documentation & Tracking Files Maintenance
 Whenever significant architectural or functional changes are made, update:
 - `CHANGELOG.md`: Log new versions and bulleted features.
 - `ROADMAP.md`: Check off completed milestones.
