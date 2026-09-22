@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import FaqClientView, { FAQ_ITEMS } from "@/components/public/FaqClientView";
+import FaqClientView from "@/components/public/FaqClientView";
+import { FAQ_ITEMS } from "@/lib/faqData";
 import JsonLd from "@/components/JsonLd";
 
 export const metadata: Metadata = {
