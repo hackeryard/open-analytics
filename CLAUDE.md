@@ -11,6 +11,19 @@
 - **Do NOT use emojis anywhere in the codebase**: Avoid emojis in UI components, AI prompts, console logs, toast messages, status dropdowns, empty states, or documentation.
 - Use clean, professional **Lucide React** icons (`<Activity />`, `<Check />`, `<Shield />`, `<Crown />`, etc.) and refined typography instead.
 
+### 1.1 World-Class Obsidian & Precision Design System
+- **No generic AI aesthetics**: Avoid muddy navy blue, blurry semi-transparent blue cards, and loud rainbow neon gradients.
+- **Obsidian Palette**: Solid `#090a0f` canvas, `#111218` solid cards, `#0e0f15` sidebars, `#20222c` / `rgba(255,255,255,0.08)` hairline borders with inset top bevels (`inset 0 1px 0 rgba(255,255,255,0.05)`).
+- **Typography**: Plus Jakarta Sans (`--font-sans`) paired with JetBrains Mono (`--font-mono`), with tabular numbers (`tabular-nums font-semibold text-white`) for all metrics and KPIs.
+- **Tactile High-Contrast CTAs**: Use crisp white buttons (`bg-white text-zinc-950 hover:bg-zinc-200`) for primary actions.
+- **Clutter-Free Navigation**: Reserve sidebar badges strictly for actionable signals (unread alerts, active crash errors). Do not clutter navigation with vanity numbers.
+
+### 1.2 Main Domain SEO, GEO & AEO Standards
+- Rendered HTML `<title>` tags across all 12 public routes must strictly fall between **50 and 60 characters** (`%s | Open Analytics` root template).
+- `<meta name="description">` tags must strictly fall between **140 and 160 characters**.
+- Interactive client components must decouple state from `page.tsx` (`*ClientView.tsx`) to enable server-rendered static metadata.
+- Every public page must inject valid, rich JSON-LD Schema.org graphs (`WebSite`, `SoftwareApplication`, `Product`, `TechArticle`, `HowTo`, `FAQPage`, `BreadcrumbList`, `ItemList`).
+
 ### 2. Multi-Tenant Project Isolation & RBAC
 - Every analytical collection (`PageView`, `CustomEvent`, `ErrorLogItem`, etc.) is strictly indexed and isolated by `projectId`.
 - Always wrap project-specific route handlers with the appropriate auth guard from `lib/auth.ts`:
@@ -139,6 +152,6 @@ yarn purge:retention # Run 1-year data retention MongoDB purge (node scripts/pur
 
 1. **Client Components**: Mark interactive UI files with `"use client";` at line 1.
 2. **Data Aggregations**: Keep complex MongoDB queries inside `lib/analyticsDb.ts` to keep API route handlers clean and maintainable.
-3. **Responsive Glassmorphism**: Use dark-mode themed cards (`bg-card border border-border rounded-3xl shadow-sm`).
+3. **Obsidian & Precision Architecture**: Use solid obsidian dark surfaces (`#090a0f`, `#111218`, `#0e0f15`, `#181922`), hairline borders (`border-white/[0.08]` or `border-white/[0.06]`), and inset bevel highlights. Strictly avoid generic AI template clichés, blurry semi-transparent cards, and legacy `bg-card` classes.
 4. **Performance**: Always limit unbounded MongoDB queries and use indexed fields (`projectId`, `createdAt`, `pathname`, `visitorId`, `sessionId`).
 5. **Project Tracking & Documentation Integrity**: Whenever significant architectural, infrastructure, or operational features are introduced, update `CHANGELOG.md`, `ROADMAP.md`, `README.md`, `REQUIREMENTS.md`, and `GEMINI.md` to ensure complete documentation alignment.

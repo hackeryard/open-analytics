@@ -16,6 +16,7 @@ import {
   Clock,
   Sparkles,
   GitBranch,
+  X,
 } from "lucide-react";
 import { usePlatform } from "@/components/PlatformContext";
 import { AnalyticsData } from "@/lib/analyticsTypes";
@@ -76,82 +77,82 @@ export default function UserJourneysSection({ data: propData }: { data?: Analyti
   return (
     <div className="space-y-6 pb-20">
       {/* ── Top Sleek KPI Gauges Grid ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* 1. Average Path Depth */}
-        <div className="p-4 bg-card border border-border rounded-2xl shadow-xs space-y-2">
+        <div className="p-5 bg-[#111218] border border-white/[0.08] rounded-xl space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
+            <span className="text-xs font-medium text-zinc-400">
               Average Journey Depth
             </span>
-            <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-primary/10 text-primary border border-primary/20">
+            <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-white/[0.04] text-zinc-300 border border-white/[0.08]">
               Pages / Session
             </span>
           </div>
           <div>
-            <span className="text-2xl font-black font-mono text-foreground">
+            <span className="text-2xl sm:text-3xl font-semibold text-white tracking-tight tabular-nums">
               {overview.avgPathDepth}
             </span>
-            <span className="block text-[10px] text-muted-foreground mt-0.5">
+            <span className="block text-[11px] text-zinc-500 mt-1">
               Average routes explored per visitor session
             </span>
           </div>
         </div>
 
         {/* 2. Multi-Page Exploration Rate */}
-        <div className="p-4 bg-card border border-border rounded-2xl shadow-xs space-y-2">
+        <div className="p-5 bg-[#111218] border border-white/[0.08] rounded-xl space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
+            <span className="text-xs font-medium text-zinc-400">
               Multi-Step Flow Rate
             </span>
-            <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+            <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
               {overview.multiPageRate}% Active
             </span>
           </div>
           <div>
-            <span className="text-2xl font-black font-mono text-emerald-500">
+            <span className="text-2xl sm:text-3xl font-semibold text-white tracking-tight tabular-nums">
               {overview.multiPageRate}%
             </span>
-            <span className="block text-[10px] text-muted-foreground mt-0.5">
+            <span className="block text-[11px] text-zinc-500 mt-1">
               Sessions that navigate beyond the landing page
             </span>
           </div>
         </div>
 
         {/* 3. Direct Bounce Rate */}
-        <div className="p-4 bg-card border border-border rounded-2xl shadow-xs space-y-2">
+        <div className="p-5 bg-[#111218] border border-white/[0.08] rounded-xl space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
+            <span className="text-xs font-medium text-zinc-400">
               Single-Page Bounces
             </span>
-            <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+            <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-white/[0.04] text-zinc-300 border border-white/[0.08]">
               {overview.bounceRate}%
             </span>
           </div>
           <div>
-            <span className="text-2xl font-black font-mono text-rose-500">
+            <span className="text-2xl sm:text-3xl font-semibold text-white tracking-tight tabular-nums">
               {overview.bounceRate}%
             </span>
-            <span className="block text-[10px] text-muted-foreground mt-0.5">
+            <span className="block text-[11px] text-zinc-500 mt-1">
               Sessions ending on the first pageview
             </span>
           </div>
         </div>
 
         {/* 4. Total Mapped Sequences */}
-        <div className="p-4 bg-card border border-border rounded-2xl shadow-xs space-y-2">
+        <div className="p-5 bg-[#111218] border border-white/[0.08] rounded-xl space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
+            <span className="text-xs font-medium text-zinc-400">
               Mapped Pathways
             </span>
-            <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+            <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-white/[0.04] text-zinc-300 border border-white/[0.08]">
               {topFlows.length} Sequences
             </span>
           </div>
           <div>
-            <span className="text-2xl font-black font-mono text-blue-500">
+            <span className="text-2xl sm:text-3xl font-semibold text-white tracking-tight tabular-nums">
               {transitions.length}
             </span>
-            <span className="block text-[10px] text-muted-foreground mt-0.5">
+            <span className="block text-[11px] text-zinc-500 mt-1">
               Distinct page-to-page route transitions
             </span>
           </div>
@@ -159,9 +160,9 @@ export default function UserJourneysSection({ data: propData }: { data?: Analyti
       </div>
 
       {/* ── Main Unified Journeys Card Container ── */}
-      <div className="bg-card border border-border rounded-3xl shadow-sm overflow-hidden space-y-0">
+      <div className="bg-[#111218] border border-white/[0.08] rounded-xl overflow-hidden space-y-0">
         {/* Header Toolbar */}
-        <div className="p-4 sm:p-5 border-b border-border bg-muted/10 space-y-3.5">
+        <div className="p-4 sm:p-5 border-b border-white/[0.08] bg-[#0e0f15] space-y-3.5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             {/* View Mode Tabs */}
             <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
@@ -174,18 +175,18 @@ export default function UserJourneysSection({ data: propData }: { data?: Analyti
                   key={tab.id}
                   type="button"
                   onClick={() => setActiveTab(tab.id as any)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
                     activeTab === tab.id
-                      ? "bg-primary text-primary-foreground shadow-xs"
-                      : "bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground"
+                      ? "bg-white text-zinc-950"
+                      : "bg-white/[0.04] hover:bg-white/[0.08] text-zinc-400 hover:text-white border border-white/[0.08]"
                   }`}
                 >
                   <span>{tab.label}</span>
                   <span
-                    className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold ${
+                    className={`px-1.5 py-0.5 rounded text-[10px] font-mono tabular-nums ${
                       activeTab === tab.id
-                        ? "bg-primary-foreground/20 text-primary-foreground"
-                        : "bg-background text-foreground"
+                        ? "bg-zinc-200 text-zinc-950 font-semibold"
+                        : "bg-white/[0.06] text-zinc-300"
                     }`}
                   >
                     {tab.count}
@@ -198,22 +199,22 @@ export default function UserJourneysSection({ data: propData }: { data?: Analyti
             <div className="relative sm:w-64">
               <Search
                 size={13}
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none"
               />
               <input
                 type="text"
                 value={flowSearchQuery}
                 onChange={(e) => setFlowSearchQuery(e.target.value)}
                 placeholder="Filter routes or paths..."
-                className="w-full pl-9 pr-8 py-1.5 bg-background border border-border rounded-xl text-xs font-mono text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary shadow-2xs transition"
+                className="w-full pl-9 pr-8 py-1.5 bg-[#111218] border border-white/[0.08] focus:border-white/20 rounded-lg text-xs font-mono text-white placeholder:text-zinc-500 focus:outline-none transition"
               />
               {flowSearchQuery && (
                 <button
                   type="button"
                   onClick={() => setFlowSearchQuery("")}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground text-xs"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white text-xs cursor-pointer p-0.5"
                 >
-                  ✕
+                  <X size={12} />
                 </button>
               )}
             </div>
@@ -225,21 +226,21 @@ export default function UserJourneysSection({ data: propData }: { data?: Analyti
           <div className="p-5 space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="text-xs font-black uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                  <GitBranch size={14} className="text-primary" />
+                <h4 className="text-xs font-medium uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+                  <GitBranch size={14} className="text-zinc-300" />
                   <span>Sequential Navigation Pathways (Step 1 &rarr; Step 2 &rarr; Step 3)</span>
                 </h4>
-                <p className="text-[11px] text-muted-foreground mt-0.5">
+                <p className="text-[11px] text-zinc-500 mt-0.5">
                   Most common chronological page sequences navigated by users in a single session
                 </p>
               </div>
-              <span className="text-xs font-mono text-muted-foreground font-bold">
+              <span className="text-xs font-mono text-zinc-500 tabular-nums">
                 {filteredFlows.length} Pathways
               </span>
             </div>
 
             {filteredFlows.length === 0 ? (
-              <div className="p-12 text-center bg-muted/20 border border-border rounded-2xl text-xs text-muted-foreground">
+              <div className="p-12 text-center bg-[#0e0f15] border border-white/[0.04] rounded-xl text-xs text-zinc-500">
                 No multi-step pathways recorded matching filter criteria.
               </div>
             ) : (
@@ -247,29 +248,29 @@ export default function UserJourneysSection({ data: propData }: { data?: Analyti
                 {filteredFlows.map((flow, idx) => (
                   <div
                     key={idx}
-                    className="p-4 bg-muted/20 border border-border hover:border-primary/40 rounded-2xl space-y-3 transition group"
+                    className="p-4 bg-[#0e0f15] border border-white/[0.06] hover:border-white/[0.12] rounded-xl space-y-3 transition group"
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="w-5 h-5 rounded-md bg-muted text-foreground flex items-center justify-center font-mono font-bold text-[10px]">
+                        <span className="w-5 h-5 rounded bg-white/[0.04] border border-white/[0.06] text-zinc-400 flex items-center justify-center font-mono text-[10px] tabular-nums">
                           #{idx + 1}
                         </span>
-                        <span className="px-2 py-0.5 bg-primary/10 text-primary border border-primary/20 rounded-md font-mono text-[10px] font-bold">
+                        <span className="px-2 py-0.5 bg-white/[0.04] text-zinc-300 border border-white/[0.08] rounded font-mono text-[10px]">
                           {flow.depth} Steps
                         </span>
-                        <span className="text-xs font-mono font-bold text-foreground">
-                          {flow.count} sessions
+                        <span className="text-xs font-mono text-zinc-400 tabular-nums">
+                          {flow.count.toLocaleString()} sessions
                         </span>
                       </div>
 
                       <div className="flex items-center gap-2">
-                        <div className="h-1.5 w-24 bg-muted rounded-full overflow-hidden">
+                        <div className="h-1.5 w-24 bg-[#181922] rounded-full overflow-hidden">
                           <div
                             style={{ width: `${Math.max(5, flow.percentage)}%` }}
-                            className="h-full bg-primary rounded-full"
+                            className="h-full bg-white rounded-full transition-all"
                           />
                         </div>
-                        <span className="text-xs font-mono font-bold text-primary">
+                        <span className="text-xs font-mono font-medium text-white tabular-nums">
                           {flow.percentage}% share
                         </span>
                       </div>
@@ -284,15 +285,15 @@ export default function UserJourneysSection({ data: propData }: { data?: Analyti
                         return (
                           <React.Fragment key={sIdx}>
                             <div
-                              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border font-mono text-xs font-bold whitespace-nowrap shadow-2xs ${
+                              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border font-mono text-xs whitespace-nowrap ${
                                 isFirst
-                                  ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
+                                  ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                                   : isLast
-                                    ? "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/30"
-                                    : "bg-background text-foreground border-border"
+                                    ? "bg-white/[0.06] text-zinc-200 border-white/[0.1]"
+                                    : "bg-[#111218] text-zinc-300 border-white/[0.08]"
                               }`}
                             >
-                              <span className="text-[10px] text-muted-foreground opacity-70">
+                              <span className="text-[10px] text-zinc-500">
                                 {sIdx + 1}.
                               </span>
                               <span>{step}</span>
@@ -300,14 +301,14 @@ export default function UserJourneysSection({ data: propData }: { data?: Analyti
                                 href={getTrackedUrl(step, activeProject)}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-muted-foreground hover:text-primary transition"
+                                className="text-zinc-500 hover:text-white transition"
                               >
                                 <ExternalLink size={10} />
                               </a>
                             </div>
 
                             {!isLast && (
-                              <ArrowRight size={14} className="text-muted-foreground shrink-0" />
+                              <ArrowRight size={13} className="text-zinc-600 shrink-0" />
                             )}
                           </React.Fragment>
                         );
@@ -325,22 +326,22 @@ export default function UserJourneysSection({ data: propData }: { data?: Analyti
           <div className="p-5 space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="text-xs font-black uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                  <Share2 size={14} className="text-blue-500" />
+                <h4 className="text-xs font-medium uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+                  <Share2 size={14} className="text-zinc-300" />
                   <span>Direct Page-to-Page Hops (From &rarr; To)</span>
                 </h4>
-                <p className="text-[11px] text-muted-foreground mt-0.5">
+                <p className="text-[11px] text-zinc-500 mt-0.5">
                   Immediate navigation links clicked by visitors when transitioning between pages
                 </p>
               </div>
-              <span className="text-xs font-mono text-muted-foreground font-bold">
+              <span className="text-xs font-mono text-zinc-500 tabular-nums">
                 {filteredTransitions.length} Transitions
               </span>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs font-mono">
-                <thead className="bg-muted/40 border-b border-border text-[10px] font-black uppercase tracking-wider text-muted-foreground">
+                <thead className="bg-[#0e0f15] border-b border-white/[0.08] text-[11px] font-medium text-zinc-400 select-none">
                   <tr>
                     <th className="p-3.5">Origin Page</th>
                     <th className="p-3.5 text-center w-8"></th>
@@ -349,46 +350,46 @@ export default function UserJourneysSection({ data: propData }: { data?: Analyti
                     <th className="p-3.5 text-right">Share %</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border">
+                <tbody className="divide-y divide-white/[0.04]">
                   {filteredTransitions.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="p-10 text-center text-muted-foreground font-sans">
+                      <td colSpan={5} className="p-10 text-center text-zinc-500 font-sans">
                         No route transitions recorded matching filter criteria.
                       </td>
                     </tr>
                   ) : (
                     filteredTransitions.map((t, idx) => (
-                      <tr key={idx} className="hover:bg-muted/20 transition">
-                        <td className="p-3.5 font-bold text-foreground max-w-xs truncate">
+                      <tr key={idx} className="hover:bg-white/[0.02] transition">
+                        <td className="p-3.5 font-medium text-zinc-200 max-w-xs truncate">
                           <a
                             href={getTrackedUrl(t.from, activeProject)}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="hover:text-primary flex items-center gap-1"
+                            className="hover:text-white flex items-center gap-1"
                           >
                             <span className="truncate">{t.from}</span>
-                            <ExternalLink size={10} className="shrink-0 text-muted-foreground" />
+                            <ExternalLink size={10} className="shrink-0 text-zinc-500" />
                           </a>
                         </td>
-                        <td className="p-3.5 text-center text-muted-foreground">
-                          <ArrowRight size={13} className="text-primary mx-auto" />
+                        <td className="p-3.5 text-center text-zinc-600">
+                          <ArrowRight size={13} className="text-zinc-500 mx-auto" />
                         </td>
-                        <td className="p-3.5 font-bold text-foreground max-w-xs truncate">
+                        <td className="p-3.5 font-medium text-zinc-200 max-w-xs truncate">
                           <a
                             href={getTrackedUrl(t.to, activeProject)}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="hover:text-primary flex items-center gap-1"
+                            className="hover:text-white flex items-center gap-1"
                           >
                             <span className="truncate">{t.to}</span>
-                            <ExternalLink size={10} className="shrink-0 text-muted-foreground" />
+                            <ExternalLink size={10} className="shrink-0 text-zinc-500" />
                           </a>
                         </td>
-                        <td className="p-3.5 text-right font-black text-foreground">
-                          {t.count}
+                        <td className="p-3.5 text-right font-medium text-white tabular-nums">
+                          {t.count.toLocaleString()}
                         </td>
                         <td className="p-3.5 text-right">
-                          <span className="px-2 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 font-bold text-[10px]">
+                          <span className="px-2 py-0.5 rounded bg-white/[0.04] text-zinc-300 border border-white/[0.08] text-[10px] tabular-nums">
                             {t.percentage}%
                           </span>
                         </td>
@@ -405,22 +406,22 @@ export default function UserJourneysSection({ data: propData }: { data?: Analyti
         {activeTab === "entry_exit" && (
           <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Top Entry Pages */}
-            <div className="bg-card border border-border rounded-2xl overflow-hidden">
-              <div className="p-3.5 border-b border-border bg-muted/20 flex items-center justify-between">
+            <div className="bg-[#0e0f15] border border-white/[0.08] rounded-xl overflow-hidden">
+              <div className="p-3.5 border-b border-white/[0.08] bg-[#111218] flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                  <h5 className="text-xs font-black uppercase tracking-wider text-foreground">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                  <h5 className="text-xs font-semibold uppercase tracking-wider text-white">
                     Top Entry Pages (Session Starters)
                   </h5>
                 </div>
-                <span className="text-xs font-mono text-muted-foreground font-bold">
+                <span className="text-xs font-mono text-zinc-500 tabular-nums">
                   {entryPages.length} Paths
                 </span>
               </div>
 
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs font-mono">
-                  <thead className="bg-muted/40 border-b border-border text-[10px] font-black uppercase tracking-wider text-muted-foreground">
+                  <thead className="bg-[#0e0f15] border-b border-white/[0.06] text-[10px] font-medium text-zinc-500 uppercase select-none">
                     <tr>
                       <th className="p-3">Route</th>
                       <th className="p-3 text-right">Sessions</th>
@@ -428,43 +429,43 @@ export default function UserJourneysSection({ data: propData }: { data?: Analyti
                       <th className="p-3 text-right">Share</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-border">
+                  <tbody className="divide-y divide-white/[0.04]">
                     {entryPages.length === 0 ? (
                       <tr>
-                        <td colSpan={4} className="p-6 text-center text-muted-foreground font-sans">
+                        <td colSpan={4} className="p-6 text-center text-zinc-500 font-sans">
                           No entry path data available.
                         </td>
                       </tr>
                     ) : (
                       entryPages.map((entry, idx) => (
-                        <tr key={idx} className="hover:bg-muted/20 transition">
-                          <td className="p-3 font-bold text-foreground truncate max-w-[150px]">
+                        <tr key={idx} className="hover:bg-white/[0.02] transition">
+                          <td className="p-3 font-medium text-zinc-200 truncate max-w-[150px]">
                             <a
                               href={getTrackedUrl(entry.pathname, activeProject)}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="hover:text-primary flex items-center gap-1"
+                              className="hover:text-white flex items-center gap-1"
                             >
                               <span className="truncate">{entry.pathname}</span>
-                              <ExternalLink size={9} className="shrink-0 text-muted-foreground" />
+                              <ExternalLink size={9} className="shrink-0 text-zinc-500" />
                             </a>
                           </td>
-                          <td className="p-3 text-right font-black text-foreground">
-                            {entry.count}
+                          <td className="p-3 text-right font-medium text-white tabular-nums">
+                            {entry.count.toLocaleString()}
                           </td>
                           <td className="p-3 text-right">
                             <span
-                              className={`px-1.5 py-0.2 rounded font-bold text-[10px] ${
+                              className={`px-1.5 py-0.5 rounded text-[10px] tabular-nums ${
                                 (entry.bounceRate || 0) > 60
-                                  ? "bg-rose-500/10 text-rose-600 dark:text-rose-400"
-                                  : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                                  ? "bg-rose-500/10 text-rose-400 border border-rose-500/20"
+                                  : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
                               }`}
                             >
                               {entry.bounceRate || 0}%
                             </span>
                           </td>
                           <td className="p-3 text-right">
-                            <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-[10px]">
+                            <span className="px-2 py-0.5 rounded bg-white/[0.04] text-zinc-300 border border-white/[0.08] text-[10px] tabular-nums">
                               {entry.percentage}%
                             </span>
                           </td>
@@ -477,54 +478,54 @@ export default function UserJourneysSection({ data: propData }: { data?: Analyti
             </div>
 
             {/* Top Exit Pages */}
-            <div className="bg-card border border-border rounded-2xl overflow-hidden">
-              <div className="p-3.5 border-b border-border bg-muted/20 flex items-center justify-between">
+            <div className="bg-[#0e0f15] border border-white/[0.08] rounded-xl overflow-hidden">
+              <div className="p-3.5 border-b border-white/[0.08] bg-[#111218] flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-rose-500" />
-                  <h5 className="text-xs font-black uppercase tracking-wider text-foreground">
+                  <span className="w-2 h-2 rounded-full bg-zinc-400" />
+                  <h5 className="text-xs font-semibold uppercase tracking-wider text-white">
                     Top Exit Pages (Drop-off Culprits)
                   </h5>
                 </div>
-                <span className="text-xs font-mono text-muted-foreground font-bold">
+                <span className="text-xs font-mono text-zinc-500 tabular-nums">
                   {exitPages.length} Paths
                 </span>
               </div>
 
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs font-mono">
-                  <thead className="bg-muted/40 border-b border-border text-[10px] font-black uppercase tracking-wider text-muted-foreground">
+                  <thead className="bg-[#0e0f15] border-b border-white/[0.06] text-[10px] font-medium text-zinc-500 uppercase select-none">
                     <tr>
                       <th className="p-3">Route</th>
                       <th className="p-3 text-right">Exits</th>
                       <th className="p-3 text-right">Exit Rate</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-border">
+                  <tbody className="divide-y divide-white/[0.04]">
                     {exitPages.length === 0 ? (
                       <tr>
-                        <td colSpan={3} className="p-6 text-center text-muted-foreground font-sans">
+                        <td colSpan={3} className="p-6 text-center text-zinc-500 font-sans">
                           No exit drop-off data available.
                         </td>
                       </tr>
                     ) : (
                       exitPages.map((exit, idx) => (
-                        <tr key={idx} className="hover:bg-muted/20 transition">
-                          <td className="p-3 font-bold text-foreground truncate max-w-[180px]">
+                        <tr key={idx} className="hover:bg-white/[0.02] transition">
+                          <td className="p-3 font-medium text-zinc-200 truncate max-w-[180px]">
                             <a
                               href={getTrackedUrl(exit.pathname, activeProject)}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="hover:text-primary flex items-center gap-1"
+                              className="hover:text-white flex items-center gap-1"
                             >
                               <span className="truncate">{exit.pathname}</span>
-                              <ExternalLink size={9} className="shrink-0 text-muted-foreground" />
+                              <ExternalLink size={9} className="shrink-0 text-zinc-500" />
                             </a>
                           </td>
-                          <td className="p-3 text-right font-black text-rose-600 dark:text-rose-400">
-                            {exit.count}
+                          <td className="p-3 text-right font-medium text-white tabular-nums">
+                            {exit.count.toLocaleString()}
                           </td>
                           <td className="p-3 text-right">
-                            <span className="px-2 py-0.5 rounded bg-rose-500/10 text-rose-600 dark:text-rose-400 font-bold text-[10px]">
+                            <span className="px-2 py-0.5 rounded bg-white/[0.04] text-zinc-300 border border-white/[0.08] text-[10px] tabular-nums">
                               {exit.percentage}%
                             </span>
                           </td>
@@ -540,19 +541,19 @@ export default function UserJourneysSection({ data: propData }: { data?: Analyti
       </div>
 
       {/* ── Session Depth Cohort Distribution ── */}
-      <div className="bg-card border border-border rounded-3xl p-5 shadow-sm space-y-4">
+      <div className="bg-[#111218] border border-white/[0.08] rounded-xl p-5 space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h4 className="text-xs font-black uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-              <Layers size={14} className="text-primary" />
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+              <Layers size={14} className="text-zinc-300" />
               <span>Session Depth &amp; Navigation Intensity</span>
             </h4>
-            <p className="text-[11px] text-muted-foreground mt-0.5">
+            <p className="text-[11px] text-zinc-500 mt-0.5">
               Distribution of session lengths by number of pageviews traversed before ending
             </p>
           </div>
-          <span className="text-xs font-mono text-muted-foreground font-bold">
-            {overview.totalSessions} Total Sessions
+          <span className="text-xs font-mono text-zinc-500 tabular-nums">
+            {overview.totalSessions.toLocaleString()} Total Sessions
           </span>
         </div>
 
@@ -560,30 +561,30 @@ export default function UserJourneysSection({ data: propData }: { data?: Analyti
           {depthDistribution.map((depth, idx) => (
             <div
               key={idx}
-              className="p-3.5 bg-muted/20 border border-border rounded-2xl space-y-2 hover:border-primary/40 transition"
+              className="p-3.5 bg-[#0e0f15] border border-white/[0.06] hover:border-white/[0.12] rounded-xl space-y-2 transition"
             >
               <div className="flex items-center justify-between text-xs font-mono">
-                <span className="font-bold text-foreground">{depth.depthLabel}</span>
-                <span className="font-black text-primary">{depth.percentage}%</span>
+                <span className="text-zinc-200 font-medium">{depth.depthLabel}</span>
+                <span className="font-medium text-white tabular-nums">{depth.percentage}%</span>
               </div>
 
-              <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+              <div className="h-1.5 w-full bg-[#181922] rounded-full overflow-hidden">
                 <div
                   style={{ width: `${Math.max(4, depth.percentage)}%` }}
-                  className={`h-full rounded-full ${
+                  className={`h-full rounded-full transition-all ${
                     idx === 0
-                      ? "bg-rose-500"
+                      ? "bg-zinc-500"
                       : idx === 1
-                        ? "bg-amber-500"
+                        ? "bg-zinc-300"
                         : idx === 2
-                          ? "bg-blue-500"
-                          : "bg-emerald-500"
+                          ? "bg-emerald-400"
+                          : "bg-white"
                   }`}
                 />
               </div>
 
-              <div className="text-[10px] font-mono text-muted-foreground flex justify-between">
-                <span>{depth.count} sessions</span>
+              <div className="text-[10px] font-mono text-zinc-500 flex justify-between tabular-nums">
+                <span>{depth.count.toLocaleString()} sessions</span>
                 <span>{idx === 0 ? "Bounce point" : "Engaged path"}</span>
               </div>
             </div>

@@ -51,22 +51,22 @@ export default function DocsClientShell({ children }: { children: React.ReactNod
     .find((l) => l.href === pathname);
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex flex-col">
+    <div className="min-h-[calc(100vh-4rem)] flex flex-col bg-[#090a0f] text-zinc-100 selection:bg-white/[0.15] selection:text-white">
       {/* Mobile Docs Sub-Navigation Bar */}
-      <div className="md:hidden sticky top-16 z-30 bg-[#070b16]/95 backdrop-blur-md border-b border-white/[0.08] px-4 py-2.5 flex items-center justify-between">
+      <div className="md:hidden sticky top-16 z-30 bg-[#090a0f]/95 backdrop-blur-md border-b border-white/[0.08] px-4 py-2.5 flex items-center justify-between">
         <div className="flex items-center gap-2 text-xs">
-          <Link href="/docs" className="font-bold text-slate-300 hover:text-white transition">
+          <Link href="/docs" className="font-semibold text-zinc-400 hover:text-white transition">
             Docs
           </Link>
-          <span className="text-slate-600">/</span>
-          <span className="text-cyan-400 font-mono font-medium truncate max-w-[200px]">
+          <span className="text-zinc-600">/</span>
+          <span className="text-white font-mono font-medium truncate max-w-[200px]">
             {currentDocLink?.label || "Overview"}
           </span>
         </div>
         <button
           type="button"
           onClick={() => setMobileDocsDrawerOpen(!mobileDocsDrawerOpen)}
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] text-xs font-semibold text-slate-300 hover:text-white transition cursor-pointer"
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] text-xs font-semibold text-zinc-300 hover:text-white transition cursor-pointer"
           aria-label="Toggle docs navigation"
         >
           {mobileDocsDrawerOpen ? <X size={14} /> : <Menu size={14} />}
@@ -76,10 +76,10 @@ export default function DocsClientShell({ children }: { children: React.ReactNod
 
       {/* Mobile Docs Navigation Drawer */}
       {mobileDocsDrawerOpen && (
-        <div className="md:hidden border-b border-white/[0.08] bg-[#070b16] px-4 py-4 space-y-4 animate-fadeIn">
+        <div className="md:hidden border-b border-white/[0.08] bg-[#0c0d14] px-4 py-4 space-y-4 animate-fadeIn">
           {navSections.map((section) => (
             <div key={section.title} className="space-y-1.5">
-              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 font-mono px-2">
+              <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-zinc-500 px-2">
                 {section.title}
               </span>
               <nav className="space-y-1">
@@ -91,10 +91,10 @@ export default function DocsClientShell({ children }: { children: React.ReactNod
                       key={link.href}
                       href={link.href}
                       onClick={() => setMobileDocsDrawerOpen(false)}
-                      className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition ${
+                      className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition ${
                         isActive
-                          ? "bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 font-bold"
-                          : "text-slate-300 hover:text-white hover:bg-white/[0.04]"
+                          ? "bg-white/[0.1] text-white shadow-xs font-semibold"
+                          : "text-zinc-400 hover:text-white hover:bg-white/[0.04]"
                       }`}
                     >
                       <div className="flex items-center gap-2.5">
@@ -102,7 +102,7 @@ export default function DocsClientShell({ children }: { children: React.ReactNod
                         <span>{link.label}</span>
                       </div>
                       {link.badge && (
-                        <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-md bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700/80">
                           {link.badge}
                         </span>
                       )}
@@ -122,7 +122,7 @@ export default function DocsClientShell({ children }: { children: React.ReactNod
           <div className="space-y-6">
             {navSections.map((section) => (
               <div key={section.title} className="space-y-2">
-                <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 font-mono">
+                <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-zinc-500">
                   {section.title}
                 </span>
                 <nav className="space-y-1">
@@ -133,18 +133,18 @@ export default function DocsClientShell({ children }: { children: React.ReactNod
                       <Link
                         key={link.href}
                         href={link.href}
-                        className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition ${
+                        className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition ${
                           isActive
-                            ? "bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 font-bold"
-                            : "text-slate-400 hover:text-slate-100 hover:bg-white/[0.04]"
+                            ? "bg-white/[0.1] text-white shadow-xs font-semibold"
+                            : "text-zinc-400 hover:text-white hover:bg-white/[0.04]"
                         }`}
                       >
                         <div className="flex items-center gap-2.5">
-                          <Icon size={15} />
+                          <Icon size={14} />
                           <span>{link.label}</span>
                         </div>
                         {link.badge && (
-                          <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-md bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                          <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700/80">
                             {link.badge}
                           </span>
                         )}
@@ -157,12 +157,12 @@ export default function DocsClientShell({ children }: { children: React.ReactNod
           </div>
 
           <div className="pt-4 border-t border-white/[0.08] space-y-3">
-            <div className="p-3 bg-white/[0.02] border border-white/[0.06] rounded-2xl space-y-1.5">
-              <div className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+            <div className="p-3.5 bg-[#111218] border border-white/[0.08] rounded-xl space-y-1.5">
+              <div className="text-xs font-semibold text-white flex items-center gap-1.5">
                 <ShieldCheck size={14} className="text-emerald-400" />
                 Zero-Cookie Policy
               </div>
-              <p className="text-[11px] text-slate-400 leading-relaxed">
+              <p className="text-[11px] text-zinc-400 leading-relaxed">
                 Open Analytics operates without persistent tracking cookies. Fully compliant with GDPR, CCPA, and PECR.
               </p>
             </div>

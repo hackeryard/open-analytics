@@ -1,392 +1,141 @@
-"use client";
+import type { Metadata } from "next";
+import AlertsDocsClientView from "@/components/docs/AlertsDocsClientView";
+import JsonLd from "@/components/JsonLd";
 
-import React, { useState } from "react";
-import Link from "next/link";
-import {
-  Bell,
-  BellOff,
-  AlertTriangle,
-  Flame,
-  Search,
-  Bot,
-  Activity,
-  MousePointerClick,
-  Volume2,
-  Sliders,
-  Shield,
-  CheckCircle2,
-  Copy,
-  Check,
-  Code2,
-  ArrowRight,
-  ExternalLink,
-  Laptop,
-  Radio,
-  Zap,
-} from "lucide-react";
-import { usePlatform } from "@/components/PlatformContext";
+export const metadata: Metadata = {
+  title: "Autonomous Incident Alerts & Notifications",
+  description:
+    "Guide to the Open Analytics incident engine: repeated error spikes, error storms, desktop OS alerts, synthesized audio chimes, and noise suppression rules.",
+  alternates: {
+    canonical: "/docs/alerts",
+  },
+  openGraph: {
+    title: "Autonomous Incident Alerts & Notifications | Open Analytics",
+    description:
+      "Guide to the Open Analytics incident engine: repeated error spikes, error storms, desktop OS alerts, synthesized audio chimes, and noise suppression rules.",
+    url: "https://openanalytics.org.in/docs/alerts",
+    type: "article",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Autonomous Incident Alerts & Notifications | Open Analytics",
+    description:
+      "Guide to the Open Analytics incident engine: repeated error spikes, error storms, desktop OS alerts, synthesized audio chimes, and noise suppression rules.",
+  },
+};
 
 export default function AlertsDocsPage() {
-  const { activeProjectId } = usePlatform();
-  const projectId = activeProjectId || "prj_production_app";
-  const [copiedCode, setCopiedCode] = useState(false);
-
   const alertCategories = [
     {
-      id: "error_repeated",
       name: "Repeated Error Spikes",
       type: "Real-Time Telemetry",
-      severity: "critical",
       threshold: ">= 5 identical occurrences",
-      desc: "Triggers high-priority alerts when identical runtime exceptions recur 5 or more times within a sliding window. Progressive milestone brackets notify teams at 10x, 25x, 50x, and 100x+ frequency.",
-      icon: Flame,
-      color: "text-rose-400",
-      bgColor: "bg-rose-500/10",
-      borderColor: "border-rose-500/20",
+      desc: "Triggers high-priority alerts when identical runtime exceptions recur 5 or more times within a sliding window.",
     },
     {
-      id: "error_storm",
       name: "Error Velocity Storms",
       type: "Rate Ingestion Surge",
-      severity: "critical",
       threshold: "> 10 errors / 5 minutes",
-      desc: "Catastrophic error storm detection that activates when error velocity spikes sharply, indicating broken production deployments, invalid third-party scripts, or API gateway downtime.",
-      icon: AlertTriangle,
-      color: "text-amber-400",
-      bgColor: "bg-amber-500/10",
-      borderColor: "border-amber-500/20",
+      desc: "Catastrophic error storm detection that activates when error velocity spikes sharply.",
     },
     {
-      id: "seo_unoptimized",
       name: "SEO Missing Title Audits",
       type: "Automated Site Scan",
-      severity: "warning",
       threshold: "Missing or empty <title>",
-      desc: "Scans indexed landing pages and routes for missing, blank, or placeholder document titles that negatively impact search engine indexability and social media metadata previews.",
-      icon: Search,
-      color: "text-sky-400",
-      bgColor: "bg-sky-500/10",
-      borderColor: "border-sky-500/20",
+      desc: "Scans indexed landing pages and routes for missing, blank, or placeholder document titles.",
     },
     {
-      id: "aeo_unoptimized",
       name: "AEO Low Dwell Friction",
       type: "Behavioral Retention",
-      severity: "warning",
       threshold: "Average dwell < 10s on content routes",
-      desc: "Identifies answer engine routes where visitors immediately bounce without engaging, signaling misleading headings, slow initial rendering, or content mismatch for AI search queries.",
-      icon: Bot,
-      color: "text-indigo-400",
-      bgColor: "bg-indigo-500/10",
-      borderColor: "border-indigo-500/20",
+      desc: "Identifies answer engine routes where visitors immediately bounce without engaging.",
     },
     {
-      id: "geo_radar",
       name: "GEO AI Citation Radar",
       type: "Generative Engine Audit",
-      severity: "info",
       threshold: "Citation readiness score < 50%",
-      desc: "Monitors readiness for generative search engines (OpenAI SearchGPT, Perplexity, ClaudeBot, Gemini) and notifies teams when crawler visibility or structured citation drops below benchmark.",
-      icon: Radio,
-      color: "text-cyan-400",
-      bgColor: "bg-cyan-500/10",
-      borderColor: "border-cyan-500/20",
+      desc: "Monitors readiness for generative search engines and notifies teams when crawler visibility drops.",
     },
     {
-      id: "web_vitals",
       name: "Core Web Vitals Degradation",
       type: "RUM Performance Threshold",
-      severity: "warning",
       threshold: "p75 INP > 500ms or LCP > 4.0s",
-      desc: "Continuous field monitoring of real visitor experience. Generates incident tickets when 75th-percentile interaction responsiveness (INP) or loading times (LCP) slip into the poor threshold.",
-      icon: Activity,
-      color: "text-emerald-400",
-      bgColor: "bg-emerald-500/10",
-      borderColor: "border-emerald-500/20",
+      desc: "Continuous field monitoring of real visitor experience against Google Core Web Vitals thresholds.",
     },
     {
-      id: "rage_clicks",
       name: "Behavioral Rage Click Hotspots",
       type: "UX Friction Telemetry",
-      severity: "warning",
       threshold: ">= 3 rapid taps within 500ms and 40px",
-      desc: "Captures rapid, repeated tapping on broken buttons, stalled links, or unresponsive elements. Groups frustrated sessions by DOM selector to accelerate frontend bug remediation.",
-      icon: MousePointerClick,
-      color: "text-purple-400",
-      bgColor: "bg-purple-500/10",
-      borderColor: "border-purple-500/20",
+      desc: "Captures rapid, repeated tapping on broken buttons, stalled links, or unresponsive elements.",
     },
   ];
 
-  const apiSnippet = `// Configure project alert rules & suppression filters via REST API
-const res = await fetch("/api/projects/${projectId}/alert-rules", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    action: "add_rule",
-    rule: {
-      id: "rule_suppress_staging",
-      name: "Ignore Staging Pathnames",
-      type: "all",
-      matchField: "route",
-      matchType: "starts_with",
-      pattern: "/staging",
-      enabled: true,
-    }
-  })
-});
-const { alertSettings } = await res.json();`;
-
-  const copyCode = () => {
-    navigator.clipboard.writeText(apiSnippet);
-    setCopiedCode(true);
-    setTimeout(() => setCopiedCode(false), 2000);
+  const alertsSchema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: "https://openanalytics.org.in",
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Documentation",
+            item: "https://openanalytics.org.in/docs",
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: "Alerts & Incident Engine",
+            item: "https://openanalytics.org.in/docs/alerts",
+          },
+        ],
+      },
+      {
+        "@type": "TechArticle",
+        "@id": "https://openanalytics.org.in/docs/alerts#article",
+        headline: "Open Analytics Autonomous Incident Alerts & Notification Engine",
+        description:
+          "Guide to the Open Analytics incident engine: repeated error spikes, error storms, desktop OS alerts, synthesized audio chimes, and noise suppression rules.",
+        url: "https://openanalytics.org.in/docs/alerts",
+        inLanguage: "en-US",
+        author: {
+          "@type": "Organization",
+          name: "Open Analytics Team",
+          url: "https://openanalytics.org.in",
+        },
+        publisher: {
+          "@type": "Organization",
+          name: "Open Analytics",
+          url: "https://openanalytics.org.in",
+          logo: {
+            "@type": "ImageObject",
+            url: "https://openanalytics.org.in/favicon.ico",
+          },
+        },
+      },
+      {
+        "@type": "ItemList",
+        name: "Autonomous Telemetry Anomaly Detection Categories",
+        itemListElement: alertCategories.map((cat, idx) => ({
+          "@type": "ListItem",
+          position: idx + 1,
+          name: `${cat.name} (${cat.type})`,
+          description: `${cat.desc} (Threshold: ${cat.threshold})`,
+        })),
+      },
+    ],
   };
 
   return (
-    <div className="space-y-12 max-w-5xl">
-      {/* Header */}
-      <div className="space-y-3">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold">
-          <Bell size={13} />
-          <span>Real-Time Incident Triage & Observability</span>
-        </div>
-        <h1 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight">
-          Alerts & Incident Engine
-        </h1>
-        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-          Open Analytics incorporates an autonomous, real-time telemetry anomaly engine that automatically monitors crash spikes, Core Web Vitals degradation, search crawler readiness, and user frustration without requiring manual query configurations.
-        </p>
-      </div>
-
-      {/* Quick Links / Highlights */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="p-4 rounded-2xl bg-card border border-border space-y-2 shadow-xs">
-          <div className="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center">
-            <Flame size={16} />
-          </div>
-          <h2 className="text-sm font-bold text-foreground">Autonomous Anomaly Radar</h2>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            Continuously evaluates inbound telemetry streams to trigger alerts on repeated crashes (5x+), error storms, and dead ends.
-          </p>
-        </div>
-
-        <div className="p-4 rounded-2xl bg-card border border-border space-y-2 shadow-xs">
-          <div className="w-8 h-8 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center">
-            <Volume2 size={16} />
-          </div>
-          <h2 className="text-sm font-bold text-foreground">Native OS Desktop Alerts</h2>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            Browser Notifications API with dual-tone Web Audio synthesized chimes and 45-second background tab synchronization.
-          </p>
-        </div>
-
-        <div className="p-4 rounded-2xl bg-card border border-border space-y-2 shadow-xs">
-          <div className="w-8 h-8 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center">
-            <BellOff size={16} />
-          </div>
-          <h2 className="text-sm font-bold text-foreground">Granular Ignore Rules</h2>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            Mute entire notification types or define regex and substring pattern rules across error messages, titles, and route paths.
-          </p>
-        </div>
-      </div>
-
-      {/* Section 1: The 7 Autonomous Incident Detection Categories */}
-      <section className="space-y-5">
-        <div className="space-y-1">
-          <div className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-400">
-            Telemetry Heuristics
-          </div>
-          <h2 className="text-2xl font-black text-foreground">7 Autonomous Incident Types</h2>
-          <p className="text-xs text-muted-foreground">
-            Each anomaly is evaluated against verified historical baselines and assigned an automated severity level:
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {alertCategories.map((cat) => {
-            const Icon = cat.icon;
-            return (
-              <div
-                key={cat.id}
-                className="p-5 rounded-2xl bg-card border border-border space-y-3 hover:border-border/80 transition shadow-xs"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-2.5">
-                    <div className={`w-9 h-9 rounded-xl ${cat.bgColor} border ${cat.borderColor} flex items-center justify-center ${cat.color}`}>
-                      <Icon size={18} />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-bold text-foreground">{cat.name}</h3>
-                      <span className="text-[11px] font-mono text-muted-foreground">{cat.type}</span>
-                    </div>
-                  </div>
-                  <span
-                    className={`text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded-full border ${
-                      cat.severity === "critical"
-                        ? "bg-rose-500/15 text-rose-400 border-rose-500/30"
-                        : cat.severity === "warning"
-                        ? "bg-amber-500/15 text-amber-400 border-amber-500/30"
-                        : "bg-cyan-500/15 text-cyan-400 border-cyan-500/30"
-                    }`}
-                  >
-                    {cat.severity}
-                  </span>
-                </div>
-
-                <div className="p-2 rounded-xl bg-muted/30 border border-border/50 text-[11px] font-mono text-cyan-300">
-                  <span className="text-muted-foreground">Trigger: </span>
-                  {cat.threshold}
-                </div>
-
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {cat.desc}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* Section 2: Native OS Desktop Notifications & Web Audio Chimes */}
-      <section className="p-6 sm:p-8 rounded-3xl bg-card border border-border space-y-6 shadow-sm">
-        <div className="space-y-2">
-          <div className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-indigo-400">
-            <Laptop size={13} />
-            <span>Native Operating System Integration</span>
-          </div>
-          <h2 className="text-xl sm:text-2xl font-black text-foreground">
-            Desktop Notifications & Synthesized Audio Chimes
-          </h2>
-          <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-            Engineering and DevOps teams cannot afford to stare at an open browser tab 24/7. Open Analytics integrates directly with the native operating system desktop notification center:
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="p-4 rounded-2xl bg-muted/20 border border-border space-y-2">
-            <div className="text-xs font-bold text-foreground flex items-center gap-2">
-              <CheckCircle2 size={14} className="text-emerald-400" />
-              <span>Background Tab Synchronization</span>
-            </div>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              PlatformContext executes an automated 45-second background sync poll. If a repeated error spike or storm occurs while your dashboard tab is minimized, an OS desktop alert appears instantly.
-            </p>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-muted/20 border border-border space-y-2">
-            <div className="text-xs font-bold text-foreground flex items-center gap-2">
-              <CheckCircle2 size={14} className="text-emerald-400" />
-              <span>Synthesized Web Audio Engine</span>
-            </div>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Dual-tone audible chimes (D5 587.33 Hz transitioning smoothly to A5 880.00 Hz) are generated dynamically using the native browser Web Audio API oscillator, requiring 0 external MP3 downloads.
-            </p>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-muted/20 border border-border space-y-2">
-            <div className="text-xs font-bold text-foreground flex items-center gap-2">
-              <CheckCircle2 size={14} className="text-emerald-400" />
-              <span>1-Click Deep Navigation</span>
-            </div>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Clicking any desktop alert immediately focuses your browser window and routes directly to the affected crash trace (`/errors`), SEO report (`/seo`), or incident summary (`/notifications`).
-            </p>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-muted/20 border border-border space-y-2">
-            <div className="text-xs font-bold text-foreground flex items-center gap-2">
-              <CheckCircle2 size={14} className="text-emerald-400" />
-              <span>Automated Permission Prompt Banner</span>
-            </div>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              The floating in-app prompt banner (`BrowserNotificationPrompt.tsx`) seamlessly handles browser gesture requirements, requesting permissions politely with instant session snooze options.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Section 3: Granular Ignore & Suppression Rules Engine */}
-      <section className="space-y-5">
-        <div className="space-y-1">
-          <div className="text-xs font-mono font-bold uppercase tracking-wider text-rose-400">
-            Alert Noise Reduction
-          </div>
-          <h2 className="text-2xl font-black text-foreground">Granular Ignore & Suppression Rules</h2>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            Eliminate alert fatigue by suppressing known staging issues, benign third-party analytics script warnings, or specific development routes before notifications are written to the database:
-          </p>
-        </div>
-
-        <div className="p-6 rounded-3xl bg-card border border-border space-y-5 shadow-xs">
-          <div className="space-y-3">
-            <h3 className="text-sm font-bold text-foreground">Two-Tier Suppression Architecture</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-              <div className="p-4 rounded-2xl bg-muted/30 border border-border space-y-2">
-                <span className="font-bold text-cyan-400 block">1. General Type Muting</span>
-                <p className="text-muted-foreground leading-relaxed">
-                  Toggle on or off any of the 7 general notification categories across the entire project. For example, turn off SEO title audits during initial site construction.
-                </p>
-              </div>
-              <div className="p-4 rounded-2xl bg-muted/30 border border-border space-y-2">
-                <span className="font-bold text-indigo-400 block">2. Custom Pattern Rules</span>
-                <p className="text-muted-foreground leading-relaxed">
-                  Match against specific route pathnames (e.g., <code className="text-cyan-300 font-mono">/staging</code>), error messages, or alert titles using contains, exact, prefix, or regular expressions.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-2 pt-2 border-t border-border">
-            <h3 className="text-sm font-bold text-foreground">1-Click Inline Mute Menus</h3>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Every alert card in the Notification Center popover and `/notifications` dashboard features an interactive <code className="text-cyan-300 font-mono">BellOff</code> menu. With a single click, engineers can mute the notification type, silence all alerts on the affected route, or suppress the specific incident signature permanently.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Section 4: REST API Reference & Configuration */}
-      <section className="space-y-4">
-        <div className="space-y-1">
-          <div className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-400">
-            Developer Integration
-          </div>
-          <h2 className="text-2xl font-black text-foreground">Alert Rules REST API</h2>
-          <p className="text-xs text-muted-foreground">
-            Programmatically configure thresholds and manage ignore rules via the project API:
-          </p>
-        </div>
-
-        <div className="relative bg-[#07090e] border border-border rounded-2xl p-4 font-mono text-xs text-slate-200 overflow-x-auto">
-          <pre className="pr-12"><code>{apiSnippet}</code></pre>
-          <button
-            type="button"
-            onClick={copyCode}
-            className="absolute right-3 top-3 p-2 rounded-xl bg-muted/60 hover:bg-muted text-slate-300 hover:text-white transition cursor-pointer"
-            title="Copy API snippet"
-          >
-            {copiedCode ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
-          </button>
-        </div>
-
-        <div className="p-4 rounded-2xl bg-card border border-border flex items-center justify-between flex-wrap gap-3">
-          <div className="space-y-0.5">
-            <div className="text-xs font-bold text-foreground">Explore Notifications Dashboard</div>
-            <p className="text-[11px] text-muted-foreground">
-              View active incidents, run optimization scans, and manage project alert rules in real time.
-            </p>
-          </div>
-          <a
-            href="https://dashboard.openanalytics.org.in/notifications"
-            className="px-3.5 py-1.5 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/30 text-cyan-300 text-xs font-bold transition flex items-center gap-1.5"
-          >
-            <span>Open Notification Hub</span>
-            <ExternalLink size={12} />
-          </a>
-        </div>
-      </section>
-    </div>
+    <>
+      <JsonLd data={alertsSchema} />
+      <AlertsDocsClientView />
+    </>
   );
 }

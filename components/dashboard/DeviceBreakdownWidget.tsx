@@ -17,58 +17,53 @@ export default function DeviceBreakdownWidget({
   const getDeviceIcon = (type: string) => {
     switch (type.toLowerCase()) {
       case "mobile":
-        return <Smartphone size={14} className="text-cyan-400" />;
+        return <Smartphone size={14} className="text-zinc-300" />;
       case "tablet":
-        return <Tablet size={14} className="text-purple-400" />;
+        return <Tablet size={14} className="text-zinc-300" />;
       default:
-        return <Laptop size={14} className="text-blue-400" />;
+        return <Laptop size={14} className="text-zinc-300" />;
     }
   };
 
   return (
-    <div className="glass-card rounded-3xl p-5 sm:p-6 space-y-4 flex flex-col justify-between">
+    <div className="rounded-2xl bg-[#111218] border border-white/[0.08] p-5 sm:p-6 space-y-4 flex flex-col justify-between shadow-xl">
       <div className="space-y-1">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-[#181922] border border-white/[0.08] flex items-center justify-center text-white">
               <Laptop size={15} />
             </div>
-            <h3 className="text-sm font-black text-white">Devices &amp; Browsers</h3>
+            <h3 className="text-sm font-bold text-white tracking-tight">Devices &amp; Browsers</h3>
           </div>
           <Link
             href="/tech"
-            className="inline-flex items-center gap-1 text-[11px] font-bold text-cyan-400 hover:text-cyan-300 transition"
+            className="inline-flex items-center gap-1 text-[11px] font-semibold text-white hover:underline transition"
           >
             <span>Hardware Details</span>
             <ArrowRight size={12} />
           </Link>
         </div>
-        <p className="text-[11px] text-muted-foreground">Form factor ratios, browser rendering engines, and OS distribution</p>
+        <p className="text-xs text-zinc-400">Form factor ratios, browser rendering engines, and OS distribution</p>
       </div>
 
       {/* Segmented Device Ratio Bar */}
       <div className="space-y-2 flex-1 pt-1">
         {safeDevices.length === 0 ? (
-          <div className="py-6 text-center text-xs text-muted-foreground">
-            No client device fingerprints recorded yet
+          <div className="py-8 text-center text-xs text-zinc-500 font-mono">
+            No client device telemetry recorded yet
           </div>
         ) : (
-          <div className="space-y-1.5">
-            <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-1 text-xs text-muted-foreground">
-              <span className="font-semibold text-slate-300">Platform Form Factors</span>
-              <span className="font-mono text-white text-[11px] truncate">
+          <div className="space-y-2">
+            <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-1 text-xs text-zinc-400">
+              <span className="font-medium text-zinc-300">Platform Form Factors</span>
+              <span className="font-mono text-white text-[11px] truncate tabular-nums">
                 {safeDevices.map((d) => `${d.percentage}% ${d.device}`).join(" • ")}
               </span>
             </div>
 
-            <div className="h-2.5 w-full bg-white/[0.05] rounded-full overflow-hidden flex">
-              {safeDevices.map((d) => {
-                const bg =
-                  d.device === "mobile"
-                    ? "bg-cyan-500"
-                    : d.device === "tablet"
-                    ? "bg-purple-500"
-                    : "bg-blue-600";
+            <div className="h-2 w-full bg-white/[0.06] rounded-full overflow-hidden flex">
+              {safeDevices.map((d, i) => {
+                const bg = i === 0 ? "bg-white" : i === 1 ? "bg-zinc-400" : "bg-zinc-600";
                 return (
                   <div
                     key={d.device}
@@ -85,17 +80,17 @@ export default function DeviceBreakdownWidget({
         {/* Top Browsers list */}
         {safeBrowsers.length > 0 && (
           <div className="pt-2 space-y-2">
-            <div className="text-[10px] font-extrabold uppercase text-muted-foreground tracking-wider">
+            <div className="text-[10px] font-mono font-semibold uppercase text-zinc-500 tracking-wider">
               Top Client Browsers
             </div>
             <div className="grid grid-cols-2 gap-2">
               {safeBrowsers.slice(0, 4).map((b) => (
                 <div
                   key={b.browser}
-                  className="p-2 rounded-xl bg-white/[0.02] border border-white/[0.05] flex items-center justify-between text-xs"
+                  className="p-2.5 rounded-xl bg-[#0e0f15] border border-white/[0.06] flex items-center justify-between text-xs"
                 >
-                  <span className="font-bold text-slate-300 truncate">{b.browser}</span>
-                  <span className="font-mono font-bold text-cyan-400 text-[11px]">{b.percentage}%</span>
+                  <span className="font-medium text-zinc-200 truncate">{b.browser}</span>
+                  <span className="font-mono font-semibold text-white text-[11px] tabular-nums">{b.percentage}%</span>
                 </div>
               ))}
             </div>
@@ -103,9 +98,9 @@ export default function DeviceBreakdownWidget({
         )}
       </div>
 
-      <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-[10px] text-muted-foreground font-mono">
-        <span>WebGL Unmasked Detection</span>
-        <span>High-DPI Retina Support</span>
+      <div className="pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs text-zinc-400 font-mono">
+        <span>Hardware Engine Analysis</span>
+        <span>High-DPI Retina Ready</span>
       </div>
     </div>
   );

@@ -466,25 +466,25 @@ export default function WorldMapAnalytics({
   return (
     <div
       ref={containerRef}
-      className="relative w-full bg-card border border-border rounded-2xl sm:rounded-3xl p-3 sm:p-6 shadow-sm overflow-hidden flex flex-col space-y-3 sm:space-y-4"
+      className="relative w-full bg-[#111218] border border-white/[0.08] rounded-xl sm:rounded-2xl p-3 sm:p-6 shadow-xs overflow-hidden flex flex-col space-y-3 sm:space-y-4"
     >
       {/* ── Top Header & Mission Control Bar ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/60 pb-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/[0.08] pb-3">
         <div className="flex items-center gap-3">
-          <div className="relative w-9 h-9 rounded-2xl bg-gradient-to-br from-primary/20 via-sky-500/10 to-indigo-500/20 text-primary flex items-center justify-center border border-primary/30 shadow-inner shrink-0">
-            <Globe size={20} />
-            <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-card animate-glow" />
+          <div className="relative w-9 h-9 rounded-xl bg-white/[0.06] text-white flex items-center justify-center border border-white/[0.08] shrink-0">
+            <Globe size={18} />
+            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-[#111218]" />
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="text-sm font-black tracking-tight text-foreground truncate">
+              <h3 className="text-sm font-semibold tracking-tight text-white truncate">
                 Global Visitor Distribution
               </h3>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-[10px] font-black uppercase tracking-wider">
-                <Radio size={10} className="animate-glow" /> Live Radar
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-semibold uppercase tracking-wider">
+                <Radio size={10} /> Live Radar
               </span>
             </div>
-            <p className="text-[11px] text-muted-foreground truncate sm:whitespace-normal">
+            <p className="text-[11px] text-zinc-400 truncate sm:whitespace-normal">
               Interactive cartography tracking {countries.length} active nations (tap / pinch to zoom)
             </p>
           </div>
@@ -494,7 +494,7 @@ export default function WorldMapAnalytics({
         <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto flex-wrap sm:flex-nowrap">
           {/* Active Filter Indicator */}
           {selectedCountryCode && (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-primary/15 text-primary text-xs font-bold border border-primary/30 shadow-xs shrink-0">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/[0.08] text-white text-xs font-medium border border-white/[0.12] shadow-xs shrink-0">
               <Filter size={11} />
               <span className="truncate max-w-[140px] sm:max-w-none">
                 Filtered: {getFullCountryName(selectedCountryCode)} ({selectedCountryCode.toUpperCase()})
@@ -502,84 +502,82 @@ export default function WorldMapAnalytics({
               <button
                 type="button"
                 onClick={() => onSelectCountry && onSelectCountry(null)}
-                className="hover:text-primary-foreground hover:bg-primary rounded p-0.5 transition"
-                title="Clear filter"
+                className="p-0.5 hover:bg-white/10 rounded transition-colors text-zinc-300 hover:text-white ml-0.5"
+                title="Clear Country Filter"
               >
                 <X size={12} />
               </button>
             </div>
           )}
 
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar max-w-full w-full sm:w-auto justify-between sm:justify-end">
-            {/* Quick Continent Selector */}
-            <div className="flex items-center gap-1 p-1 bg-muted/50 border border-border/80 rounded-xl text-xs font-bold overflow-x-auto no-scrollbar shrink-0">
+          {/* Continent Quick Jump Buttons */}
+          <div className="flex items-center gap-1">
+            <div className="hidden md:flex items-center gap-1 p-1 bg-[#0e0f15] border border-white/[0.08] rounded-lg">
               <button
                 type="button"
                 onClick={() => handleJumpToContinent("world")}
-                className={`px-2 py-1 rounded-lg text-[11px] whitespace-nowrap transition ${
-                  zoom === 1 ? "bg-primary text-primary-foreground shadow-xs" : "text-muted-foreground hover:text-foreground"
-                }`}
+                className="px-2 py-1 rounded text-[11px] whitespace-nowrap font-medium text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-colors"
               >
-                World
-              </button>
-              <button
-                type="button"
-                onClick={() => handleJumpToContinent("asia")}
-                className="px-2 py-1 rounded-lg text-[11px] whitespace-nowrap text-muted-foreground hover:text-foreground hover:bg-muted/80 transition"
-              >
-                Asia-Pac
+                Global
               </button>
               <button
                 type="button"
                 onClick={() => handleJumpToContinent("europe")}
-                className="px-2 py-1 rounded-lg text-[11px] whitespace-nowrap text-muted-foreground hover:text-foreground hover:bg-muted/80 transition"
+                className="px-2 py-1 rounded text-[11px] whitespace-nowrap font-medium text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-colors"
               >
                 Europe
               </button>
               <button
                 type="button"
+                onClick={() => handleJumpToContinent("asia")}
+                className="px-2 py-1 rounded text-[11px] whitespace-nowrap font-medium text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-colors"
+              >
+                Asia
+              </button>
+              <button
+                type="button"
                 onClick={() => handleJumpToContinent("americas")}
-                className="px-2 py-1 rounded-lg text-[11px] whitespace-nowrap text-muted-foreground hover:text-foreground hover:bg-muted/80 transition"
+                className="px-2 py-1 rounded text-[11px] whitespace-nowrap font-medium text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-colors"
               >
                 Americas
               </button>
               <button
                 type="button"
                 onClick={() => handleJumpToContinent("africa")}
-                className="px-2 py-1 rounded-lg text-[11px] whitespace-nowrap text-muted-foreground hover:text-foreground hover:bg-muted/80 transition"
+                className="px-2 py-1 rounded text-[11px] whitespace-nowrap font-medium text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-colors"
               >
                 Africa
               </button>
             </div>
 
             {/* Zoom & Reset Controls */}
-            <div className="flex items-center gap-1 p-1 bg-muted/60 border border-border rounded-xl shadow-xs shrink-0">
+            <div className="flex items-center gap-1 p-1 bg-[#0e0f15] border border-white/[0.08] rounded-lg shadow-xs shrink-0">
               <button
                 type="button"
                 onClick={handleZoomIn}
                 disabled={zoom >= 4.5}
-                className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-card transition disabled:opacity-30"
+                className="p-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-colors disabled:opacity-30"
                 title="Zoom In"
               >
                 <ZoomIn size={14} />
               </button>
-              <span className="text-[10px] font-mono font-bold px-1 text-muted-foreground min-w-[32px] text-center">
+              <span className="text-[10px] font-mono font-semibold tabular-nums px-1 text-zinc-400 min-w-[32px] text-center">
                 {Math.round(zoom * 100)}%
               </span>
               <button
                 type="button"
                 onClick={handleZoomOut}
                 disabled={zoom <= 1}
-                className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-card transition disabled:opacity-30"
+                className="p-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-colors disabled:opacity-30"
                 title="Zoom Out"
               >
                 <ZoomOut size={14} />
               </button>
-              <div className="w-[1px] h-3.5 bg-border mx-0.5" />
+              <div className="w-[1px] h-3.5 bg-white/[0.08] mx-0.5" />
               <button
                 type="button"
                 onClick={handleReset}
-                className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-card transition"
+                className="p-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-colors"
                 title="Reset View"
               >
                 <RotateCcw size={13} />
@@ -592,7 +590,7 @@ export default function WorldMapAnalytics({
       {/* ── High-Tech Interactive SVG Map Canvas (Wheel / Pinch Zoom Enabled) ── */}
       <div
         ref={canvasRef}
-        className={`relative w-full aspect-[16/10] sm:aspect-[2.05/1] min-h-[260px] sm:min-h-[460px] rounded-xl sm:rounded-2xl border border-border/80 overflow-hidden flex items-center justify-center select-none bg-gradient-to-b from-[#080d1a] via-[#050811] to-[#020408] shadow-2xl transition-all ${
+        className={`relative w-full aspect-[16/10] sm:aspect-[2.05/1] min-h-[260px] sm:min-h-[460px] rounded-xl sm:rounded-2xl border border-white/[0.08] overflow-hidden flex items-center justify-center select-none bg-[#090a0f] shadow-2xl transition-all ${
           zoom > 1 ? (isDragging ? "cursor-grabbing" : "cursor-grab") : "cursor-default"
         }`}
         style={{

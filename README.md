@@ -33,6 +33,8 @@ It provides complete insight into user experience, performance bottlenecks, rage
 - **Quota Enforcement & Modal Guarding**: Automated enforcement of website ceilings (1 Free, 10 Pro) blocking project creation wizards when limits are reached with proactive upgrade prompts.
 - **Expired Plan Multi-Project Locking**: Seamless active website selection for expired users, locking 1 active tracking property and pausing unselected properties on Free tier while preserving historical data.
 - **Developer Profile Hub (`/profile`)**: Manage user profile details, role assignments, subscription tier status, and associated workspaces.
+- **World-Class Obsidian & Precision Dark Design System**: Human-crafted developer aesthetics inspired by Linear, Vercel, and Raycast. Built with Plus Jakarta Sans typography (`--font-sans`) and JetBrains Mono (`--font-mono`), tabular numerals (`tabular-nums font-semibold text-white`), solid obsidian surfaces (`#090a0f`, `#111218`, `#0e0f15`, `#181922`), hairline borders (`border-white/[0.08]`), tactile high-contrast white CTAs, a 5-card Bento Grid Showcase, an ergonomic 2-tier executive overview grid, and complete obsidian redesign across all 15+ workspace modules, all 7 overview widgets, and all public marketing/docs pages.
+- **Enterprise SEO, GEO & AEO Optimization**: 100% of public main domain pages (`openanalytics.org.in`) calibrated to recommended SEO metadata standards (50–60 character rendered title tags, 140–160 character meta descriptions), server-decoupled rendering, and machine-readable JSON-LD Schema.org graphs (`WebSite`, `SoftwareApplication`, `Product`, `TechArticle`, `HowTo`, `FAQPage`, `BreadcrumbList`, `ItemList`) for rich indexing by Google and generative answer engines (OpenAI SearchGPT, Perplexity, Claude, Applebot).
 - **Privacy & Security by Design**: Built-in IP address anonymization (masking the last octet for GDPR compliance) and automated PII redaction (scrubbing emails, passwords, tokens from URL query parameters and error payloads).
 
 ---
@@ -95,7 +97,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <Script
           id="open-analytics"
-          src="https://openanalytics.org.in/open.js"
+          src="https://api.openanalytics.org.in/open.js"
           strategy="afterInteractive"
           data-project-id="prj_your_project_id"
         />
@@ -121,7 +123,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <>
       <Script
         id="open-analytics"
-        src="https://openanalytics.org.in/open.js"
+        src="https://api.openanalytics.org.in/open.js"
         strategy="afterInteractive"
         data-project-id="prj_your_project_id"
       />
@@ -146,7 +148,7 @@ In your root `index.html` (inside `<head>`):
     <!-- Open Analytics Tracking -->
     <script 
       defer 
-      src="https://openanalytics.org.in/open.js" 
+      src="https://api.openanalytics.org.in/open.js" 
       data-project-id="prj_your_project_id"
     ></script>
   </head>
@@ -168,7 +170,7 @@ export default defineNuxtConfig({
     head: {
       script: [
         {
-          src: "https://openanalytics.org.in/open.js",
+          src: "https://api.openanalytics.org.in/open.js",
           defer: true,
           "data-project-id": "prj_your_project_id",
         },
@@ -187,7 +189,7 @@ In `src/app.html` (SvelteKit) or your base layout (Astro):
 ```html
 <script 
   defer 
-  src="https://openanalytics.org.in/open.js" 
+  src="https://api.openanalytics.org.in/open.js" 
   data-project-id="prj_your_project_id"
 ></script>
 ```

@@ -103,12 +103,35 @@ To build the most developer-friendly, high-performance, and visually stunning an
 - [ ] External incident alerts via Slack, Discord, and Telegram webhooks.
 - [ ] Daily/Weekly executive summary email reports.
 
-### Phase 8: Session Replay & Visual Heatmaps (Q1 2027)
+### Phase 12: World-Class Obsidian & Precision Design System (Completed)
+- [x] Full UI/UX visual overhaul from generic AI template clichés to Obsidian & Precision developer aesthetic (inspired by Linear, Vercel, Raycast).
+- [x] Plus Jakarta Sans (`--font-sans`) and JetBrains Mono (`--font-mono`) typography integration via `next/font/google` with tabular numbers across all KPI metrics.
+- [x] Solid obsidian dark surfaces (`#090a0f`, `#111218`, `#0e0f15`, `#181922`) with razor-thin borders (`rgba(255,255,255,0.08)`) and inset bevel highlights.
+- [x] Complete eradication of legacy `bg-card` classes across 100% of codebase files.
+- [x] 5-card Bento Grid Showcase on main domain landing page with telemetry simulator, CWV gauges, AI crawler radar, and crash triage.
+- [x] Clutter-free sidebar navigation: stripped out 10+ noisy non-actionable badges, retaining badges strictly for actionable signals (unread alerts, active errors).
+- [x] Balanced 2-tier executive overview grid (4 primary hero stats + 3 secondary health cards) replacing cramped 7-column row.
+- [x] Modernized all 7 core overview cockpit widgets (`TopPagesWidget`, `WebVitalsRadarWidget`, `AiAndErrorWidget`, `TrafficChannelsWidget`, `LiveStreamWidget`, `GeoWidget`, `DeviceBreakdownWidget`).
+- [x] Redesigned all dedicated workspace sections: Live Feed (all 1839 lines), Errors Triage, Custom Events, Core Web Vitals, Behavioral UX, AI Visibility, Top Pages, Acquisition Channels, Audience & Loyalty, Technology & Hardware, User Journeys, Geo Analytics, Virtual Labs, SEO Monitoring, and Script Installation.
+- [x] Redesigned all public marketing and documentation pages (`/features`, `/pricing`, `/vs-google-analytics`, `/privacy`, `/faq`, `/docs`, `/docs/web-vitals`, `/docs/verification`, `/docs/seo-aeo`, `/docs/installation`, `/docs/alerts`).
+- [x] Redesigned authentication & profile interfaces (`/login`, `/register`, `/profile`) with solid obsidian panels and high-contrast inputs.
+- [x] High-contrast tactile white CTA buttons and clean obsidian workspace switcher popovers across desktop and mobile.
+
+### Phase 13: Main Domain Full SEO, GEO & AEO Optimization (Completed)
+- [x] Systematic optimization of all 12 main domain routes (`/`, `/features`, `/pricing`, `/vs-google-analytics`, `/privacy`, `/faq`, `/docs`, `/docs/installation`, `/docs/verification`, `/docs/web-vitals`, `/docs/seo-aeo`, `/docs/alerts`).
+- [x] Rendered HTML title tags calibrated strictly between 50 and 60 characters with zero duplicate branding (`%s | Open Analytics`).
+- [x] Meta description tags calibrated strictly between 140 and 160 characters.
+- [x] Client/Server component decoupling across all interactive public pages (`FaqClientView`, `DocsOverviewClientView`, `InstallationClientView`, `VerificationClientView`, `AlertsDocsClientView`) enabling static server metadata rendering.
+- [x] Full JSON-LD structured schemas (`WebSite`, `SoftwareApplication`, `Product`, `TechArticle`, `HowTo`, `FAQPage`, `BreadcrumbList`, `ItemList`) for AI search answer engines (SearchGPT, Perplexity, Claude, Gemini).
+- [x] Updated `robots.ts` and `sitemap.ts` with explicit allow rules for major LLM bot user-agents and full docs subroute indexing.
+
+### Phase 14: Session Replay & Visual Heatmaps (Q1 2027)
 - [ ] Lightweight, DOM-sanitized session recording playback engine.
 - [ ] Click & scroll aggregate heatmaps on rendered pages.
 - [ ] Privacy masking for sensitive user input fields during replay capture.
 
-### Phase 9: Enterprise Private Cloud & Global Edge (Q2 2027)
+### Phase 15: Enterprise Private Cloud & Global Edge (Q2 2027)
 - [ ] Dedicated Enterprise VPC deployments with custom SLAs.
 - [ ] Cloudflare Workers / Vercel Edge middleware ingestion adapters.
 - [ ] ClickHouse database driver support for ultra-high throughput event streaming (100M+ events/mo).
+

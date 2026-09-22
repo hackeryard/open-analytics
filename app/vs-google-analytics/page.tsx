@@ -10,7 +10,6 @@ import {
   Sparkles,
   Bot,
   Activity,
-  Flame,
   Bug,
   HelpCircle,
   Gauge,
@@ -26,9 +25,9 @@ import { getDashboardUrl } from "@/lib/subdomain";
 const baseUrl = "https://openanalytics.org.in";
 
 export const metadata: Metadata = {
-  title: "Open Analytics vs Google Analytics 4 (GA4) | Complete 2026 Comparison",
+  title: "Open Analytics vs Google Analytics 4 (GA4)",
   description:
-    "Comprehensive head-to-head comparison: Open Analytics vs Google Analytics 4 (GA4). Why modern engineering teams choose Open Analytics for sub-3.2KB script payload, zero cookie banners, real-time sub-second latency, and autonomous AI search radar.",
+    "Compare Open Analytics vs GA4: sub-3.2KB payload vs 45KB+, zero cookie consent banners, real-time sub-second telemetry, and autonomous AI search crawler radar.",
   keywords: [
     "open analytics vs google analytics",
     "ga4 alternative",
@@ -44,21 +43,30 @@ export const metadata: Metadata = {
     canonical: "https://openanalytics.org.in/vs-google-analytics",
   },
   openGraph: {
-    title: "Open Analytics vs Google Analytics 4 (GA4) | The Privacy-First Alternative",
+    title: "Open Analytics vs Google Analytics 4: Technical Comparison",
     description:
-      "Sub-3.2KB vs 45KB+ script, zero cookie banners vs mandatory consent popups, sub-second telemetry vs 24hr data lag. See the complete head-to-head comparison.",
+      "Compare Open Analytics vs GA4: sub-3.2KB payload vs 45KB+, zero cookie consent banners, real-time sub-second telemetry, and autonomous AI search crawler radar.",
     url: `${baseUrl}/vs-google-analytics`,
     type: "article",
+    images: [
+      {
+        url: `${baseUrl}/og-image.png`,
+        width: 1200,
+        height: 630,
+        alt: "Open Analytics vs Google Analytics 4 Comparison",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Open Analytics vs Google Analytics 4 (GA4) Comparison",
-    description: "Compare script payload, privacy compliance, AI bot radar, and real-time latency.",
+    title: "Open Analytics vs Google Analytics 4: Technical Comparison",
+    description:
+      "Compare Open Analytics vs GA4: sub-3.2KB payload vs 45KB+, zero cookie consent banners, real-time sub-second telemetry, and autonomous AI search crawler radar.",
+    images: [`${baseUrl}/og-image.png`],
   },
 };
 
 const breadcrumbSchema = {
-  "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
     {
@@ -70,30 +78,41 @@ const breadcrumbSchema = {
     {
       "@type": "ListItem",
       position: 2,
-      name: "vs Google Analytics 4",
+      name: "vs Google Analytics",
       item: `${baseUrl}/vs-google-analytics`,
     },
   ],
 };
 
+const articleSchema = {
+  "@type": "TechArticle",
+  "@id": `${baseUrl}/vs-google-analytics/#article`,
+  headline: "Open Analytics vs Google Analytics 4: Complete Technical Comparison",
+  description:
+    "Architectural and performance comparison between Open Analytics and Google Analytics 4 covering script payload, cookie consent, and real user monitoring.",
+  url: `${baseUrl}/vs-google-analytics`,
+  author: {
+    "@type": "Organization",
+    name: "Open Analytics Team",
+    url: baseUrl,
+  },
+  publisher: {
+    "@type": "Organization",
+    name: "Open Analytics",
+    url: baseUrl,
+  },
+  inLanguage: "en-US",
+};
+
 const faqSchema = {
-  "@context": "https://schema.org",
   "@type": "FAQPage",
   mainEntity: [
     {
       "@type": "Question",
-      name: "Why choose Open Analytics over Google Analytics 4 (GA4)?",
+      name: "Why do websites switch from Google Analytics 4 to Open Analytics?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Open Analytics is 15x lighter (<3.2KB vs 45-120KB for GA4), 100% cookieless so you never need to display an intrusive cookie consent banner, delivers instant sub-second real-time streaming instead of GA4's 24-48 hour delay, and includes native AI bot crawler radar and Core Web Vitals tracking.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Do I need a cookie consent banner when using Open Analytics?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "No. Open Analytics does not use tracking cookies, LocalStorage identifiers, or cross-site device fingerprinting. Session hashes are generated using an anonymized IP address combined with a daily rotating cryptographic salt, fully complying with GDPR, CCPA, and PECR without requiring user consent banners.",
+        text: "Teams migrate to Open Analytics to eliminate slow script payloads, remove mandatory GDPR cookie consent banners, view real-time streaming telemetry with 0s lag, and monitor AI search engine traffic from SearchGPT, Perplexity, and Claude.",
       },
     },
     {
@@ -115,6 +134,11 @@ const faqSchema = {
   ],
 };
 
+const comparisonPageSchema = {
+  "@context": "https://schema.org",
+  "@graph": [breadcrumbSchema, articleSchema, faqSchema],
+};
+
 export default function VsGoogleAnalyticsPage() {
   const dashboardUrl = getDashboardUrl("/");
 
@@ -129,31 +153,31 @@ export default function VsGoogleAnalyticsPage() {
       feature: "Cookie Consent Banner Required?",
       openAnalytics: "No (100% Cookieless)",
       ga4: "Yes (Mandatory by Law)",
-      whyItMatters: "Cookie popups lower conversion rates and degrade visitor trust.",
+      whyItMatters: "Cookie popups lower conversion rates and create visitor fatigue.",
     },
     {
       feature: "Data Ingestion Latency",
       openAnalytics: "Sub-second (< 2s)",
       ga4: "24 – 48 Hour Delay",
-      whyItMatters: "Immediate feedback is essential during product launches and marketing campaigns.",
+      whyItMatters: "Immediate feedback is essential during product launches and deployments.",
     },
     {
       feature: "Autonomous AI Search Radar",
       openAnalytics: "Yes (SearchGPT, Perplexity, Claude)",
       ga4: "No (Grouped into Direct traffic)",
-      whyItMatters: "Essential for modern Generative Engine Optimization (GEO) and AEO visibility.",
+      whyItMatters: "Essential for modern Generative Engine Optimization (GEO) visibility.",
     },
     {
       feature: "Core Web Vitals Real User Monitoring (RUM)",
       openAnalytics: "Built-in p75 LCP, INP, CLS",
       ga4: "Requires manual BigQuery pipelines",
-      whyItMatters: "Real visitor field performance is critical for Google SEO rankings.",
+      whyItMatters: "Real visitor field performance directly drives Google search rankings.",
     },
     {
       feature: "Behavioral Friction (Rage & Dead Clicks)",
       openAnalytics: "Included Out-of-the-Box",
       ga4: "Not supported",
-      whyItMatters: "Identifies broken buttons and UI layout confusion without heavy session video tools.",
+      whyItMatters: "Identifies broken buttons without invasive DOM video recorders.",
     },
     {
       feature: "Frontend JavaScript Crash Triage",
@@ -165,7 +189,7 @@ export default function VsGoogleAnalyticsPage() {
       feature: "EU Data Sovereignty & GDPR Compliance",
       openAnalytics: "100% EU Data Residency (Frankfurt/AMS)",
       ga4: "Subject to Schrems II legal scrutiny",
-      whyItMatters: "Guaranteed peace of mind against EU regulatory data export fines.",
+      whyItMatters: "Guaranteed compliance against European cross-border data export fines.",
     },
     {
       feature: "Data Sampling on High-Traffic Sites",
@@ -182,123 +206,133 @@ export default function VsGoogleAnalyticsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#050811] text-slate-100 selection:bg-cyan-500/30 selection:text-cyan-200">
-      <JsonLd schema={breadcrumbSchema} />
-      <JsonLd schema={faqSchema} />
+    <div className="w-full text-zinc-100 selection:bg-white/[0.15] selection:text-white">
+      <JsonLd data={comparisonPageSchema} />
 
-      {/* Hero Section */}
+      {/* ============================================================ */}
+      {/* 1. HERO SECTION                                              */}
+      {/* ============================================================ */}
       <section className="relative pt-24 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[360px] bg-gradient-to-tr from-cyan-500/15 via-blue-600/10 to-indigo-600/5 blur-[120px] -z-10 pointer-events-none" />
+        {/* Ambient top vignette */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-white/[0.02] blur-[120px] -z-10 pointer-events-none" />
 
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/25 text-cyan-400 text-xs font-semibold tracking-wide uppercase mb-6 backdrop-blur-md">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>Independent Technical Benchmark</span>
+        {/* Release Pill */}
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#111218] border border-white/[0.08] hover:border-white/[0.16] text-zinc-300 text-xs font-medium mb-8 transition shadow-xs">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="font-semibold text-white">Technical Benchmark:</span>
+          <span>Architectural Comparison</span>
+          <span className="text-zinc-500">•</span>
+          <span className="font-mono text-zinc-400 text-[11px]">2026 Audit</span>
         </div>
 
-        <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white mb-6 max-w-4xl mx-auto leading-[1.1]">
-          Open Analytics vs{" "}
-          <span className="bg-gradient-to-r from-rose-400 via-amber-300 to-cyan-400 bg-clip-text text-transparent">
-            Google Analytics 4 (GA4)
-          </span>
+        {/* Hero Title */}
+        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-6 max-w-5xl mx-auto leading-[1.06]">
+          Open Analytics vs Google Analytics 4 (GA4).
         </h1>
 
-        <p className="max-w-3xl mx-auto text-base sm:text-lg text-slate-300 leading-relaxed mb-10">
-          Why engineering and product teams are replacing bloated, complex Google Analytics 4 with Open Analytics: featherweight sub-3.2KB scripts, zero cookie consent popups, sub-second real-time streaming, and autonomous AI search radar.
+        {/* Subtitle */}
+        <p className="max-w-3xl mx-auto text-base sm:text-lg text-zinc-400 leading-relaxed mb-8">
+          Why engineering and product teams are replacing bloated, complex Google Analytics 4 with Open Analytics: featherweight sub-3.2KB script, zero cookie banners, sub-second real-time streaming, and autonomous AI search radar.
         </p>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-12">
           <a
             href={dashboardUrl}
-            className="w-full sm:w-auto py-3.5 px-8 rounded-xl bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-400 hover:from-cyan-300 hover:via-sky-300 hover:to-indigo-300 text-slate-950 font-black text-sm transition-all shadow-xl shadow-cyan-500/25 flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.02]"
+            className="w-full sm:w-auto py-3 px-6 rounded-xl bg-white hover:bg-zinc-200 text-zinc-950 font-semibold text-sm transition shadow-sm flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
           >
             <span>Launch Dashboard</span>
             <ArrowRight className="w-4 h-4" />
           </a>
           <Link
             href="/features"
-            className="w-full sm:w-auto py-3.5 px-6 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 font-semibold text-sm transition border border-white/[0.1] flex items-center justify-center gap-2"
+            className="w-full sm:w-auto py-3 px-5 rounded-xl bg-[#111218] hover:bg-[#181922] text-zinc-300 hover:text-white font-medium text-sm transition border border-white/[0.08] hover:border-white/[0.16] flex items-center justify-center gap-2"
           >
             <span>Explore All Features</span>
           </Link>
         </div>
       </section>
 
-      {/* Simulated Mobile Lighthouse Score Comparison */}
-      <section className="py-8 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
-        <div className="p-8 rounded-3xl bg-gradient-to-b from-white/[0.03] to-white/[0.01] border border-white/[0.08] backdrop-blur-md shadow-xl space-y-6">
+      {/* ============================================================ */}
+      {/* 2. LIGHTHOUSE PERFORMANCE IMPACT (MOBILE AUDIT)              */}
+      {/* ============================================================ */}
+      <section className="py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-12">
+        <div className="p-6 sm:p-10 rounded-2xl bg-[#111218] border border-white/[0.08] shadow-xl space-y-6">
           <div className="text-center space-y-1">
-            <h3 className="text-lg font-black text-white">Google Lighthouse Performance Impact (Mobile Simulation)</h3>
-            <p className="text-xs text-slate-400">Measured on standard mobile 4G throttling using identical Next.js application baselines.</p>
+            <h3 className="text-lg font-bold text-white tracking-tight">Google Lighthouse Performance Impact (Mobile Audit)</h3>
+            <p className="text-xs text-zinc-400">Measured on standard mobile 4G network throttling using identical Next.js application baselines.</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
             {/* Open Analytics Score */}
-            <div className="p-6 rounded-2xl bg-[#070b16] border border-emerald-500/30 text-center space-y-3">
-              <div className="w-20 h-20 rounded-full border-4 border-emerald-400 flex items-center justify-center mx-auto text-3xl font-black text-emerald-400 font-mono shadow-lg shadow-emerald-500/20">
+            <div className="p-6 rounded-xl bg-[#0e0f15] border border-emerald-500/30 text-center space-y-3">
+              <div className="w-20 h-20 rounded-full border-4 border-emerald-400 flex items-center justify-center mx-auto text-3xl font-bold text-emerald-400 font-mono">
                 100
               </div>
               <div>
-                <div className="text-sm font-bold text-white">With Open Analytics</div>
-                <div className="text-xs text-emerald-400 font-mono mt-0.5">Payload: 3.1 KB • Blocking: 0 ms</div>
+                <div className="text-sm font-semibold text-white">With Open Analytics</div>
+                <div className="text-xs text-emerald-400 font-mono mt-0.5">Payload: 3.1 KB • Main Thread: &lt; 2 ms</div>
               </div>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-zinc-400 leading-relaxed">
                 Zero impact on First Contentful Paint (FCP) and zero execution delay on Interaction to Next Paint (INP).
               </p>
             </div>
 
             {/* Google Analytics 4 Score */}
-            <div className="p-6 rounded-2xl bg-[#070b16] border border-rose-500/30 text-center space-y-3">
-              <div className="w-20 h-20 rounded-full border-4 border-rose-400 flex items-center justify-center mx-auto text-3xl font-black text-rose-400 font-mono shadow-lg shadow-rose-500/20">
+            <div className="p-6 rounded-xl bg-[#0e0f15] border border-rose-500/30 text-center space-y-3">
+              <div className="w-20 h-20 rounded-full border-4 border-rose-400 flex items-center justify-center mx-auto text-3xl font-bold text-rose-400 font-mono">
                 72
               </div>
               <div>
-                <div className="text-sm font-bold text-white">With Google Analytics 4 (GA4)</div>
-                <div className="text-xs text-rose-400 font-mono mt-0.5">Payload: 84.6 KB • Blocking: 180 ms</div>
+                <div className="text-sm font-semibold text-white">With Google Analytics 4 (GA4)</div>
+                <div className="text-xs text-rose-400 font-mono mt-0.5">Payload: 84.6 KB • Main Thread: 180 ms</div>
               </div>
-              <p className="text-xs text-slate-400">
-                Heavy script parsing, tag manager network waterfall, and cookie consent banner DOM injections degrade score.
+              <p className="text-xs text-zinc-400 leading-relaxed">
+                Heavy script parsing, tag manager waterfall requests, and cookie consent banner DOM injections degrade score.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Head-to-Head Comparison Table */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+      {/* ============================================================ */}
+      {/* 3. HEAD-TO-HEAD FEATURE MATRIX TABLE                         */}
+      {/* ============================================================ */}
+      <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-16">
         <div className="text-center mb-10 space-y-2">
-          <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
-            Detailed Head-to-Head Feature Matrix
+          <h2 className="text-2xl sm:text-4xl font-bold text-white tracking-tight">
+            Detailed head-to-head feature matrix
           </h2>
-          <p className="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto">
-            An honest breakdown of architectural differences between Open Analytics and GA4.
+          <p className="text-xs sm:text-sm text-zinc-400 max-w-xl mx-auto">
+            An architectural breakdown between Open Analytics and Google Analytics 4.
           </p>
         </div>
 
-        <div className="overflow-x-auto rounded-3xl border border-white/[0.08] bg-[#070b16]/90 backdrop-blur-md shadow-2xl">
+        <div className="overflow-x-auto rounded-2xl border border-white/[0.08] bg-[#111218] shadow-xl">
           <table className="w-full text-left border-collapse text-xs sm:text-sm">
             <thead>
-              <tr className="border-b border-white/[0.08] bg-white/[0.03] text-slate-300">
-                <th className="py-4 px-6 font-bold w-1/3">Feature / Capability</th>
-                <th className="py-4 px-6 font-bold text-cyan-400 w-1/3">Open Analytics</th>
-                <th className="py-4 px-6 font-bold text-rose-400 w-1/3">Google Analytics 4</th>
+              <tr className="border-b border-white/[0.08] bg-[#0e0f15] text-zinc-300">
+                <th className="py-4 px-6 font-semibold w-1/3 text-white">Feature / Capability</th>
+                <th className="py-4 px-6 font-semibold text-emerald-400 w-1/3">Open Analytics</th>
+                <th className="py-4 px-6 font-semibold text-zinc-400 w-1/3">Google Analytics 4</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/[0.06] text-slate-300">
+            <tbody className="divide-y divide-white/[0.06] text-zinc-300">
               {comparisonRows.map((row) => (
-                <tr key={row.feature} className="hover:bg-white/[0.015] transition-colors">
-                  <td className="py-4 px-6 font-semibold text-white">
+                <tr key={row.feature} className="hover:bg-white/[0.02] transition-colors">
+                  <td className="py-4 px-6 font-medium text-white">
                     <div>{row.feature}</div>
-                    <div className="text-[11px] text-slate-500 font-normal mt-0.5">{row.whyItMatters}</div>
+                    <div className="text-[11px] text-zinc-500 font-normal mt-0.5">{row.whyItMatters}</div>
                   </td>
-                  <td className="py-4 px-6 text-emerald-400 font-bold">
+                  <td className="py-4 px-6 text-emerald-400 font-semibold font-mono">
                     <div className="flex items-center gap-1.5">
-                      <Check size={15} className="shrink-0" />
+                      <Check size={14} className="shrink-0 text-emerald-400" />
                       <span>{row.openAnalytics}</span>
                     </div>
                   </td>
-                  <td className="py-4 px-6 text-slate-400">
-                    <div className="flex items-center gap-1.5 text-rose-300">
-                      <X size={15} className="shrink-0 text-rose-400" />
+                  <td className="py-4 px-6 text-zinc-400 font-mono">
+                    <div className="flex items-center gap-1.5">
+                      <X size={14} className="shrink-0 text-rose-400" />
                       <span>{row.ga4}</span>
                     </div>
                   </td>
@@ -309,45 +343,47 @@ export default function VsGoogleAnalyticsPage() {
         </div>
       </section>
 
-      {/* Migration in Under 60 Seconds */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
-        <div className="p-8 sm:p-12 rounded-3xl bg-white/[0.02] border border-white/[0.08] space-y-8">
+      {/* ============================================================ */}
+      {/* 4. MIGRATION IN UNDER 60 SECONDS                             */}
+      {/* ============================================================ */}
+      <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-16">
+        <div className="p-6 sm:p-10 rounded-2xl bg-[#111218] border border-white/[0.08] shadow-xl space-y-8">
           <div className="text-center space-y-2">
-            <h3 className="text-2xl sm:text-3xl font-black text-white">
-              Migrate From GA4 in Under 60 Seconds
+            <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+              Migrate from GA4 in under 60 seconds
             </h3>
-            <p className="text-xs sm:text-sm text-slate-400 max-w-lg mx-auto">
+            <p className="text-xs sm:text-sm text-zinc-400 max-w-lg mx-auto">
               Switching is as simple as replacing your old Google Tag Manager snippet.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-5 rounded-2xl bg-[#070b16] border border-white/[0.06] space-y-3">
-              <div className="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 font-mono font-black flex items-center justify-center text-sm">
+            <div className="p-5 rounded-xl bg-[#0e0f15] border border-white/[0.06] space-y-3">
+              <div className="w-8 h-8 rounded-lg bg-white/[0.08] border border-white/[0.1] text-white font-mono font-bold flex items-center justify-center text-xs">
                 1
               </div>
-              <h4 className="text-sm font-bold text-white">Create Your Project</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Launch the dashboard and create your website property. You will receive a unique, project ID instantly.
+              <h4 className="text-sm font-semibold text-white">Create Your Project</h4>
+              <p className="text-xs text-zinc-400 leading-relaxed">
+                Launch the dashboard and create your website property. You will receive a unique project ID instantly.
               </p>
             </div>
 
-            <div className="p-5 rounded-2xl bg-[#070b16] border border-white/[0.06] space-y-3">
-              <div className="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 font-mono font-black flex items-center justify-center text-sm">
+            <div className="p-5 rounded-xl bg-[#0e0f15] border border-white/[0.06] space-y-3">
+              <div className="w-8 h-8 rounded-lg bg-white/[0.08] border border-white/[0.1] text-white font-mono font-bold flex items-center justify-center text-xs">
                 2
               </div>
-              <h4 className="text-sm font-bold text-white">Paste The Single Tag</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Embed the &lt;3.2KB asynchronous snippet into your website&apos;s &lt;head&gt;. Zero additional dependencies.
+              <h4 className="text-sm font-semibold text-white">Paste The Single Tag</h4>
+              <p className="text-xs text-zinc-400 leading-relaxed">
+                Embed the &lt;3.2KB asynchronous snippet into your website&apos;s &lt;head&gt;. Zero additional dependencies required.
               </p>
             </div>
 
-            <div className="p-5 rounded-2xl bg-[#070b16] border border-white/[0.06] space-y-3">
-              <div className="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 font-mono font-black flex items-center justify-center text-sm">
+            <div className="p-5 rounded-xl bg-[#0e0f15] border border-white/[0.06] space-y-3">
+              <div className="w-8 h-8 rounded-lg bg-white/[0.08] border border-white/[0.1] text-white font-mono font-bold flex items-center justify-center text-xs">
                 3
               </div>
-              <h4 className="text-sm font-bold text-white">Delete The Cookie Banner</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
+              <h4 className="text-sm font-semibold text-white">Delete The Cookie Banner</h4>
+              <p className="text-xs text-zinc-400 leading-relaxed">
                 Safely remove your invasive cookie consent banners. Your site is now 100% compliant with GDPR by architecture.
               </p>
             </div>
@@ -355,27 +391,36 @@ export default function VsGoogleAnalyticsPage() {
         </div>
       </section>
 
-      {/* Bottom CTA */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center">
-        <div className="p-8 sm:p-14 rounded-3xl bg-gradient-to-r from-cyan-950/40 via-slate-900 to-indigo-950/40 border border-cyan-500/30 relative overflow-hidden space-y-6">
-          <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
-            Stop Losing 25% of Your Analytics Traffic
+      {/* ============================================================ */}
+      {/* 5. BOTTOM CTA CONSOLE                                        */}
+      {/* ============================================================ */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
+        <div className="p-8 sm:p-14 rounded-2xl bg-[#111218] border border-white/[0.08] space-y-6 shadow-2xl">
+          <div className="w-12 h-12 rounded-xl bg-[#181922] border border-white/[0.08] flex items-center justify-center text-white mx-auto">
+            <Activity size={24} />
+          </div>
+
+          <h2 className="text-3xl sm:text-5xl font-bold text-white tracking-tight max-w-2xl mx-auto">
+            Stop losing 25% of your analytics traffic.
           </h2>
-          <p className="text-sm sm:text-base text-slate-300 max-w-lg mx-auto leading-relaxed">
+
+          <p className="text-sm sm:text-base text-zinc-400 max-w-lg mx-auto leading-relaxed">
             Eliminate cookie rejection rates and adblocker penalties. Start tracking 100% of your real visitors with Open Analytics.
           </p>
+
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
             <a
               href={dashboardUrl}
-              className="w-full sm:w-auto py-3.5 px-8 rounded-xl bg-gradient-to-r from-cyan-400 to-indigo-400 hover:from-cyan-300 hover:to-indigo-300 text-slate-950 font-black text-sm transition-all shadow-xl shadow-cyan-500/25 cursor-pointer hover:scale-[1.02]"
+              className="w-full sm:w-auto py-3 px-8 rounded-xl bg-white hover:bg-zinc-200 text-zinc-950 font-semibold text-sm transition shadow-sm cursor-pointer active:scale-[0.98] flex items-center justify-center gap-2"
             >
-              Launch Dashboard
+              <span>Launch Dashboard</span>
+              <ArrowRight size={14} />
             </a>
             <Link
               href="/pricing"
-              className="w-full sm:w-auto py-3.5 px-8 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-slate-200 font-bold text-sm transition border border-white/[0.1]"
+              className="w-full sm:w-auto py-3 px-6 rounded-xl bg-[#14161f] hover:bg-[#181922] text-zinc-300 hover:text-white font-medium text-sm transition border border-white/[0.08] hover:border-white/[0.16] flex items-center justify-center gap-2"
             >
-              See Transparent Pricing
+              <span>See Transparent Pricing</span>
             </Link>
           </div>
         </div>

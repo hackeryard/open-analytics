@@ -31,29 +31,29 @@ export default function TopPagesWidget({
       : 0;
 
   return (
-    <div className="glass-card rounded-3xl p-5 sm:p-6 space-y-4 flex flex-col justify-between">
+    <div className="rounded-2xl bg-[#111218] border border-white/[0.08] p-5 sm:p-6 space-y-4 flex flex-col justify-between shadow-xl">
       <div className="space-y-1">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+            <div className="w-8 h-8 rounded-xl bg-[#181922] border border-white/[0.08] flex items-center justify-center text-white">
               <Layers size={15} />
             </div>
-            <h3 className="text-sm font-black text-white">Top Performing Routes</h3>
+            <h3 className="text-sm font-bold text-white tracking-tight">Top Performing Routes</h3>
           </div>
           <Link
             href="/pages"
-            className="inline-flex items-center gap-1 text-[11px] font-bold text-cyan-400 hover:text-cyan-300 transition"
+            className="inline-flex items-center gap-1 text-[11px] font-semibold text-white hover:underline transition"
           >
             <span>All Routes</span>
             <ArrowRight size={12} />
           </Link>
         </div>
-        <p className="text-[11px] text-muted-foreground">Most visited endpoints ranked by total traffic volume</p>
+        <p className="text-xs text-zinc-400">Most visited endpoints ranked by traffic volume</p>
       </div>
 
       <div className="space-y-2.5 flex-1 pt-1">
         {safePages.length === 0 ? (
-          <div className="py-8 text-center text-xs text-muted-foreground">
+          <div className="py-8 text-center text-xs text-zinc-500 font-mono">
             No route telemetry logged yet
           </div>
         ) : (
@@ -65,31 +65,31 @@ export default function TopPagesWidget({
               <div key={page.pathname || idx} className="space-y-1 group">
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2 min-w-0 pr-2">
-                    <span className="text-[10px] font-mono text-muted-foreground w-3.5 shrink-0">
+                    <span className="text-[10px] font-mono text-zinc-500 w-3.5 shrink-0">
                       {idx + 1}.
                     </span>
-                    <span className="font-mono font-bold text-slate-200 truncate group-hover:text-cyan-400 transition" title={page.pathname}>
+                    <span className="font-mono font-medium text-zinc-200 truncate group-hover:text-white transition" title={page.pathname}>
                       {page.pathname}
                     </span>
                   </div>
                   <div className="flex items-center gap-3 shrink-0 text-[11px] font-mono">
-                    <span className="text-muted-foreground hidden sm:inline">
+                    <span className="text-zinc-500 hidden sm:inline">
                       {formatDuration(page.avgDuration)}
                     </span>
-                    <span className="font-bold text-white">
+                    <span className="font-semibold text-white tabular-nums">
                       {page.views.toLocaleString()}
                     </span>
-                    <span className="text-slate-500 text-[10px] w-8 text-right">
+                    <span className="text-zinc-500 text-[10px] w-8 text-right tabular-nums">
                       {shareOfTotal}%
                     </span>
                   </div>
                 </div>
 
                 {/* Relative visual bar */}
-                <div className="h-1.5 w-full bg-white/[0.04] rounded-full overflow-hidden">
+                <div className="h-1.5 w-full bg-[#181922] rounded-full overflow-hidden">
                   <div
                     style={{ width: `${pct}%` }}
-                    className="h-full bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full group-hover:from-cyan-400 group-hover:to-blue-500 transition-all"
+                    className="h-full bg-white/80 rounded-full group-hover:bg-white transition-all"
                   />
                 </div>
               </div>
@@ -98,9 +98,9 @@ export default function TopPagesWidget({
         )}
       </div>
 
-      <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-[10px] text-muted-foreground font-mono">
-        <span>{safePages.length} active routes tracked</span>
-        <span>Average dwell: {avgDwell > 0 ? formatDuration(avgDwell) : "—"}</span>
+      <div className="pt-3 border-t border-white/[0.06] flex items-center justify-between text-[11px] text-zinc-500 font-mono">
+        <span>{safePages.length} active routes</span>
+        <span>Avg dwell: {avgDwell > 0 ? formatDuration(avgDwell) : "—"}</span>
       </div>
     </div>
   );

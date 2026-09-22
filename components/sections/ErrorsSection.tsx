@@ -725,102 +725,102 @@ ${err.stack}
 
   return (
     <div className="space-y-6 pb-24 relative">
-      {/* ── Top Sleek KPI Gauges Grid (Aligned with WebVitals/Overview style) ── */}
+      {/* ── Top Sleek KPI Gauges Grid ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
         {/* 1. Total Exceptions */}
-        <div className="p-4 bg-card border border-border rounded-2xl shadow-xs space-y-2">
+        <div className="p-4 bg-[#111218] border border-white/[0.08] rounded-xl space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
               Total Issues
             </span>
-            <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+            <span className="px-2 py-0.5 rounded text-[10px] font-medium uppercase bg-rose-500/10 text-rose-400 border border-rose-500/20 tabular-nums">
               {allErrors.length} Unique
             </span>
           </div>
           <div>
-            <span className="text-2xl font-black font-mono text-foreground">
+            <span className="text-2xl font-semibold font-mono text-white tabular-nums">
               {allErrors.length}
             </span>
-            <span className="block text-[10px] text-muted-foreground mt-0.5">
+            <span className="block text-xs text-zinc-500 mt-0.5 tabular-nums">
               {totalOccurrences.toLocaleString()} total crash occurrences
             </span>
           </div>
         </div>
 
         {/* 2. Active / Unresolved Issues */}
-        <div className="p-4 bg-card border border-border rounded-2xl shadow-xs space-y-2">
+        <div className="p-4 bg-[#111218] border border-white/[0.08] rounded-xl space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
               Active &amp; Investigating
             </span>
-            <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+            <span className="px-2 py-0.5 rounded text-[10px] font-medium uppercase bg-amber-500/10 text-amber-400 border border-amber-500/20 tabular-nums">
               {newCount} New
             </span>
           </div>
           <div>
-            <span className="text-2xl font-black font-mono text-amber-500">
+            <span className="text-2xl font-semibold font-mono text-amber-400 tabular-nums">
               {activeCount}
             </span>
-            <span className="block text-[10px] text-muted-foreground mt-0.5">
+            <span className="block text-xs text-zinc-500 mt-0.5 tabular-nums">
               {investigatingCount} currently marked investigating
             </span>
           </div>
         </div>
 
         {/* 3. 404 Route Anomalies */}
-        <div className="p-4 bg-card border border-border rounded-2xl shadow-xs space-y-2">
+        <div className="p-4 bg-[#111218] border border-white/[0.08] rounded-xl space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
               404 Broken Routes
             </span>
-            <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20">
+            <span className="px-2 py-0.5 rounded text-[10px] font-medium uppercase bg-orange-500/10 text-orange-400 border border-orange-500/20 tabular-nums">
               {allErrors.length > 0 ? Math.round((notFoundCount / allErrors.length) * 100) : 0}% of Total
             </span>
           </div>
           <div>
-            <span className="text-2xl font-black font-mono text-orange-500">
+            <span className="text-2xl font-semibold font-mono text-orange-400 tabular-nums">
               {notFoundCount}
             </span>
-            <span className="block text-[10px] text-muted-foreground mt-0.5">
+            <span className="block text-xs text-zinc-500 mt-0.5">
               Unmatched URLs &amp; missing pages
             </span>
           </div>
         </div>
 
         {/* 4. Resolved Rate & Active Block Rules */}
-        <div className="p-4 bg-card border border-border rounded-2xl shadow-xs space-y-2">
+        <div className="p-4 bg-[#111218] border border-white/[0.08] rounded-xl space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
               Resolution Rate
             </span>
-            <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+            <span className="px-2 py-0.5 rounded text-[10px] font-medium uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 tabular-nums">
               {resolvedCount} Solved
             </span>
           </div>
           <div>
-            <span className="text-2xl font-black font-mono text-emerald-500">
+            <span className="text-2xl font-semibold font-mono text-emerald-400 tabular-nums">
               {resolvedRate}%
             </span>
-            <span className="block text-[10px] text-muted-foreground mt-0.5">
+            <span className="block text-xs text-zinc-500 mt-0.5 tabular-nums">
               {rulesList.filter((r) => r.enabled).length} active edge suppression rules
             </span>
           </div>
         </div>
       </div>
 
-      {/* ── Main Unified Analytics Card (Matches LiveFeedSection layout) ── */}
-      <div className="bg-card border border-border rounded-3xl shadow-sm overflow-hidden space-y-0">
+      {/* ── Main Unified Analytics Card ── */}
+      <div className="bg-[#111218] border border-white/[0.08] rounded-xl overflow-hidden space-y-0">
         {/* Top Header & Filter Controls */}
-        <div className="p-4 sm:p-5 border-b border-border bg-muted/10 space-y-3.5">
+        <div className="p-4 sm:p-5 border-b border-white/[0.08] bg-[#0e0f15] space-y-3.5">
           {/* Status Tab Pills + Quick Counter */}
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
             <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 lg:pb-0">
               {[
                 { id: "all", label: "All Issues", count: errorCounts.total },
-                { id: "active", label: "Active", count: errorCounts.active, color: "text-rose-500" },
-                { id: "investigating", label: "Investigating", count: errorCounts.investigating, color: "text-amber-500" },
-                { id: "resolved", label: "Resolved", count: errorCounts.resolved, color: "text-emerald-500" },
-                { id: "ignored", label: "Ignored", count: errorCounts.ignored, color: "text-muted-foreground" },
+                { id: "active", label: "Active", count: errorCounts.active, color: "text-rose-400" },
+                { id: "investigating", label: "Investigating", count: errorCounts.investigating, color: "text-amber-400" },
+                { id: "resolved", label: "Resolved", count: errorCounts.resolved, color: "text-emerald-400" },
+                { id: "ignored", label: "Ignored", count: errorCounts.ignored, color: "text-zinc-500" },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -829,18 +829,18 @@ ${err.stack}
                     setErrorStatusFilter(tab.id);
                     setErrorPage(1);
                   }}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
                     errorStatusFilter === tab.id
-                      ? "bg-primary text-primary-foreground shadow-xs"
-                      : "bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground"
+                      ? "bg-white text-zinc-950"
+                      : "bg-[#111218] hover:bg-[#181922] text-zinc-400 hover:text-white border border-white/[0.08]"
                   }`}
                 >
                   <span>{tab.label}</span>
                   <span
-                    className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold ${
+                    className={`px-1.5 py-0.5 rounded text-[10px] font-mono tabular-nums ${
                       errorStatusFilter === tab.id
-                        ? "bg-primary-foreground/20 text-primary-foreground"
-                        : "bg-background text-foreground"
+                        ? "bg-zinc-200 text-zinc-950 font-semibold"
+                        : "bg-white/[0.06] text-zinc-400"
                     }`}
                   >
                     {tab.count}
@@ -855,12 +855,12 @@ ${err.stack}
               <button
                 type="button"
                 onClick={() => setShowRulesModal(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-background hover:bg-muted border border-border text-foreground transition cursor-pointer shadow-2xs"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[#111218] hover:bg-[#181922] border border-white/[0.08] text-zinc-300 hover:text-white transition cursor-pointer"
                 title="Manage blocked & ignored error rules"
               >
-                <ShieldAlert size={13} className="text-amber-500" />
+                <ShieldAlert size={13} className="text-amber-400" />
                 <span>Blocked Rules</span>
-                <span className="px-1.5 py-0.2 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 text-[10px] font-mono font-bold">
+                <span className="px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-400 text-[10px] font-mono tabular-nums font-semibold">
                   {rulesList.filter((r) => r.enabled).length}
                 </span>
               </button>
@@ -870,10 +870,10 @@ ${err.stack}
                 type="button"
                 onClick={() => handleCopyAllAiPrompts(filteredErrors)}
                 disabled={filteredErrors.length === 0}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-xs cursor-pointer disabled:opacity-50 ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition cursor-pointer disabled:opacity-50 ${
                   copiedAllErrors
                     ? "bg-emerald-600 text-white"
-                    : "bg-primary text-primary-foreground hover:bg-primary/90"
+                    : "bg-white hover:bg-zinc-200 text-zinc-950"
                 }`}
                 title="Copy AI fix prompts for all filtered errors"
               >
@@ -890,7 +890,7 @@ ${err.stack}
                     setShowBulkActionDropdown(false);
                   }}
                   disabled={filteredErrors.length === 0}
-                  className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-background hover:bg-muted border border-border text-xs font-bold text-foreground transition cursor-pointer shadow-2xs disabled:opacity-50"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#111218] hover:bg-[#181922] border border-white/[0.08] text-xs font-medium text-zinc-300 hover:text-white transition cursor-pointer disabled:opacity-50"
                   title="Export error diagnostics"
                 >
                   <Download size={13} />
@@ -904,32 +904,32 @@ ${err.stack}
                 {showExportDropdown && (
                   <>
                     <div className="fixed inset-0 z-40" onClick={() => setShowExportDropdown(false)} />
-                    <div className="absolute right-0 top-full mt-2 z-50 p-2 bg-card border border-border rounded-2xl shadow-2xl w-56 space-y-1 animate-in fade-in zoom-in-95 duration-150">
-                      <div className="px-3 py-1 text-[9px] font-black uppercase tracking-wider text-muted-foreground border-b border-border mb-1">
+                    <div className="absolute right-0 top-full mt-2 z-50 p-1.5 bg-[#111218] border border-white/[0.08] rounded-xl shadow-2xl w-56 space-y-0.5 animate-in fade-in zoom-in-95 duration-150">
+                      <div className="px-3 py-1 text-[9px] font-semibold uppercase tracking-wider text-zinc-400 border-b border-white/[0.08] mb-1">
                         Export Filtered ({filteredErrors.length})
                       </div>
                       <button
                         type="button"
                         onClick={() => handleExportErrors("markdown", filteredErrors)}
-                        className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-foreground hover:bg-muted rounded-xl transition text-left cursor-pointer"
+                        className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:text-white hover:bg-white/[0.04] rounded-lg transition text-left cursor-pointer"
                       >
-                        <FileText size={13} className="text-primary" />
+                        <FileText size={13} className="text-zinc-400" />
                         <span>AI Debug Report (.md)</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => handleExportErrors("json", filteredErrors)}
-                        className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-foreground hover:bg-muted rounded-xl transition text-left cursor-pointer"
+                        className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:text-white hover:bg-white/[0.04] rounded-lg transition text-left cursor-pointer"
                       >
-                        <FileJson size={13} className="text-amber-500" />
+                        <FileJson size={13} className="text-amber-400" />
                         <span>Raw JSON Dump (.json)</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => handleExportErrors("csv", filteredErrors)}
-                        className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-foreground hover:bg-muted rounded-xl transition text-left cursor-pointer"
+                        className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:text-white hover:bg-white/[0.04] rounded-lg transition text-left cursor-pointer"
                       >
-                        <FileSpreadsheet size={13} className="text-emerald-500" />
+                        <FileSpreadsheet size={13} className="text-emerald-400" />
                         <span>Spreadsheet (.csv)</span>
                       </button>
                     </div>
@@ -946,17 +946,17 @@ ${err.stack}
                     setShowExportDropdown(false);
                   }}
                   disabled={errorBulkLoading}
-                  className="p-1.5 rounded-xl bg-background hover:bg-muted border border-border text-foreground transition cursor-pointer shadow-2xs disabled:opacity-50"
+                  className="p-2 rounded-lg bg-[#111218] hover:bg-[#181922] border border-white/[0.08] text-zinc-400 hover:text-white transition cursor-pointer disabled:opacity-50"
                   title="Mass status & purge tools"
                 >
-                  <SlidersHorizontal size={14} />
+                  <SlidersHorizontal size={13} />
                 </button>
 
                 {showBulkActionDropdown && (
                   <>
                     <div className="fixed inset-0 z-40" onClick={() => setShowBulkActionDropdown(false)} />
-                    <div className="absolute right-0 top-full mt-2 z-50 p-2 bg-card border border-border rounded-2xl shadow-2xl w-60 space-y-1 animate-in fade-in zoom-in-95 duration-150">
-                      <div className="px-3 py-1 text-[9px] font-black uppercase tracking-wider text-muted-foreground border-b border-border mb-1">
+                    <div className="absolute right-0 top-full mt-2 z-50 p-1.5 bg-[#111218] border border-white/[0.08] rounded-xl shadow-2xl w-60 space-y-0.5 animate-in fade-in zoom-in-95 duration-150">
+                      <div className="px-3 py-1 text-[9px] font-semibold uppercase tracking-wider text-zinc-400 border-b border-white/[0.08] mb-1">
                         Mass Status Update
                       </div>
                       <button
@@ -968,9 +968,9 @@ ${err.stack}
                           )
                         }
                         disabled={filteredErrors.length === 0}
-                        className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-foreground hover:bg-muted rounded-xl transition text-left cursor-pointer disabled:opacity-50"
+                        className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:text-white hover:bg-white/[0.04] rounded-lg transition text-left cursor-pointer disabled:opacity-50"
                       >
-                        <CheckCheck size={13} className="text-emerald-500" />
+                        <CheckCheck size={13} className="text-emerald-400" />
                         <span>Mark Filtered ({filteredErrors.length}) Resolved</span>
                       </button>
                       <button
@@ -982,19 +982,19 @@ ${err.stack}
                           )
                         }
                         disabled={filteredErrors.length === 0}
-                        className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-foreground hover:bg-muted rounded-xl transition text-left cursor-pointer disabled:opacity-50"
+                        className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:text-white hover:bg-white/[0.04] rounded-lg transition text-left cursor-pointer disabled:opacity-50"
                       >
-                        <Wrench size={13} className="text-amber-500" />
+                        <Wrench size={13} className="text-amber-400" />
                         <span>Mark Filtered Investigating</span>
                       </button>
 
-                      <div className="px-3 py-1 text-[9px] font-black uppercase tracking-wider text-rose-500 border-t border-border mt-1 pt-1">
+                      <div className="px-3 py-1 text-[9px] font-semibold uppercase tracking-wider text-rose-400 border-t border-white/[0.08] mt-1 pt-1">
                         Purge Tools
                       </div>
                       <button
                         type="button"
                         onClick={() => handleBulkPurgeErrors("resolved")}
-                        className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-rose-600 hover:bg-rose-500/10 rounded-xl transition text-left cursor-pointer"
+                        className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-rose-400 hover:bg-rose-500/10 rounded-lg transition text-left cursor-pointer"
                       >
                         <Trash2 size={13} className="shrink-0" />
                         <span>Purge Resolved ({resolvedCount})</span>
@@ -1002,7 +1002,7 @@ ${err.stack}
                       <button
                         type="button"
                         onClick={() => handleBulkPurgeErrors("ignored")}
-                        className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-rose-600 hover:bg-rose-500/10 rounded-xl transition text-left cursor-pointer"
+                        className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-rose-400 hover:bg-rose-500/10 rounded-lg transition text-left cursor-pointer"
                       >
                         <Trash2 size={13} className="shrink-0" />
                         <span>Purge Ignored ({ignoredCount})</span>
@@ -1010,7 +1010,7 @@ ${err.stack}
                       <button
                         type="button"
                         onClick={() => handleBulkPurgeErrors("all")}
-                        className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-rose-600 hover:bg-rose-500/10 rounded-xl transition text-left cursor-pointer"
+                        className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-rose-400 hover:bg-rose-500/10 rounded-lg transition text-left cursor-pointer"
                       >
                         <Trash2 size={13} className="shrink-0" />
                         <span>Purge All ({allErrors.length}) Records</span>
@@ -1028,7 +1028,7 @@ ${err.stack}
             <div className="sm:col-span-8 relative">
               <Search
                 size={13}
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none"
               />
               <input
                 type="text"
@@ -1038,7 +1038,7 @@ ${err.stack}
                   setErrorPage(1);
                 }}
                 placeholder="Search error message, URL path, digest, or type..."
-                className="w-full pl-9 pr-8 py-2 bg-background border border-border rounded-xl text-xs font-mono text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary shadow-2xs transition"
+                className="w-full pl-9 pr-8 py-2 bg-[#111218] border border-white/[0.08] rounded-lg text-xs font-mono text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/20 transition"
               />
               {errorSearchQuery && (
                 <button
@@ -1047,7 +1047,7 @@ ${err.stack}
                     setErrorSearchQuery("");
                     setErrorPage(1);
                   }}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1 cursor-pointer"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white p-1 cursor-pointer"
                   title="Clear search"
                 >
                   <X size={12} />
@@ -1064,7 +1064,7 @@ ${err.stack}
                   setErrorPage(1);
                 }}
                 aria-label="Filter error logs by type"
-                className="w-full px-3 py-2 bg-background border border-border rounded-xl text-xs font-bold text-foreground focus:outline-none focus:border-primary shadow-2xs cursor-pointer [&>option]:bg-card [&>option]:text-foreground [&>option]:dark:bg-slate-900 [&>option]:dark:text-slate-100"
+                className="w-full px-3 py-2 bg-[#111218] border border-white/[0.08] rounded-lg text-xs font-medium text-white focus:outline-none focus:border-white/20 cursor-pointer [&>option]:bg-[#111218] [&>option]:text-white transition"
               >
                 <option value="all">All Error Categories</option>
                 <option value="not_found">404 Not Found (Missing Routes)</option>
@@ -1084,19 +1084,19 @@ ${err.stack}
           </div>
         </div>
 
-        {/* ── Master Multi-Selection Info Bar (When Items Selected) ── */}
+        {/* ── Master Multi-Selection Info Bar ── */}
         {selectedErrorIds.length > 0 && (
-          <div className="px-4 py-2.5 bg-primary/5 border-b border-border flex items-center justify-between gap-3 text-xs font-medium">
+          <div className="px-4 py-2.5 bg-white/[0.04] border-b border-white/[0.08] flex items-center justify-between gap-3 text-xs font-medium">
             <div className="flex items-center gap-3">
-              <span className="font-bold text-foreground flex items-center gap-1.5">
-                <CheckSquare2 size={15} className="text-primary" />
-                <span>{selectedErrorIds.length} errors selected</span>
+              <span className="font-semibold text-white flex items-center gap-1.5">
+                <CheckSquare2 size={15} className="text-white" />
+                <span className="tabular-nums">{selectedErrorIds.length} errors selected</span>
               </span>
               {selectedErrorIds.length < filteredErrors.length && (
                 <button
                   type="button"
                   onClick={handleSelectAllFiltered}
-                  className="text-primary hover:underline font-bold"
+                  className="text-white hover:underline font-medium cursor-pointer"
                 >
                   Select all {filteredErrors.length} matching
                 </button>
@@ -1104,12 +1104,12 @@ ${err.stack}
               <button
                 type="button"
                 onClick={handleClearSelection}
-                className="text-muted-foreground hover:text-foreground ml-1"
+                className="text-zinc-400 hover:text-white ml-1 cursor-pointer transition"
               >
                 Clear selection
               </button>
             </div>
-            <span className="text-[11px] font-mono text-muted-foreground">
+            <span className="text-[11px] font-mono text-zinc-500">
               Use floating action dock at bottom to execute mass actions
             </span>
           </div>
@@ -1118,22 +1118,22 @@ ${err.stack}
         {/* ── High-Density Exception Table ── */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-muted/40 border-b border-border text-[10px] font-black uppercase tracking-wider text-muted-foreground select-none">
+            <thead className="bg-[#0e0f15] border-b border-white/[0.08] text-[10px] font-semibold uppercase tracking-wider text-zinc-400 select-none">
               <tr>
                 {/* Select All Checkbox */}
                 <th className="p-3.5 w-10 text-center">
                   <button
                     type="button"
                     onClick={handleToggleSelectAllPage}
-                    className="text-muted-foreground hover:text-primary transition cursor-pointer"
+                    className="text-zinc-500 hover:text-white transition cursor-pointer"
                     title={isAllPageSelected ? "Deselect Page" : "Select All On Page"}
                   >
                     {isAllPageSelected ? (
-                      <CheckSquare2 size={16} className="text-primary" />
+                      <CheckSquare2 size={16} className="text-white" />
                     ) : isSomePageSelected ? (
-                      <MinusSquare size={16} className="text-primary" />
+                      <MinusSquare size={16} className="text-white" />
                     ) : (
-                      <Square size={16} className="text-muted-foreground/60" />
+                      <Square size={16} className="text-zinc-600" />
                     )}
                   </button>
                 </th>
@@ -1145,15 +1145,15 @@ ${err.stack}
                 <th className="p-3.5 text-right">Actions &amp; AI Fix</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody className="divide-y divide-white/[0.06]">
               {filteredErrors.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="p-16 text-center text-muted-foreground">
-                    <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center mx-auto mb-2">
-                      <CheckCircle2 size={24} />
+                  <td colSpan={7} className="p-16 text-center text-zinc-400">
+                    <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mx-auto mb-2 border border-emerald-500/20">
+                      <CheckCircle2 size={22} />
                     </div>
-                    <h4 className="text-sm font-bold text-foreground">Zero Exceptions Found</h4>
-                    <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
+                    <h4 className="text-sm font-semibold text-white">Zero Exceptions Found</h4>
+                    <p className="text-xs text-zinc-500 mt-1 max-w-sm mx-auto">
                       {errorSearchQuery || errorStatusFilter !== "all" || errorTypeFilter !== "all"
                         ? "No error traces matched your filter criteria."
                         : "Your application is running smoothly with no tracked errors!"}
@@ -1171,10 +1171,10 @@ ${err.stack}
                         onClick={() => setExpandedErrorId(isExpanded ? null : err._id)}
                         className={`transition group cursor-pointer ${
                           isSelected
-                            ? "bg-primary/[0.04]"
+                            ? "bg-white/[0.06]"
                             : isExpanded
-                              ? "bg-muted/30"
-                              : "hover:bg-muted/20"
+                              ? "bg-white/[0.03]"
+                              : "hover:bg-white/[0.02]"
                         }`}
                       >
                         {/* 1. Selection Checkbox */}
@@ -1185,13 +1185,13 @@ ${err.stack}
                           <button
                             type="button"
                             onClick={() => handleToggleSelectError(err._id)}
-                            className="text-muted-foreground hover:text-primary transition cursor-pointer"
+                            className="text-zinc-500 hover:text-white transition cursor-pointer"
                             title={isSelected ? "Deselect" : "Select"}
                           >
                             {isSelected ? (
-                              <CheckSquare2 size={16} className="text-primary" />
+                              <CheckSquare2 size={16} className="text-white" />
                             ) : (
-                              <Square size={16} className="text-muted-foreground/60" />
+                              <Square size={16} className="text-zinc-600" />
                             )}
                           </button>
                         </td>
@@ -1205,15 +1205,15 @@ ${err.stack}
                             value={err.status}
                             onChange={(e) => handleUpdateErrorStatus(err._id, e.target.value)}
                             aria-label="Change error status"
-                            className={`px-2 py-1 rounded-lg text-[11px] font-bold border transition cursor-pointer focus:outline-none ${
+                            className={`px-2 py-1 rounded-md text-[11px] font-medium border transition cursor-pointer focus:outline-none ${
                               err.status === "new"
-                                ? "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/30"
+                                ? "bg-rose-500/10 text-rose-400 border-rose-500/30"
                                 : err.status === "investigating"
-                                  ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30"
+                                  ? "bg-amber-500/10 text-amber-400 border-amber-500/30"
                                   : err.status === "resolved"
-                                    ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
-                                    : "bg-muted text-muted-foreground border-border"
-                            } [&>option]:bg-card [&>option]:text-foreground [&>option]:dark:bg-slate-900 [&>option]:dark:text-slate-100`}
+                                    ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+                                    : "bg-white/[0.04] text-zinc-400 border-white/[0.08]"
+                            } [&>option]:bg-[#111218] [&>option]:text-white`}
                           >
                             <option value="new">New</option>
                             <option value="investigating">Investigating</option>
@@ -1228,7 +1228,7 @@ ${err.stack}
                             {/* Message Header with Quick Copy */}
                             <div className="flex items-start gap-1.5">
                               <span
-                                className="font-bold text-foreground font-mono text-xs leading-snug line-clamp-2 hover:line-clamp-none transition"
+                                className="font-medium text-white font-mono text-xs leading-snug line-clamp-2 hover:line-clamp-none transition"
                                 title="Click row to expand details & stack trace"
                               >
                                 {err.message}
@@ -1239,11 +1239,11 @@ ${err.stack}
                                   e.stopPropagation();
                                   handleCopyMessage(err);
                                 }}
-                                className="p-0.5 text-muted-foreground hover:text-foreground transition shrink-0 opacity-0 group-hover:opacity-100"
+                                className="p-0.5 text-zinc-500 hover:text-white transition shrink-0 opacity-0 group-hover:opacity-100 cursor-pointer"
                                 title="Copy error message"
                               >
                                 {copiedMessageId === err._id ? (
-                                  <Check size={11} className="text-emerald-500" />
+                                  <Check size={11} className="text-emerald-400" />
                                 ) : (
                                   <Copy size={11} />
                                 )}
@@ -1251,20 +1251,20 @@ ${err.stack}
                             </div>
 
                             {/* Pathname Link */}
-                            <div className="flex items-center gap-2 flex-wrap text-[11px] font-mono text-muted-foreground">
+                            <div className="flex items-center gap-2 flex-wrap text-[11px] font-mono text-zinc-400">
                               <a
                                 href={getTrackedUrl(String(err.pathname), activeProject)}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={(e) => e.stopPropagation()}
-                                className="hover:text-primary flex items-center gap-1 transition max-w-xs truncate"
+                                className="hover:text-white flex items-center gap-1 transition max-w-xs truncate"
                                 title={`Open ${err.pathname}`}
                               >
                                 <span className="truncate">{err.pathname}</span>
-                                <ExternalLink size={10} className="shrink-0" />
+                                <ExternalLink size={10} className="shrink-0 text-zinc-500" />
                               </a>
                               {err.digest && (
-                                <span className="bg-muted px-1.5 py-0.2 rounded text-[10px]">
+                                <span className="bg-white/[0.04] border border-white/[0.06] text-zinc-400 px-1.5 py-0.2 rounded text-[10px]">
                                   digest: {err.digest}
                                 </span>
                               )}
@@ -1275,7 +1275,7 @@ ${err.stack}
                         {/* 4. Category Badge */}
                         <td className="p-3.5 whitespace-nowrap">
                           <span
-                            className={`px-2 py-0.8 rounded-md font-bold font-mono text-[10px] uppercase border inline-flex items-center gap-1 ${getCategoryBadgeClass(
+                            className={`px-2 py-0.5 rounded-md font-medium font-mono text-[10px] uppercase border inline-flex items-center gap-1 ${getCategoryBadgeClass(
                               err.errorType
                             )}`}
                           >
@@ -1285,19 +1285,19 @@ ${err.stack}
 
                         {/* 5. Occurrences count */}
                         <td className="p-3.5 text-center whitespace-nowrap">
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-muted/80 rounded-md font-mono text-xs font-bold text-foreground">
-                            <Flame size={11} className="text-amber-500 shrink-0" />
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-white/[0.04] border border-white/[0.08] rounded-md font-mono text-xs font-semibold text-white tabular-nums">
+                            <Flame size={11} className="text-amber-400 shrink-0" />
                             <span>{err.occurrences}x</span>
                           </span>
                         </td>
 
                         {/* 6. Last Seen Timestamp & Device */}
                         <td className="p-3.5 whitespace-nowrap">
-                          <div className="font-mono text-xs text-foreground font-bold flex items-center gap-1">
-                            <Clock size={11} className="text-primary shrink-0" />
+                          <div className="font-mono text-xs text-white font-medium flex items-center gap-1 tabular-nums">
+                            <Clock size={11} className="text-zinc-400 shrink-0" />
                             <span>{timeAgo(err.lastOccurredAt)}</span>
                           </div>
-                          <div className="text-[10px] font-mono text-muted-foreground mt-0.5">
+                          <div className="text-[10px] font-mono text-zinc-500 mt-0.5">
                             <span>
                               {err.browser || "Unknown"} &bull; {err.os || "Desktop"}
                             </span>
@@ -1314,17 +1314,17 @@ ${err.stack}
                             <button
                               type="button"
                               onClick={() => handleCopyAiPrompt(err)}
-                              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold border transition cursor-pointer shadow-2xs ${
+                              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium border transition cursor-pointer ${
                                 copiedErrorId === err._id
                                   ? "bg-emerald-600 text-white border-emerald-600"
-                                  : "bg-background hover:bg-muted border-border text-foreground hover:border-primary"
+                                  : "bg-[#0e0f15] hover:bg-[#181922] border-white/[0.08] text-zinc-300 hover:text-white"
                               }`}
                               title="Copy AI fix prompt for this crash"
                             >
                               {copiedErrorId === err._id ? (
                                 <Check size={12} />
                               ) : (
-                                <Bot size={12} className="text-primary" />
+                                <Bot size={12} className="text-zinc-400" />
                               )}
                               <span>
                                 {copiedErrorId === err._id ? "Copied!" : "AI Fix"}
@@ -1340,10 +1340,10 @@ ${err.stack}
                                     muteMenuErrorId === err._id ? null : err._id
                                   )
                                 }
-                                className="p-1 rounded-lg bg-background hover:bg-muted border border-border text-foreground transition cursor-pointer shadow-2xs"
+                                className="p-1.5 rounded-lg bg-[#0e0f15] hover:bg-[#181922] border border-white/[0.08] text-zinc-400 hover:text-white transition cursor-pointer"
                                 title="Mute future occurrences"
                               >
-                                <Ban size={13} className="text-amber-500" />
+                                <Ban size={12} className="text-amber-400" />
                               </button>
 
                               {muteMenuErrorId === err._id && (
@@ -1352,19 +1352,19 @@ ${err.stack}
                                     className="fixed inset-0 z-40"
                                     onClick={() => setMuteMenuErrorId(null)}
                                   />
-                                  <div className="absolute right-0 top-full mt-2 z-50 p-2 bg-card border border-border rounded-2xl shadow-2xl w-60 space-y-1 text-left animate-in fade-in zoom-in-95 duration-150">
-                                    <div className="px-3 py-1 text-[9px] font-black uppercase tracking-wider text-muted-foreground border-b border-border mb-1">
+                                  <div className="absolute right-0 top-full mt-2 z-50 p-1.5 bg-[#111218] border border-white/[0.08] rounded-xl shadow-2xl w-60 space-y-0.5 text-left animate-in fade-in zoom-in-95 duration-150">
+                                    <div className="px-3 py-1 text-[9px] font-semibold uppercase tracking-wider text-zinc-400 border-b border-white/[0.08] mb-1">
                                       Mute Future Tracking
                                     </div>
                                     <button
                                       type="button"
                                       onClick={() => handleQuickMute(err, "message")}
-                                      className="w-full flex items-start gap-2 px-2.5 py-1.5 text-xs font-bold text-foreground hover:bg-muted rounded-xl transition text-left cursor-pointer"
+                                      className="w-full flex items-start gap-2 px-2.5 py-1.5 text-xs font-medium text-zinc-300 hover:text-white hover:bg-white/[0.04] rounded-lg transition text-left cursor-pointer"
                                     >
-                                      <ShieldOff size={13} className="text-rose-500 shrink-0 mt-0.5" />
+                                      <ShieldOff size={13} className="text-rose-400 shrink-0 mt-0.5" />
                                       <div className="min-w-0 flex-1">
-                                        <div className="font-bold truncate">Mute Exact Message</div>
-                                        <div className="text-[10px] text-muted-foreground font-normal truncate">
+                                        <div className="font-medium truncate">Mute Exact Message</div>
+                                        <div className="text-[10px] text-zinc-500 font-normal truncate">
                                           {err.message}
                                         </div>
                                       </div>
@@ -1372,12 +1372,12 @@ ${err.stack}
                                     <button
                                       type="button"
                                       onClick={() => handleQuickMute(err, "pathname")}
-                                      className="w-full flex items-start gap-2 px-2.5 py-1.5 text-xs font-bold text-foreground hover:bg-muted rounded-xl transition text-left cursor-pointer"
+                                      className="w-full flex items-start gap-2 px-2.5 py-1.5 text-xs font-medium text-zinc-300 hover:text-white hover:bg-white/[0.04] rounded-lg transition text-left cursor-pointer"
                                     >
-                                      <ShieldOff size={13} className="text-amber-500 shrink-0 mt-0.5" />
+                                      <ShieldOff size={13} className="text-amber-400 shrink-0 mt-0.5" />
                                       <div className="min-w-0 flex-1">
-                                        <div className="font-bold truncate">Mute Route</div>
-                                        <div className="text-[10px] text-muted-foreground font-normal truncate">
+                                        <div className="font-medium truncate">Mute Route</div>
+                                        <div className="text-[10px] text-zinc-500 font-normal truncate">
                                           {err.pathname}
                                         </div>
                                       </div>
@@ -1385,14 +1385,14 @@ ${err.stack}
                                     <button
                                       type="button"
                                       onClick={() => handleQuickMute(err, "errorType")}
-                                      className="w-full flex items-start gap-2 px-2.5 py-1.5 text-xs font-bold text-foreground hover:bg-muted rounded-xl transition text-left cursor-pointer"
+                                      className="w-full flex items-start gap-2 px-2.5 py-1.5 text-xs font-medium text-zinc-300 hover:text-white hover:bg-white/[0.04] rounded-lg transition text-left cursor-pointer"
                                     >
-                                      <ShieldOff size={13} className="text-sky-500 shrink-0 mt-0.5" />
+                                      <ShieldOff size={13} className="text-sky-400 shrink-0 mt-0.5" />
                                       <div className="min-w-0 flex-1">
-                                        <div className="font-bold truncate">
+                                        <div className="font-medium truncate">
                                           Mute Category: {(err.errorType || "runtime").toUpperCase()}
                                         </div>
-                                        <div className="text-[10px] text-muted-foreground font-normal">
+                                        <div className="text-[10px] text-zinc-500 font-normal">
                                           Ignore this category
                                         </div>
                                       </div>
@@ -1406,10 +1406,10 @@ ${err.stack}
                             <button
                               type="button"
                               onClick={() => handleDeleteError(err._id)}
-                              className="p-1 rounded-lg bg-background hover:bg-rose-500/10 hover:text-rose-500 border border-border text-muted-foreground transition cursor-pointer shadow-2xs"
+                              className="p-1.5 rounded-lg bg-[#0e0f15] hover:bg-rose-500/10 hover:text-rose-400 border border-white/[0.08] text-zinc-500 transition cursor-pointer"
                               title="Delete error record"
                             >
-                              <Trash2 size={13} />
+                              <Trash2 size={12} />
                             </button>
                           </div>
                         </td>
@@ -1417,14 +1417,14 @@ ${err.stack}
 
                       {/* Expanded Accordion Row (Stack Trace & AI Fix) */}
                       {isExpanded && (
-                        <tr className="bg-muted/15 border-b border-border">
+                        <tr className="bg-[#090a0f] border-b border-white/[0.08]">
                           <td colSpan={7} className="p-4 sm:p-5 space-y-4">
                             <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
                               {/* Left: Stack Trace Code Box */}
                               <div className="lg:col-span-8 space-y-2">
                                 <div className="flex items-center justify-between">
-                                  <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                                    <Code2 size={13} className="text-rose-500" />
+                                  <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+                                    <Code2 size={13} className="text-rose-400" />
                                     <span>Diagnostic Stack Trace</span>
                                   </span>
                                   {err.stack && (
@@ -1436,13 +1436,13 @@ ${err.stack}
                                           showRuleNotification("Stack trace copied to clipboard.");
                                         } catch {}
                                       }}
-                                      className="px-2 py-0.8 bg-muted hover:bg-accent border border-border text-foreground rounded-lg text-[10px] font-bold font-mono transition cursor-pointer"
+                                      className="px-2.5 py-1 bg-[#111218] hover:bg-[#181922] border border-white/[0.08] text-zinc-300 hover:text-white rounded-md text-[11px] font-medium font-mono transition cursor-pointer"
                                     >
                                       Copy Trace
                                     </button>
                                   )}
                                 </div>
-                                <pre className="p-3.5 bg-black/95 text-rose-300 font-mono text-[11px] rounded-2xl overflow-x-auto border border-rose-500/20 leading-relaxed whitespace-pre-wrap max-h-72">
+                                <pre className="p-3.5 bg-[#0e0f15] text-rose-300 font-mono text-[11px] rounded-xl overflow-x-auto border border-white/[0.08] leading-relaxed whitespace-pre-wrap max-h-72">
                                   {err.stack || "No JavaScript stack trace captured for this error event."}
                                 </pre>
                               </div>
@@ -1451,33 +1451,33 @@ ${err.stack}
                               <div className="lg:col-span-4 space-y-3">
                                 <div className="space-y-2">
                                   <div className="flex items-center justify-between">
-                                    <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                                      <Bot size={13} className="text-primary" />
+                                    <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+                                      <Bot size={13} className="text-zinc-400" />
                                       <span>AI Prompt Preview</span>
                                     </span>
                                     <button
                                       type="button"
                                       onClick={() => handleCopyAiPrompt(err)}
-                                      className="px-2 py-0.8 bg-primary text-primary-foreground rounded-lg text-[10px] font-bold transition cursor-pointer"
+                                      className="px-2.5 py-1 bg-white hover:bg-zinc-200 text-zinc-950 rounded-md text-[11px] font-medium transition cursor-pointer"
                                     >
                                       Copy Prompt
                                     </button>
                                   </div>
-                                  <div className="p-3 bg-muted/50 border border-border rounded-2xl text-[11px] font-mono text-muted-foreground space-y-1.5 leading-snug">
+                                  <div className="p-3 bg-[#0e0f15] border border-white/[0.08] rounded-xl text-[11px] font-mono text-zinc-400 space-y-1.5 leading-snug">
                                     <div>
-                                      <strong className="text-foreground">Route:</strong>{" "}
+                                      <strong className="text-zinc-200 font-medium">Route:</strong>{" "}
                                       {err.pathname}
                                     </div>
                                     <div>
-                                      <strong className="text-foreground">Type:</strong>{" "}
+                                      <strong className="text-zinc-200 font-medium">Type:</strong>{" "}
                                       {err.errorType || "runtime"}
                                     </div>
                                     <div>
-                                      <strong className="text-foreground">Client:</strong>{" "}
+                                      <strong className="text-zinc-200 font-medium">Client:</strong>{" "}
                                       {err.browser || "Unknown"} on {err.os || "Desktop"} ({err.device || "desktop"})
                                     </div>
                                     <div>
-                                      <strong className="text-foreground">Exact Time:</strong>{" "}
+                                      <strong className="text-zinc-200 font-medium">Exact Time:</strong>{" "}
                                       {formatExactTime(err.lastOccurredAt)} ({formatExactDate(err.lastOccurredAt)})
                                     </div>
                                   </div>
@@ -1487,14 +1487,14 @@ ${err.stack}
                                   <button
                                     type="button"
                                     onClick={() => handleUpdateErrorStatus(err._id, "resolved")}
-                                    className="flex-1 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition text-center cursor-pointer"
+                                    className="flex-1 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-medium transition text-center cursor-pointer"
                                   >
                                     Mark Resolved
                                   </button>
                                   <button
                                     type="button"
                                     onClick={() => handleQuickMute(err, "message")}
-                                    className="px-3 py-1.5 bg-background hover:bg-muted border border-border text-foreground rounded-xl text-xs font-bold transition cursor-pointer"
+                                    className="px-3 py-1.5 bg-[#0e0f15] hover:bg-[#181922] border border-white/[0.08] text-zinc-300 hover:text-white rounded-lg text-xs font-medium transition cursor-pointer"
                                   >
                                     Mute Rule
                                   </button>
@@ -1514,19 +1514,19 @@ ${err.stack}
 
         {/* ── Table Footer Navigation & Pagination ── */}
         {filteredErrors.length > 0 && (
-          <div className="p-4 border-t border-border bg-muted/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-3 flex-wrap text-xs text-muted-foreground">
+          <div className="p-4 border-t border-white/[0.08] bg-[#0e0f15] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3 flex-wrap text-xs text-zinc-400">
               <span className="font-mono">
                 Showing{" "}
-                <strong className="text-foreground font-bold">
+                <strong className="text-white font-medium">
                   {(errorPage - 1) * errorPageSize + 1}–
                   {Math.min(errorPage * errorPageSize, filteredErrors.length)}
                 </strong>{" "}
-                of <strong className="text-foreground font-bold">{filteredErrors.length}</strong>{" "}
+                of <strong className="text-white font-medium">{filteredErrors.length}</strong>{" "}
                 errors
               </span>
 
-              <div className="flex items-center gap-1.5 pl-3 border-l border-border">
+              <div className="flex items-center gap-1.5 pl-3 border-l border-white/[0.08]">
                 <span className="text-[11px]">Per page:</span>
                 <select
                   value={errorPageSize}
@@ -1535,7 +1535,7 @@ ${err.stack}
                     setErrorPage(1);
                   }}
                   aria-label="Errors per page"
-                  className="px-2 py-1 bg-background border border-border rounded-lg text-xs font-bold text-foreground focus:outline-none focus:border-primary cursor-pointer [&>option]:bg-card [&>option]:text-foreground [&>option]:dark:bg-slate-900 [&>option]:dark:text-slate-100"
+                  className="px-2 py-1 bg-[#111218] border border-white/[0.08] rounded-md text-xs font-medium text-white focus:outline-none focus:border-white/20 cursor-pointer [&>option]:bg-[#111218] [&>option]:text-white"
                 >
                   <option value={10}>10</option>
                   <option value={15}>15</option>
@@ -1552,7 +1552,7 @@ ${err.stack}
                 type="button"
                 onClick={() => setErrorPage(1)}
                 disabled={errorPage <= 1}
-                className="p-1 rounded-lg bg-background border border-border text-foreground hover:bg-muted disabled:opacity-40 disabled:pointer-events-none transition cursor-pointer"
+                className="p-1 rounded-md bg-[#111218] border border-white/[0.08] text-zinc-400 hover:text-white hover:bg-white/[0.04] disabled:opacity-30 disabled:pointer-events-none transition cursor-pointer"
                 title="First Page"
               >
                 <ChevronsLeft size={13} />
@@ -1562,7 +1562,7 @@ ${err.stack}
                 type="button"
                 onClick={() => setErrorPage((p) => Math.max(1, p - 1))}
                 disabled={errorPage <= 1}
-                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-background border border-border text-xs font-bold text-foreground hover:bg-muted disabled:opacity-40 disabled:pointer-events-none transition cursor-pointer"
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#111218] border border-white/[0.08] text-xs font-medium text-zinc-300 hover:text-white hover:bg-white/[0.04] disabled:opacity-30 disabled:pointer-events-none transition cursor-pointer"
               >
                 <ChevronLeft size={13} />
                 <span>Prev</span>
@@ -1576,16 +1576,16 @@ ${err.stack}
                       key={idx}
                       type="button"
                       onClick={() => setErrorPage(num)}
-                      className={`w-6 h-6 rounded-lg text-xs font-bold transition cursor-pointer ${
+                      className={`w-6 h-6 rounded-md text-xs font-medium transition cursor-pointer ${
                         errorPage === num
-                          ? "bg-primary text-primary-foreground shadow-xs"
-                          : "bg-background border border-border hover:bg-muted text-foreground"
+                          ? "bg-white text-zinc-950"
+                          : "bg-[#111218] border border-white/[0.08] hover:bg-white/[0.04] text-zinc-300 hover:text-white"
                       }`}
                     >
                       {num}
                     </button>
                   ) : (
-                    <span key={idx} className="px-1 text-muted-foreground text-xs">
+                    <span key={idx} className="px-1 text-zinc-600 text-xs">
                       {num}
                     </span>
                   )
@@ -1596,7 +1596,7 @@ ${err.stack}
                 type="button"
                 onClick={() => setErrorPage((p) => Math.min(totalErrorPages, p + 1))}
                 disabled={errorPage >= totalErrorPages}
-                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-background border border-border text-xs font-bold text-foreground hover:bg-muted disabled:opacity-40 disabled:pointer-events-none transition cursor-pointer"
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#111218] border border-white/[0.08] text-xs font-medium text-zinc-300 hover:text-white hover:bg-white/[0.04] disabled:opacity-30 disabled:pointer-events-none transition cursor-pointer"
               >
                 <span>Next</span>
                 <ChevronRight size={13} />
@@ -1606,7 +1606,7 @@ ${err.stack}
                 type="button"
                 onClick={() => setErrorPage(totalErrorPages)}
                 disabled={errorPage >= totalErrorPages}
-                className="p-1 rounded-lg bg-background border border-border text-foreground hover:bg-muted disabled:opacity-40 disabled:pointer-events-none transition cursor-pointer"
+                className="p-1 rounded-md bg-[#111218] border border-white/[0.08] text-zinc-400 hover:text-white hover:bg-white/[0.04] disabled:opacity-30 disabled:pointer-events-none transition cursor-pointer"
                 title="Last Page"
               >
                 <ChevronsRight size={13} />
@@ -1615,7 +1615,7 @@ ${err.stack}
               {totalErrorPages > 1 && (
                 <form
                   onSubmit={handleJumpErrorPage}
-                  className="hidden md:flex items-center gap-1 pl-2 border-l border-border"
+                  className="hidden md:flex items-center gap-1 pl-2 border-l border-white/[0.08]"
                 >
                   <input
                     type="number"
@@ -1624,12 +1624,12 @@ ${err.stack}
                     value={errorJumpPageInput}
                     onChange={(e) => setErrorJumpPageInput(e.target.value)}
                     placeholder="#"
-                    className="w-10 px-1.5 py-1 bg-background border border-border rounded-lg text-xs text-center font-mono text-foreground focus:outline-none focus:border-primary"
+                    className="w-10 px-1.5 py-1 bg-[#111218] border border-white/[0.08] rounded-md text-xs text-center font-mono text-white focus:outline-none focus:border-white/20"
                   />
                   <button
                     type="submit"
                     disabled={!errorJumpPageInput}
-                    className="px-2 py-1 bg-muted hover:bg-accent border border-border text-foreground rounded-lg text-xs font-bold disabled:opacity-40 transition cursor-pointer"
+                    className="px-2 py-1 bg-[#111218] hover:bg-[#181922] border border-white/[0.08] text-zinc-300 rounded-md text-xs font-medium disabled:opacity-30 transition cursor-pointer"
                   >
                     Go
                   </button>
@@ -1642,20 +1642,20 @@ ${err.stack}
 
       {/* ── Interactive Floating Multi-Selection Dock (HUD) ── */}
       {selectedErrorIds.length > 0 && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 p-2 bg-slate-900/95 text-white backdrop-blur-md rounded-2xl shadow-2xl border border-slate-700/80 animate-in slide-in-from-bottom-5 fade-in duration-200 max-w-[95vw] overflow-x-auto no-scrollbar">
-          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white/10 rounded-xl text-xs font-bold font-mono">
-            <CheckSquare2 size={14} className="text-primary" />
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 p-2 bg-[#111218]/95 text-white backdrop-blur-md rounded-xl shadow-2xl border border-white/[0.1] animate-in slide-in-from-bottom-5 fade-in duration-200 max-w-[95vw] overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.06] rounded-lg text-xs font-medium font-mono tabular-nums">
+            <CheckSquare2 size={14} className="text-white" />
             <span>{selectedErrorIds.length} Selected</span>
           </div>
 
-          <div className="h-4 w-px bg-slate-700" />
+          <div className="h-4 w-px bg-white/[0.1]" />
 
           {/* Quick Mark Resolved */}
           <button
             type="button"
             onClick={() => handleBulkUpdateErrors("resolved", selectedErrorIds)}
             disabled={errorBulkLoading}
-            className="flex items-center gap-1.5 px-2.5 py-1.2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer disabled:opacity-50"
+            className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-medium transition cursor-pointer disabled:opacity-50"
             title="Mark all selected errors as Resolved"
           >
             <CheckCheck size={12} />
@@ -1667,7 +1667,7 @@ ${err.stack}
             type="button"
             onClick={() => handleBulkUpdateErrors("investigating", selectedErrorIds)}
             disabled={errorBulkLoading}
-            className="flex items-center gap-1.5 px-2.5 py-1.2 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer disabled:opacity-50"
+            className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-medium transition cursor-pointer disabled:opacity-50"
             title="Mark all selected errors as Investigating"
           >
             <Wrench size={12} />
@@ -1679,7 +1679,7 @@ ${err.stack}
             type="button"
             onClick={() => handleBulkUpdateErrors("ignored", selectedErrorIds)}
             disabled={errorBulkLoading}
-            className="flex items-center gap-1.5 px-2.5 py-1.2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold transition border border-slate-700 cursor-pointer disabled:opacity-50"
+            className="flex items-center gap-1.5 px-2.5 py-1 bg-[#181922] hover:bg-[#20222c] text-zinc-300 rounded-lg text-xs font-medium transition border border-white/[0.08] cursor-pointer disabled:opacity-50"
             title="Mark all selected errors as Ignored"
           >
             <Ban size={12} />
@@ -1691,7 +1691,7 @@ ${err.stack}
             type="button"
             onClick={() => handleBulkUpdateErrors("new", selectedErrorIds)}
             disabled={errorBulkLoading}
-            className="flex items-center gap-1.5 px-2.5 py-1.2 bg-rose-600/80 hover:bg-rose-600 text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer disabled:opacity-50"
+            className="flex items-center gap-1.5 px-2.5 py-1 bg-rose-600/80 hover:bg-rose-600 text-white rounded-lg text-xs font-medium transition cursor-pointer disabled:opacity-50"
             title="Re-open all selected errors as New"
           >
             <AlertCircle size={12} />
@@ -1702,14 +1702,14 @@ ${err.stack}
           <button
             type="button"
             onClick={handleCopySelectedAiPrompts}
-            className={`flex items-center gap-1.5 px-2.5 py-1.2 rounded-xl text-xs font-bold transition shadow-xs cursor-pointer ${
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium transition cursor-pointer ${
               copiedSelectionPrompt
                 ? "bg-emerald-600 text-white"
-                : "bg-white/10 hover:bg-white/20 text-white"
+                : "bg-white/[0.06] hover:bg-white/[0.1] text-white"
             }`}
             title="Copy bundled AI diagnostics for selected errors"
           >
-            {copiedSelectionPrompt ? <Check size={12} /> : <Bot size={12} className="text-primary" />}
+            {copiedSelectionPrompt ? <Check size={12} /> : <Bot size={12} className="text-zinc-400" />}
             <span className="hidden md:inline">
               {copiedSelectionPrompt ? "Copied!" : "AI Prompt"}
             </span>
@@ -1720,7 +1720,7 @@ ${err.stack}
             <button
               type="button"
               onClick={() => setShowSelectionExportDropdown(!showSelectionExportDropdown)}
-              className="flex items-center gap-1 px-2.5 py-1.2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold transition cursor-pointer"
+              className="flex items-center gap-1 px-2.5 py-1 bg-white/[0.06] hover:bg-white/[0.1] text-white rounded-lg text-xs font-medium transition cursor-pointer"
               title="Export selected errors"
             >
               <Download size={12} />
@@ -1734,22 +1734,22 @@ ${err.stack}
                   className="fixed inset-0 z-40"
                   onClick={() => setShowSelectionExportDropdown(false)}
                 />
-                <div className="absolute right-0 bottom-full mb-2 z-50 p-2 bg-slate-900 border border-slate-700 text-white rounded-2xl shadow-2xl w-48 space-y-1 animate-in fade-in zoom-in-95 duration-150">
-                  <div className="px-3 py-1 text-[9px] font-black uppercase text-slate-400 border-b border-slate-800">
+                <div className="absolute right-0 bottom-full mb-2 z-50 p-1.5 bg-[#111218] border border-white/[0.08] text-white rounded-xl shadow-2xl w-48 space-y-0.5 animate-in fade-in zoom-in-95 duration-150">
+                  <div className="px-3 py-1 text-[9px] font-semibold uppercase text-zinc-400 border-b border-white/[0.08]">
                     Export {selectedErrorIds.length} Selected
                   </div>
                   <button
                     type="button"
                     onClick={() => handleExportErrors("markdown", selectedErrorsList)}
-                    className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-bold hover:bg-white/10 rounded-xl transition text-left cursor-pointer"
+                    className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-medium hover:bg-white/[0.04] rounded-lg transition text-left cursor-pointer"
                   >
-                    <FileText size={13} className="text-primary" />
+                    <FileText size={13} className="text-zinc-400" />
                     <span>Markdown Report (.md)</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => handleExportErrors("json", selectedErrorsList)}
-                    className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-bold hover:bg-white/10 rounded-xl transition text-left cursor-pointer"
+                    className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-medium hover:bg-white/[0.04] rounded-lg transition text-left cursor-pointer"
                   >
                     <FileJson size={13} className="text-amber-400" />
                     <span>JSON Dump (.json)</span>
@@ -1757,7 +1757,7 @@ ${err.stack}
                   <button
                     type="button"
                     onClick={() => handleExportErrors("csv", selectedErrorsList)}
-                    className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-bold hover:bg-white/10 rounded-xl transition text-left cursor-pointer"
+                    className="w-full flex items-center gap-2 px-3 py-1.5 text-xs font-medium hover:bg-white/[0.04] rounded-lg transition text-left cursor-pointer"
                   >
                     <FileSpreadsheet size={13} className="text-emerald-400" />
                     <span>CSV Table (.csv)</span>
@@ -1772,7 +1772,7 @@ ${err.stack}
             type="button"
             onClick={() => handleBulkDeleteSelected(selectedErrorIds)}
             disabled={errorBulkLoading}
-            className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-rose-500/20 rounded-xl transition cursor-pointer"
+            className="p-1.5 text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition cursor-pointer"
             title="Permanently delete selected errors"
           >
             <Trash2 size={13} />
@@ -1782,7 +1782,7 @@ ${err.stack}
           <button
             type="button"
             onClick={handleClearSelection}
-            className="p-1.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-xl transition cursor-pointer"
+            className="p-1.5 text-zinc-400 hover:text-white hover:bg-white/[0.06] rounded-lg transition cursor-pointer"
             title="Deselect all"
           >
             <X size={13} />
@@ -1792,13 +1792,13 @@ ${err.stack}
 
       {/* ── Toast Notification Banner ── */}
       {ruleToast && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 bg-slate-900 text-white rounded-2xl shadow-2xl border border-slate-700 animate-in fade-in slide-in-from-bottom-4 duration-200">
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 bg-[#111218] text-white rounded-xl shadow-2xl border border-white/[0.08] animate-in fade-in slide-in-from-bottom-4 duration-200">
           <ShieldCheck size={16} className="text-emerald-400 shrink-0" />
-          <span className="text-xs font-semibold">{ruleToast}</span>
+          <span className="text-xs font-medium">{ruleToast}</span>
           <button
             type="button"
             onClick={() => setRuleToast(null)}
-            className="ml-2 text-slate-400 hover:text-white text-xs cursor-pointer"
+            className="ml-2 text-zinc-400 hover:text-white text-xs cursor-pointer"
           >
             <X size={13} />
           </button>
@@ -1807,20 +1807,20 @@ ${err.stack}
 
       {/* ── Blocked Error Rules Manager Modal ── */}
       {showRulesModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-150">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs animate-in fade-in duration-150">
           <div className="fixed inset-0" onClick={() => setShowRulesModal(false)} />
-          <div className="relative z-10 w-full max-w-2xl bg-card border border-border rounded-3xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-200">
+          <div className="relative z-10 w-full max-w-2xl bg-[#111218] border border-white/[0.08] rounded-xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-200">
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-5 border-b border-border bg-card">
+            <div className="flex items-center justify-between p-5 border-b border-white/[0.08] bg-[#0e0f15]">
               <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-xl bg-amber-500/10 text-amber-500 border border-amber-500/20">
-                  <ShieldAlert size={18} />
+                <div className="p-2 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                  <ShieldAlert size={16} />
                 </div>
                 <div>
-                  <h3 className="text-base font-black text-foreground">
+                  <h3 className="text-sm font-semibold text-white">
                     Blocked &amp; Ignored Error Rules
                   </h3>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-zinc-400">
                     Errors matching active rules are automatically suppressed at ingestion.
                   </p>
                 </div>
@@ -1828,9 +1828,9 @@ ${err.stack}
               <button
                 type="button"
                 onClick={() => setShowRulesModal(false)}
-                className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl transition cursor-pointer"
+                className="p-1.5 text-zinc-400 hover:text-white hover:bg-white/[0.06] rounded-lg transition cursor-pointer"
               >
-                <X size={18} />
+                <X size={16} />
               </button>
             </div>
 
@@ -1839,21 +1839,21 @@ ${err.stack}
               {/* Create New Block Rule Form */}
               <form
                 onSubmit={handleCreateRule}
-                className="p-4 bg-muted/30 border border-border rounded-2xl space-y-3"
+                className="p-4 bg-[#0e0f15] border border-white/[0.08] rounded-xl space-y-3"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-black uppercase tracking-wider text-foreground flex items-center gap-1.5">
-                    <Plus size={14} className="text-primary" />
+                  <span className="text-xs font-semibold uppercase tracking-wider text-white flex items-center gap-1.5">
+                    <Plus size={14} className="text-white" />
                     <span>Add New Suppression Rule</span>
                   </span>
-                  <span className="text-[11px] text-muted-foreground">
+                  <span className="text-[11px] text-zinc-500">
                     Applies immediately
                   </span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                   <div>
-                    <label className="text-[10px] font-bold uppercase text-muted-foreground block mb-1">
+                    <label className="text-[10px] font-medium uppercase text-zinc-400 block mb-1">
                       Rule Name (Optional)
                     </label>
                     <input
@@ -1861,12 +1861,12 @@ ${err.stack}
                       value={newRuleForm.name}
                       onChange={(e) => setNewRuleForm({ ...newRuleForm, name: e.target.value })}
                       placeholder="e.g. Ignore ResizeObserver"
-                      className="w-full px-3 py-1.5 bg-background border border-border rounded-xl text-xs text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary"
+                      className="w-full px-3 py-1.5 bg-[#111218] border border-white/[0.08] rounded-lg text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/20 transition"
                     />
                   </div>
 
                   <div>
-                    <label className="text-[10px] font-bold uppercase text-muted-foreground block mb-1">
+                    <label className="text-[10px] font-medium uppercase text-zinc-400 block mb-1">
                       Match Field
                     </label>
                     <select
@@ -1875,7 +1875,7 @@ ${err.stack}
                         setNewRuleForm({ ...newRuleForm, matchField: e.target.value as any })
                       }
                       aria-label="Match Target Field"
-                      className="w-full px-3 py-1.5 bg-background border border-border rounded-xl text-xs font-bold text-foreground focus:outline-none focus:border-primary cursor-pointer [&>option]:bg-card [&>option]:text-foreground [&>option]:dark:bg-slate-900 [&>option]:dark:text-slate-100"
+                      className="w-full px-3 py-1.5 bg-[#111218] border border-white/[0.08] rounded-lg text-xs font-medium text-white focus:outline-none focus:border-white/20 cursor-pointer [&>option]:bg-[#111218] [&>option]:text-white transition"
                     >
                       <option value="message">Error Message</option>
                       <option value="pathname">Route / Pathname</option>
@@ -1885,7 +1885,7 @@ ${err.stack}
                   </div>
 
                   <div>
-                    <label className="text-[10px] font-bold uppercase text-muted-foreground block mb-1">
+                    <label className="text-[10px] font-medium uppercase text-zinc-400 block mb-1">
                       Operator
                     </label>
                     <select
@@ -1894,7 +1894,7 @@ ${err.stack}
                         setNewRuleForm({ ...newRuleForm, matchType: e.target.value as any })
                       }
                       aria-label="Match Operator"
-                      className="w-full px-3 py-1.5 bg-background border border-border rounded-xl text-xs font-bold text-foreground focus:outline-none focus:border-primary cursor-pointer [&>option]:bg-card [&>option]:text-foreground [&>option]:dark:bg-slate-900 [&>option]:dark:text-slate-100"
+                      className="w-full px-3 py-1.5 bg-[#111218] border border-white/[0.08] rounded-lg text-xs font-medium text-white focus:outline-none focus:border-white/20 cursor-pointer [&>option]:bg-[#111218] [&>option]:text-white transition"
                     >
                       <option value="contains">Contains Substring</option>
                       <option value="exact">Exact Match</option>
@@ -1906,7 +1906,7 @@ ${err.stack}
 
                 <div className="flex gap-2">
                   <div className="flex-1">
-                    <label className="text-[10px] font-bold uppercase text-muted-foreground block mb-1">
+                    <label className="text-[10px] font-medium uppercase text-zinc-400 block mb-1">
                       Pattern to Match
                     </label>
                     <input
@@ -1915,13 +1915,13 @@ ${err.stack}
                       value={newRuleForm.pattern}
                       onChange={(e) => setNewRuleForm({ ...newRuleForm, pattern: e.target.value })}
                       placeholder="e.g. ResizeObserver loop limit exceeded"
-                      className="w-full px-3 py-1.5 bg-background border border-border rounded-xl text-xs font-mono text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary"
+                      className="w-full px-3 py-1.5 bg-[#111218] border border-white/[0.08] rounded-lg text-xs font-mono text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/20 transition"
                     />
                   </div>
                   <div className="self-end">
                     <button
                       type="submit"
-                      className="px-4 py-1.5 bg-primary text-primary-foreground font-bold text-xs rounded-xl shadow-xs hover:bg-primary/90 transition cursor-pointer"
+                      className="px-4 py-1.5 bg-white hover:bg-zinc-200 text-zinc-950 font-medium text-xs rounded-lg transition cursor-pointer"
                     >
                       Save Rule
                     </button>
@@ -1932,19 +1932,19 @@ ${err.stack}
               {/* Existing Rules List */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-black uppercase tracking-wider text-muted-foreground">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
                     Configured Rules ({rulesList.length})
                   </span>
                   {rulesLoading && (
-                    <RefreshCw size={13} className="animate-spin text-primary" />
+                    <RefreshCw size={13} className="animate-spin text-white" />
                   )}
                 </div>
 
                 {rulesList.length === 0 ? (
-                  <div className="p-8 text-center bg-muted/20 border border-border rounded-2xl">
-                    <ShieldCheck size={28} className="text-emerald-500 mx-auto mb-1.5" />
-                    <h5 className="text-xs font-bold text-foreground">No Active Block Rules</h5>
-                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                  <div className="p-8 text-center bg-[#0e0f15] border border-dashed border-white/[0.08] rounded-xl">
+                    <ShieldCheck size={28} className="text-emerald-400 mx-auto mb-1.5" />
+                    <h5 className="text-xs font-semibold text-white">No Active Block Rules</h5>
+                    <p className="text-[11px] text-zinc-500 mt-0.5">
                       All runtime exceptions and HTTP errors will be ingested. Use the form above to mute specific errors.
                     </p>
                   </div>
@@ -1953,35 +1953,35 @@ ${err.stack}
                     {rulesList.map((rule) => (
                       <div
                         key={rule.id}
-                        className={`p-3.5 border rounded-2xl flex items-center justify-between gap-3 transition ${
+                        className={`p-3.5 border rounded-xl flex items-center justify-between gap-3 transition ${
                           rule.enabled
-                            ? "bg-muted/30 border-border"
-                            : "bg-muted/10 border-border/50 opacity-60"
+                            ? "bg-[#0e0f15] border-white/[0.08]"
+                            : "bg-[#0e0f15]/40 border-white/[0.04] opacity-50"
                         }`}
                       >
                         <div className="min-w-0 flex-1 space-y-1">
                           <div className="flex items-center gap-2">
                             <span
-                              className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase font-mono border ${
+                              className={`px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase font-mono border ${
                                 rule.enabled
-                                  ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
-                                  : "bg-muted text-muted-foreground border-border"
+                                  ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                                  : "bg-white/[0.04] text-zinc-500 border-white/[0.06]"
                               }`}
                             >
                               {rule.enabled ? "Active / Suppressed" : "Paused"}
                             </span>
-                            <span className="text-xs font-bold text-foreground truncate">
+                            <span className="text-xs font-medium text-white truncate">
                               {rule.name || rule.pattern}
                             </span>
                           </div>
 
-                          <div className="flex items-center gap-2 text-[11px] font-mono text-muted-foreground flex-wrap">
-                            <span>Field: <strong className="text-foreground">{rule.matchField}</strong></span>
+                          <div className="flex items-center gap-2 text-[11px] font-mono text-zinc-400 flex-wrap">
+                            <span>Field: <strong className="text-white font-medium">{rule.matchField}</strong></span>
                             <span>&bull;</span>
-                            <span>Op: <strong className="text-foreground">{rule.matchType}</strong></span>
+                            <span>Op: <strong className="text-white font-medium">{rule.matchType}</strong></span>
                             <span>&bull;</span>
                             <span className="truncate max-w-xs">
-                              Pattern: <strong className="text-foreground">&ldquo;{rule.pattern}&rdquo;</strong>
+                              Pattern: <strong className="text-white font-medium">&ldquo;{rule.pattern}&rdquo;</strong>
                             </span>
                           </div>
                         </div>
@@ -1990,23 +1990,23 @@ ${err.stack}
                           <button
                             type="button"
                             onClick={() => handleToggleRule(rule.id, rule.enabled)}
-                            className="p-1 text-muted-foreground hover:text-foreground transition cursor-pointer"
+                            className="p-1 text-zinc-500 hover:text-white transition cursor-pointer"
                             title={rule.enabled ? "Pause this rule" : "Activate this rule"}
                           >
                             {rule.enabled ? (
-                              <ToggleRight size={26} className="text-primary" />
+                              <ToggleRight size={24} className="text-emerald-400" />
                             ) : (
-                              <ToggleLeft size={26} className="text-muted-foreground" />
+                              <ToggleLeft size={24} className="text-zinc-600" />
                             )}
                           </button>
 
                           <button
                             type="button"
                             onClick={() => handleDeleteRule(rule.id)}
-                            className="p-1.5 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 rounded-lg transition cursor-pointer"
+                            className="p-1.5 text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-md transition cursor-pointer"
                             title="Delete rule"
                           >
-                            <Trash2 size={14} />
+                            <Trash2 size={13} />
                           </button>
                         </div>
                       </div>
@@ -2017,11 +2017,11 @@ ${err.stack}
             </div>
 
             {/* Modal Footer */}
-            <div className="p-4 border-t border-border bg-card flex justify-end">
+            <div className="p-4 border-t border-white/[0.08] bg-[#0e0f15] flex justify-end">
               <button
                 type="button"
                 onClick={() => setShowRulesModal(false)}
-                className="px-4 py-2 bg-muted hover:bg-accent text-foreground rounded-xl text-xs font-bold transition cursor-pointer"
+                className="px-4 py-2 bg-[#111218] hover:bg-[#181922] border border-white/[0.08] text-white rounded-lg text-xs font-medium transition cursor-pointer"
               >
                 Done
               </button>

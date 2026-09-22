@@ -6,9 +6,9 @@ import PricingInteractive from "@/components/public/PricingInteractive";
 const baseUrl = "https://openanalytics.org.in";
 
 export const metadata: Metadata = {
-  title: "Pricing & Plans | Free Starter & Pro Analytics - Open Analytics",
+  title: "Pricing Plans: Free Starter & Pro Analytics",
   description:
-    "Simple, predictable pricing for modern web telemetry. Start free with core analytics, or unlock Pro for AI Search Radar, Core Web Vitals RUM, and Rage Click detection.",
+    "Simple, predictable web analytics pricing. Start free forever with 10k events/mo, or upgrade to Pro for AI crawler radar, Core Web Vitals RUM, and rage clicks.",
   keywords: [
     "open analytics pricing",
     "web analytics plans",
@@ -22,16 +22,26 @@ export const metadata: Metadata = {
     canonical: "https://openanalytics.org.in/pricing",
   },
   openGraph: {
-    title: "Open Analytics Pricing | Free Starter & Pro Tiers",
+    title: "Open Analytics Pricing Plans: Free Starter & Pro",
     description:
-      "Transparent pricing for privacy-first web telemetry. Start free with core analytics, or upgrade to Pro for AI Radar, RUM vitals, and rage click triage.",
+      "Simple, predictable web analytics pricing. Start free forever with 10k events/mo, or upgrade to Pro for AI crawler radar, Core Web Vitals RUM, and rage clicks.",
     url: `${baseUrl}/pricing`,
     type: "website",
+    images: [
+      {
+        url: `${baseUrl}/og-image.png`,
+        width: 1200,
+        height: 630,
+        alt: "Open Analytics Pricing Plans",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Open Analytics Pricing & Plans",
-    description: "Free Starter forever. Pro unlocks AI Radar, Core Web Vitals RUM, and Rage Clicks.",
+    title: "Open Analytics Pricing Plans: Free Starter & Pro",
+    description:
+      "Simple, predictable web analytics pricing. Start free forever with 10k events/mo, or upgrade to Pro for AI crawler radar, Core Web Vitals RUM, and rage clicks.",
+    images: [`${baseUrl}/og-image.png`],
   },
 };
 
@@ -58,7 +68,7 @@ const productOfferSchema = {
   "@context": "https://schema.org",
   "@type": "Product",
   name: "Open Analytics Platform",
-  image: `${baseUrl}/icon.svg`,
+  image: `${baseUrl}/og-image.png`,
   description:
     "Privacy-first, cookieless web telemetry and RUM observability SaaS platform.",
   brand: {
@@ -84,6 +94,16 @@ const productOfferSchema = {
       availability: "https://schema.org/InStock",
       url: `${baseUrl}/pricing`,
       description: "Pro tier with 250,000 events/mo, Core Web Vitals RUM, GEO & AI Search Radar, Rage Clicks, and custom reverse-proxy domain.",
+    },
+    {
+      "@type": "Offer",
+      name: "Enterprise Plan",
+      price: "79",
+      priceCurrency: "USD",
+      priceValidUntil: "2027-12-31",
+      availability: "https://schema.org/InStock",
+      url: `${baseUrl}/pricing`,
+      description: "Enterprise tier with unlimited websites, 1M+ events/mo, private cluster, custom SLAs, and VIP priority support.",
     },
   ],
 };
@@ -135,13 +155,31 @@ const pricingFaqSchema = {
   ],
 };
 
+const pricingPageSchema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    breadcrumbSchema,
+    {
+      "@type": "WebPage",
+      "@id": `${baseUrl}/pricing/#webpage`,
+      url: `${baseUrl}/pricing`,
+      name: "Open Analytics Pricing Plans: Free Starter & Pro",
+      description:
+        "Simple, predictable web analytics pricing. Start free forever with 10k events/mo, or upgrade to Pro for AI crawler radar, Core Web Vitals RUM, and rage clicks.",
+      isPartOf: {
+        "@type": "WebSite",
+        "@id": `${baseUrl}/#website`,
+      },
+    },
+    productOfferSchema,
+    pricingFaqSchema,
+  ],
+};
+
 export default function PricingPage() {
   return (
-    <div className="min-h-screen bg-[#050811] text-slate-100 selection:bg-cyan-500/30 selection:text-cyan-200">
-      <JsonLd schema={breadcrumbSchema} />
-      <JsonLd schema={productOfferSchema} />
-      <JsonLd schema={pricingFaqSchema} />
-
+    <div className="min-h-screen bg-background text-foreground">
+      <JsonLd data={pricingPageSchema} />
       <PricingInteractive />
     </div>
   );

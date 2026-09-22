@@ -218,70 +218,78 @@ export default function EventsSection({ data: propData }: { data?: AnalyticsData
   return (
     <div className="space-y-6">
       {/* ── Top Metric KPI Summary Gauges ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-        <div className="p-4 bg-card border border-border rounded-2xl shadow-xs space-y-1">
-          <div className="flex items-center justify-between text-muted-foreground text-[10px] font-black uppercase tracking-wider">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="p-5 bg-[#111218] border border-white/[0.08] rounded-xl space-y-2">
+          <div className="flex items-center justify-between text-zinc-400 text-xs font-medium">
             <span>Total Events</span>
-            <Activity size={14} className="text-primary" />
+            <div className="w-7 h-7 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-400">
+              <Activity size={14} />
+            </div>
           </div>
-          <div className="text-2xl font-black text-foreground font-mono">
+          <div className="text-2xl sm:text-3xl font-semibold text-white tracking-tight tabular-nums font-mono">
             {totalEventsCount.toLocaleString()}
           </div>
-          <p className="text-[11px] text-muted-foreground">In active timeframe</p>
+          <p className="text-[11px] text-zinc-500">In active timeframe</p>
         </div>
 
-        <div className="p-4 bg-card border border-border rounded-2xl shadow-xs space-y-1">
-          <div className="flex items-center justify-between text-muted-foreground text-[10px] font-black uppercase tracking-wider">
+        <div className="p-5 bg-[#111218] border border-white/[0.08] rounded-xl space-y-2">
+          <div className="flex items-center justify-between text-zinc-400 text-xs font-medium">
             <span>Event Types</span>
-            <Layers size={14} className="text-blue-500" />
+            <div className="w-7 h-7 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-400">
+              <Layers size={14} />
+            </div>
           </div>
-          <div className="text-2xl font-black text-foreground font-mono">
+          <div className="text-2xl sm:text-3xl font-semibold text-white tracking-tight tabular-nums font-mono">
             {uniqueEventNames}
           </div>
-          <p className="text-[11px] text-muted-foreground">Unique event signatures</p>
+          <p className="text-[11px] text-zinc-500">Unique event signatures</p>
         </div>
 
-        <div className="p-4 bg-card border border-border rounded-2xl shadow-xs space-y-1">
-          <div className="flex items-center justify-between text-muted-foreground text-[10px] font-black uppercase tracking-wider">
+        <div className="p-5 bg-[#111218] border border-white/[0.08] rounded-xl space-y-2">
+          <div className="flex items-center justify-between text-zinc-400 text-xs font-medium">
             <span>Active No-Code Rules</span>
-            <Sliders size={14} className="text-purple-500" />
+            <div className="w-7 h-7 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-zinc-400">
+              <Sliders size={14} />
+            </div>
           </div>
-          <div className="text-2xl font-black text-foreground font-mono">
-            {activeRulesCount} <span className="text-xs text-muted-foreground font-normal">/ {rules.length}</span>
+          <div className="text-2xl sm:text-3xl font-semibold text-white tracking-tight tabular-nums font-mono">
+            {activeRulesCount} <span className="text-xs text-zinc-500 font-normal">/ {rules.length}</span>
           </div>
-          <p className="text-[11px] text-muted-foreground">Zero-code rules running</p>
+          <p className="text-[11px] text-zinc-500">Zero-code rules running</p>
         </div>
 
-        <div className="p-4 bg-card border border-border rounded-2xl shadow-xs space-y-1">
-          <div className="flex items-center justify-between text-muted-foreground text-[10px] font-black uppercase tracking-wider">
+        <div className="p-5 bg-[#111218] border border-white/[0.08] rounded-xl space-y-2">
+          <div className="flex items-center justify-between text-zinc-400 text-xs font-medium">
             <span>Conversion Value</span>
-            <DollarSign size={14} className="text-emerald-500" />
+            <div className="w-7 h-7 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-emerald-400">
+              <DollarSign size={14} />
+            </div>
           </div>
-          <div className="text-2xl font-black text-foreground font-mono text-emerald-600 dark:text-emerald-400">
+          <div className="text-2xl sm:text-3xl font-semibold text-emerald-400 tracking-tight tabular-nums font-mono">
             ${totalMonetaryValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
-          <p className="text-[11px] text-muted-foreground">Attributed revenue</p>
+          <p className="text-[11px] text-zinc-500">Attributed revenue</p>
         </div>
       </div>
 
       {ruleMessage && (
-        <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold rounded-2xl flex items-center gap-2">
+        <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium rounded-xl flex items-center gap-2">
           <CheckCircle2 size={16} />
           <span>{ruleMessage}</span>
         </div>
       )}
 
       {/* ── Main Hub Container ── */}
-      <div className="bg-card border border-border rounded-3xl p-5 sm:p-7 shadow-xs space-y-6">
+      <div className="bg-[#111218] border border-white/[0.08] rounded-xl p-5 sm:p-7 space-y-6">
         {/* Header & Tabs */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-5">
-          <div className="flex items-center gap-2 p-1 bg-muted/60 border border-border rounded-2xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.08] pb-5">
+          <div className="flex items-center gap-1.5 p-1 bg-[#0e0f15] border border-white/[0.08] rounded-xl">
             <button
               onClick={() => setActiveTab("stream")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition ${
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition cursor-pointer ${
                 activeTab === "stream"
-                  ? "bg-primary text-primary-foreground shadow-xs"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-white text-zinc-950"
+                  : "text-zinc-400 hover:text-white"
               }`}
             >
               <Activity size={14} />
@@ -290,10 +298,10 @@ export default function EventsSection({ data: propData }: { data?: AnalyticsData
 
             <button
               onClick={() => setActiveTab("rules")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition ${
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition cursor-pointer ${
                 activeTab === "rules"
-                  ? "bg-primary text-primary-foreground shadow-xs"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-white text-zinc-950"
+                  : "text-zinc-400 hover:text-white"
               }`}
             >
               <Sliders size={14} />
@@ -305,9 +313,9 @@ export default function EventsSection({ data: propData }: { data?: AnalyticsData
             {activeTab === "rules" && (
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="flex items-center gap-1.5 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-xl transition shadow-xs"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 bg-white hover:bg-zinc-200 text-zinc-950 text-xs font-medium rounded-lg transition cursor-pointer"
               >
-                <Plus size={15} />
+                <Plus size={14} />
                 <span>Create No-Code Event</span>
               </button>
             )}
@@ -329,10 +337,10 @@ export default function EventsSection({ data: propData }: { data?: AnalyticsData
                   <button
                     key={pill.id}
                     onClick={() => setSelectedCategory(pill.id)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition shrink-0 ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition shrink-0 cursor-pointer ${
                       selectedCategory === pill.id
-                        ? "bg-muted text-foreground border border-border"
-                        : "text-muted-foreground hover:bg-muted/50"
+                        ? "bg-white text-zinc-950"
+                        : "bg-[#0e0f15] text-zinc-400 hover:text-white border border-white/[0.08] hover:border-white/20"
                     }`}
                   >
                     {pill.label}
@@ -341,24 +349,24 @@ export default function EventsSection({ data: propData }: { data?: AnalyticsData
               </div>
 
               <div className="relative min-w-[220px]">
-                <Search size={14} className="absolute left-3 top-2.5 text-muted-foreground" />
+                <Search size={14} className="absolute left-3 top-2.5 text-zinc-500" />
                 <input
                   type="text"
                   placeholder="Filter events, path, signature..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-3.5 py-1.5 bg-background border border-border rounded-xl text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary shadow-2xs"
+                  className="w-full pl-9 pr-3.5 py-1.5 bg-[#0e0f15] border border-white/[0.08] rounded-lg text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/20 transition"
                 />
               </div>
             </div>
 
             {/* Events List */}
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               {filteredEvents.length === 0 ? (
-                <div className="p-12 text-center text-xs text-muted-foreground space-y-2 border border-dashed border-border rounded-2xl">
-                  <Activity size={24} className="mx-auto text-muted-foreground/50" />
-                  <p className="font-bold text-foreground">No events recorded matching criteria.</p>
-                  <p>Open Analytics autotracks clicks, buttons, forms, and custom rules automatically.</p>
+                <div className="p-12 text-center text-xs text-zinc-400 space-y-2 border border-dashed border-white/[0.08] rounded-xl bg-[#0e0f15]/50">
+                  <Activity size={24} className="mx-auto text-zinc-600" />
+                  <p className="font-semibold text-white">No events recorded matching criteria.</p>
+                  <p className="text-zinc-500">Open Analytics autotracks clicks, buttons, forms, and custom rules automatically.</p>
                 </div>
               ) : (
                 filteredEvents.map((evt) => {
@@ -368,52 +376,52 @@ export default function EventsSection({ data: propData }: { data?: AnalyticsData
                   return (
                     <div
                       key={evt._id}
-                      className="p-4 bg-muted/20 border border-border rounded-2xl space-y-3 hover:border-border/80 transition"
+                      className="p-3.5 bg-[#0e0f15] border border-white/[0.08] rounded-xl space-y-2.5 hover:border-white/20 transition"
                     >
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="px-2.5 py-1 bg-primary/10 text-primary border border-primary/20 rounded-xl font-bold font-mono text-xs">
+                          <span className="px-2 py-0.5 bg-white/[0.06] text-white border border-white/[0.1] rounded-md font-mono text-xs font-semibold">
                             {evt.eventName}
                           </span>
 
                           {isAutotrack && (
-                            <span className="px-2 py-0.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 rounded-lg font-mono text-[10px] font-bold">
+                            <span className="px-2 py-0.5 bg-sky-500/10 text-sky-400 border border-sky-500/20 rounded-md font-mono text-[10px] font-medium">
                               Autotrack
                             </span>
                           )}
 
                           {isNoCodeRule && (
-                            <span className="px-2 py-0.5 bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 rounded-lg font-mono text-[10px] font-bold">
+                            <span className="px-2 py-0.5 bg-violet-500/10 text-violet-400 border border-violet-500/20 rounded-md font-mono text-[10px] font-medium">
                               No-Code Rule
                             </span>
                           )}
 
                           {!isAutotrack && !isNoCodeRule && (
-                            <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 rounded-lg font-mono text-[10px] font-bold">
+                            <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-md font-mono text-[10px] font-medium">
                               SDK
                             </span>
                           )}
 
                           {typeof evt.value === "number" && evt.value > 0 && (
-                            <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-500 font-mono font-bold text-[11px] rounded-lg">
+                            <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono font-semibold text-[11px] rounded-md tabular-nums">
                               +${evt.value.toFixed(2)}
                             </span>
                           )}
 
                           {evt.pathname && (
-                            <span className="text-[11px] font-mono text-muted-foreground flex items-center gap-1">
+                            <span className="text-[11px] font-mono text-zinc-400 flex items-center gap-1">
                               <span>Path:</span>
-                              <code className="text-foreground">{evt.pathname}</code>
+                              <code className="text-zinc-200 bg-white/[0.04] px-1.5 py-0.5 rounded border border-white/[0.06]">{evt.pathname}</code>
                             </span>
                           )}
                         </div>
 
                         <div className="text-right shrink-0">
-                          <div className="font-mono text-xs font-bold text-foreground flex items-center gap-1 justify-end">
-                            <Clock size={11} className="text-primary" />
+                          <div className="font-mono text-xs font-medium text-white flex items-center gap-1 justify-end tabular-nums">
+                            <Clock size={11} className="text-zinc-400" />
                             <span>{formatExactTime(evt.createdAt)}</span>
                           </div>
-                          <div className="text-[10px] font-mono text-muted-foreground">
+                          <div className="text-[10px] font-mono text-zinc-500 tabular-nums">
                             <span>{timeAgo(evt.createdAt)}</span> &bull; <span>{formatExactDate(evt.createdAt)}</span>
                           </div>
                         </div>
@@ -426,7 +434,7 @@ export default function EventsSection({ data: propData }: { data?: AnalyticsData
                             onClick={() =>
                               setExpandedEventId(expandedEventId === evt._id ? null : evt._id)
                             }
-                            className="text-[11px] font-bold text-primary hover:underline flex items-center gap-1"
+                            className="text-[11px] font-medium text-zinc-400 hover:text-white flex items-center gap-1 cursor-pointer transition"
                           >
                             <span>
                               {expandedEventId === evt._id ? "Hide Event Payload" : "Inspect Payload & Metadata"}
@@ -435,7 +443,7 @@ export default function EventsSection({ data: propData }: { data?: AnalyticsData
                           </button>
 
                           {expandedEventId === evt._id && (
-                            <pre className="mt-2 p-3 bg-background border border-border text-foreground font-mono text-[11px] rounded-xl overflow-x-auto leading-relaxed">
+                            <pre className="mt-2 p-3 bg-[#090a0f] border border-white/[0.08] text-zinc-300 font-mono text-[11px] rounded-lg overflow-x-auto leading-relaxed">
                               {JSON.stringify(evt.properties, null, 2)}
                             </pre>
                           )}
@@ -454,10 +462,10 @@ export default function EventsSection({ data: propData }: { data?: AnalyticsData
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-bold text-foreground">
+                <h3 className="text-sm font-semibold text-white">
                   Active No-Code Event Trigger Rules
                 </h3>
-                <p className="text-xs text-muted-foreground mt-0.5">
+                <p className="text-xs text-zinc-400 mt-0.5">
                   These rules are evaluated in real-time on your live website. When a visitor clicks a matching button or submits a form, Open Analytics records the event automatically.
                 </p>
               </div>
@@ -465,7 +473,7 @@ export default function EventsSection({ data: propData }: { data?: AnalyticsData
               <button
                 onClick={fetchRules}
                 disabled={loadingRules}
-                className="p-2 rounded-xl bg-muted hover:bg-muted/80 border border-border text-muted-foreground hover:text-foreground transition"
+                className="p-2 rounded-lg bg-[#0e0f15] hover:bg-[#181922] border border-white/[0.08] text-zinc-400 hover:text-white transition cursor-pointer"
                 title="Refresh Rules"
               >
                 <RefreshCw size={14} className={loadingRules ? "animate-spin" : ""} />
@@ -474,76 +482,76 @@ export default function EventsSection({ data: propData }: { data?: AnalyticsData
 
             {/* Rules List */}
             {rules.length === 0 ? (
-              <div className="p-12 text-center text-xs text-muted-foreground space-y-3 border border-dashed border-border rounded-2xl">
-                <Sliders size={28} className="mx-auto text-muted-foreground/50" />
+              <div className="p-12 text-center text-xs text-zinc-400 space-y-3 border border-dashed border-white/[0.08] rounded-xl bg-[#0e0f15]/50">
+                <Sliders size={28} className="mx-auto text-zinc-600" />
                 <div className="space-y-1">
-                  <p className="font-bold text-foreground">No custom event rules configured yet.</p>
-                  <p className="max-w-md mx-auto">
+                  <p className="font-semibold text-white">No custom event rules configured yet.</p>
+                  <p className="max-w-md mx-auto text-zinc-500">
                     Create your first rule to automatically track clicks on buttons (e.g. &quot;Sign Up&quot;, &quot;Buy Now&quot;) or form submissions without modifying any code.
                   </p>
                 </div>
                 <button
                   onClick={() => setShowCreateModal(true)}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-primary text-primary-foreground text-xs font-bold rounded-xl shadow-xs"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white hover:bg-zinc-200 text-zinc-950 text-xs font-medium rounded-lg transition cursor-pointer"
                 >
                   <Plus size={14} />
                   <span>Create First Event Rule</span>
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-3">
+              <div className="grid grid-cols-1 gap-2.5">
                 {rules.map((rule) => {
                   return (
                     <div
                       key={rule.id}
-                      className={`p-4 rounded-2xl border transition ${
+                      className={`p-3.5 rounded-xl border transition ${
                         rule.enabled
-                          ? "bg-card border-border hover:border-border/80"
-                          : "bg-muted/30 border-border/50 opacity-60"
-                      } space-y-3`}
+                          ? "bg-[#0e0f15] border-white/[0.08] hover:border-white/20"
+                          : "bg-[#0e0f15]/40 border-white/[0.04] opacity-50"
+                      } space-y-2.5`}
                     >
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div className="flex items-center gap-3">
                           <button
                             onClick={() => handleToggleRule(rule.id, rule.enabled)}
-                            className="text-muted-foreground hover:text-foreground transition"
+                            className="text-zinc-500 hover:text-white transition cursor-pointer"
                             title={rule.enabled ? "Disable Rule" : "Enable Rule"}
                           >
                             {rule.enabled ? (
-                              <ToggleRight size={26} className="text-emerald-500" />
+                              <ToggleRight size={24} className="text-emerald-400" />
                             ) : (
-                              <ToggleLeft size={26} className="text-muted-foreground" />
+                              <ToggleLeft size={24} className="text-zinc-600" />
                             )}
                           </button>
 
                           <div>
                             <div className="flex items-center gap-2 flex-wrap">
-                              <span className="font-mono font-bold text-xs text-foreground">
+                              <span className="font-mono font-semibold text-xs text-white">
                                 {rule.name}
                               </span>
-                              <span className="px-2 py-0.5 bg-primary/10 text-primary border border-primary/20 rounded-md font-mono text-[10px] font-bold uppercase">
+                              <span className="px-2 py-0.5 bg-white/[0.06] text-zinc-300 border border-white/[0.1] rounded-md font-mono text-[10px] uppercase">
                                 {rule.triggerType.replace("_", " ")}
                               </span>
                               {typeof rule.value === "number" && rule.value > 0 && (
-                                <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-500 rounded-md font-mono text-[10px] font-bold">
+                                <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-md font-mono text-[10px] tabular-nums font-semibold">
                                   +${rule.value.toFixed(2)}
                                 </span>
                               )}
                             </div>
 
-                            <div className="flex items-center gap-3 text-[11px] text-muted-foreground mt-1 flex-wrap">
+                            <div className="flex items-center gap-3 text-[11px] text-zinc-400 mt-1 flex-wrap">
                               {rule.selector && (
                                 <span>
-                                  Selector: <code className="text-primary font-mono">{rule.selector}</code>
+                                  Selector: <code className="text-white font-mono bg-white/[0.04] px-1 py-0.5 rounded border border-white/[0.06]">{rule.selector}</code>
                                 </span>
                               )}
                               {rule.textMatch && (
                                 <span>
-                                  Text {rule.textMatchType}: <code className="text-foreground font-mono">&quot;{rule.textMatch}&quot;</code>
+                                  Text {rule.textMatchType}: <code className="text-white font-mono bg-white/[0.04] px-1 py-0.5 rounded border border-white/[0.06]">&quot;{rule.textMatch}&quot;</code>
                                 </span>
                               )}
                               <span>
-                                Path: <code className="text-muted-foreground font-mono">{rule.pathPattern || "*"}</code>
+                                Path: <code className="text-zinc-400 font-mono bg-white/[0.04] px-1 py-0.5 rounded border border-white/[0.06]">{rule.pathPattern || "*"}</code>
                               </span>
                             </div>
                           </div>
@@ -551,10 +559,10 @@ export default function EventsSection({ data: propData }: { data?: AnalyticsData
 
                         <button
                           onClick={() => handleDeleteRule(rule.id)}
-                          className="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 transition self-end sm:self-center"
+                          className="p-2 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 transition self-end sm:self-center cursor-pointer border border-rose-500/20"
                           title="Delete Rule"
                         >
-                          <Trash2 size={14} />
+                          <Trash2 size={13} />
                         </button>
                       </div>
                     </div>
@@ -568,30 +576,30 @@ export default function EventsSection({ data: propData }: { data?: AnalyticsData
 
       {/* ── Create No-Code Event Modal ── */}
       {showCreateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
-          <div className="bg-card border border-border rounded-3xl max-w-lg w-full p-6 sm:p-7 space-y-5 shadow-2xl animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between border-b border-border pb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs">
+          <div className="bg-[#111218] border border-white/[0.08] rounded-xl max-w-lg w-full p-6 space-y-5 shadow-2xl animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
               <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-xl bg-primary/10 text-primary">
-                  <Sparkles size={18} />
+                <div className="p-2 rounded-lg bg-white/[0.06] text-white border border-white/[0.08]">
+                  <Sparkles size={16} />
                 </div>
                 <div>
-                  <h3 className="text-base font-black text-foreground">Create No-Code Custom Event</h3>
-                  <p className="text-xs text-muted-foreground">Automatically track user actions without changing website code</p>
+                  <h3 className="text-sm font-semibold text-white">Create No-Code Custom Event</h3>
+                  <p className="text-xs text-zinc-400">Automatically track user actions without changing website code</p>
                 </div>
               </div>
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="p-2 rounded-xl hover:bg-muted text-muted-foreground hover:text-foreground transition"
+                className="p-1.5 rounded-lg hover:bg-white/[0.06] text-zinc-400 hover:text-white transition cursor-pointer"
               >
-                <X size={16} />
+                <X size={15} />
               </button>
             </div>
 
             <form onSubmit={handleCreateRule} className="space-y-4 text-xs">
               {/* Event Name */}
               <div className="space-y-1.5">
-                <label className="font-bold text-foreground block">
+                <label className="font-medium text-zinc-300 block">
                   Event Signature Name:
                 </label>
                 <input
@@ -600,19 +608,19 @@ export default function EventsSection({ data: propData }: { data?: AnalyticsData
                   placeholder="e.g. signup_cta_clicked or enterprise_demo_request"
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl font-mono text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary shadow-2xs"
+                  className="w-full px-3 py-2 bg-[#0e0f15] border border-white/[0.08] rounded-lg font-mono text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/20 transition"
                 />
               </div>
 
               {/* Trigger Type */}
               <div className="space-y-1.5">
-                <label className="font-bold text-foreground block">
+                <label className="font-medium text-zinc-300 block">
                   Trigger Event Type:
                 </label>
                 <select
                   value={formTriggerType}
                   onChange={(e) => setFormTriggerType(e.target.value as any)}
-                  className="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl text-xs text-foreground focus:outline-none focus:border-primary shadow-2xs cursor-pointer"
+                  className="w-full px-3 py-2 bg-[#0e0f15] border border-white/[0.08] rounded-lg text-xs text-white focus:outline-none focus:border-white/20 cursor-pointer transition"
                 >
                   <option value="click">Button / Element Click</option>
                   <option value="form_submit">Form Submission</option>
@@ -627,7 +635,7 @@ export default function EventsSection({ data: propData }: { data?: AnalyticsData
               {formTriggerType === "click" && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1.5">
-                    <label className="font-bold text-foreground block">
+                    <label className="font-medium text-zinc-300 block">
                       CSS Selector (Optional):
                     </label>
                     <input
@@ -635,12 +643,12 @@ export default function EventsSection({ data: propData }: { data?: AnalyticsData
                       placeholder="e.g. #hero-signup or .btn-cta"
                       value={formSelector}
                       onChange={(e) => setFormSelector(e.target.value)}
-                      className="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl font-mono text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary shadow-2xs"
+                      className="w-full px-3 py-2 bg-[#0e0f15] border border-white/[0.08] rounded-lg font-mono text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/20 transition"
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="font-bold text-foreground block">
+                    <label className="font-medium text-zinc-300 block">
                       Button / Label Text:
                     </label>
                     <input
@@ -648,7 +656,7 @@ export default function EventsSection({ data: propData }: { data?: AnalyticsData
                       placeholder="e.g. Start Free Trial"
                       value={formTextMatch}
                       onChange={(e) => setFormTextMatch(e.target.value)}
-                      className="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary shadow-2xs"
+                      className="w-full px-3 py-2 bg-[#0e0f15] border border-white/[0.08] rounded-lg text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/20 transition"
                     />
                   </div>
                 </div>
@@ -656,7 +664,7 @@ export default function EventsSection({ data: propData }: { data?: AnalyticsData
 
               {formTriggerType === "form_submit" && (
                 <div className="space-y-1.5">
-                  <label className="font-bold text-foreground block">
+                  <label className="font-medium text-zinc-300 block">
                     Form ID or CSS Selector:
                   </label>
                   <input
@@ -664,7 +672,7 @@ export default function EventsSection({ data: propData }: { data?: AnalyticsData
                     placeholder="e.g. #newsletter-form or form[action='/api/signup']"
                     value={formSelector}
                     onChange={(e) => setFormSelector(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl font-mono text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary shadow-2xs"
+                    className="w-full px-3 py-2 bg-[#0e0f15] border border-white/[0.08] rounded-lg font-mono text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/20 transition"
                   />
                 </div>
               )}
@@ -672,7 +680,7 @@ export default function EventsSection({ data: propData }: { data?: AnalyticsData
               {/* Path Filter */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <label className="font-bold text-foreground block">
+                  <label className="font-medium text-zinc-300 block">
                     Target Page Path:
                   </label>
                   <input
@@ -680,12 +688,12 @@ export default function EventsSection({ data: propData }: { data?: AnalyticsData
                     placeholder="e.g. /pricing, /checkout/* or *"
                     value={formPathPattern}
                     onChange={(e) => setFormPathPattern(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl font-mono text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary shadow-2xs"
+                    className="w-full px-3 py-2 bg-[#0e0f15] border border-white/[0.08] rounded-lg font-mono text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/20 transition"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="font-bold text-foreground block">
+                  <label className="font-medium text-zinc-300 block">
                     Conversion Value ($ USD):
                   </label>
                   <input
@@ -695,27 +703,27 @@ export default function EventsSection({ data: propData }: { data?: AnalyticsData
                     placeholder="0.00"
                     value={formValue}
                     onChange={(e) => setFormValue(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl font-mono text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary shadow-2xs"
+                    className="w-full px-3 py-2 bg-[#0e0f15] border border-white/[0.08] rounded-lg font-mono text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/20 transition"
                   />
                 </div>
               </div>
 
               {/* Actions */}
-              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-border">
+              <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-white/[0.08]">
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="px-4 py-2.5 rounded-xl bg-muted hover:bg-muted/80 text-foreground font-bold text-xs transition"
+                  className="px-4 py-2 rounded-lg bg-[#0e0f15] hover:bg-[#181922] text-zinc-300 border border-white/[0.08] font-medium text-xs transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={savingRule || !formName.trim()}
-                  className="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs transition shadow-xs disabled:opacity-50 flex items-center gap-1.5"
+                  className="px-4 py-2 rounded-lg bg-white hover:bg-zinc-200 text-zinc-950 font-medium text-xs transition cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
                 >
                   {savingRule ? (
-                    <div className="w-3.5 h-3.5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+                    <div className="w-3.5 h-3.5 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin" />
                   ) : (
                     <Check size={14} />
                   )}

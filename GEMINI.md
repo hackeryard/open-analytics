@@ -6,6 +6,12 @@
 - **Do NOT use emojis anywhere in the codebase**: Avoid emojis in UI components, console logs, toast messages, AI prompts, status badges, git commit messages, or documentation.
 - Use clean, professional **Lucide React** icons (`<Activity />`, `<Check />`, `<Shield />`, `<Radio />`, etc.) instead.
 
+### 1.1 World-Class Obsidian & Precision Design System
+- Avoid generic AI template clichés (muddy navy-blue `#080c14`, blurry cards, rainbow neon gradients, vanity sidebar badges).
+- Use the solid Obsidian Dark palette: `#090a0f` background, `#111218` solid cards, `#0e0f15` sidebar/secondary, `#181922` muted, `#20222c` / `rgba(255,255,255,0.08)` hairline borders with inset bevel highlights.
+- Use Plus Jakarta Sans typography (`--font-sans`) paired with JetBrains Mono (`--font-mono`) with tabular numerals (`tabular-nums font-semibold text-white`) for analytical metrics.
+- Use tactile high-contrast white CTAs (`bg-white text-zinc-950 hover:bg-zinc-200`) and decluttered navigation.
+
 ### 2. 3-Tier Domain Architecture & Subdomain Isolation
 Open Analytics is strictly segregated into three domains. Never mix routes or CTAs between them:
 1. **Main Domain (`openanalytics.org.in` / `localhost:3005`)**:
@@ -55,7 +61,13 @@ Never run ad-hoc raw commands for git pulls, port killing, or PRs. Always use pr
 - Always verify project permissions using `lib/auth.ts` (`verifyProjectAccess`, `verifyProjectEdit`, `verifyProjectManage`, `verifyProjectOwner`).
 - Roles: `owner`, `admin`, `editor`, `member`, `super_admin`.
 
-### 6. Project Documentation & Tracking Files Maintenance
+### 6. Main Domain SEO, GEO & AEO Standards
+- Rendered HTML `<title>` tags across all 12 public routes must strictly fall between **50 and 60 characters** (`%s | Open Analytics` root template).
+- `<meta name="description">` tags must strictly fall between **140 and 160 characters**.
+- Interactive client components must decouple state from `page.tsx` (`*ClientView.tsx`) to enable server-rendered static metadata.
+- Every public page must inject valid, rich JSON-LD Schema.org graphs (`WebSite`, `SoftwareApplication`, `Product`, `TechArticle`, `HowTo`, `FAQPage`, `BreadcrumbList`, `ItemList`).
+
+### 7. Project Documentation & Tracking Files Maintenance
 Whenever significant architectural or functional changes are made, update:
 - `CHANGELOG.md`: Log new versions and bulleted features.
 - `ROADMAP.md`: Check off completed milestones.
