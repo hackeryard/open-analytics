@@ -76,10 +76,15 @@ export async function authenticateProjectRequest(req: Request, body?: any): Prom
         const cleanNoProto = raw.replace(/^https?:\/\//, "").replace(/\/.*$/, "");
         const cleanNoPort = cleanNoProto.replace(/:\d+$/, "");
 
-        // Match exact hostname, subdomain, or host:port
+        const baseHost = hostname.replace(/^www\./, "");
+        const baseAllowed = cleanNoPort.replace(/^www\./, "");
+
+        // Match exact hostname, www/apex equivalent, subdomain, or host:port
         return (
           hostname === cleanNoPort ||
+          baseHost === baseAllowed ||
           hostname.endsWith(`.${cleanNoPort}`) ||
+          baseHost.endsWith(`.${baseAllowed}`) ||
           hostWithPort === cleanNoProto
         );
       });

@@ -59,7 +59,17 @@ export default function PrimaryAnalyticsChart({
       return { labels: [], datasets: [] };
     }
 
-    const labels = timeseries.map((t) => t.label);
+    const labels = timeseries.map((t) => {
+      if (t.label.includes(" ")) {
+        return t.label.split(" ")[1];
+      }
+      if (/^\d{4}-\d{2}-\d{2}$/.test(t.label)) {
+        const [y, m, d] = t.label.split("-").map(Number);
+        const dt = new Date(Date.UTC(y, m - 1, d));
+        return dt.toLocaleDateString(undefined, { month: "short", day: "numeric", timeZone: "UTC" });
+      }
+      return t.label;
+    });
 
     const values = timeseries.map((t) => {
       if (selectedMetric === "visitors") return t.visitors || 0;
@@ -147,6 +157,24 @@ export default function PrimaryAnalyticsChart({
           bodyFont: { size: 13, weight: "900", family: "monospace" },
           displayColors: false,
           callbacks: {
+            title: (items: any) => {
+              if (!items || items.length === 0) return "";
+              const idx = items[0].dataIndex;
+              const rawLabel = timeseries[idx]?.label || "";
+              if (rawLabel.includes(" ")) {
+                const [d, time] = rawLabel.split(" ");
+                const [y, m, day] = d.split("-").map(Number);
+                const dt = new Date(Date.UTC(y, m - 1, day));
+                const dateStr = dt.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
+                return `${dateStr} at ${time}`;
+              }
+              if (/^\d{4}-\d{2}-\d{2}$/.test(rawLabel)) {
+                const [y, m, d] = rawLabel.split("-").map(Number);
+                const dt = new Date(Date.UTC(y, m - 1, d));
+                return dt.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
+              }
+              return rawLabel;
+            },
             label: (item: any) => `${item.dataset.label}: ${item.parsed.y.toLocaleString()}`,
           },
         },

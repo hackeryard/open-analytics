@@ -40,6 +40,12 @@ export function parseDateFilter(
       endStr = parts[1] || parts[0];
     }
 
+    if (startStr && endStr && startStr > endStr) {
+      const tmp = startStr;
+      startStr = endStr;
+      endStr = tmp;
+    }
+
     const rawStart = new Date(`${startStr}T00:00:00.000Z`);
     const rawEnd = new Date(`${endStr}T23:59:59.999Z`);
     const start = isNaN(rawStart.getTime()) ? earliestAllowed : rawStart;
@@ -88,7 +94,7 @@ export function parseDateFilter(
   switch (timeRange) {
     case "today": {
       const todayStart = new Date();
-      todayStart.setHours(0, 0, 0, 0);
+      todayStart.setUTCHours(0, 0, 0, 0);
       return {
         matchStage: {
           projectId,
@@ -101,12 +107,12 @@ export function parseDateFilter(
     }
     case "yesterday": {
       const yStart = new Date();
-      yStart.setDate(yStart.getDate() - 1);
-      yStart.setHours(0, 0, 0, 0);
+      yStart.setUTCDate(yStart.getUTCDate() - 1);
+      yStart.setUTCHours(0, 0, 0, 0);
 
       const yEnd = new Date();
-      yEnd.setDate(yEnd.getDate() - 1);
-      yEnd.setHours(23, 59, 59, 999);
+      yEnd.setUTCDate(yEnd.getUTCDate() - 1);
+      yEnd.setUTCHours(23, 59, 59, 999);
 
       return {
         matchStage: {
@@ -215,13 +221,15 @@ export async function getProjectAnalytics(
   endDateParam?: string | null,
   plan = "free"
 ) {
-  const { matchStage, isHourly } = parseDateFilter(
+  const { matchStage, isHourly, label, maxRetentionDays } = parseDateFilter(
     projectId,
     timeRange,
     startDateParam,
     endDateParam,
     plan
   );
+  const now = new Date();
+  const earliestAllowed = new Date(now.getTime() - maxRetentionDays * 24 * 60 * 60 * 1000);
   const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
 
   // 1. High-level Overview Metrics
@@ -1223,20 +1231,118 @@ export async function getProjectAnalytics(
     };
   });
 
-  // Timeseries
-  const timeseries = timeseriesRaw.map((t: any) => {
-    const visitors = t.visitors?.length || 0;
-    const returningVisitors = t.returningVisitors?.length || 0;
-    const newVisitors = Math.max(0, visitors - returningVisitors);
-    return {
-      label: t._id,
-      views: t.views,
-      visitors,
-      returningVisitors,
-      newVisitors,
-      returningViews: t.returningViews || 0,
-    };
-  });
+  // Timeseries with continuous interval backfill
+  const rawMap = new Map<string, any>();
+  for (const t of timeseriesRaw) {
+    if (t._id) rawMap.set(t._id, t);
+  }
+
+  const timeseries: Array<{
+    label: string;
+    views: number;
+    visitors: number;
+    returningVisitors: number;
+    newVisitors: number;
+    returningViews: number;
+  }> = [];
+
+  const startGte = matchStage.createdAt?.$gte ? new Date(matchStage.createdAt.$gte) : earliestAllowed;
+  const endLte = matchStage.createdAt?.$lte ? new Date(matchStage.createdAt.$lte) : now;
+
+  if (isHourly) {
+    const cur = new Date(startGte);
+    cur.setUTCMinutes(0, 0, 0);
+    const endBoundary = new Date(endLte);
+    let count = 0;
+    while (cur <= endBoundary && count < 168) {
+      const year = cur.getUTCFullYear();
+      const month = String(cur.getUTCMonth() + 1).padStart(2, "0");
+      const day = String(cur.getUTCDate()).padStart(2, "0");
+      const hour = String(cur.getUTCHours()).padStart(2, "0");
+      const key = `${year}-${month}-${day} ${hour}:00`;
+
+      const t = rawMap.get(key);
+      if (t) {
+        const visitors = t.visitors?.length || 0;
+        const returningVisitors = t.returningVisitors?.length || 0;
+        const newVisitors = Math.max(0, visitors - returningVisitors);
+        timeseries.push({
+          label: key,
+          views: t.views || 0,
+          visitors,
+          returningVisitors,
+          newVisitors,
+          returningViews: t.returningViews || 0,
+        });
+      } else {
+        timeseries.push({
+          label: key,
+          views: 0,
+          visitors: 0,
+          returningVisitors: 0,
+          newVisitors: 0,
+          returningViews: 0,
+        });
+      }
+      cur.setUTCHours(cur.getUTCHours() + 1);
+      count++;
+    }
+  } else {
+    const cur = new Date(startGte);
+    cur.setUTCHours(0, 0, 0, 0);
+    const endBoundary = new Date(endLte);
+    endBoundary.setUTCHours(23, 59, 59, 999);
+    let count = 0;
+    while (cur <= endBoundary && count < 366) {
+      const year = cur.getUTCFullYear();
+      const month = String(cur.getUTCMonth() + 1).padStart(2, "0");
+      const day = String(cur.getUTCDate()).padStart(2, "0");
+      const key = `${year}-${month}-${day}`;
+
+      const t = rawMap.get(key);
+      if (t) {
+        const visitors = t.visitors?.length || 0;
+        const returningVisitors = t.returningVisitors?.length || 0;
+        const newVisitors = Math.max(0, visitors - returningVisitors);
+        timeseries.push({
+          label: key,
+          views: t.views || 0,
+          visitors,
+          returningVisitors,
+          newVisitors,
+          returningViews: t.returningViews || 0,
+        });
+      } else {
+        timeseries.push({
+          label: key,
+          views: 0,
+          visitors: 0,
+          returningVisitors: 0,
+          newVisitors: 0,
+          returningViews: 0,
+        });
+      }
+      cur.setUTCDate(cur.getUTCDate() + 1);
+      count++;
+    }
+  }
+
+  // Fallback to raw timeseries if interval generation was empty
+  if (timeseries.length === 0) {
+    timeseriesRaw.forEach((t: any) => {
+      const visitors = t.visitors?.length || 0;
+      const returningVisitors = t.returningVisitors?.length || 0;
+      const newVisitors = Math.max(0, visitors - returningVisitors);
+      timeseries.push({
+        label: t._id,
+        views: t.views || 0,
+        visitors,
+        returningVisitors,
+        newVisitors,
+        returningViews: t.returningViews || 0,
+      });
+    });
+  }
 
   // Top Pages
   const topPages = topPagesRaw.map((p: any) => ({
@@ -1808,5 +1914,11 @@ export async function getProjectAnalytics(
     userJourneys,
     seoAnalytics,
     aiVisibility,
+    timeframe: {
+      label,
+      timeRange,
+      isHourly,
+      maxRetentionDays,
+    },
   };
 }

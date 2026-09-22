@@ -329,6 +329,12 @@ export interface AnalyticsData {
       percentage: number;
     }[];
   };
+  timeframe?: {
+    label: string;
+    timeRange: string;
+    isHourly: boolean;
+    maxRetentionDays?: number;
+  };
 }
 
 export function formatDuration(seconds: number): string {

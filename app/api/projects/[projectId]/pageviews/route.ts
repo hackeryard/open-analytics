@@ -18,7 +18,7 @@ export async function GET(req: Request, { params }: { params: { projectId: strin
 
     const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
     const limit = Math.min(200, Math.max(5, parseInt(searchParams.get("limit") || "50", 10)));
-    const timeRange = searchParams.get("timeRange") || "all";
+    const timeRange = searchParams.get("timeRange") || searchParams.get("range") || "all";
     const startDateParam = searchParams.get("startDate") || null;
     const endDateParam = searchParams.get("endDate") || null;
     const userType = searchParams.get("userType") || "all";
