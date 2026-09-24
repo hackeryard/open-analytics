@@ -131,6 +131,10 @@ To build the most developer-friendly, high-performance, and visually stunning an
 - [x] Aligned date filter boundaries with UTC midnight for MongoDB aggregation parity.
 - [x] Multi-day window shifting on preset ranges (`7d`, `30d`) in DateRangeNavigator.
 - [x] Apex & WWW domain equivalence matching in project authentication to eliminate 403 errors.
+- [x] Client script re-entrancy protection and safe default API endpoint fallback (`https://api.openanalytics.org.in`).
+- [x] SPA router history navigation deduplication on `replaceState` and `popstate`.
+- [x] Cloud serverless DNS resolver isolation preventing port 53 timeouts.
+- [x] Next.js App Router `<body>` script placement for reliable SSR hydration.
 
 ### Phase 15: Session Replay & Visual Heatmaps (Q1 2027)
 - [ ] Lightweight, DOM-sanitized session recording playback engine.
