@@ -159,6 +159,15 @@ To build the most developer-friendly, high-performance, and visually stunning an
 - [x] Public Features showcase upgrade (`components/public/FeaturesClientView.tsx`) with interactive preview card featuring Live Feed, AI Citations, /llms.txt validator, and Bot Matrix.
 - [x] Technical developer documentation expansion (`app/docs/seo-aeo/page.tsx`) with answer engine attribution guides and machine protocol standards.
 
+### Phase 16.1: Devices & Hardware Diagnostics Executive Matrix (Completed)
+- [x] Dedicated `/devices` workspace URL migration with permanent HTTP 301/308 redirects from legacy `/tech`.
+- [x] 5 Executive KPI telemetry cards (`Primary Form Factor`, `Top Web Browser`, `Dominant Platform`, `WebGL Hardware GPU`, `5G / Fast Cellular`).
+- [x] Proportional segmented device distribution bar with interactive device category breakdown.
+- [x] Interactive tabbed navigation (`All Diagnostics`, `Form Factors & Displays`, `Browsers & Engines`, `Operating Systems`, `Hardware & WebGL GPU`, `Network & 5G`).
+- [x] Real-time search query filtering and sorting controls (Share High-to-Low, Low-to-High, Alphabetical A-Z).
+- [x] WebGL GPU vendor normalization (Apple Silicon, NVIDIA, AMD, Intel, Qualcomm, ARM Mali) and screen aspect ratio detector.
+- [x] 1-Click CSV telemetry export for device and hardware diagnostics.
+
 ### Phase 17: Session Replay & Visual Heatmaps (Q1 2027)
 - [ ] Lightweight, DOM-sanitized session recording playback engine.
 - [ ] Click & scroll aggregate heatmaps on rendered pages.

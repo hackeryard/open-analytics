@@ -36,7 +36,7 @@ export default function DeviceBreakdownWidget({
             <h3 className="text-sm font-bold text-white tracking-tight">Devices &amp; Browsers</h3>
           </div>
           <Link
-            href="/tech"
+            href="/devices"
             className="inline-flex items-center gap-1 text-[11px] font-semibold text-white hover:underline transition"
           >
             <span>Hardware Details</span>

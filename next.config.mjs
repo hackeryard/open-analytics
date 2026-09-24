@@ -10,6 +10,15 @@ const nextConfig = {
   reactStrictMode: false,
   poweredByHeader: false,
   compress: true,
+  async redirects() {
+    return [
+      {
+        source: "/tech",
+        destination: "/devices",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

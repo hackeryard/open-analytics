@@ -303,7 +303,7 @@ To restrict telemetry collection to authorized domains only:
 7. **Web Vitals (RUM)** (`/vitals`): Core Web Vitals (LCP, INP, CLS, FCP, TTFB) with route-level ratings and distribution gauges.
 8. **Crash & Errors** (`/errors`): Universal error tracking with multi-selection batch management, AI fix prompt generator, expandable stack traces, and Edge suppression rules.
 9. **Behavioral UX** (`/ux`): Rage click detection, desktop exit intent rates, outbound links, and active vs. idle dwell time analysis.
-10. **Devices & Tech** (`/tech`): Browser, OS, device form factors, GPU renderers, memory, and network connection types.
+10. **Devices & Hardware Diagnostics** (`/devices`): Client form factors, screen aspect ratios, web browsers, operating systems, unmasked WebGL GPUs, and 5G network telemetry (with legacy `/tech` permanently redirected).
 11. **Audience Geography** (`/geo`): Interactive SVG World Atlas, country rankings, continent breakdowns, and city-level drilldowns.
 12. **Acquisition & Sources** (`/acquisition`): Referrers, direct traffic, search engines, and UTM campaign attribution.
 13. **SEO & Search Radar** (`/seo`): Search engine traffic breakdown, organic discovery, and structured data monitoring.

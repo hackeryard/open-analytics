@@ -222,7 +222,7 @@
    - **Decluttered Sidebar Navigation**: Badges restricted strictly to actionable notifications (unread alerts, active crash errors).
    - **Executive Cockpit (2-Tier)**: 4 Hero KPI cards (Pageviews, Visitors, Realtime, Dwell) and 3 Telemetry Health cards (Loyalty, CWV LCP, Crash-Free Rate).
    - **All 7 Cockpit Widgets**: `TopPagesWidget`, `WebVitalsRadarWidget`, `AiAndErrorWidget`, `TrafficChannelsWidget`, `LiveStreamWidget`, `GeoWidget`, and `DeviceBreakdownWidget` standardized to obsidian precision cards.
-   - **All 15+ Workspace Sections**: Live Feed, Errors, Events, Web Vitals, Behavioral UX, AI Visibility, Pages, Acquisition, Audience, Tech, User Journeys, Geo Analytics, Virtual Labs, SEO, and Project Settings must use solid `#111218` cards and hairline borders.
+   - **All 15+ Workspace Sections**: Live Feed, Errors, Events, Web Vitals, Behavioral UX, AI Visibility, Pages, Acquisition, Audience, Devices & Hardware Diagnostics (`/devices`), User Journeys, Geo Analytics, Virtual Labs, SEO, and Project Settings must use solid `#111218` cards and hairline borders.
    - **Public Domain Presentation**: Clean 5-card Bento Grid showcase on landing page, precision marketing cards on `/features`, `/pricing`, `/vs-google-analytics`, `/privacy`, a responsive dual-column Bento developer knowledgebase on `/faq`, and unified sticky sidebar layout for all `/docs/*` guides.
 4. **Zero-Emoji Rule**:
    - Strictly zero emojis across all code, UI components, status badges, and documentation. Lucide React icons only.
