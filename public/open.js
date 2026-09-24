@@ -1,6 +1,8 @@
 (function() {
   "use strict";
   if (typeof window === "undefined") return;
+  if (window.__OPEN_ANALYTICS_INITIALIZED__) return;
+  window.__OPEN_ANALYTICS_INITIALIZED__ = true;
 
   // Locate the current script tag and configuration
   let cachedScript = null;
@@ -10,15 +12,16 @@
       cachedScript = document.currentScript;
       return cachedScript;
     }
-    const queryMatch = document.querySelector('script[data-project-id], script[src*="open.js"], script#open-analytics-script');
+    const queryMatch = document.querySelector('script[data-project-id], script[data-measurement-id], script[src*="open.js"], script#open-analytics-tracker, script#open-analytics-script');
     if (queryMatch) {
       cachedScript = queryMatch;
       return cachedScript;
     }
     const scripts = document.getElementsByTagName("script");
     for (let i = scripts.length - 1; i >= 0; i--) {
-      if (scripts[i].src && (scripts[i].src.includes("open.js") || scripts[i].hasAttribute("data-project-id"))) {
-        cachedScript = scripts[i];
+      const s = scripts[i];
+      if ((s.src && s.src.includes("open.js")) || s.hasAttribute("data-project-id") || s.hasAttribute("data-measurement-id")) {
+        cachedScript = s;
         return cachedScript;
       }
     }
@@ -29,9 +32,20 @@
 
   function getConfig() {
     const el = getScriptElement();
-    const pid = configOverrides.projectId || (el && (el.getAttribute("data-measurement-id") || el.getAttribute("data-project-id") || el.getAttribute("data-id"))) || (window.__OPEN_ANALYTICS_PROJECT_ID__) || "prj_openlabs";
-    const key = configOverrides.apiKey || (el && (el.getAttribute("data-api-key") || el.getAttribute("data-key"))) || "";
-    let ep = configOverrides.endpoint || (el && el.getAttribute("data-endpoint")) || "";
+    const pid =
+      configOverrides.projectId ||
+      (el && (el.getAttribute("data-measurement-id") || el.getAttribute("data-project-id") || el.getAttribute("data-id"))) ||
+      window.__OPEN_ANALYTICS_PROJECT_ID__ ||
+      window.OPEN_ANALYTICS_PROJECT_ID ||
+      "";
+    const key =
+      configOverrides.apiKey ||
+      (el && (el.getAttribute("data-api-key") || el.getAttribute("data-key"))) ||
+      "";
+    let ep =
+      configOverrides.endpoint ||
+      (el && el.getAttribute("data-endpoint")) ||
+      "";
 
     if (!ep) {
       if (el && el.src) {
@@ -39,10 +53,10 @@
           const scriptUrl = new URL(el.src);
           ep = scriptUrl.origin;
         } catch (e) {
-          ep = window.location.origin;
+          ep = "https://api.openanalytics.org.in";
         }
       } else {
-        ep = window.location.origin;
+        ep = "https://api.openanalytics.org.in";
       }
     }
 
@@ -1127,21 +1141,30 @@
   // SPA Route Change Listener
   const originalPushState = history.pushState;
   history.pushState = function() {
-    triggerHeartbeat();
     originalPushState.apply(this, arguments);
-    triggerPageview(window.location.pathname);
+    const newPath = window.location.pathname;
+    if (newPath !== currentPath) {
+      triggerHeartbeat();
+      triggerPageview(newPath);
+    }
   };
 
   const originalReplaceState = history.replaceState;
   history.replaceState = function() {
-    triggerHeartbeat();
     originalReplaceState.apply(this, arguments);
-    triggerPageview(window.location.pathname);
+    const newPath = window.location.pathname;
+    if (newPath !== currentPath) {
+      triggerHeartbeat();
+      triggerPageview(newPath);
+    }
   };
 
   window.addEventListener("popstate", function() {
-    triggerHeartbeat();
-    triggerPageview(window.location.pathname);
+    const newPath = window.location.pathname;
+    if (newPath !== currentPath) {
+      triggerHeartbeat();
+      triggerPageview(newPath);
+    }
   });
 
   // Global Public API

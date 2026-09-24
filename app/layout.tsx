@@ -222,6 +222,8 @@ export default function RootLayout({
     <html lang="en" className={`dark ${plusJakarta.variable} ${jetbrainsMono.variable}`}>
       <head>
         <JsonLd data={organizationSchema} />
+      </head>
+      <body className="min-h-screen bg-background text-foreground font-sans antialiased selection:bg-cyan-500/20 selection:text-cyan-200">
         <Script
           strategy="afterInteractive"
           src="https://www.googletagmanager.com/gtag/js?id=G-ZDHKTDPHFX"
@@ -247,8 +249,6 @@ export default function RootLayout({
           data-api-key="pk_live_8481cc68ffbf81e84b34e6e0e5b447e5"
           data-endpoint={process.env.NEXT_PUBLIC_API_URL || "https://api.openanalytics.org.in"}
         />
-      </head>
-      <body className="min-h-screen bg-background text-foreground font-sans antialiased selection:bg-cyan-500/20 selection:text-cyan-200">
         <PlatformProvider initialIsDashboard={isDashboard}>
           <AppShell initialIsDashboard={isDashboard}>{children}</AppShell>
         </PlatformProvider>

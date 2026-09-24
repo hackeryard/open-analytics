@@ -3,7 +3,9 @@ import dns from "dns";
 
 try {
   dns.setDefaultResultOrder?.("ipv4first");
-  dns.setServers(["8.8.8.8", "1.1.1.1", "8.8.4.4"]);
+  if (process.env.NODE_ENV === "development" && process.platform === "win32") {
+    dns.setServers(["8.8.8.8", "1.1.1.1"]);
+  }
 } catch (e) {}
 
 const MONGO_URI = process.env.MONGO_URI;

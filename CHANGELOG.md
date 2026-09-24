@@ -2,6 +2,19 @@
 
 All notable changes to the Open Analytics platform are documented in this file.
 
+## [3.7.2] - 2026-09-24
+
+### Fixed
+- **Script Ingestion Resilience & Safe Endpoint Fallback (`public/open.js`)**:
+  - Defaulted telemetry collector endpoint to `https://api.openanalytics.org.in` rather than `window.location.origin`, preventing beacons from dropping with HTTP 404 when script attributes are resolved asynchronously.
+  - Added singleton re-entrancy guard (`window.__OPEN_ANALYTICS_INITIALIZED__`) to prevent duplicate script initializations and duplicate interval timers.
+  - Added router pathname deduplication in `history.replaceState` and `popstate` to eliminate duplicate pageviews during Next.js client-side mount.
+  - Expanded script selector queries to match `data-measurement-id`, `data-project-id`, `open-analytics-tracker`, and global project variables.
+- **Cloud Serverless DNS Resolver Protection (`lib/mongodb.ts`, `next.config.mjs`)**:
+  - Restricted custom UDP `dns.setServers` to local Windows development only, ensuring production serverless environments (Vercel/AWS Lambda) utilize platform VPC DNS resolvers without port 53 timeouts.
+- **Next.js App Router Script Placement (`app/layout.tsx`)**:
+  - Moved self-tracking and analytics `<Script>` components from `<head>` into `<body>` to ensure hydration and execution across all visitors in compliance with Next.js App Router standards.
+
 ## [3.7.1] - 2026-09-22
 
 ### Fixed
