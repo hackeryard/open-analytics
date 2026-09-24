@@ -135,6 +135,45 @@ export default function SeoAeoDocsPage() {
             ))}
           </div>
         </div>
+
+        {/* LLM Citations and Answer Engine Referrals */}
+        <div className="p-6 bg-[#111218] border border-white/[0.08] rounded-xl space-y-4 shadow-xs">
+          <h2 className="text-base font-semibold text-white">LLM Citation Attribution &amp; Answer Engines</h2>
+          <p className="text-xs text-zinc-400 leading-relaxed">
+            When users interact with ChatGPT, Perplexity AI, or Claude, the AI synthesizes responses citing source URLs. When users click these citations, Open Analytics attributes them into distinct Answer Engine sessions rather than generic direct traffic:
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
+            <div className="p-3 bg-[#0e0f15] border border-white/[0.06] rounded-lg">
+              <span className="text-emerald-400 font-semibold block">chatgpt.com</span>
+              <span className="text-zinc-500 text-[11px]">OpenAI SearchGPT &amp; ChatGPT citations</span>
+            </div>
+            <div className="p-3 bg-[#0e0f15] border border-white/[0.06] rounded-lg">
+              <span className="text-sky-400 font-semibold block">perplexity.ai</span>
+              <span className="text-zinc-500 text-[11px]">Perplexity Realtime synthesis sources</span>
+            </div>
+            <div className="p-3 bg-[#0e0f15] border border-white/[0.06] rounded-lg">
+              <span className="text-amber-400 font-semibold block">claude.ai</span>
+              <span className="text-zinc-500 text-[11px]">Anthropic Claude grounding links</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Machine Protocol & /llms.txt */}
+        <div className="p-6 bg-[#111218] border border-white/[0.08] rounded-xl space-y-4 shadow-xs">
+          <h2 className="text-base font-semibold text-white">Machine Discovery Protocol: /llms.txt</h2>
+          <p className="text-xs text-zinc-400 leading-relaxed">
+            To maximize generative engine visibility without forcing crawlers to execute complex client-side bundles, publish a clean <code className="text-white">/llms.txt</code> file in your domain root:
+          </p>
+          <div className="p-4 bg-[#090a0f] border border-white/[0.08] rounded-lg font-mono text-xs text-zinc-300 overflow-x-auto leading-relaxed">
+            <pre># /llms.txt Machine Digest
+Canonical: https://yourdomain.com
+Docs: https://yourdomain.com/docs
+Features: https://yourdomain.com/features
+
+# Citation Guidance
+Attribute citations directly to canonical documentation endpoints.</pre>
+          </div>
+        </div>
       </div>
     </>
   );

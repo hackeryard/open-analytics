@@ -103,7 +103,7 @@ export default function PricingInteractive() {
         </div>
 
         {/* Hero Title */}
-        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-6 max-w-5xl mx-auto leading-[1.06]">
+        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-6 max-w-7xl mx-auto leading-[1.06]">
           Predictable pricing engineered for modern engineering teams.
         </h1>
 
@@ -117,22 +117,20 @@ export default function PricingInteractive() {
           <button
             type="button"
             onClick={() => setBillingCycle("monthly")}
-            className={`px-4 py-2 rounded-lg text-xs font-semibold transition cursor-pointer ${
-              billingCycle === "monthly"
+            className={`px-4 py-2 rounded-lg text-xs font-semibold transition cursor-pointer ${billingCycle === "monthly"
                 ? "bg-white/[0.1] text-white shadow-xs"
                 : "text-zinc-400 hover:text-white"
-            }`}
+              }`}
           >
             Monthly Billing
           </button>
           <button
             type="button"
             onClick={() => setBillingCycle("annual")}
-            className={`px-4 py-2 rounded-lg text-xs font-semibold transition flex items-center gap-2 cursor-pointer ${
-              billingCycle === "annual"
+            className={`px-4 py-2 rounded-lg text-xs font-semibold transition flex items-center gap-2 cursor-pointer ${billingCycle === "annual"
                 ? "bg-white/[0.1] text-white shadow-xs"
                 : "text-zinc-400 hover:text-white"
-            }`}
+              }`}
           >
             <span>Annual Billing</span>
             <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
@@ -246,11 +244,10 @@ export default function PricingInteractive() {
                       key={tier.shortLabel}
                       type="button"
                       onClick={() => setSelectedTierIndex(idx)}
-                      className={`px-2 py-0.5 rounded text-[10px] font-mono font-semibold transition cursor-pointer ${
-                        selectedTierIndex === idx
+                      className={`px-2 py-0.5 rounded text-[10px] font-mono font-semibold transition cursor-pointer ${selectedTierIndex === idx
                           ? "bg-white/[0.15] text-white shadow-xs"
                           : "text-zinc-500 hover:text-zinc-300"
-                      }`}
+                        }`}
                     >
                       {tier.shortLabel}
                     </button>
@@ -442,11 +439,10 @@ export default function PricingInteractive() {
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveSpotlightTab(tab.id as any)}
-                className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-2 cursor-pointer ${
-                  isActive
+                className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-2 cursor-pointer ${isActive
                     ? "bg-white/[0.1] text-white border border-white/[0.15] shadow-xs"
                     : "bg-[#111218] border border-white/[0.08] text-zinc-400 hover:text-white hover:bg-[#181922]"
-                }`}
+                  }`}
               >
                 <Icon className={`w-4 h-4 ${isActive ? "text-white" : "text-zinc-500"}`} />
                 <span>{tab.label}</span>
