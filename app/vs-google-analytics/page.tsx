@@ -226,7 +226,7 @@ export default function VsGoogleAnalyticsPage() {
         </div>
 
         {/* Hero Title */}
-        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-6 max-w-5xl mx-auto leading-[1.06]">
+        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-6 max-w-7xl mx-auto leading-[1.06]">
           Open Analytics vs Google Analytics 4 (GA4).
         </h1>
 

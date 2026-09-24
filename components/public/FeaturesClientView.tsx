@@ -33,8 +33,9 @@ export default function FeaturesClientView() {
   const [copiedPrompt, setCopiedPrompt] = useState(false);
   const [audioPlayed, setAudioPlayed] = useState(false);
   const [activeRumTab, setActiveRumTab] = useState<"gauges" | "latency">("gauges");
-  const [activeAiTab, setActiveAiTab] = useState<"feed" | "catalog">("feed");
+  const [activeAiTab, setActiveAiTab] = useState<"feed" | "citations" | "generator" | "catalog">("feed");
   const [activeErrorTab, setActiveErrorTab] = useState<"stack" | "prompt">("stack");
+  const [copiedFeatureRobots, setCopiedFeatureRobots] = useState(false);
 
   const universalSnippet = `<script defer src="https://api.openanalytics.org.in/open.js" data-project-id="prj_your_site"></script>`;
 
@@ -131,34 +132,34 @@ Provide a defensive null-safe refactor and a Jest unit test to prevent regressio
     },
     {
       id: "ai-radar",
-      badge: "Generative Engine Optimization",
-      title: "Autonomous AI & LLM Search Radar",
+      badge: "Generative Engine Optimization (GEO)",
+      title: "AI Visibility & LLM Citation Benchmark Hub",
       tagline:
-        "Detect, analyze, and measure how generative AI search crawlers index, synthesize, and cite your web pages.",
+        "Measure how generative search engines and foundation models crawl, index, synthesize, and cite your brand.",
       icon: Bot,
       points: [
         {
-          title: "AI Search Referrals vs Crawlers",
-          desc: "Differentiate human traffic coming from Perplexity AI and SearchGPT from automated LLM crawler scrapes.",
+          title: "AI Search Referrals vs Autonomous Crawlers",
+          desc: "Differentiate human traffic coming from Perplexity AI and SearchGPT from automated LLM crawler training runs.",
         },
         {
           title: "LLM Bot Scraping Telemetry",
           desc: "Real-time visibility when ClaudeBot, GPTBot, PerplexityBot, or Bytespider crawl your documentation.",
         },
         {
-          title: "AEO Citation Intelligence",
-          desc: "Identify which pages are cited as high-authority references in generative synthesis answer engines.",
+          title: "Answer Engine Citation Share-of-Voice",
+          desc: "Track which high-authority pages get cited inside ChatGPT, Claude, and Perplexity answers with session attribution.",
         },
         {
-          title: "Machine Protocol Delivery",
-          desc: "Built-in optimization headers for /llms.txt and /agents.md discovery to supercharge machine ingestion.",
+          title: "Robots.txt & /llms.txt AI Policy Generator",
+          desc: "Generate production-ready robots.txt rules and machine-readable /llms.txt indexes to maximize citation likelihood.",
         },
       ],
       stats: [
-        { label: "Bot Catalog", value: "Continuous Heuristics" },
+        { label: "Bot Catalog", value: "17+ Continuous Heuristics" },
         { label: "Classification", value: "IP + User-Agent Verified" },
         { label: "Answer Engine Coverage", value: "ChatGPT, Perplexity, Claude, Gemini" },
-        { label: "Scrape Alerts", value: "Instant Streaming" },
+        { label: "Machine Protocol", value: "/llms.txt & /agents.md Ready" },
       ],
     },
     {
@@ -309,12 +310,12 @@ Provide a defensive null-safe refactor and a Jest unit test to prevent regressio
         </div>
 
         {/* Hero Title */}
-        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-6 max-w-5xl mx-auto leading-[1.06]">
+        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-6 max-w-7xl mx-auto leading-[1.06]">
           Complete web observability. Built for speed, precision, and privacy.
         </h1>
 
         {/* Subtitle */}
-        <p className="max-w-2xl mx-auto text-base sm:text-lg text-zinc-400 leading-relaxed mb-8">
+        <p className="max-w-4xl mx-auto text-base sm:text-lg text-zinc-400 leading-relaxed mb-8">
           Everything your engineering team needs to audit real-world Core Web Vitals, track AI search crawler traffic, detect behavioral rage clicks, and triage JavaScript crashes with zero cookies.
         </p>
 
@@ -473,18 +474,16 @@ Provide a defensive null-safe refactor and a Jest unit test to prevent regressio
                           <button
                             type="button"
                             onClick={() => setActiveRumTab("gauges")}
-                            className={`px-2 py-0.5 rounded text-[11px] font-medium transition cursor-pointer ${
-                              activeRumTab === "gauges" ? "bg-white/[0.1] text-white" : "text-zinc-400 hover:text-white"
-                            }`}
+                            className={`px-2 py-0.5 rounded text-[11px] font-medium transition cursor-pointer ${activeRumTab === "gauges" ? "bg-white/[0.1] text-white" : "text-zinc-400 hover:text-white"
+                              }`}
                           >
                             Scores
                           </button>
                           <button
                             type="button"
                             onClick={() => setActiveRumTab("latency")}
-                            className={`px-2 py-0.5 rounded text-[11px] font-medium transition cursor-pointer ${
-                              activeRumTab === "latency" ? "bg-white/[0.1] text-white" : "text-zinc-400 hover:text-white"
-                            }`}
+                            className={`px-2 py-0.5 rounded text-[11px] font-medium transition cursor-pointer ${activeRumTab === "latency" ? "bg-white/[0.1] text-white" : "text-zinc-400 hover:text-white"
+                              }`}
                           >
                             Breakdown
                           </button>
@@ -564,31 +563,45 @@ Provide a defensive null-safe refactor and a Jest unit test to prevent regressio
                       <div className="p-3 bg-[#14161f] border-b border-white/[0.08] flex items-center justify-between text-xs">
                         <div className="flex items-center gap-2">
                           <Bot size={13} className="text-purple-400" />
-                          <span className="font-mono text-zinc-300">Live AI Search Crawler Radar</span>
+                          <span className="font-mono text-zinc-300">Live AI Search &amp; LLM Benchmark Hub</span>
                         </div>
-                        <div className="flex items-center gap-1 bg-[#0e0f15] p-0.5 rounded-md border border-white/[0.06]">
+                        <div className="flex items-center gap-1 bg-[#0e0f15] p-0.5 rounded-md border border-white/[0.06] overflow-x-auto">
                           <button
                             type="button"
                             onClick={() => setActiveAiTab("feed")}
-                            className={`px-2 py-0.5 rounded text-[11px] font-medium transition cursor-pointer ${
-                              activeAiTab === "feed" ? "bg-white/[0.1] text-white" : "text-zinc-400 hover:text-white"
-                            }`}
+                            className={`px-2 py-0.5 rounded text-[11px] font-medium transition cursor-pointer shrink-0 ${activeAiTab === "feed" ? "bg-white/[0.1] text-white" : "text-zinc-400 hover:text-white"
+                              }`}
                           >
                             Live Feed
                           </button>
                           <button
                             type="button"
-                            onClick={() => setActiveAiTab("catalog")}
-                            className={`px-2 py-0.5 rounded text-[11px] font-medium transition cursor-pointer ${
-                              activeAiTab === "catalog" ? "bg-white/[0.1] text-white" : "text-zinc-400 hover:text-white"
-                            }`}
+                            onClick={() => setActiveAiTab("citations")}
+                            className={`px-2 py-0.5 rounded text-[11px] font-medium transition cursor-pointer shrink-0 ${activeAiTab === "citations" ? "bg-white/[0.1] text-white" : "text-zinc-400 hover:text-white"
+                              }`}
                           >
-                            Catalog
+                            AI Citations
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setActiveAiTab("generator")}
+                            className={`px-2 py-0.5 rounded text-[11px] font-medium transition cursor-pointer shrink-0 ${activeAiTab === "generator" ? "bg-white/[0.1] text-white" : "text-zinc-400 hover:text-white"
+                              }`}
+                          >
+                            /llms.txt
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setActiveAiTab("catalog")}
+                            className={`px-2 py-0.5 rounded text-[11px] font-medium transition cursor-pointer shrink-0 ${activeAiTab === "catalog" ? "bg-white/[0.1] text-white" : "text-zinc-400 hover:text-white"
+                              }`}
+                          >
+                            Bot Matrix
                           </button>
                         </div>
                       </div>
 
-                      {activeAiTab === "feed" ? (
+                      {activeAiTab === "feed" && (
                         <div className="p-4 space-y-2.5 font-mono text-xs">
                           <div className="p-2.5 rounded-lg bg-[#14161f] border border-white/[0.06] flex items-center justify-between gap-2">
                             <div className="flex items-center gap-2 truncate">
@@ -630,27 +643,91 @@ Provide a defensive null-safe refactor and a Jest unit test to prevent regressio
                             <span className="text-[10px] text-emerald-400 shrink-0">200 OK • 16ms</span>
                           </div>
                         </div>
-                      ) : (
+                      )}
+
+                      {activeAiTab === "citations" && (
+                        <div className="p-4 space-y-2.5 font-mono text-xs">
+                          <div className="p-2.5 rounded-lg bg-[#14161f] border border-white/[0.06] flex items-center justify-between">
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-white font-semibold text-[11px]">chatgpt.com</span>
+                                <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                  Grounding Source
+                                </span>
+                              </div>
+                              <span className="text-[10px] text-zinc-400 font-sans">Landing: /vs-google-analytics • 48 visitors</span>
+                            </div>
+                            <span className="text-white font-semibold tabular-nums text-xs">142 sessions</span>
+                          </div>
+
+                          <div className="p-2.5 rounded-lg bg-[#14161f] border border-white/[0.06] flex items-center justify-between">
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-white font-semibold text-[11px]">perplexity.ai</span>
+                                <span className="text-[9px] px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20">
+                                  Live Citation
+                                </span>
+                              </div>
+                              <span className="text-[10px] text-zinc-400 font-sans">Landing: /faq • 29 visitors</span>
+                            </div>
+                            <span className="text-white font-semibold tabular-nums text-xs">87 sessions</span>
+                          </div>
+
+                          <div className="p-2.5 rounded-lg bg-[#14161f] border border-white/[0.06] flex items-center justify-between">
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-white font-semibold text-[11px]">claude.ai</span>
+                                <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                                  Research Link
+                                </span>
+                              </div>
+                              <span className="text-[10px] text-zinc-400 font-sans">Landing: /docs/web-vitals • 18 visitors</span>
+                            </div>
+                            <span className="text-white font-semibold tabular-nums text-xs">34 sessions</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {activeAiTab === "generator" && (
+                        <div className="p-4 space-y-3 font-mono text-xs">
+                          <div className="flex items-center justify-between text-zinc-400 text-[11px]">
+                            <span>Machine Context Protocol (/llms.txt)</span>
+                            <span className="text-emerald-400">Validated</span>
+                          </div>
+                          <div className="p-2.5 rounded-lg bg-[#090a0f] border border-white/[0.06] text-[11px] text-zinc-300 leading-relaxed overflow-x-auto">
+                            <pre># /llms.txt Machine Manifest
+Canonical: https://yourdomain.com
+Docs: https://yourdomain.com/docs
+User-agent: GPTBot, ClaudeBot, PerplexityBot
+Allow: /</pre>
+                          </div>
+                          <div className="text-[11px] text-zinc-400 font-sans">
+                            Instant automated compliance for AI crawlers without blocking SEO search engine indexing.
+                          </div>
+                        </div>
+                      )}
+
+                      {activeAiTab === "catalog" && (
                         <div className="p-5 space-y-3 text-xs">
                           <div className="text-zinc-400 text-[11px]">
-                            Autonomous radar continuously resolves official bot IP address ranges and User-Agent signatures.
+                            Continuous heuristic detection verifies IP ranges and official User-Agent signatures.
                           </div>
                           <div className="grid grid-cols-2 gap-2 font-mono text-[11px]">
                             <div className="p-2 rounded bg-[#14161f] border border-white/[0.06]">
-                              <div className="font-semibold text-white">GPTBot / ChatGPT</div>
-                              <div className="text-zinc-500 text-[10px]">OpenAI Corpus Scraper</div>
+                              <div className="font-semibold text-white">GPTBot / SearchGPT</div>
+                              <div className="text-zinc-500 text-[10px]">OpenAI Corpus &amp; Search</div>
                             </div>
                             <div className="p-2 rounded bg-[#14161f] border border-white/[0.06]">
                               <div className="font-semibold text-white">PerplexityBot</div>
-                              <div className="text-zinc-500 text-[10px]">Perplexity AI Realtime</div>
+                              <div className="text-zinc-500 text-[10px]">Perplexity Realtime Web</div>
                             </div>
                             <div className="p-2 rounded bg-[#14161f] border border-white/[0.06]">
                               <div className="font-semibold text-white">ClaudeBot / Anthropic</div>
-                              <div className="text-zinc-500 text-[10px]">Anthropic Web Crawler</div>
+                              <div className="text-zinc-500 text-[10px]">Anthropic Crawler</div>
                             </div>
                             <div className="p-2 rounded bg-[#14161f] border border-white/[0.06]">
-                              <div className="font-semibold text-white">Bytespider / TikTok</div>
-                              <div className="text-zinc-500 text-[10px]">ByteDance AI Bot</div>
+                              <div className="font-semibold text-white">Bytespider / Doubao</div>
+                              <div className="text-zinc-500 text-[10px]">ByteDance Search Bot</div>
                             </div>
                           </div>
                         </div>
@@ -706,18 +783,16 @@ Provide a defensive null-safe refactor and a Jest unit test to prevent regressio
                           <button
                             type="button"
                             onClick={() => setActiveErrorTab("stack")}
-                            className={`px-2 py-0.5 rounded text-[11px] font-medium transition cursor-pointer ${
-                              activeErrorTab === "stack" ? "bg-white/[0.1] text-white" : "text-zinc-400 hover:text-white"
-                            }`}
+                            className={`px-2 py-0.5 rounded text-[11px] font-medium transition cursor-pointer ${activeErrorTab === "stack" ? "bg-white/[0.1] text-white" : "text-zinc-400 hover:text-white"
+                              }`}
                           >
                             Stack Trace
                           </button>
                           <button
                             type="button"
                             onClick={() => setActiveErrorTab("prompt")}
-                            className={`px-2 py-0.5 rounded text-[11px] font-medium transition cursor-pointer ${
-                              activeErrorTab === "prompt" ? "bg-white/[0.1] text-white" : "text-zinc-400 hover:text-white"
-                            }`}
+                            className={`px-2 py-0.5 rounded text-[11px] font-medium transition cursor-pointer ${activeErrorTab === "prompt" ? "bg-white/[0.1] text-white" : "text-zinc-400 hover:text-white"
+                              }`}
                           >
                             AI Fix Prompt
                           </button>

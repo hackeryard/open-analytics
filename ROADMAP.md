@@ -136,13 +136,37 @@ To build the most developer-friendly, high-performance, and visually stunning an
 - [x] Cloud serverless DNS resolver isolation preventing port 53 timeouts.
 - [x] Next.js App Router `<body>` script placement for reliable SSR hydration.
 
-### Phase 15: Session Replay & Visual Heatmaps (Q1 2027)
+### Phase 15: Developer Knowledgebase & Privacy Architecture Redesign (Completed)
+- [x] Full Obsidian Precision knowledgebase transformation of `/faq`.
+- [x] Responsive 2-column Bento layout with sticky category navigator, item count badges, and telemetry architecture spec sheet.
+- [x] Real-time command-center search with keyboard shortcuts (`/`, `Ctrl+K`, `Escape`), active search tags, and match counter.
+- [x] Deep anchor linking (`#id`) with 1-click clipboard copy indicator and auto-expansion on direct URL hash navigation.
+- [x] Interactive syntax-highlighted code snippets for script installation, custom conversion tracking, and reverse-proxy configurations.
+- [x] Micro architecture spec chips (`<3.2 KB`, `0 Cookies`, `100% Exempt`, `Real-Time AI Radar`) and tactile Obsidian CTA console.
+- [x] Instant feedback widget ("Was this answer helpful?") with active state feedback.
+- [x] Consolidated FAQ JSON-LD Schema.org graph eliminating redundant layout schemas.
+- [x] Full Obsidian Precision redesign of Privacy & GDPR architecture hub (`/privacy`).
+- [x] Multi-regulation compliance explorer tabs (`EU GDPR`, `ePrivacy & PECR`, `Schrems II`, `CCPA/CPRA`, `365-Day Retention`).
+- [x] 3-step visual cryptographic salt pipeline (`Volatile RAM Masking`, `HMAC-SHA-256`, `00:00:00 UTC Destruction`).
+- [x] Interactive customer Privacy Policy clause and DPA terms generator with 1-click clipboard copy.
+
+### Phase 16: AI Visibility & LLM Citation Benchmark Hub (Completed)
+- [x] Comprehensive AI Visibility & Citation Hub (`components/AiVisibilityModule.tsx`) with 4-tab workflow:
+  - `AI Crawler Radar`: Real-time detection & scrape ranking for 12+ AI crawlers (`GPTBot`, `ClaudeBot`, `PerplexityBot`, `Bytespider`, `Applebot`, `Google-Extended`).
+  - `LLM Citations & Referrals`: Distinct Answer Engine attribution separating human citation visits (from ChatGPT, Perplexity, Claude) from crawler hits.
+  - `Robots.txt & /llms.txt AI Policy Generator`: Interactive bot access matrix with 1-click `robots.txt` configuration and `/llms.txt` machine manifest export.
+  - `GEO Readiness Audit`: Diagnostic evaluation of Schema.org JSON-LD coverage, crawler accessibility, and scraper TTFB performance.
+- [x] Public Features showcase upgrade (`components/public/FeaturesClientView.tsx`) with interactive preview card featuring Live Feed, AI Citations, /llms.txt validator, and Bot Matrix.
+- [x] Technical developer documentation expansion (`app/docs/seo-aeo/page.tsx`) with answer engine attribution guides and machine protocol standards.
+
+### Phase 17: Session Replay & Visual Heatmaps (Q1 2027)
 - [ ] Lightweight, DOM-sanitized session recording playback engine.
 - [ ] Click & scroll aggregate heatmaps on rendered pages.
 - [ ] Privacy masking for sensitive user input fields during replay capture.
 
-### Phase 16: Enterprise Private Cloud & Global Edge (Q2 2027)
+### Phase 18: Enterprise Private Cloud & Global Edge (Q2 2027)
 - [ ] Dedicated Enterprise VPC deployments with custom SLAs.
 - [ ] Cloudflare Workers / Vercel Edge middleware ingestion adapters.
 - [ ] ClickHouse database driver support for ultra-high throughput event streaming (100M+ events/mo).
+
 

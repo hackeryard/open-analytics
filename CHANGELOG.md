@@ -2,6 +2,41 @@
 
 All notable changes to the Open Analytics platform are documented in this file.
 
+## [3.8.1] - 2026-09-24
+
+### Added
+- **AI Visibility & LLM Citation Benchmark Hub (`components/AiVisibilityModule.tsx`, `components/public/FeaturesClientView.tsx`, `app/docs/seo-aeo/page.tsx`)**:
+  - Elevated the GEO & AI Search Radar into a comprehensive AI Visibility & LLM Citation Benchmark Hub adhering to the Obsidian Precision design system.
+  - Implemented 4 sub-navigation tabs inside the workspace module (`AI Crawler Radar`, `LLM Citations & Referrals`, `Robots.txt & /llms.txt Generator`, `GEO Readiness Audit`).
+  - Added interactive AI Bot Access Matrix allowing engineering teams to toggle crawler permissions for 12 major AI bots (`GPTBot`, `OAI-SearchBot`, `ChatGPT-User`, `PerplexityBot`, `ClaudeBot`, `Claude-Web`, `Google-Extended`, `Applebot-Extended`, `Meta-ExternalAgent`, `Bytespider`, `cohere-ai`, `CCBot`).
+  - Built 1-click `robots.txt` generator and machine-readable `/llms.txt` protocol exporter with instant clipboard copy.
+  - Implemented Answer Engine Referrals (AEO) attribution tracking, isolating user referral sessions from ChatGPT, Perplexity, and Claude citations with landing route breakdowns.
+  - Added GEO content optimization playbook providing guidelines for JSON-LD schema injection, `/llms.txt` setup, and bot classification.
+  - Updated the public Features page (`components/public/FeaturesClientView.tsx`) with an expanded interactive preview card showcasing Live Feeds, AI Citations, /llms.txt manifests, and the Bot Matrix.
+  - Extended developer documentation (`app/docs/seo-aeo/page.tsx`) detailing citation attribution and machine-readable endpoint protocols.
+
+## [3.8.0] - 2026-09-24
+
+### Added
+- **Developer Knowledgebase & FAQ Page Redesign (`components/public/FaqClientView.tsx`, `lib/faqData.ts`, `app/faq/page.tsx`, `app/faq/layout.tsx`)**:
+  - Re-architected public FAQ route into a dual-column Bento developer knowledgebase adhering to the world-class Obsidian Precision design system.
+  - Added sticky category navigation with dynamic counts and distinct Lucide icons (`General & Setup`, `Privacy & Legal Compliance`, `AI & Behavioral Telemetry`, `Architecture & Integration`, `Machine-Readable Endpoints`).
+  - Implemented 4 micro-spec architecture metric chips in hero (`<3.2 KB` Brotli Weight, `0 Cookies` Client Storage, `100% Exempt` GDPR/PECR, `Real-Time` AI Search Radar).
+  - Built an interactive command-center search bar with keyboard shortcuts (`/` and `Ctrl+K` to focus, `Escape` to clear), active filter chips, matching counter, and "Reset filters" controls.
+  - Implemented deep anchor linking (`#id`) with 1-click clipboard copy indicator and auto-expansion on direct URL hash navigation.
+  - Added syntax-highlighted JetBrains Mono code blocks with 1-click copy for installation script, custom conversion tracking, and Next.js reverse-proxy rewrite rules.
+  - Added sticky telemetry specifications sheet (ingestion host, payload format, transport layer, salt rotation, and EU data residency) and machine-readable endpoint cards (`/llms.txt`, `/agents.md`).
+  - Added interactive feedback widgets ("Was this helpful?") with instant confirmation state.
+  - Enhanced bottom console section with tactile high-contrast white CTA (`Launch Dashboard`), documentation guide link, and `/llms.txt` interface.
+- **Privacy Architecture & Legal Compliance Page Redesign (`components/public/PrivacyClientView.tsx`, `app/privacy/page.tsx`)**:
+  - Re-architected `/privacy` into an Obsidian Precision legal and technical compliance hub, decoupling client state into `PrivacyClientView.tsx` while maintaining server-rendered JSON-LD schemas (`BreadcrumbList`, `TechArticle`, `FAQPage`).
+  - Added 4 trust pillar micro-stat chips in hero (`0 Client Cookies`, `Volatile Masking in RAM`, `HMAC-SHA-256 Daily Salts`, `EU Residency & Schrems II Safe`).
+  - Implemented 3-step visual cryptographic salt pipeline (`Volatile Masking in Memory`, `Daily Session Key Generation`, `Permanent 00:00:00 UTC Salt Destruction`).
+  - Built interactive multi-regulation compliance explorer tabs (`EU GDPR`, `ePrivacy & PECR`, `Schrems II & Sovereignty`, `California CCPA/CPRA`, `365-Day Retention & Purge`) with statutory article citations and engineering enforcement notes.
+  - Standardized complete transparency matrix contrasting 6 captured telemetry signals against 6 strictly non-collected categories (no cookies, no persistent profiling, no device fingerprinting).
+  - Added interactive ready-to-use Privacy Policy clause generator with Markdown and Plain Text format toggling, 1-click clipboard copy, and Data Processing Agreement (DPA) terms summary.
+  - Upgraded bottom console section with tactile high-contrast white CTA (`Launch Dashboard`), compliance FAQ link, and developer docs navigation.
+
 ## [3.7.2] - 2026-09-24
 
 ### Fixed
