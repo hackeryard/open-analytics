@@ -28,6 +28,7 @@ const DASHBOARD_PATHS = [
   "/vitals",
   "/errors",
   "/ux",
+  "/devices",
   "/tech",
   "/geo",
   "/acquisition",
@@ -93,6 +94,15 @@ export function middleware(req: NextRequest) {
     pathname.includes(".") // fonts, images, css, static files
   ) {
     return NextResponse.next();
+  }
+
+  // 3.1 Redirect legacy /tech route permanently to /devices
+  if (pathname === "/tech" || pathname.startsWith("/tech/")) {
+    const newPath = pathname.replace(/^\/tech/, "/devices");
+    const targetUrl = isDashboard
+      ? `${newPath}${search}`
+      : getDashboardUrl(`${newPath}${search}`, host);
+    return NextResponse.redirect(new URL(targetUrl, req.url), 301);
   }
 
   // 3. Allow Edge Telemetry Ingestion (supports /v1/collect, /collect, and /api/v1/*)

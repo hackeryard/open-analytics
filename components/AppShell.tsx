@@ -222,7 +222,7 @@ export default function AppShell({
         { href: "/vitals", label: "Web Vitals (RUM)", icon: Activity, pro: true },
         { href: "/errors", label: "Crash & Errors", icon: Bug, pro: true, badge: (data?.errorStats?.totalErrors || 0) > 0 ? `${data?.errorStats?.totalErrors}` : undefined, alert: (data?.errorStats?.totalErrors || 0) > 0 },
         { href: "/ux", label: "Behavioral UX", icon: Flame, pro: true },
-        { href: "/tech", label: "Devices & Tech", icon: Laptop },
+        { href: "/devices", label: "Devices & Tech", icon: Laptop },
       ],
     },
     {

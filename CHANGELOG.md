@@ -2,6 +2,19 @@
 
 All notable changes to the Open Analytics platform are documented in this file.
 
+## [3.8.2] - 2026-09-24
+
+### Added
+- **Devices & Hardware Diagnostics Executive Matrix (`components/sections/DevicesSection.tsx`, `app/devices/page.tsx`, `app/tech/page.tsx`)**:
+  - Re-architected and elevated `/tech` into a dedicated `/devices` workspace route adhering to the Obsidian Precision design system.
+  - Implemented 5 Executive KPI telemetry cards (`Primary Form Factor`, `Top Web Browser`, `Dominant Platform`, `WebGL Hardware GPU`, `5G / Fast Cellular`).
+  - Added multi-segmented proportional device distribution bar with interactive device category breakdown.
+  - Built interactive tabbed filtering controls (`All Diagnostics`, `Form Factors & Displays`, `Browsers & Engines`, `Operating Systems`, `Hardware & WebGL GPU`, `Network & 5G`).
+  - Added real-time instant search filtering across GPUs, browsers, OS families, displays, and screen aspect ratios.
+  - Built sorting controls (Share High-to-Low, Share Low-to-High, Alphabetical A-Z) and 1-click CSV telemetry export.
+  - Added clean WebGL GPU vendor parsing (NVIDIA, Apple Silicon, AMD, Intel, Qualcomm, ARM Mali) and display aspect ratio classification (16:9, 16:10, 19.5:9, 4:3, 21:9).
+  - Maintained complete backward compatibility by permanently redirecting `/tech` to `/devices` via `next.config.mjs`, App Router redirect, and `middleware.ts`.
+
 ## [3.8.1] - 2026-09-24
 
 ### Added
