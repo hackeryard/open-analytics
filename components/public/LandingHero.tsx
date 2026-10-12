@@ -132,12 +132,12 @@ export default function LandingHero() {
 
         {/* Hero Title */}
         <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-6 max-w-7xl mx-auto leading-[1.06]">
-          Web analytics engineered for speed, precision, and privacy.
+          Open-source web analytics and observability for modern websites
         </h1>
 
         {/* Subtitle */}
         <p className="max-w-2xl mx-auto text-base sm:text-lg text-zinc-400 leading-relaxed mb-8">
-          The high-performance Google Analytics alternative built for developers. Under 3.2 KB featherweight script, zero cookie banners, real-time Core Web Vitals RUM, and autonomous AI search radar.
+          Track visitors, understand user behavior, monitor Core Web Vitals, detect frontend errors, and analyze AI crawler traffic from one privacy-first analytics platform.
         </p>
 
         {/* Primary CTA Button Group */}
@@ -154,6 +154,13 @@ export default function LandingHero() {
             className="w-full sm:w-auto py-3 px-5 rounded-xl bg-[#111218] hover:bg-[#181922] text-zinc-300 hover:text-white font-medium text-sm transition border border-white/[0.08] hover:border-white/[0.16] flex items-center justify-center gap-2"
           >
             <span>Compare vs GA4</span>
+          </Link>
+          <Link
+            href="/docs/installation"
+            className="w-full sm:w-auto py-3 px-5 rounded-xl bg-[#111218] hover:bg-[#181922] text-zinc-300 hover:text-white font-medium text-sm transition border border-white/[0.08] hover:border-white/[0.16] flex items-center justify-center gap-2"
+          >
+            <Terminal className="w-4 h-4 text-zinc-400" />
+            <span>Self-host Open Analytics</span>
           </Link>
         </div>
 
@@ -467,19 +474,19 @@ export default function LandingHero() {
       </section>
 
       {/* ============================================================ */}
-      {/* 4. BENTO GRID ARCHITECTURE (5 CORE PLATFORM ENGINES)         */}
+      {/* 4. FIVE PILLARS ARCHITECTURE                                  */}
       {/* ============================================================ */}
       <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="text-center mb-16 space-y-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#111218] border border-white/[0.08] text-zinc-300 text-xs font-medium">
             <Layers size={13} />
-            <span>Platform Capabilities</span>
+            <span>Platform Pillars</span>
           </div>
           <h2 className="text-3xl sm:text-5xl font-bold text-white tracking-tight">
-            Four powerful observability engines in one platform.
+            Everything you need to understand your website
           </h2>
           <p className="text-sm text-zinc-400 max-w-2xl mx-auto leading-relaxed">
-            Eliminate bulky vendor libraries, annoying cookie consent popups, and delayed reporting with an observability engine built for modern speed.
+            Understand your visitors, performance, behavior, and frontend errors from one privacy-first analytics and observability platform.
           </p>
         </div>
 
@@ -521,30 +528,64 @@ export default function LandingHero() {
             </div>
           </div>
 
-          {/* Bento Card 2: Sub-3.2KB Payload */}
+          {/* Bento Card 2: Web Analytics & Journeys */}
           <div className="p-6 sm:p-7 rounded-2xl bg-[#111218] border border-white/[0.08] hover:border-white/[0.16] space-y-4 transition">
             <div className="w-9 h-9 rounded-lg bg-[#181922] border border-white/[0.08] flex items-center justify-center text-zinc-200">
-              <Zap className="w-4 h-4" />
+              <BarChart3 className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-base font-semibold text-white">Sub-3.2KB Beacon</h3>
+              <h3 className="text-base font-semibold text-white">Web Analytics &amp; Journeys</h3>
               <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
-                15x lighter than Google Analytics 4. Executes asynchronously in under 2ms with zero DOM blocking.
+                Pageviews, unique visitors, referral channels, multi-step user funnels, and geographic distribution.
               </p>
             </div>
             <div className="p-3.5 rounded-lg bg-[#14161f] border border-white/[0.06] space-y-2 text-xs font-mono">
               <div className="flex justify-between text-zinc-400">
-                <span>Google Analytics 4</span>
-                <span className="text-zinc-500">48.5 KB</span>
+                <span>Unique Visitors</span>
+                <span className="text-white font-semibold tabular-nums">48,290</span>
               </div>
-              <div className="flex justify-between font-semibold">
-                <span className="text-white">Open Analytics</span>
-                <span className="text-emerald-400">3.1 KB</span>
+              <div className="flex justify-between text-zinc-400">
+                <span>Bounce Rate</span>
+                <span className="text-emerald-400 font-semibold tabular-nums">24.2%</span>
               </div>
             </div>
           </div>
 
-          {/* Bento Card 3: Autonomous AI Search Radar */}
+          {/* Bento Card 3: Behavioral UX Analytics */}
+          <div className="p-6 sm:p-7 rounded-2xl bg-[#111218] border border-white/[0.08] hover:border-white/[0.16] space-y-4 transition">
+            <div className="w-9 h-9 rounded-lg bg-[#181922] border border-white/[0.08] flex items-center justify-center text-zinc-200">
+              <MousePointerClick className="w-4 h-4" />
+            </div>
+            <div>
+              <h3 className="text-base font-semibold text-white">Behavioral UX Analytics</h3>
+              <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                Automated rage-click detection (3+ clicks within 500ms within 40px), dwell time, and scroll depth telemetry.
+              </p>
+            </div>
+            <div className="p-3.5 rounded-lg bg-[#14161f] border border-white/[0.06] flex items-center justify-between text-xs">
+              <span className="text-zinc-400 font-medium">Rage-Click Logic</span>
+              <span className="text-zinc-200 font-mono font-semibold">&gt;=3 clicks / 500ms</span>
+            </div>
+          </div>
+
+          {/* Bento Card 4: Frontend Error Observability */}
+          <div className="p-6 sm:p-7 rounded-2xl bg-[#111218] border border-white/[0.08] hover:border-white/[0.16] space-y-4 transition">
+            <div className="w-9 h-9 rounded-lg bg-[#181922] border border-white/[0.08] flex items-center justify-center text-zinc-200">
+              <Bug className="w-4 h-4" />
+            </div>
+            <div>
+              <h3 className="text-base font-semibold text-white">Frontend Observability</h3>
+              <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                JavaScript runtime crash triage, unhandled promise rejections, full stack traces, and AI diagnostic analysis.
+              </p>
+            </div>
+            <div className="p-3.5 rounded-lg bg-[#14161f] border border-white/[0.06] flex items-center justify-between text-xs">
+              <span className="text-zinc-400 font-medium">Auto Grouping</span>
+              <span className="text-emerald-400 font-mono font-medium">Fingerprinted</span>
+            </div>
+          </div>
+
+          {/* Bento Card 5: Autonomous AI Crawler Radar */}
           <div className="p-6 sm:p-7 rounded-2xl bg-[#111218] border border-white/[0.08] hover:border-white/[0.16] space-y-4 transition">
             <div className="w-9 h-9 rounded-lg bg-[#181922] border border-white/[0.08] flex items-center justify-center text-zinc-200">
               <Bot className="w-4 h-4" />
@@ -552,52 +593,18 @@ export default function LandingHero() {
             <div>
               <h3 className="text-base font-semibold text-white">Autonomous AI Radar</h3>
               <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
-                Real-time classification of citations, referrals, and crawler requests from OpenAI SearchGPT, Perplexity, Claude, and Gemini.
+                Real-time classification of bot requests from OpenAI GPTBot, PerplexityBot, ClaudeBot, and Applebot for GEO &amp; AEO.
               </p>
             </div>
             <div className="space-y-1.5 text-[11px] font-mono">
               <div className="p-2 rounded-lg bg-[#14161f] border border-white/[0.06] flex items-center justify-between text-zinc-300">
                 <span>PerplexityBot</span>
-                <span className="text-emerald-400">2s ago</span>
+                <span className="text-emerald-400">Verified</span>
               </div>
               <div className="p-2 rounded-lg bg-[#14161f] border border-white/[0.06] flex items-center justify-between text-zinc-300">
                 <span>OAI-SearchBot</span>
-                <span className="text-emerald-400">14s ago</span>
+                <span className="text-emerald-400">Indexed</span>
               </div>
-            </div>
-          </div>
-
-          {/* Bento Card 4: Incident Triage & Alerts */}
-          <div className="p-6 sm:p-7 rounded-2xl bg-[#111218] border border-white/[0.08] hover:border-white/[0.16] space-y-4 transition">
-            <div className="w-9 h-9 rounded-lg bg-[#181922] border border-white/[0.08] flex items-center justify-center text-zinc-200">
-              <Bell className="w-4 h-4" />
-            </div>
-            <div>
-              <h3 className="text-base font-semibold text-white">Incident &amp; Crash Alerts</h3>
-              <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
-                Repeated error detection (5x+), error velocity storm spikes, and native OS desktop alerts with Web Audio chimes.
-              </p>
-            </div>
-            <div className="p-3.5 rounded-lg bg-[#14161f] border border-white/[0.06] flex items-center justify-between text-xs">
-              <span className="text-zinc-400 font-medium">Alert Threshold</span>
-              <span className="text-zinc-200 font-mono font-semibold">&gt;= 5 occurrences</span>
-            </div>
-          </div>
-
-          {/* Bento Card 5: 100% Cookieless Cryptographic Privacy */}
-          <div className="p-6 sm:p-7 rounded-2xl bg-[#111218] border border-white/[0.08] hover:border-white/[0.16] space-y-4 transition">
-            <div className="w-9 h-9 rounded-lg bg-[#181922] border border-white/[0.08] flex items-center justify-center text-zinc-200">
-              <ShieldCheck className="w-4 h-4" />
-            </div>
-            <div>
-              <h3 className="text-base font-semibold text-white">Cookieless Privacy</h3>
-              <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
-                Daily visitor hashes use HMAC-SHA-256 with an ephemeral salt purged every night at midnight UTC. Zero tracking cookies.
-              </p>
-            </div>
-            <div className="p-3.5 rounded-lg bg-[#14161f] border border-white/[0.06] flex items-center justify-between text-xs">
-              <span className="text-zinc-400 font-medium">Cookie Banners</span>
-              <span className="text-emerald-400 font-medium">100% Exempt</span>
             </div>
           </div>
         </div>

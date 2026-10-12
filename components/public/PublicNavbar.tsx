@@ -19,6 +19,7 @@ export default function PublicNavbar() {
 
   const navLinks = [
     { href: "/features", label: "Features" },
+    { href: "/demo", label: "Live Demo", badge: "Live" },
     { href: "/vs-google-analytics", label: "vs Google Analytics", badge: "Compare" },
     { href: "/pricing", label: "Pricing" },
     { href: "/privacy", label: "Privacy & GDPR" },

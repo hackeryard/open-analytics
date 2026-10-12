@@ -248,3 +248,16 @@
 5. **AI Search Crawler User-Agents Support**:
    - `robots.ts` and `sitemap.ts` must explicitly allow and catalog all primary LLM crawler agents: `GPTBot`, `PerplexityBot`, `ClaudeBot`, `Applebot-Extended`, and `Bytespider`.
 
+---
+
+## 9. Central SEO Route Registry & Schema System
+
+1. **Route Registry (`lib/seo/routes.ts`)**:
+   - Central authority mapping public paths, rendered titles (50-60 characters), descriptions (140-160 characters), category tagging, indexability, change frequency, priorities, and breadcrumbs.
+   - Sitemaps (`app/sitemap.ts`) automatically derive indexable routes from this registry.
+2. **Metadata Constructor (`lib/seo/metadata.ts`)**:
+   - Provides `constructPageMetadata(path, overrides)` to enforce consistent canonical URLs (`https://openanalytics.org.in`), OpenGraph, Twitter cards, and GoogleBot crawl parameters.
+3. **Structured Data Schemas (`lib/seo/schema.ts`)**:
+   - Programmatically renders JSON-LD graphs for `Organization`, `WebSite`, and `SoftwareApplication` with actual feature capabilities and pricing tiers.
+
+

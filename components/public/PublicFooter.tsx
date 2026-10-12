@@ -58,38 +58,62 @@ export default function PublicFooter() {
                 <Link href="/vs-google-analytics" className="hover:text-white transition-colors">vs Google Analytics 4</Link>
               </li>
               <li>
-                <Link href="/vs-google-analytics#privacy" className="hover:text-white transition-colors">Cookieless vs Cookies</Link>
+                <Link href="/alternatives/plausible" className="hover:text-white transition-colors">vs Plausible</Link>
               </li>
               <li>
-                <Link href="/vs-google-analytics#speed" className="hover:text-white transition-colors">Script Size Comparison</Link>
+                <Link href="/alternatives/umami" className="hover:text-white transition-colors">vs Umami</Link>
               </li>
               <li>
-                <Link href="/vs-google-analytics#pricing" className="hover:text-white transition-colors">GA4 Migration Guide</Link>
+                <Link href="/alternatives/posthog" className="hover:text-white transition-colors">vs PostHog</Link>
+              </li>
+              <li>
+                <Link href="/alternatives" className="hover:text-white transition-colors font-medium">All Alternatives</Link>
               </li>
             </ul>
           </div>
 
           {/* Col 4: Resources & Trust */}
           <div className="space-y-3">
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-white">Trust &amp; Docs</h4>
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-white">Trust &amp; Tools</h4>
             <ul className="space-y-2 text-zinc-400">
               <li>
                 <Link href="/docs" className="hover:text-white transition-colors">Documentation</Link>
               </li>
               <li>
-                <Link href="/docs/installation" className="hover:text-white transition-colors">Framework Integration</Link>
+                <Link href="/demo" className="hover:text-white transition-colors">Interactive Demo</Link>
+              </li>
+              <li>
+                <Link href="/security" className="hover:text-white transition-colors">Security Architecture</Link>
+              </li>
+              <li>
+                <Link href="/privacy-first-analytics" className="hover:text-white transition-colors">Privacy Architecture</Link>
+              </li>
+              <li>
+                <Link href="/cookieless-analytics" className="hover:text-white transition-colors">Cookieless Guide</Link>
+              </li>
+              <li>
+                <Link href="/tools/utm-builder" className="hover:text-white transition-colors">UTM Builder Tool</Link>
+              </li>
+              <li>
+                <Link href="/tools/analytics-comparison" className="hover:text-white transition-colors">Comparison Calculator</Link>
+              </li>
+              <li>
+                <Link href="/tools/analytics-event-debugger" className="hover:text-white transition-colors">Event Debugger Tool</Link>
+              </li>
+              <li>
+                <Link href="/tools/ai-crawler-checker" className="hover:text-white transition-colors">AI Crawler Checker</Link>
+              </li>
+              <li>
+                <Link href="/self-hosting" className="hover:text-white transition-colors">Self-Hosting Guide</Link>
+              </li>
+              <li>
+                <Link href="/open-source" className="hover:text-white transition-colors">Open Source Core</Link>
               </li>
               <li>
                 <Link href="/pricing" className="hover:text-white transition-colors">Pricing Plans</Link>
               </li>
               <li>
-                <Link href="/privacy" className="hover:text-white transition-colors">Privacy &amp; GDPR Details</Link>
-              </li>
-              <li>
                 <Link href="/faq" className="hover:text-white transition-colors">Frequently Asked Questions</Link>
-              </li>
-              <li>
-                <a href={dashboardUrl} className="hover:text-white transition-colors font-medium">Platform Console</a>
               </li>
             </ul>
           </div>

@@ -1,0 +1,47 @@
+name: Bug Report
+description: Create a report to help us improve Open Analytics
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting an issue. Please provide as much technical detail as possible.
+  - type: input
+    id: version
+    attributes:
+      label: Open Analytics Version / Deployment Mode
+      description: Specify whether you are running Open Analytics Cloud or Self-Hosted (e.g., Docker, Node 20 + MongoDB 6.x).
+      placeholder: "e.g., Self-hosted Docker v3.9.0"
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Step-by-step instructions to reproduce the behavior.
+      placeholder: |
+        1. Deploy tracker script on test domain
+        2. Navigate to target URL
+        3. Observe console error...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error Logs or Telemetry Payload
+      description: Paste relevant terminal logs, browser console errors, or network payloads.
+      render: shell

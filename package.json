@@ -15,6 +15,7 @@
     "kill": "node scripts/kill-port.js",
     "kill:3005": "node scripts/kill-port.js 3005",
     "test:subdomain": "node scripts/test-subdomain.js",
+    "test:seo": "node scripts/test-seo-regression.js",
     "purge:retention": "node scripts/purge-retention.js"
   },
   "dependencies": {

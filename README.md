@@ -1,54 +1,65 @@
-# Open Analytics & Observability Platform
+# Open Analytics
 
-> **Next-Generation Standalone Web Analytics, Real User Monitoring (RUM), Behavioral UX Signals, AI-Powered Error Triage & Multi-Tenant Project Governance.**
+> Open-source web analytics and observability for modern websites.
 
-Open Analytics is a production-grade, multi-tenant analytics and observability platform designed to connect to any website, mobile application, or SaaS product.
-
-It provides complete insight into user experience, performance bottlenecks, rage clicks, multi-step navigation flows, runtime crashes, and audience loyalty—**with zero custom code required on client websites**.
+[Website](https://openanalytics.org.in) • [Documentation](https://openanalytics.org.in/docs) • [Cloud Dashboard](https://dashboard.openanalytics.org.in) • [Self-Hosting Guide](https://openanalytics.org.in/docs/installation)
 
 ---
 
-## Key Highlights
+## Why Open Analytics?
 
-- **Zero-Code 1-Line Script Installation**: Paste a single `<script>` tag into any HTML `<head>`—everything (pageviews, dwell times, Web Vitals, hardware diagnostics, rage clicks, errors) is tracked automatically.
-- **Multi-Tenant Project Governance & Ownership Transfer**: Organizations can manage multiple isolated projects. Project creators are automatically assigned as Owner and Admin, with full support for transferring project ownership to other users.
-- **Audience & Loyalty Directory**: Deep customer intelligence calculating dynamic Loyalty Scores (0–100) and grouping visitors into 4 tiers: Brand Champions, Loyal Advocates, Returning Users, and New Explorers.
-- **User Journeys & Route Transitions**: Visual multi-step navigation flow analysis (`Step 1 -> Step 2 -> Step 3`), direct page-to-page transition matrices, landing page bounce rates, and session depth cohorts.
-- **Real User Monitoring (RUM)**: Live browser performance tracking for Core Web Vitals (LCP, INP, CLS, FCP, TTFB) with Good / Needs Improvement / Poor distributions.
-- **Hardware & Network Diagnostics**: Detects WebGL GPU renderers, device RAM, CPU cores, DPR, viewport dimensions, and network speeds (5G/4G, downlink Mbps, RTT).
-- **Behavioral UX Signals**: Measures active vs. idle dwell time, scroll depth milestones, rage click detection (≥3 rapid clicks in 500ms within 40px), desktop exit intent, outbound links, and text copy events.
-- **Universal Error & Crash Monitoring**: Automatically captures uncaught JS runtime errors, failed resource loading, unhandled promise rejections, WebGL context loss, and fetch/API failures, attaching circular user action breadcrumbs.
-- **Automated Incident Alerting & Notification Center**: Real-time error threshold alerts (triggers on ≥ 5 repeated crash occurrences with progressive milestone brackets at 10x, 25x, 50x, 100x+), 1-hour error storm velocity detection, automated SEO/AEO missing title audits, low GEO citation readiness warnings, and Core Web Vitals degradation alerts with an in-app popover and dedicated `/notifications` management hub.
-- **Native OS Desktop Alerts & Synthesized Web Audio Chimes**: Web Notifications API integration with 45-second background tab synchronization, permission prompt banner, and dual-tone synthesized audio chimes (587Hz to 880Hz sine sweeps) with zero external MP3 assets.
-- **Granular Notification Ignore & Suppression Engine**: Project-level toggles for all 7 notification types (`error_repeated`, `error_storm`, `seo_unoptimized`, `aeo_unoptimized`, `geo_radar`, `web_vitals`, `rage_clicks`) plus granular pattern suppression rules matching message, title, or route via `contains`, `equals`, `starts_with`, or `regex`.
-- **Inline 1-Click Incident Mute**: Instant inline mute dropdowns (`BellOff`) on notification cards and popover items to silence types, routes, or specific error signatures with one click.
-- **Mobile-First Responsive Navigation & One-Tap Switcher**: Fully responsive top command bar and mobile drawer with an interactive one-tap project switcher for smartphones and tablets.
-- **Zero-Transparency High-Contrast Surfaces**: Deep solid surfaces (`bg-[#080d1a]`, `bg-[#0b1120]`) across all popovers, modals, and permission banners to eliminate backdrop bleed-through.
-- **Edge Error Suppression Rules**: Define match rules (`contains`, `exact`, `regex`, `starts_with`) on message, pathname, errorType, or stack trace to suppress known noise or benign third-party errors at ingestion.
-- **AI-Powered Bug Triage**: Generates comprehensive, copyable bug diagnostic prompts formatted for AI coding assistants (Claude, Gemini, ChatGPT) with stack traces, affected routes, client environment, and step-by-step fix recommendations.
-- **Live Telemetry & Real-Time Event Stream**: Live polling stream with configurable refresh intervals (2s, 5s, 10s, 30s), segment filtering, CSV/JSON export, and deep audit inspector modals.
-- **Interactive SVG World Atlas**: Interactive world map with pan, zoom, country rankings, continent breakdowns, and city-level drilldown.
-- **Temporary Provider-Independent Subscription System**: Decoupled payment provider layer (`ManualPaymentProvider`, `RazorpayPaymentProvider`) allowing the platform to launch immediately while PAN / KYC account updates are finalized. Users can submit "Request Subscription" requests directly through `/billing`, while authorized administrators verify manual payments and activate subscriptions atomically with full audit trails via `/admin/subscriptions`.
-- **Dedicated Billing & Plans Hub (`/billing`)**: User-level subscription management, live website slot gauges (`ownedProjects / maxProjects`), unpooled quotas, interactive monthly/annual billing cycle toggle (2 months free), live pending request status banners, and accidental downgrade protection.
-- **Quota Enforcement & Modal Guarding**: Automated enforcement of website ceilings (1 Free, 10 Pro) blocking project creation wizards when limits are reached with proactive upgrade prompts.
-- **Expired Plan Multi-Project Locking**: Seamless active website selection for expired users, locking 1 active tracking property and pausing unselected properties on Free tier while preserving historical data.
-- **Developer Profile Hub (`/profile`)**: Manage user profile details, role assignments, subscription tier status, and associated workspaces.
-- **World-Class Obsidian & Precision Dark Design System**: Human-crafted developer aesthetics inspired by Linear, Vercel, and Raycast. Built with Plus Jakarta Sans typography (`--font-sans`) and JetBrains Mono (`--font-mono`), tabular numerals (`tabular-nums font-semibold text-white`), solid obsidian surfaces (`#090a0f`, `#111218`, `#0e0f15`, `#181922`), hairline borders (`border-white/[0.08]`), tactile high-contrast white CTAs, a 5-card Bento Grid Showcase, an ergonomic 2-tier executive overview grid, a responsive 2-column Bento developer knowledgebase (`/faq`), and complete obsidian redesign across all 15+ workspace modules, all 7 overview widgets, and all public marketing/docs pages.
-- **Enterprise SEO, GEO & AEO Optimization**: 100% of public main domain pages (`openanalytics.org.in`) calibrated to recommended SEO metadata standards (50–60 character rendered title tags, 140–160 character meta descriptions), server-decoupled rendering, and machine-readable JSON-LD Schema.org graphs (`WebSite`, `SoftwareApplication`, `Product`, `TechArticle`, `HowTo`, `FAQPage`, `BreadcrumbList`, `ItemList`) for rich indexing by Google and generative answer engines (OpenAI SearchGPT, Perplexity, Claude, Applebot).
-- **Continuous Timeseries & Ingestion Resilience**: Gapless continuous timeline backfilling (hourly zero-fill for single-day windows, daily for multi-day ranges), UTC date filter normalization, and automatic apex/www domain equivalence for reliable telemetry ingestion across all visitor entry points.
-- **Privacy & Security by Design**: Built-in IP address anonymization (masking the last octet for GDPR compliance) and automated PII redaction (scrubbing emails, passwords, tokens from URL query parameters and error payloads).
+Modern web applications need more than traditional pageview counters. They require real user monitoring, behavioral UX intelligence, frontend crash detection, and visibility into AI crawlers—without compromising visitor privacy or loading hundreds of kilobytes of blocking JavaScript.
+
+Open Analytics unifies web analytics and frontend observability into a single platform:
+
+- **Sub-3.2 KB Featherweight Script**: 15x lighter than Google Analytics 4, executing asynchronously with zero main-thread blocking.
+- **Cookieless & Privacy-First**: 100% exempt from cookie consent banners. Cryptographic HMAC-SHA-256 daily hashes with midnight UTC ephemeral salt purging.
+- **Full Frontend Observability**: Continuous Core Web Vitals RUM, runtime JavaScript crash grouping, unhandled promise rejections, and AI-assisted bug triage.
+- **Behavioral UX Telemetry**: Automated rage-click detection (>=3 clicks within 500ms within 40px), active dwell time, scroll depth, and exit intent.
+- **Autonomous AI Radar**: Real-time identification of LLM training bots and search crawlers (OpenAI GPTBot, PerplexityBot, ClaudeBot, Applebot).
+- **100% Open Source & Self-Hostable**: Own your telemetry data completely or use managed Open Analytics Cloud.
 
 ---
 
-## Installation & Integration Guide
+## Core Product Pillars
 
-Open Analytics can be integrated into any web application or CMS in under 60 seconds.
+### 1. Web Analytics & Journeys
+- Real-time visitor counts, live stream telemetry, and geographic world maps.
+- Referral channel classification (direct, organic search, social, paid, email).
+- Multi-step visual conversion funnels and route transition matrices.
+- Custom event tracking with dynamic property payloads.
+
+### 2. Real User Monitoring (RUM)
+- Continuous field measurement of Google Core Web Vitals at the 75th percentile (p75):
+  - **LCP** (Largest Contentful Paint)
+  - **INP** (Interaction to Next Paint)
+  - **CLS** (Cumulative Layout Shift)
+  - **FCP** (First Contentful Paint)
+  - **TTFB** (Time to First Byte)
+- Device-level performance filtering (Mobile vs Tablet vs Desktop).
+
+### 3. Behavioral UX Analytics
+- **Rage Click Detection**: Automatically detects user frustration when >=3 clicks occur within 500ms within a 40px radius.
+- **Dwell Time Telemetry**: Distinguishes active user engagement from background tab idle time.
+- **Scroll Depth Tracking**: Measures 25%, 50%, 75%, and 100% viewport scroll thresholds.
+- **Exit Intent & Outbound Links**: Detects mouse velocity departures and external link clicks.
+
+### 4. Frontend Observability & Crash Triage
+- Automatically captures uncaught runtime JavaScript exceptions and unhandled promise rejections.
+- Circular user action breadcrumb capture prior to error occurrence.
+- Fingerprinted error clustering with automated occurrence counters and velocity spike detection.
+- One-click copyable bug diagnostic prompts formatted for AI coding assistants (Claude, Gemini, ChatGPT).
+
+### 5. Autonomous AI Visibility (GEO & AEO)
+- Identifies visits from generative AI search crawlers and LLM dataset harvesters.
+- Classifies requests from OpenAI (`GPTBot`, `OAI-SearchBot`), Anthropic (`ClaudeBot`), Perplexity (`PerplexityBot`), and Apple (`Applebot`).
+- Generative Engine Optimization (GEO) and Answer Engine Optimization (AEO) readiness tracking.
 
 ---
 
-### 1. Universal 1-Line HTML Tag (Any Website or CMS)
+## Quick Start: One-Line Installation
 
-Paste this tag directly before the closing `</head>` tag in your HTML template (compatible with Vanilla HTML, Webflow, WordPress, Shopify, Wix, Ghost, Squarespace):
+Add this single tag to your HTML `<head>`:
 
 ```html
 <script 
@@ -58,37 +69,16 @@ Paste this tag directly before the closing `</head>` tag in your HTML template (
 ></script>
 ```
 
-#### Script Tag Configuration Attributes
-
-| Attribute | Required | Description | Example / Default |
-| :--- | :--- | :--- | :--- |
-| `data-project-id` | **Yes** | Unique project identifier generated in Open Analytics | `prj_production_app` |
-| `data-endpoint` | Optional | Open Analytics server origin (only needed if script is hosted on CDN/subdomain) | `https://analytics.company.com` |
-| `data-api-key` | Optional | Publishable client API key | `pk_live_123456789` |
+Everything—pageviews, dwell times, Core Web Vitals, rage clicks, and frontend errors—tracks automatically with zero additional configuration.
 
 ---
 
-### 2. Next.js Integration (App Router)
+## Framework Integrations
 
-In your root layout (`app/layout.tsx`), import the React Tracker component or use Next.js `<Script />`:
+### Next.js (App Router)
 
-#### Option A: Using the React Tracker Component
-```tsx
-import OpenAnalyticsTracker from "@/lib/sdk/OpenAnalyticsTracker";
+In `app/layout.tsx`:
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en">
-      <head>
-        <OpenAnalyticsTracker projectId="prj_your_project_id" />
-      </head>
-      <body>{children}</body>
-    </html>
-  );
-}
-```
-
-#### Option B: Using `next/script`
 ```tsx
 import Script from "next/script";
 
@@ -97,10 +87,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <head>
         <Script
-          id="open-analytics"
           src="https://api.openanalytics.org.in/open.js"
-          strategy="afterInteractive"
           data-project-id="prj_your_project_id"
+          strategy="afterInteractive"
         />
       </head>
       <body>{children}</body>
@@ -109,61 +98,29 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 }
 ```
 
----
+### React (Vite / CRA)
 
-### 3. Next.js Integration (Pages Router)
-
-In your `pages/_app.tsx` or `pages/_document.tsx`:
+In `src/App.tsx` or `src/main.tsx`:
 
 ```tsx
-import Script from "next/script";
-import type { AppProps } from "next/app";
+import { useEffect } from "react";
 
-export default function App({ Component, pageProps }: AppProps) {
-  return (
-    <>
-      <Script
-        id="open-analytics"
-        src="https://api.openanalytics.org.in/open.js"
-        strategy="afterInteractive"
-        data-project-id="prj_your_project_id"
-      />
-      <Component {...pageProps} />
-    </>
-  );
+export default function App() {
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://api.openanalytics.org.in/open.js";
+    script.setAttribute("data-project-id", "prj_your_project_id");
+    script.defer = true;
+    document.head.appendChild(script);
+  }, []);
+
+  return <YourApplicationRouter />;
 }
 ```
 
----
+### Nuxt 3
 
-### 4. React Single Page Applications (Vite / CRA / Remix)
-
-In your root `index.html` (inside `<head>`):
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>My Application</title>
-    <!-- Open Analytics Tracking -->
-    <script 
-      defer 
-      src="https://api.openanalytics.org.in/open.js" 
-      data-project-id="prj_your_project_id"
-    ></script>
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
-</html>
-```
-
----
-
-### 5. Nuxt 3 / Vue.js Integration
-
-In your `nuxt.config.ts`:
+In `nuxt.config.ts`:
 
 ```ts
 export default defineNuxtConfig({
@@ -172,8 +129,8 @@ export default defineNuxtConfig({
       script: [
         {
           src: "https://api.openanalytics.org.in/open.js",
-          defer: true,
           "data-project-id": "prj_your_project_id",
+          defer: true,
         },
       ],
     },
@@ -181,202 +138,74 @@ export default defineNuxtConfig({
 });
 ```
 
----
+### Direct Telemetry HTTP API
 
-### 6. SvelteKit & Astro Integration
-
-In `src/app.html` (SvelteKit) or your base layout (Astro):
-
-```html
-<script 
-  defer 
-  src="https://api.openanalytics.org.in/open.js" 
-  data-project-id="prj_your_project_id"
-></script>
-```
-
----
-
-## JavaScript SDK & Manual Telemetry Usage
-
-While all standard telemetry (pageviews, dwell times, Web Vitals, hardware diagnostics, rage clicks, errors) is recorded automatically, the `window.OpenAnalytics` global object provides high-level APIs for custom business logic.
-
-### 1. Custom Business Event Tracking
-Track user actions, feature adoption, funnel conversions, and revenue:
-
-```js
-// Track a basic event
-window.OpenAnalytics.track("signup_modal_opened");
-
-// Track an event with custom properties and numerical value
-window.OpenAnalytics.track("plan_purchased", {
-  plan: "enterprise_annual",
-  seats: 25,
-  billing_interval: "annual",
-  currency: "USD"
-}, 1200.00);
-```
-
-### 2. User & Account Identification
-Associate anonymous telemetry with authenticated users without cookies:
-
-```js
-window.OpenAnalytics.identify("usr_98124_alex", {
-  name: "Alex Mercer",
-  email: "alex@company.io",
-  company: "Acme Corp",
-  tier: "enterprise"
-});
-```
-
-### 3. Programmatic Exception & Error Capturing
-Capture handled exceptions in `try/catch` blocks or React Error Boundaries:
-
-```js
-try {
-  executeCriticalPaymentFlow();
-} catch (err) {
-  window.OpenAnalytics.captureError(err, {
-    gateway: "stripe",
-    step: "charge_authorization",
-    cart_id: "cart_88219"
-  });
-}
-```
-
-### 4. 404 Route & Broken Link Tracking
-Capture Not Found pages in custom error catchers or Next.js `not-found.tsx`:
-
-```js
-window.OpenAnalytics.track404("/products/discontinued-item", document.referrer);
-```
-
-### 5. Programmatic SPA Route Transitions
-If using custom routing logic without standard HTML5 History API events:
-
-```js
-window.OpenAnalytics.page("/app/workspace/settings");
-```
-
----
-
-## Allowed Origins & CORS Whitelisting
-
-By default, every new project has `allowedDomains: ["*"]`, accepting hits from all origins (production, staging, and localhost).
-
-To restrict telemetry collection to authorized domains only:
-1. Navigate to **Workspace Settings** (`/projects/[projectId]/settings`).
-2. Under **Allowed Origins & CORS Domains**, enter your domains separated by commas:
-   ```
-   myapp.com, app.myapp.com, staging.myapp.com, localhost:3000
-   ```
-3. Click **Save Changes**. Requests from unapproved origins will automatically be rejected with `403 Forbidden`.
-
----
-
-## What Gets Tracked Automatically
-
-| Metric / Telemetry | Automatic Capture Mechanism |
-| :--- | :--- |
-| **Pageviews & SPA Transitions** | Tracks `pushState`, `replaceState`, `popstate`, and initial page load |
-| **Dwell & Active Attention** | Measures continuous active focus vs. background/idle tab time |
-| **Scroll Depth** | Tracks vertical scroll depth milestones (25%, 50%, 75%, 100%) |
-| **Core Web Vitals** | Captures real browser LCP, INP, CLS, FCP, and TTFB via PerformanceObserver |
-| **Rage Clicks** | Detects frustrational click bursts (≥3 clicks within 500ms and 40px radius) |
-| **Desktop Exit Intent** | Detects cursor acceleration towards browser address bar/tab close area |
-| **Client Errors & Crashes** | Intercepts `window.onerror`, unhandled promise rejections, and asset load failures |
-| **Hardware & GPU** | Detects WebGL GPU renderer, device RAM, CPU cores, DPR, and viewport size |
-| **Network Quality** | Measures effective network type (5G/4G/3G/2G), downlink Mbps, and round-trip time |
-| **Outbound Link Clicks** | Records navigation to external domain URLs |
-| **Text Copy Events** | Measures high-intent user snippet copy actions |
-
----
-
-## Analytical Modules & Views
-
-1. **Overview Dashboard** (`/`): High-level KPI ribbons, traffic timeseries, device breakdown, top pages, acquisition channels, and real-time live users.
-2. **Live Telemetry** (`/live-feed`): Real-time event stream with multi-interval polling, segment filters (New, Returning, Authenticated, Bounced, Bots), CSV/JSON exports, and raw payload audit modal.
-3. **Audience & Loyalty** (`/audience`, `/visitors`): Visitor intelligence directory with dynamic Loyalty Scores (0–100), 4 loyalty tiers, visit frequency cohorts, and full visitor journey inspection.
-4. **User Journeys** (`/journeys`): Multi-step navigation sequences (`Step 1 -> Step 2 -> Step 3`), direct route transition matrices, and landing page bounce distribution.
-5. **Top Pages & Routes** (`/pages`): High-density route performance table with traffic share distribution, dwell time, scroll depth, CSV export, and live telemetry filtering.
-6. **Custom Events** (`/events`): Custom business conversion event tracking, properties inspector, and frequency analysis.
-7. **Web Vitals (RUM)** (`/vitals`): Core Web Vitals (LCP, INP, CLS, FCP, TTFB) with route-level ratings and distribution gauges.
-8. **Crash & Errors** (`/errors`): Universal error tracking with multi-selection batch management, AI fix prompt generator, expandable stack traces, and Edge suppression rules.
-9. **Behavioral UX** (`/ux`): Rage click detection, desktop exit intent rates, outbound links, and active vs. idle dwell time analysis.
-10. **Devices & Hardware Diagnostics** (`/devices`): Client form factors, screen aspect ratios, web browsers, operating systems, unmasked WebGL GPUs, and 5G network telemetry (with legacy `/tech` permanently redirected).
-11. **Audience Geography** (`/geo`): Interactive SVG World Atlas, country rankings, continent breakdowns, and city-level drilldowns.
-12. **Acquisition & Sources** (`/acquisition`): Referrers, direct traffic, search engines, and UTM campaign attribution.
-13. **SEO & Search Radar** (`/seo`): Search engine traffic breakdown, organic discovery, and structured data monitoring.
-14. **GEO & AI Radar** (`/ai-visibility`): AI crawler detection (GPTBot, ClaudeBot, Perplexity, etc.) and AEO citation readiness.
-15. **Workspace Management** (`/projects`, `/projects/[projectId]/settings`): Multi-project directory, role-based access control (Owner, Admin, Editor, Member), team invitations, and secure project ownership transfer.
-
----
-
-## Tech Stack & Architecture
-
-- **Framework**: Next.js 14 (App Router, Server Actions, Route Handlers)
-- **Database**: MongoDB with Mongoose ODM (Optimized compound indexes)
-- **Styling**: Tailwind CSS & Vanilla CSS Design Tokens (Dark Mode Glassmorphism)
-- **Icons**: Lucide React (Strict Zero-Emoji Policy)
-- **Client Script**: Vanilla JavaScript (`public/open.js`, ~12KB unminified, zero external dependencies)
-- **Authentication**: JWT-based session cookies with bcrypt password hashing and Role-Based Access Control (RBAC)
-
----
-
-## 3-Tier Domain Architecture
-
-Open Analytics is structured across three segregated subdomains:
-
-| Subdomain | Environment / Port | Purpose |
-| :--- | :--- | :--- |
-| **`openanalytics.org.in`** | `localhost:3005` | **Pure SEO & Marketing**: Landing pages, comparison matrix, pricing tiers, public documentation. |
-| **`dashboard.openanalytics.org.in`** | `dashboard.localhost:3005` | **Analytics Workspace & Auth**: Dashboards, live feed, property settings, user login & registration. |
-| **`api.openanalytics.org.in`** | `api.localhost:3005` | **Edge Ingestion & CDN**: Tracker script delivery (`/open.js`) and versioned ingestion (`/v1/collect`, `/v1/error`, `/v1/identify`, `/v1/event-rules`). |
-
----
-
-## User-Level Subscription Model & Ceilings
-
-Subscription plans belong to user accounts and are inherited by projects owned by that user:
-
-| Tier | Price | Tracked Websites | Events / Month (Per Project) | Retention | Team Members / Project | Included Modules |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Free Starter** | $0 | **1 Website** | 10,000 | 30 days | Up to 2 | Core Cookieless Web Telemetry |
-| **Cloud Pro** | $19 / mo ($15/mo annual) | **10 Websites** | 250,000 | 365 days (1 yr) | Up to 10 | All 5 Power Modules (RUM, AI Radar, UX, Errors, Custom Events) |
-| **Enterprise** | Custom | **10 Base (+ $10/mo per extra)** | 1,000,000+ | 365 days (1 yr) | Unlimited | All Modules + Dedicated SLA, SSO, Custom DPA |
-
-- **Team Collaborator Inheritance**: Invited team members enjoy Pro privileges on projects owned by a Pro subscriber without cross-account leakage into their independently owned projects.
-- **Unpooled Quotas**: Monthly event limits are enforced per-project, protecting high-throughput streams from starving other properties.
-
----
-
-## Workflow & Developer Scripts
-
-| Command | Script File | Description |
-| :--- | :--- | :--- |
-| `npm run pull` | `scripts/pull.js` | Pulls latest changes from `origin` for specified branch (default: `dev`). |
-| `npm run push [msg]` | `scripts/push.js` | Stages all changes, creates a commit with the provided message, and pushes to `origin/dev`. |
-| `npm run sync [msg] [--pr]` | `scripts/sync.js` | Full sync pipeline: pull -> commit -> push -> optional PR. |
-| `npm run pr [--title "..." --body "..."]` | `scripts/create-pr.js` | Dynamic GitHub PR creation & synchronization derived from git commits. |
-| `npm run kill:3005` | `scripts/kill-port.js` | Cross-platform process killer releasing port 3005. |
-| `npm run test:subdomain` | `scripts/test-subdomain.js` | Automated 10-point regression test suite for subdomain routing and isolation. |
-| `npm run purge:retention` | `scripts/purge-retention.js` | 1-year telemetry data purge utility for raw collections in MongoDB. |
-
----
-
-## Getting Started Locally
-
-### 1. Clone & Install Dependencies
+Ingest custom backend telemetry or mobile events directly via HTTP:
 
 ```bash
-git clone https://github.com/hackeryard/open-analytics.git
-cd open-analytics
-yarn install # or npm install
+curl -X POST "https://api.openanalytics.org.in/v1/collect" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "pageview",
+    "projectId": "prj_your_project_id",
+    "pathname": "/checkout",
+    "title": "Completed Order",
+    "country": "United States"
+  }'
 ```
 
-### 2. Environment Configuration
+---
 
-Copy `.env.example` to `.env.local` and set your MongoDB connection string:
+## Product Architecture
+
+Open Analytics uses a 3-tier domain isolation architecture:
+
+```text
+openanalytics.org.in (Main Domain)
+│
+├── Marketing
+├── Public Documentation
+├── Comparisons (/vs-google-analytics)
+└── Knowledge Base (/faq)
+        │
+        ↓
+dashboard.openanalytics.org.in (Dashboard Subdomain)
+│
+├── Authentication (/login, /register)
+├── Workspaces & Projects
+├── Real-Time Feeds & Analytics
+├── RUM & Core Web Vitals
+├── Error Triage & Alerts
+└── Billing & Subscriptions
+        │
+        ↓
+api.openanalytics.org.in (Telemetry Ingestion Subdomain)
+│
+├── /open.js (Asynchronous tracking beacon)
+├── POST /v1/collect (Pageviews, vitals, rage clicks)
+├── POST /v1/error (Crash & exception triage)
+└── POST /v1/identify (Visitor profile enrichment)
+```
+
+---
+
+## Self-Hosting Guide
+
+### Prerequisites
+- Node.js >= 18.17.0
+- MongoDB 6.0+ instance
+
+### 1. Clone Repository
+
+```bash
+git clone <repository-url>
+cd open-analytics
+npm install
+```
+
+### 2. Environment Variables
+
+Create `.env.local`:
 
 ```env
 MONGODB_URI=mongodb://localhost:27017/open_analytics
@@ -388,13 +217,53 @@ NEXT_PUBLIC_API_URL=https://api.openanalytics.org.in
 ### 3. Run Development Server
 
 ```bash
-yarn dev # or npm run dev
+npm run dev
 ```
 
-Open `http://localhost:3005` in your browser.
+Server is available at `http://localhost:3005`.
 
 ---
 
-## License & Terms
+## Developer Workflow Scripts
 
-Copyright &copy; Open Analytics. All rights reserved. Managed and hosted at [openanalytics.org.in](https://openanalytics.org.in).
+All repository workflows use standardized npm scripts:
+
+| Command | Script File | Description |
+| :--- | :--- | :--- |
+| `npm run pull` | `scripts/pull.js` | Pull latest updates cleanly from upstream branch. |
+| `npm run push [msg]` | `scripts/push.js` | Stage, commit, and push changes to upstream branch. |
+| `npm run sync [msg] [--pr]` | `scripts/sync.js` | Complete sync pipeline: pull -> commit -> push -> optional PR. |
+| `npm run pr [--title "..." --body "..."]` | `scripts/create-pr.js` | Dynamic GitHub PR creation & synchronization derived from git commits. |
+| `npm run merge:pr [number]` | `scripts/merge-pr.js` | Programmatically merge open PRs via GitHub REST API. |
+| `npm run kill:3005` | `scripts/kill-port.js` | Free port 3005 if an orphaned process is lingering. |
+| `npm run test:subdomain` | `scripts/test-subdomain.js` | Automated 10-point regression test suite for subdomain routing. |
+| `npm run purge:retention` | `scripts/purge-retention.js` | Enforce 365-day TTL telemetry retention purge in MongoDB. |
+
+---
+
+## Cloud Plans & Pricing
+
+Open Analytics is available as both open-source self-hosted software and fully managed Cloud:
+
+- **Community / Self-Hosted**: 100% Free and open source under Apache-2.0. Full feature access.
+- **Free Cloud Starter**: 1 website, 10,000 monthly events, Core Web Vitals RUM, 30-day historical window.
+- **Pro Cloud ($19/mo)**: 10 websites included, 250,000 monthly events, AI Bot Radar, rage clicks, 365-day retention.
+- **Enterprise Cloud**: Custom high-volume event ingestion, private clusters, SLA, and dedicated support.
+
+---
+
+## Contributing
+
+We welcome community contributions. Please review our [Contribution Guidelines](CONTRIBUTING.md) and ensure all pull requests follow the zero-emoji rule, Obsidian Dark design tokens, and subdomain isolation standards.
+
+---
+
+## Security & Privacy
+
+For vulnerability reporting and details on our cryptographic salt rotation and data handling, review our [Security Policy](SECURITY.md).
+
+---
+
+## License
+
+Open Analytics is open-source software licensed under the [Apache License, Version 2.0](LICENSE).

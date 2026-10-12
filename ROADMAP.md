@@ -168,14 +168,92 @@ To build the most developer-friendly, high-performance, and visually stunning an
 - [x] WebGL GPU vendor normalization (Apple Silicon, NVIDIA, AMD, Intel, Qualcomm, ARM Mali) and screen aspect ratio detector.
 - [x] 1-Click CSV telemetry export for device and hardware diagnostics.
 
-### Phase 17: Session Replay & Visual Heatmaps (Q1 2027)
+### Phase 19: Master Plan — Phase 1 Foundation Architecture (Completed)
+- [x] Finalized product positioning: "Open-source web analytics and observability for modern websites."
+- [x] Formalized 5 core product pillars: Web Analytics, RUM, Behavioral UX, Frontend Observability, and AI Visibility.
+- [x] Central Route Registry (`lib/seo/routes.ts`), Metadata Constructor (`lib/seo/metadata.ts`), and Schema Architecture (`lib/seo/schema.ts`).
+- [x] Character-enforced rendered `<title>` (50-60 characters) and `<meta name="description">` (140-160 characters).
+- [x] Homepage messaging overhaul: H1, hero copy, 3-tier CTAs, and 5-pillar bento showcase.
+- [x] Dynamic sitemap engine linked to route registry (`app/sitemap.ts`).
+- [x] Hardened robots.txt crawler disallow configuration (`app/robots.ts`).
+- [x] Added official Apache-2.0 license (`LICENSE`).
+- [x] Added open-source contributor guide (`CONTRIBUTING.md`).
+- [x] Added security and responsible disclosure policy (`SECURITY.md`).
+- [x] Rewrote `README.md` into an open-source conversion engine.
+
+### Phase 20: Highest-Value Topic Hubs (Completed)
+- [x] Dedicated feature architecture pages (`/analytics/web-analytics`, `/observability/real-user-monitoring`, `/observability/web-vitals`, `/observability/javascript-error-monitoring`, `/behavior/rage-click-detection`, `/ai/ai-visibility`, `/open-source`, `/self-hosting`).
+- [x] Reusable Obsidian Precision Feature Hub component (`components/public/FeatureHubLayout.tsx`).
+- [x] Subdomain isolation and middleware mapping for all marketing routes.
+- [x] Robots.txt and dynamic sitemap integration.
+
+### Phase 21: Developer SEO & Framework Integration Cluster (Completed)
+- [x] Reusable Obsidian Precision Developer Guide component (`components/public/DeveloperGuideLayout.tsx`).
+- [x] Full developer framework integration hubs:
+  - Next.js App Router & Pages Router guide (`/developers/nextjs-analytics`).
+  - React SPA with React Router & TanStack Router guide (`/developers/react-analytics`).
+  - Vanilla JavaScript & HTML deferred beacon guide (`/developers/javascript-analytics`).
+  - Vue.js 3 Composition API & Nuxt 3 guide (`/developers/vue-analytics`).
+  - Astro Islands & View Transitions guide (`/developers/astro-analytics`).
+  - Svelte 5 Runes & SvelteKit routing guide (`/developers/svelte-analytics`).
+- [x] Linked developer guides in documentation sidebar navigation (`components/docs/DocsClientShell.tsx`).
+
+### Phase 22: Comparison Engine & Alternatives Cluster (Completed)
+- [x] Reusable Obsidian Precision 20-Point Comparison component (`components/public/ComparisonLayout.tsx`).
+- [x] Central comparison directory hub (`/alternatives`).
+- [x] Head-to-head technical comparison guides:
+  - Google Analytics 4 deep comparison (`/alternatives/google-analytics` & `/vs-google-analytics`).
+  - Plausible Analytics privacy & RUM comparison (`/alternatives/plausible`).
+  - Umami Analytics open-source telemetry comparison (`/alternatives/umami`).
+  - Matomo Analytics PHP migration comparison (`/alternatives/matomo`).
+  - PostHog lightweight analytics comparison (`/alternatives/posthog`).
+- [x] Registered all comparison routes in central SEO registry with character-counted metadata and Schema.org graphs.
+- [x] Linked comparisons into documentation sidebar and global public footer.
+
+### Phase 23: Open-Source Governance & Community Infrastructure (Completed)
+- [x] Contributor Covenant Code of Conduct (`CODE_OF_CONDUCT.md`).
+- [x] GitHub Bug Report issue form (`.github/ISSUE_TEMPLATE/bug_report.yml`).
+- [x] GitHub Feature Request issue form (`.github/ISSUE_TEMPLATE/feature_request.yml`).
+- [x] Architecture-compliant Pull Request template (`.github/pull_request_template.md`).
+
+### Phase 24: Free Public Developer Tools Engine (Completed)
+- [x] Standalone browser utilities hub (`/tools`).
+- [x] Campaign URL & UTM Builder (`/tools/utm-builder`) with presets and live validation.
+- [x] AI Crawler & Robots.txt Rule Tester (`/tools/ai-crawler-checker`) with `/llms.txt` generation.
+- [x] Core Web Vitals Budget & Threshold Calculator (`/tools/core-web-vitals-checker`) with p75 sliders.
+- [x] Cookie & Consent Audit Calculator (`/tools/cookie-audit`) with third-party cookie analysis.
+
+### Phase 25: Dedicated Privacy Architecture & Cookieless Guides (Completed)
+- [x] Privacy-First Web Telemetry Architecture guide (`/privacy-first-analytics`).
+- [x] Cookieless Web Analytics & Cookie Banner Elimination Guide (`/cookieless-analytics`).
+- [x] Full integration into sitemaps, robots.txt, documentation sidebar, and site footer.
+
+### Phase 26: Developer Documentation Knowledgebase Expansion (Completed)
+- [x] First Project domain binding & team inheritance guide (`/docs/first-project`).
+- [x] Custom event tracking, e-commerce models & cURL guide (`/docs/first-event`).
+- [x] Telemetry Ingestion REST API contract & reverse proxy recipes (`/docs/api/ingestion`).
+- [x] First-party Cloudflare Worker and Next.js edge rewrite recipes to bypass adblockers.
+
+### Phase 27: Enterprise Security Hub, Public Sandbox Demo & Regression Suite (Completed)
+- [x] Enterprise Security Architecture Hub (`/security`) with RBAC, session cookie isolation, in-memory IP masking, and RFC 9116 security.txt disclosure policy.
+- [x] Public Interactive Telemetry Sandbox (`/demo`) with real-time simulated event streams, Core Web Vitals RUM, AI bot radar, and behavioral UX telemetry.
+- [x] Interactive Analytics Event Debugger & Schema Validator (`/tools/analytics-event-debugger`) with property typing, 16KB byte size calculation, and PII alerts.
+- [x] Developer REST API Reference Hub (`/docs/api`) with full endpoint specification and server-side ingestion guides.
+- [x] Web Analytics Cost & Tool Comparison Calculator (`/tools/analytics-comparison`) with real-time traffic sliders and savings analysis.
+- [x] Automated SEO & Route Registry Regression Suite (`scripts/test-seo-regression.js` / `npm run test:seo`) validating 47/47 public routes (100% pass rate).
+
+
+
+
+### Phase 21: Session Replay & Visual Heatmaps (Q1 2027)
 - [ ] Lightweight, DOM-sanitized session recording playback engine.
 - [ ] Click & scroll aggregate heatmaps on rendered pages.
 - [ ] Privacy masking for sensitive user input fields during replay capture.
 
-### Phase 18: Enterprise Private Cloud & Global Edge (Q2 2027)
+### Phase 22: Enterprise Private Cloud & Global Edge (Q2 2027)
 - [ ] Dedicated Enterprise VPC deployments with custom SLAs.
 - [ ] Cloudflare Workers / Vercel Edge middleware ingestion adapters.
 - [ ] ClickHouse database driver support for ultra-high throughput event streaming (100M+ events/mo).
+
 
 
