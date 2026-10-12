@@ -41,3 +41,9 @@ Whenever major architectural, infrastructure, or operational changes are impleme
 4. `REQUIREMENTS.md`
 5. `CLAUDE.md`
 6. `GEMINI.md` / `AGENTS.md`
+
+## 5. Central SEO Route Registry & Schema System
+- All public marketing, comparisons, and docs routes must be registered in `lib/seo/routes.ts` (`ROUTE_REGISTRY`).
+- Sitemaps (`app/sitemap.ts`) automatically derive indexable URLs from `ROUTE_REGISTRY`.
+- Page metadata must be constructed with `constructPageMetadata` from `lib/seo/metadata.ts`.
+

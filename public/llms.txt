@@ -51,10 +51,33 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 ## Key Links & Documentation
 - **Features Overview**: https://openanalytics.org.in/features
 - **vs Google Analytics 4**: https://openanalytics.org.in/vs-google-analytics
+- **Platform Alternatives**: https://openanalytics.org.in/alternatives
+- **vs Plausible**: https://openanalytics.org.in/alternatives/plausible
+- **vs Umami**: https://openanalytics.org.in/alternatives/umami
+- **vs PostHog**: https://openanalytics.org.in/alternatives/posthog
+- **Open Source Core**: https://openanalytics.org.in/open-source
+- **Self-Hosting Guide**: https://openanalytics.org.in/self-hosting
+- **Next.js Analytics**: https://openanalytics.org.in/developers/nextjs-analytics
+- **React Analytics**: https://openanalytics.org.in/developers/react-analytics
 - **Pricing & Tier Calculator**: https://openanalytics.org.in/pricing
-- **Privacy Architecture & GDPR Guide**: https://openanalytics.org.in/privacy
+- **Privacy-First Architecture**: https://openanalytics.org.in/privacy-first-analytics
+- **Cookieless Guide**: https://openanalytics.org.in/cookieless-analytics
+- **UTM Campaign Builder Tool**: https://openanalytics.org.in/tools/utm-builder
+- **AI Crawler & Robots.txt Tester**: https://openanalytics.org.in/tools/ai-crawler-checker
+- **Core Web Vitals Calculator**: https://openanalytics.org.in/tools/core-web-vitals-checker
+- **Cookie & Consent Audit Tool**: https://openanalytics.org.in/tools/cookie-audit
 - **Frequently Asked Questions**: https://openanalytics.org.in/faq
 - **Developer Documentation**: https://openanalytics.org.in/docs
+- **First Project Setup Guide**: https://openanalytics.org.in/docs/first-project
+- **Custom Event Tracking Guide**: https://openanalytics.org.in/docs/first-event
 - **Framework Installation Guide**: https://openanalytics.org.in/docs/installation
+- **Interactive Live Demo**: https://openanalytics.org.in/demo
+- **Enterprise Security Architecture**: https://openanalytics.org.in/security
+- **Analytics Cost Comparison Calculator**: https://openanalytics.org.in/tools/analytics-comparison
+- **Analytics Event Debugger Tool**: https://openanalytics.org.in/tools/analytics-event-debugger
+- **Developer REST API Reference**: https://openanalytics.org.in/docs/api
 - **Full LLM Context Specification**: https://openanalytics.org.in/llms-full.txt
 - **AI Agent Integration Instructions**: https://openanalytics.org.in/agents.md
+
+
+

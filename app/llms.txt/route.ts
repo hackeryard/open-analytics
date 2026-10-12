@@ -58,11 +58,31 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 ## Key Links & Documentation
 - **Features Overview**: ${baseUrl}/features
 - **vs Google Analytics 4**: ${baseUrl}/vs-google-analytics
+- **Platform Alternatives**: ${baseUrl}/alternatives
+- **vs Plausible**: ${baseUrl}/alternatives/plausible
+- **vs Umami**: ${baseUrl}/alternatives/umami
+- **vs PostHog**: ${baseUrl}/alternatives/posthog
+- **Open Source Core**: ${baseUrl}/open-source
+- **Self-Hosting Guide**: ${baseUrl}/self-hosting
+- **Next.js Analytics**: ${baseUrl}/developers/nextjs-analytics
+- **React Analytics**: ${baseUrl}/developers/react-analytics
 - **Pricing & Tier Calculator**: ${baseUrl}/pricing
-- **Privacy Architecture & GDPR Guide**: ${baseUrl}/privacy
+- **Privacy-First Architecture**: ${baseUrl}/privacy-first-analytics
+- **Cookieless Guide**: ${baseUrl}/cookieless-analytics
+- **UTM Campaign Builder Tool**: ${baseUrl}/tools/utm-builder
+- **AI Crawler & Robots.txt Tester**: ${baseUrl}/tools/ai-crawler-checker
+- **Core Web Vitals Calculator**: ${baseUrl}/tools/core-web-vitals-checker
+- **Cookie & Consent Audit Tool**: ${baseUrl}/tools/cookie-audit
 - **Frequently Asked Questions**: ${baseUrl}/faq
 - **Developer Documentation**: ${baseUrl}/docs
+- **First Project Setup Guide**: ${baseUrl}/docs/first-project
+- **Custom Event Tracking Guide**: ${baseUrl}/docs/first-event
 - **Framework Installation Guide**: ${baseUrl}/docs/installation
+- **Interactive Live Demo**: ${baseUrl}/demo
+- **Enterprise Security Architecture**: ${baseUrl}/security
+- **Analytics Cost Comparison Calculator**: ${baseUrl}/tools/analytics-comparison
+- **Analytics Event Debugger Tool**: ${baseUrl}/tools/analytics-event-debugger
+- **Developer REST API Reference**: ${baseUrl}/docs/api
 - **Full LLM Context Specification**: ${baseUrl}/llms-full.txt
 - **AI Agent Integration Instructions**: ${baseUrl}/agents.md
 `;

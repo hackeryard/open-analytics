@@ -31,8 +31,21 @@ export default function DocsClientShell({ children }: { children: React.ReactNod
       title: "Getting Started",
       links: [
         { href: "/docs", label: "Overview & Architecture", icon: BookOpen },
+        { href: "/docs/first-project", label: "First Project Setup", icon: BookOpen },
         { href: "/docs/installation", label: "Installation Guides", icon: Code2, badge: "Popular" },
+        { href: "/docs/first-event", label: "Custom Event Tracking", icon: Code2 },
         { href: "/docs/verification", label: "Testing & Verification", icon: Terminal },
+      ],
+    },
+    {
+      title: "Framework Integrations",
+      links: [
+        { href: "/developers/nextjs-analytics", label: "Next.js", icon: Code2 },
+        { href: "/developers/react-analytics", label: "React", icon: Code2 },
+        { href: "/developers/javascript-analytics", label: "Vanilla JS", icon: Code2 },
+        { href: "/developers/vue-analytics", label: "Vue.js", icon: Code2 },
+        { href: "/developers/astro-analytics", label: "Astro", icon: Code2 },
+        { href: "/developers/svelte-analytics", label: "Svelte & SvelteKit", icon: Code2 },
       ],
     },
     {
@@ -41,6 +54,31 @@ export default function DocsClientShell({ children }: { children: React.ReactNod
         { href: "/docs/web-vitals", label: "Core Web Vitals & RUM", icon: Activity },
         { href: "/docs/seo-aeo", label: "SEO & AI Crawler Radar", icon: Bot },
         { href: "/docs/alerts", label: "Alerts & Incident Engine", icon: Bell, badge: "New" },
+      ],
+    },
+    {
+      title: "API & Infrastructure",
+      links: [
+        { href: "/docs/api/ingestion", label: "Edge Telemetry Ingestion", icon: Terminal },
+        { href: "/self-hosting", label: "Self-Hosting Guide", icon: Code2 },
+      ],
+    },
+    {
+      title: "Comparisons & Alternatives",
+      links: [
+        { href: "/vs-google-analytics", label: "vs Google Analytics", icon: Layers },
+        { href: "/alternatives/plausible", label: "vs Plausible", icon: BookOpen },
+        { href: "/alternatives/umami", label: "vs Umami", icon: Terminal },
+        { href: "/alternatives/matomo", label: "vs Matomo", icon: Layers },
+        { href: "/alternatives/posthog", label: "vs PostHog", icon: Activity },
+      ],
+    },
+    {
+      title: "Free Developer Tools",
+      links: [
+        { href: "/tools/utm-builder", label: "UTM Campaign Builder", icon: Code2 },
+        { href: "/tools/ai-crawler-checker", label: "AI Crawler Tester", icon: Bot },
+        { href: "/tools/core-web-vitals-checker", label: "Web Vitals Calculator", icon: Activity },
       ],
     },
   ];

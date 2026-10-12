@@ -2,6 +2,125 @@
 
 All notable changes to the Open Analytics platform are documented in this file.
 
+## [3.11.1] - 2026-10-12
+
+### Fixed
+- **React Server Component Serialization Architecture**:
+  - Converted `FeatureHubLayout`, `ComparisonLayout`, and `DeveloperGuideLayout` into pure Server Components, resolving RSC boundary function serialization errors during static page generation.
+  - Extracted client interactive hooks into isolated lightweight subcomponents (`CopyCodeButton.tsx`, `FaqAccordion.tsx`).
+  - Added full test and build validation with 47 verified routes in `npm run test:seo` and clean `npm run build`.
+
+## [3.11.0] - 2026-10-06
+
+### Added
+- **Enterprise Security Architecture Hub (`app/security/page.tsx`, `components/public/SecurityClientView.tsx`)**:
+  - Detailed technical guide covering stateless JWT sessions, HttpOnly SameSite=Lax cookies, and Argon2id password hashing.
+  - Multi-tenant 5-tier RBAC project isolation and project-scoped query enforcement.
+  - Edge CORS verification against project allowed origins and token-bucket velocity limits.
+  - In-memory IP masking (/24 IPv4, /64 IPv6), ephemeral 24-hour rotating HMAC salts, and automated 365-day TTL eviction.
+  - Defense-in-depth HTTP security headers profile (HSTS 2-year preload, X-Frame-Options DENY, strict CSP).
+  - RFC 9116 security.txt implementation and 48-hour vulnerability disclosure SLA.
+- **Interactive Public Live Telemetry Sandbox (`app/demo/page.tsx`, `components/public/DemoClientView.tsx`)**:
+  - Zero-auth interactive sandbox allowing prospective users and evaluators to test drive Open Analytics dashboards.
+  - Real-time pulse feed simulating live incoming pageviews, crawlers, and Web Vitals events.
+  - Tabbed exploration of Core Web Vitals (LCP, INP, CLS), autonomous AI crawler radar, behavioral rage click heuristics, and JS error triage.
+  - Multi-project simulation presets (SaaS Cloud, E-Commerce Storefront, Developer Documentation).
+- **Interactive Analytics Event Debugger & Schema Validator (`app/tools/analytics-event-debugger/*`)**:
+  - Standalone browser utility for constructing and testing custom telemetry events and conversion payloads.
+  - Real-time key-value property editor with automatic typing (string, number, boolean).
+  - Edge payload byte-size calculation with 16KB threshold indicator and PII key warnings.
+  - Dynamic code generators for Vanilla JS, React / Next.js hooks, and cURL ingestion endpoints.
+- **Developer REST API Reference Hub (`app/docs/api/page.tsx`)**:
+  - Comprehensive specification for telemetry ingestion (`/v1/collect`), runtime error reporting (`/v1/error`), visitor identity enrichment (`/v1/identify`), and event rules.
+  - Public `x-project-id` vs secret `oa_live_...` API key isolation rules.
+  - Cross-platform server-side ingestion recipes for Node.js, Next.js, and background tasks.
+- **Web Analytics Cost & Tool Comparison Calculator (`app/tools/analytics-comparison/*`)**:
+  - Interactive pricing and feature benchmark calculator across 6 platforms (Open Analytics Cloud & Self-Hosted, GA4/360, Plausible, Matomo, PostHog).
+  - Real-time monthly sliders (10k to 5M pageviews/mo) and annual savings estimates.
+  - Tracker script byte-weight comparisons (<3.2 KB Brotli vs 54 KB GA4 and 72 KB PostHog).
+- **Automated SEO & Route Registry Regression Suite (`scripts/test-seo-regression.js`)**:
+  - Full automated validation of all 45 public routes in `ROUTE_REGISTRY`.
+  - Enforces 50-60 character rendered title tags, 140-160 character meta descriptions, zero emojis, and physical component existence.
+
+## [3.10.0] - 2026-10-06
+
+### Added
+- **Free Public Linkable Tools Engine (`app/tools/*`)**:
+  - Central Tools Hub directory (`/tools`) featuring zero-auth standalone browser utilities.
+  - Interactive Campaign URL & UTM Builder (`/tools/utm-builder`) with presets for twitter, linkedin, newsletter, cpc, and 1-click clipboard copy.
+  - Interactive AI Crawler & Robots.txt Rule Tester (`/tools/ai-crawler-checker`) supporting SearchGPT, ClaudeBot, PerplexityBot, Applebot, and generating production `/llms.txt` and `robots.txt` directives.
+  - Interactive Core Web Vitals Budget Calculator (`/tools/core-web-vitals-checker`) with live p75 threshold sliders for LCP, INP, CLS, TTFB, and FCP.
+  - Interactive Cookie & Consent Audit Calculator (`/tools/cookie-audit`) evaluating third-party script cookies, GDPR banner requirements, and conversion uplift.
+- **Developer Documentation Knowledgebase Expansion (`app/docs/*`)**:
+  - Dedicated `/docs/first-project`: Complete walkthrough for creating projects, apex domain equivalence, and team access inheritance.
+  - Dedicated `/docs/first-event`: Custom event tracking guide with browser JavaScript API, TypeScript wrappers, e-commerce models, and HTTP triggers.
+  - Dedicated `/docs/api/ingestion`: Full REST API reference for `/v1/collect` and `/v1/error`, plus first-party Cloudflare Worker and Next.js reverse proxy recipes.
+- **Dedicated Privacy Architecture Deep-Dives (`app/privacy-first-analytics`, `app/cookieless-analytics`)**:
+  - `/privacy-first-analytics`: In-depth technical breakdown of 24h rotating ephemeral HMAC salts, volatile memory-only IP processing, and automated 365-day TTL index data eviction.
+  - `/cookieless-analytics`: Engineering guide on eliminating cookie consent banners legally under GDPR, PECR, and CCPA, while recovering 15% to 28% in lost conversion rates.
+- **Developer SEO Cluster (`components/public/DeveloperGuideLayout.tsx`, `app/developers/*`)**:
+  - Reusable Obsidian Precision Developer Guide component (`components/public/DeveloperGuideLayout.tsx`) featuring 60-second quickstart, multi-step instructions, custom event snippets, Web Vitals performance benchmarks, error monitoring details, and FAQs.
+  - Dedicated `/developers/nextjs-analytics`: App Router, Pages Router, `next/script` async loading, client-side route transitions, and Core Web Vitals telemetry.
+  - Dedicated `/developers/react-analytics`: React SPA, React Router v6 & TanStack Router hooks, custom conversion event emitters, and error boundaries.
+  - Dedicated `/developers/javascript-analytics`: Vanilla JS, static HTML deferred script placement, manual page dispatch, and zero runtime bloat.
+  - Dedicated `/developers/vue-analytics`: Vue 3 Composition API, Nuxt 3 route middleware, and component event logging.
+  - Dedicated `/developers/astro-analytics`: Astro Islands, `is:inline` script directives, Astro View Transitions, and content collection reading metrics.
+  - Dedicated `/developers/svelte-analytics`: Svelte 5 Runes, SvelteKit `afterNavigate` lifecycle routing, and zero-cookie GDPR compliance.
+- **Comparison Engine & Alternatives Architecture (`components/public/ComparisonLayout.tsx`, `app/alternatives/*`)**:
+  - Reusable Obsidian Precision 20-Point Comparison component (`components/public/ComparisonLayout.tsx`) implementing executive quick summary, architectural philosophy, head-to-head feature matrix, privacy & cookie deep dives, RUM & error telemetry, and 60-second migration path.
+  - Central `/alternatives` hub directory with technical KPI cards, payload benchmarks, and schema ItemList.
+  - Dedicated `/alternatives/google-analytics`: GA4 alternative guide contrasting <3.2KB payload vs 45KB-120KB gtag.js, sub-second ingestion, and zero cookie popups.
+  - Dedicated `/alternatives/plausible`: Privacy & RUM comparison highlighting built-in Core Web Vitals, frontend error logging, and AI crawler radar.
+  - Dedicated `/alternatives/umami`: Open-source comparison highlighting automated 365-day TTL purging, high-throughput edge ingestion, and rage clicks.
+  - Dedicated `/alternatives/matomo`: Modernization guide contrasting sub-3.2KB beacon with legacy PHP/MySQL server maintenance and complex cookie policies.
+  - Dedicated `/alternatives/posthog`: Lightweight web observability comparison contrasting featherweight tracking with heavy 65KB+ session replay recording overhead.
+- **Open-Source Community Governance & Infrastructure**:
+  - Contributor Covenant Code of Conduct (`CODE_OF_CONDUCT.md`).
+  - GitHub Bug Report issue form (`.github/ISSUE_TEMPLATE/bug_report.yml`).
+  - GitHub Feature Request issue form (`.github/ISSUE_TEMPLATE/feature_request.yml`).
+  - Pull Request template enforcing Obsidian design, Zero-Emoji rule, domain isolation, and metadata character limits (`.github/pull_request_template.md`).
+- **Internal Linking & Navigation Expansion**:
+  - Added Framework Integrations and Comparisons & Alternatives sections into documentation sidebar (`components/docs/DocsClientShell.tsx`).
+  - Added Comparisons and Open Source Core links to global public footer (`components/public/PublicFooter.tsx`).
+  - Updated machine discovery manifests (`public/llms.txt`, `app/llms.txt/route.ts`).
+
+## [3.9.0] - 2026-10-06
+
+### Added
+- **Master Implementation Plan Phase 2: Highest-Value Feature Pages (`open-analytics-master-implementation-plan.md`)**:
+  - Reusable Obsidian Precision Feature Hub component (`components/public/FeatureHubLayout.tsx`) featuring 9-section technical narrative architecture.
+  - Dedicated `/analytics/web-analytics`: In-depth cookieless web analytics, customer loyalty scoring, multi-step navigation transitions, and conversion funnels.
+  - Dedicated `/observability/real-user-monitoring`: Production p75 field telemetry, W3C PerformanceObserver architecture, device hardware, and 5G network profiling.
+  - Dedicated `/observability/web-vitals`: Continuous Google Core Web Vitals optimization guide (LCP, INP, CLS, FCP, TTFB) with green/amber/red performance splits.
+  - Dedicated `/observability/javascript-error-monitoring`: Frontend crash triage, circular action breadcrumbs, automated error clustering, and AI diagnosis prompts.
+  - Dedicated `/behavior/rage-click-detection`: Algorithmic rage click detection (>=3 clicks within 500ms within 40px radius), active dwell time, and scroll depth telemetry.
+  - Dedicated `/ai/ai-visibility`: Autonomous AI crawler radar (GPTBot, ClaudeBot, PerplexityBot, Applebot), LLM human citations, and /llms.txt manifest protocols.
+  - Dedicated `/open-source`: Community edition overview, Apache 2.0 license transparency, and self-hosted vs managed Cloud comparison.
+  - Dedicated `/self-hosting`: Comprehensive infrastructure setup guide for Node.js, Docker, MongoDB persistence, and 365-day TTL retention policies.
+- **Master Implementation Plan Phase 1: Foundation Architecture (`open-analytics-master-implementation-plan.md`)**:
+  - Finalized strategic product positioning: "Open-source web analytics and observability for modern websites."
+  - Formalized 5 core product pillars: Web Analytics, Real User Monitoring, Behavioral UX Analytics, Frontend Observability, and Autonomous AI Visibility.
+  - Central SEO Route Registry (`lib/seo/routes.ts`) mapping public routes, character-enforced titles, descriptions, breadcrumbs, and schema types.
+  - Central SEO Metadata & Canonical Constructor (`lib/seo/metadata.ts`) ensuring consistent canonical URLs, OpenGraph, and Twitter tags.
+  - Central JSON-LD Schema.org Architecture (`lib/seo/schema.ts`) defining Organization, WebSite, and SoftwareApplication entities.
+  - Official Apache-2.0 open-source license file (`LICENSE`).
+  - Open-source contributor guidelines and workflow instructions (`CONTRIBUTING.md`).
+  - Security vulnerability reporting and privacy architecture policy (`SECURITY.md`).
+
+### Changed
+- **Subdomain Routing & Middleware Protection (`middleware.ts`, `app/robots.ts`)**:
+  - Registered all Phase 2 marketing routes (`/analytics`, `/observability`, `/behavior`, `/ai`, `/open-source`, `/self-hosting`) in `MARKETING_PATHS` for clean subdomain isolation.
+  - Allowed all public feature hubs in `robots.ts` for search engines and generative AI crawlers.
+- **Homepage Messaging & Public Surfaces Overhaul (`components/public/LandingHero.tsx`, `app/layout.tsx`)**:
+  - Rewrote H1: "Open-source web analytics and observability for modern websites".
+  - Standardized rendered `<title>` (58 chars: `Open Analytics — Open-Source Web Analytics & Observability`) and `<meta name="description">` (155 chars).
+  - Configured tactile CTA group (Launch Dashboard, Compare vs GA4, Self-hosting) with zero exposed repository links.
+  - Re-architected 5-pillar bento grid section with dedicated cards for Web Analytics, RUM, Behavioral UX, Error Observability, and AI Radar.
+  - Redesigned `README.md` into an open-source conversion-oriented developer guide.
+- **Sitemap & Robots Infrastructure (`app/sitemap.ts`, `app/robots.ts`)**:
+  - Dynamically linked `app/sitemap.ts` to `ROUTE_REGISTRY` in `lib/seo/routes.ts`.
+  - Tightened `app/robots.ts` crawler disallow rules to protect private dashboard workspace routes and telemetry ingestion endpoints.
+
 ## [3.8.2] - 2026-09-24
 
 ### Added

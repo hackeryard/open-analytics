@@ -15,6 +15,19 @@ const MARKETING_PATHS = [
   "/pricing",
   "/privacy",
   "/faq",
+  "/analytics",
+  "/observability",
+  "/behavior",
+  "/ai",
+  "/open-source",
+  "/self-hosting",
+  "/alternatives",
+  "/developers",
+  "/tools",
+  "/privacy-first-analytics",
+  "/cookieless-analytics",
+  "/security",
+  "/demo",
 ];
 
 // Internal platform workspace paths that belong exclusively on the Dashboard Subdomain

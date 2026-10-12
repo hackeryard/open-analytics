@@ -155,3 +155,5 @@ yarn purge:retention # Run 1-year data retention MongoDB purge (node scripts/pur
 3. **Obsidian & Precision Architecture**: Use solid obsidian dark surfaces (`#090a0f`, `#111218`, `#0e0f15`, `#181922`), hairline borders (`border-white/[0.08]` or `border-white/[0.06]`), and inset bevel highlights. Strictly avoid generic AI template clichés, blurry semi-transparent cards, and legacy `bg-card` classes.
 4. **Performance**: Always limit unbounded MongoDB queries and use indexed fields (`projectId`, `createdAt`, `pathname`, `visitorId`, `sessionId`).
 5. **Project Tracking & Documentation Integrity**: Whenever significant architectural, infrastructure, or operational features are introduced, update `CHANGELOG.md`, `ROADMAP.md`, `README.md`, `REQUIREMENTS.md`, and `GEMINI.md` to ensure complete documentation alignment.
+6. **Central SEO Route Registry & Schema System**: Register all public marketing, docs, and comparison routes in `lib/seo/routes.ts` (`ROUTE_REGISTRY`), construct metadata with `constructPageMetadata` from `lib/seo/metadata.ts`, and derive sitemaps dynamically in `app/sitemap.ts`.
+

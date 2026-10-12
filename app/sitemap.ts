@@ -1,99 +1,40 @@
 import { MetadataRoute } from "next";
+import { ROUTE_REGISTRY, BASE_URL } from "@/lib/seo/routes";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://openanalytics.org.in";
   const now = new Date();
 
-  return [
-    {
-      url: `${baseUrl}`,
+  // 1. Core indexable application routes from central SEO registry
+  const registryEntries: MetadataRoute.Sitemap = Object.values(ROUTE_REGISTRY)
+    .filter((route) => route.indexable)
+    .map((route) => ({
+      url: `${BASE_URL}${route.path === "/" ? "" : route.path}`,
       lastModified: now,
-      changeFrequency: "daily",
-      priority: 1.0,
-    },
+      changeFrequency: route.changeFrequency,
+      priority: route.priority,
+    }));
+
+  // 2. Auxiliary text specifications for AI, LLM, and Agent discoverability
+  const auxiliaryEntries: MetadataRoute.Sitemap = [
     {
-      url: `${baseUrl}/features`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.95,
-    },
-    {
-      url: `${baseUrl}/vs-google-analytics`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.95,
-    },
-    {
-      url: `${baseUrl}/pricing`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/privacy`,
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.85,
-    },
-    {
-      url: `${baseUrl}/faq`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.85,
-    },
-    {
-      url: `${baseUrl}/docs`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/docs/alerts`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.85,
-    },
-    {
-      url: `${baseUrl}/docs/installation`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.85,
-    },
-    {
-      url: `${baseUrl}/docs/verification`,
+      url: `${BASE_URL}/llms.txt`,
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/docs/web-vitals`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/docs/seo-aeo`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/llms.txt`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/llms-full.txt`,
+      url: `${BASE_URL}/llms-full.txt`,
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.75,
     },
     {
-      url: `${baseUrl}/agents.md`,
+      url: `${BASE_URL}/agents.md`,
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.75,
     },
   ];
+
+  return [...registryEntries, ...auxiliaryEntries];
 }

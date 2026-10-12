@@ -74,3 +74,9 @@ Whenever significant architectural or functional changes are made, update:
 - `README.md`: Update architecture tables, script references, and snippet examples.
 - `REQUIREMENTS.md`: Keep environment variables and collection schemas current.
 - `CLAUDE.md` / `GEMINI.md` / `AGENTS.md`: Keep developer rules and conventions synchronized.
+
+### 8. Central SEO Route Registry & Schema System
+- Always register public routes in `lib/seo/routes.ts` (`ROUTE_REGISTRY`).
+- Sitemaps (`app/sitemap.ts`) automatically derive indexable URLs from `ROUTE_REGISTRY`.
+- Construct page metadata using `constructPageMetadata` from `lib/seo/metadata.ts`.
+
