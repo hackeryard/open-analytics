@@ -1,4 +1,5 @@
 import { connectDB } from "@/lib/mongodb";
+import mongoose from "mongoose";
 import PageView from "@/models/PageView";
 import AnalyticsEvent from "@/models/AnalyticsEvent";
 import Project from "@/models/Project";
@@ -66,7 +67,7 @@ export async function POST(req: Request) {
       }, { status: 403 }, req);
     }
 
-    await connectDB();
+    // connectDB() already called inside authenticateProjectRequest above.
 
     // Auto-activate project monitoring and mark stream verified upon receiving first beacon
     if (auth.project.monitoringStatus !== "active" || !auth.project.verifiedAt) {
@@ -245,7 +246,32 @@ export async function POST(req: Request) {
 
     return corsJsonResponse({ ok: true }, { status: 200 }, req);
   } catch (err: any) {
-    console.error("Open Analytics collect error:", err);
-    return corsJsonResponse({ ok: false, error: err.message }, { status: 500 }, req);
+    // Detect MongoDB connection errors and attempt a single reconnect + retry
+    const isMongoError =
+      err.name === "MongooseServerSelectionError" ||
+      err.name === "MongoServerSelectionError" ||
+      err.name === "MongoNetworkError" ||
+      err.name === "MongoNotConnectedError" ||
+      err.message?.includes("buffering timed out") ||
+      err.message?.includes("Client must be connected") ||
+      (mongoose.connection && mongoose.connection.readyState !== 1);
+
+    if (isMongoError) {
+      console.error("Open Analytics collect: MongoDB connection error, attempting reconnect...", err.message);
+      try {
+        await connectDB();
+        // Return a soft 503 so the client SDK knows to retry
+        return corsJsonResponse(
+          { ok: false, error: "Temporary ingestion delay, please retry", code: "DB_RECONNECTING" },
+          { status: 503 },
+          req
+        );
+      } catch (reconnectErr: any) {
+        console.error("Open Analytics collect: Reconnect also failed:", reconnectErr.message);
+      }
+    }
+
+    console.error("Open Analytics collect error:", err.name, err.message);
+    return corsJsonResponse({ ok: false, error: "Internal server error" }, { status: 500 }, req);
   }
 }
