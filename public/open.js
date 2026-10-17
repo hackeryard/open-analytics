@@ -112,18 +112,21 @@
     };
   }
 
-  // 2. Beacon Dispatcher
+  // 2. Beacon Dispatcher with automatic retry on server errors
+  var _retryQueue = [];
+  var MAX_RETRIES = 3;
+
   function sendBeacon(urlPath, data) {
-    const cfg = getConfig();
-    let targetPath = urlPath;
-    const isApiDomain = cfg.endpoint.includes("api.") || cfg.endpoint.includes("api.localhost");
+    var cfg = getConfig();
+    var targetPath = urlPath;
+    var isApiDomain = cfg.endpoint.includes("api.") || cfg.endpoint.includes("api.localhost");
     if (isApiDomain && targetPath.startsWith("/api/v1/")) {
       targetPath = targetPath.replace("/api/v1/", "/v1/");
     }
-    const fullUrl = cfg.endpoint.replace(/\/$/, "") + targetPath;
-    const visitorMeta = getVisitorMetadata();
+    var fullUrl = cfg.endpoint.replace(/\/$/, "") + targetPath;
+    var visitorMeta = getVisitorMetadata();
 
-    const payload = JSON.stringify(Object.assign({}, data, {
+    var payload = JSON.stringify(Object.assign({}, data, {
       projectId: cfg.projectId,
       apiKey: cfg.apiKey,
       visitorId: getOrCreateVisitorId(),
@@ -134,22 +137,43 @@
       timestamp: Date.now(),
     }));
 
-    if (navigator.sendBeacon) {
-      try {
-        const blob = new Blob([payload], { type: "text/plain;charset=UTF-8" });
-        if (navigator.sendBeacon(fullUrl, blob)) return;
-      } catch (e) {}
-    }
+    _sendWithRetry(fullUrl, payload, 0);
+  }
 
+  function _sendWithRetry(url, payload, attempt) {
+    // Use fetch as primary transport for visibility into response status
     try {
-      fetch(fullUrl, {
+      fetch(url, {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=UTF-8" },
         body: payload,
         keepalive: true,
         mode: "cors",
-      }).catch(function() {});
-    } catch (e) {}
+      }).then(function(response) {
+        if (response && (response.status === 500 || response.status === 503) && attempt < MAX_RETRIES) {
+          // Server is cold/reconnecting -- retry with exponential backoff
+          var delay = Math.min(1000 * Math.pow(2, attempt), 8000);
+          setTimeout(function() { _sendWithRetry(url, payload, attempt + 1); }, delay);
+        }
+      }).catch(function() {
+        // Network failure -- try navigator.sendBeacon as last resort
+        if (attempt === 0) {
+          _sendBeaconFallback(url, payload);
+        }
+      });
+    } catch (e) {
+      // fetch itself threw (very old browser) -- fallback
+      _sendBeaconFallback(url, payload);
+    }
+  }
+
+  function _sendBeaconFallback(url, payload) {
+    if (navigator.sendBeacon) {
+      try {
+        var blob = new Blob([payload], { type: "text/plain;charset=UTF-8" });
+        navigator.sendBeacon(url, blob);
+      } catch (e) {}
+    }
   }
 
   // 3. Breadcrumbs Queue

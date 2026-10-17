@@ -1,4 +1,5 @@
 import { connectDB } from "@/lib/mongodb";
+import mongoose from "mongoose";
 import ErrorLog from "@/models/ErrorLog";
 import { authenticateProjectRequest } from "@/lib/projectAuth";
 import { corsJsonResponse, handleCorsPreflight } from "@/lib/cors";
@@ -129,7 +130,7 @@ export async function POST(req: Request) {
       );
     }
 
-    await connectDB();
+    // connectDB() already called inside authenticateProjectRequest above.
 
     const ua = req.headers.get("user-agent") || "";
     const isMobile = /mobile|android|iphone/i.test(ua);
@@ -200,7 +201,30 @@ export async function POST(req: Request) {
 
     return corsJsonResponse({ ok: true, errorId: errorLog._id }, { status: 200 }, req);
   } catch (err: any) {
-    console.error("Open Analytics error ingestion error:", err);
-    return corsJsonResponse({ ok: false, error: err.message }, { status: 500 }, req);
+    const isMongoError =
+      err.name === "MongooseServerSelectionError" ||
+      err.name === "MongoServerSelectionError" ||
+      err.name === "MongoNetworkError" ||
+      err.name === "MongoNotConnectedError" ||
+      err.message?.includes("buffering timed out") ||
+      err.message?.includes("Client must be connected") ||
+      (mongoose.connection && mongoose.connection.readyState !== 1);
+
+    if (isMongoError) {
+      console.error("Open Analytics error ingestion: MongoDB connection error, attempting reconnect...", err.message);
+      try {
+        await connectDB();
+        return corsJsonResponse(
+          { ok: false, error: "Temporary ingestion delay, please retry", code: "DB_RECONNECTING" },
+          { status: 503 },
+          req
+        );
+      } catch (reconnectErr: any) {
+        console.error("Open Analytics error ingestion: Reconnect also failed:", reconnectErr.message);
+      }
+    }
+
+    console.error("Open Analytics error ingestion error:", err.name, err.message);
+    return corsJsonResponse({ ok: false, error: "Internal server error" }, { status: 500 }, req);
   }
 }
