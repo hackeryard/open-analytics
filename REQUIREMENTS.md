@@ -160,6 +160,40 @@
 - `fingerprint` (String, Index): Unique signature used for 24-hour cooldown deduplication.
 - `createdAt` (Date, TTL 365 days): Document creation timestamp.
 
+### 3.5 `GscIntegration` Collection
+- `projectId` (String, Unique, Indexed): Multi-tenant isolation key.
+- `siteUrl` (String): Verified Google Search Console property (`sc-domain:...` or URL prefix).
+- `connectedBy` (ObjectId, Ref User): Authorizing user.
+- `authMethod` (Enum: `"oauth" | "service_account" | "manual_api" | "demo"`).
+- `accessToken` (String): Google OAuth Bearer token.
+- `refreshToken` (String): Offline refresh token for autonomous sync.
+- `tokenExpiry` (Date): Access token expiry.
+- `status` (Enum: `"connected" | "disconnected" | "token_expired" | "error"`).
+- `metrics` (Object): Aggregated `clicks`, `impressions`, `ctr`, `position`.
+- `topQueries` (Array): Search query keyword rows with clicks, impressions, CTR %, and position.
+- `topPages` (Array): Search entry landing pages with metrics.
+- `devices` (Array): Search breakdown by device (desktop, mobile, tablet).
+- `countries` (Array): Search impressions & clicks by country.
+- `history` (Array): 28-day daily search analytics performance trend.
+
+### 3.6 `GrowthStrategy` Collection
+- `projectId` (String, Indexed): Multi-tenant isolation key.
+- `strategyId` (String, Unique, Indexed): Strategy identifier.
+- `title` (String): Strategy action title.
+- `slug` (String): Unique identifier slug.
+- `category` (Enum: `"seo_search" | "cro_ux" | "web_vitals" | "technical_errors" | "geo_expansion"`).
+- `priority` (Enum: `"critical" | "high" | "medium" | "low"`).
+- `impact` (Enum: `"high" | "medium" | "low"`).
+- `effort` (Enum: `"low" | "medium" | "high"`).
+- `isQuickWin` (Boolean): True if High Impact and Low Effort.
+- `score` (Number): Priority ranking score (0-100).
+- `headline` (String): One-line diagnostic headline.
+- `problem` (String): Quantitative problem statement based on real telemetry.
+- `expectedOutcome` (String): Projected traffic / conversion lift.
+- `telemetryEvidence` (Array): Concrete metrics from GSC, Vitals, UX, Errors, or Geo.
+- `actionSteps` (Array): Step-by-step instructions with copyable code snippets (`title`, Next.js, Error Boundary, CSS, Schema).
+- `status` (Enum: `"recommended" | "in_progress" | "implemented" | "dismissed"`).
+
 ---
 
 ## 4. Role-Based Access Control (RBAC) Matrix

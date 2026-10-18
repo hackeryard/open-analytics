@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { AnalyticsData, PageViewItem } from "@/lib/analyticsTypes";
 import { isDashboardClient } from "@/lib/subdomain";
 import { getMaxAllowedProjects, getUserEffectivePlan, isUserPlanExpired, isPlanActive } from "@/lib/planLimits";
@@ -207,9 +208,11 @@ export function PlatformProvider({
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
 
+  const pathname = usePathname();
+
   useEffect(() => {
     setIsDashboard(isDashboardClient());
-  }, []);
+  }, [pathname]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [projectsLoading, setProjectsLoading] = useState<boolean>(true);
   const [activeProjectId, setActiveProjectIdState] = useState<string>("");
@@ -630,8 +633,19 @@ export function PlatformProvider({
   };
 
   const activeProject = useMemo(() => {
-    return projects.find((p) => p.projectId === activeProjectId);
-  }, [projects, activeProjectId]);
+    const prj = projects.find((p) => p.projectId === activeProjectId);
+    if (!prj) return undefined;
+    const userEffective = currentUser ? getUserEffectivePlan(currentUser) : "free";
+    const isUserPro = userEffective === "pro" || userEffective === "enterprise" || currentUser?.role === "super_admin";
+    if (isUserPro && (prj.isOwner || currentUser?.role === "super_admin" || prj.plan === "free")) {
+      return {
+        ...prj,
+        plan: prj.plan === "free" ? userEffective : prj.plan,
+        effectivePlan: prj.effectivePlan === "free" ? userEffective : (prj.effectivePlan || userEffective),
+      };
+    }
+    return prj;
+  }, [projects, activeProjectId, currentUser]);
 
   const updateProjectPlan = useCallback(async (projectId: string, plan: "free" | "pro" | "enterprise"): Promise<boolean> => {
     try {

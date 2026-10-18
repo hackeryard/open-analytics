@@ -289,7 +289,13 @@ export async function verifyProjectAccess(req: Request, projectId: string): Prom
     };
   }
 
-  const effectivePlan = getProjectEffectivePlan(project, project.ownerId);
+  let effectivePlan = getProjectEffectivePlan(project, project.ownerId);
+  const userPlan = getUserEffectivePlan(user);
+  if (user.role === "super_admin") {
+    effectivePlan = "enterprise";
+  } else if ((userPlan === "pro" || userPlan === "enterprise") && isProjectOwner(user, project)) {
+    effectivePlan = userPlan;
+  }
   project.effectivePlan = effectivePlan;
   project.plan = effectivePlan;
 
@@ -312,7 +318,10 @@ export async function verifyProjectEdit(req: Request, projectId: string): Promis
     return { ok: false, status: 401, error: "Authentication required. Please log in." };
   }
 
-  const project = await (Project as any).findOne({ projectId }).lean();
+  const project = await (Project as any)
+    .findOne({ projectId })
+    .populate("ownerId", "name email plan planExpiresAt subscriptionStatus role extraProjectsAllowed")
+    .lean();
   if (!project) {
     return { ok: false, status: 404, error: "Project not found" };
   }
@@ -324,6 +333,16 @@ export async function verifyProjectEdit(req: Request, projectId: string): Promis
       error: "Access denied: You do not have editor or admin permissions for this project.",
     };
   }
+
+  let effectivePlan = getProjectEffectivePlan(project, project.ownerId);
+  const userPlan = getUserEffectivePlan(user);
+  if (user.role === "super_admin") {
+    effectivePlan = "enterprise";
+  } else if ((userPlan === "pro" || userPlan === "enterprise") && isProjectOwner(user, project)) {
+    effectivePlan = userPlan;
+  }
+  project.effectivePlan = effectivePlan;
+  project.plan = effectivePlan;
 
   return { ok: true, user, project };
 }
@@ -344,7 +363,10 @@ export async function verifyProjectManage(req: Request, projectId: string): Prom
     return { ok: false, status: 401, error: "Authentication required. Please log in." };
   }
 
-  const project = await (Project as any).findOne({ projectId }).lean();
+  const project = await (Project as any)
+    .findOne({ projectId })
+    .populate("ownerId", "name email plan planExpiresAt subscriptionStatus role extraProjectsAllowed")
+    .lean();
   if (!project) {
     return { ok: false, status: 404, error: "Project not found" };
   }
@@ -356,6 +378,16 @@ export async function verifyProjectManage(req: Request, projectId: string): Prom
       error: "Access denied: You do not have administrative permission to modify this project.",
     };
   }
+
+  let effectivePlan = getProjectEffectivePlan(project, project.ownerId);
+  const userPlan = getUserEffectivePlan(user);
+  if (user.role === "super_admin") {
+    effectivePlan = "enterprise";
+  } else if ((userPlan === "pro" || userPlan === "enterprise") && isProjectOwner(user, project)) {
+    effectivePlan = userPlan;
+  }
+  project.effectivePlan = effectivePlan;
+  project.plan = effectivePlan;
 
   return { ok: true, user, project };
 }

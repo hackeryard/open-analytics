@@ -12,8 +12,116 @@ export async function GET(req: NextRequest) {
   const errorParam = searchParams.get("error");
 
   const baseUrl = getOAuthBaseUrl(req);
-  const redirectUri = `${baseUrl}/api/auth/oauth/google/callback`;
+  const redirectUri = process.env.GOOGLE_GSC_REDIRECT_URI || `${baseUrl}/api/auth/oauth/google/callback`;
 
+  // Check if this callback is for Google Search Console (GSC) integration
+  let gscState: { projectId: string; userId?: string; nonce?: string; type?: string } | null = null;
+  try {
+    const raw = Buffer.from(state || "", "base64url").toString("utf-8");
+    const parsed = JSON.parse(raw);
+    if (parsed && parsed.projectId) {
+      gscState = parsed;
+    }
+  } catch {}
+
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+
+  if (!clientId || !clientSecret) {
+    if (gscState) {
+      return NextResponse.redirect(new URL("/seo?tab=gsc&error=oauth_not_configured", baseUrl));
+    }
+    return NextResponse.redirect(new URL("/login?error=oauth_not_configured&provider=google", baseUrl));
+  }
+
+  // --- GOOGLE SEARCH CONSOLE FLOW ---
+  if (gscState) {
+    if (errorParam || !code) {
+      return NextResponse.redirect(
+        new URL(`/seo?tab=gsc&error=${encodeURIComponent(errorParam || "oauth_cancelled")}`, baseUrl)
+      );
+    }
+
+    const savedNonce = req.cookies.get("open_gsc_state")?.value;
+    if (gscState.nonce && savedNonce && savedNonce !== gscState.nonce) {
+      return NextResponse.redirect(new URL("/seo?tab=gsc&error=invalid_oauth_state", baseUrl));
+    }
+
+    try {
+      await connectDB();
+      const GscIntegration = (await import("@/models/GscIntegration")).default;
+
+      // Exchange code for tokens
+      const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          code,
+          client_id: clientId,
+          client_secret: clientSecret,
+          redirect_uri: redirectUri,
+          grant_type: "authorization_code",
+        }),
+      });
+
+      const tokenData = await tokenResponse.json();
+      if (!tokenResponse.ok || !tokenData.access_token) {
+        console.error("GSC token exchange error:", tokenData);
+        return NextResponse.redirect(new URL("/seo?tab=gsc&error=token_exchange_failed", baseUrl));
+      }
+
+      const expiresIn = tokenData.expires_in || 3600;
+      const tokenExpiry = new Date(Date.now() + expiresIn * 1000);
+
+      // Fetch verified sites from Google Search Console API
+      let defaultSiteUrl = "";
+      try {
+        const sitesRes = await fetch("https://www.googleapis.com/webmasters/v3/sites", {
+          headers: {
+            Authorization: `Bearer ${tokenData.access_token}`,
+          },
+        });
+
+        if (sitesRes.ok) {
+          const sitesData = await sitesRes.json();
+          const entries = sitesData.siteEntry || [];
+          if (entries.length > 0) {
+            defaultSiteUrl = entries[0].siteUrl;
+          }
+        }
+      } catch (siteErr) {
+        console.error("GSC initial sites query error:", siteErr);
+      }
+
+      // Upsert GscIntegration document
+      await (GscIntegration as any).findOneAndUpdate(
+        { projectId: gscState.projectId },
+        {
+          projectId: gscState.projectId,
+          connectedBy: gscState.userId || null,
+          authMethod: "oauth",
+          accessToken: tokenData.access_token,
+          refreshToken: tokenData.refresh_token || "",
+          tokenExpiry,
+          status: "connected",
+          siteUrl: defaultSiteUrl,
+          lastError: null,
+        },
+        { upsert: true, new: true }
+      );
+
+      const res = NextResponse.redirect(
+        new URL(`/seo?tab=gsc&status=connected&projectId=${gscState.projectId}`, baseUrl)
+      );
+      res.cookies.delete("open_gsc_state");
+      return res;
+    } catch (err: any) {
+      console.error("GSC OAuth callback exception:", err);
+      return NextResponse.redirect(new URL("/seo?tab=gsc&error=internal_callback_error", baseUrl));
+    }
+  }
+
+  // --- USER LOGIN FLOW ---
   if (errorParam || !code) {
     return NextResponse.redirect(new URL(`/login?error=${encodeURIComponent(errorParam || "google_auth_cancelled")}`, baseUrl));
   }
@@ -22,13 +130,6 @@ export async function GET(req: NextRequest) {
   const savedState = req.cookies.get("open_oauth_state")?.value;
   if (!savedState || !state || savedState !== state) {
     return NextResponse.redirect(new URL("/login?error=invalid_oauth_state", baseUrl));
-  }
-
-  const clientId = process.env.GOOGLE_CLIENT_ID;
-  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-
-  if (!clientId || !clientSecret) {
-    return NextResponse.redirect(new URL("/login?error=oauth_not_configured&provider=google", baseUrl));
   }
 
   try {

@@ -17,7 +17,8 @@ No emojis anywhere in code, comments, UI strings, documentation, or commit messa
 - Interactive client components must decouple state from `page.tsx` (`*ClientView.tsx`) to enable server-rendered static metadata.
 - Every public page must inject valid, rich JSON-LD Schema.org graphs (`WebSite`, `SoftwareApplication`, `Product`, `TechArticle`, `HowTo`, `FAQPage`, `BreadcrumbList`, `ItemList`).
 
-## 2. 3-Tier Domain Isolation
+## 2. 3-Tier Domain Isolation (Production) & Localhost Dev
+In production, Open Analytics strictly enforces 3-tier domain isolation. In local development, standard `http://localhost:3005` handles all paths directly without subdomain prefixing (`dashboard.localhost` or `api.localhost`):
 - **Main (`openanalytics.org.in`)**: Pure SEO/marketing only. No login or signup buttons. Use "Launch Dashboard".
 - **Dashboard (`dashboard.openanalytics.org.in`)**: Workspaces, charts, live feed, `/login`, `/register`.
 - **API (`api.openanalytics.org.in`)**: Edge `/open.js` script delivery and versioned `/v1/collect` ingestion.
@@ -46,4 +47,10 @@ Whenever major architectural, infrastructure, or operational changes are impleme
 - All public marketing, comparisons, and docs routes must be registered in `lib/seo/routes.ts` (`ROUTE_REGISTRY`).
 - Sitemaps (`app/sitemap.ts`) automatically derive indexable URLs from `ROUTE_REGISTRY`.
 - Page metadata must be constructed with `constructPageMetadata` from `lib/seo/metadata.ts`.
+
+## 6. Google Search Console & Autonomous Growth Strategies
+- GSC Integration (`models/GscIntegration.ts`): OAuth 2.0 with search console read-only scope, 28-day sync, Striking Distance Keyword Spotlight (positions 4–20).
+- Strategy Engine (`models/GrowthStrategy.ts`, `lib/strategyEngine.ts`): Cross-synthesizes GSC keywords, Core Web Vitals RUM, behavioral drop-offs, device breakdowns, geo radar, and runtime exceptions into prioritized code blueprints.
+- Monetization: Strictly gated under Cloud Pro and Enterprise subscriptions (`lib/planLimits.ts`).
+
 

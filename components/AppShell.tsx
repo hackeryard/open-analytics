@@ -73,7 +73,7 @@ export default function AppShell({
 
   useEffect(() => {
     setIsDashboard(isDashboardClient());
-  }, []);
+  }, [pathname]);
   const {
     currentUser,
     projects,
@@ -130,7 +130,16 @@ export default function AppShell({
   }, [pathname]);
 
   const activeProject = projects.find((p) => p.projectId === activeProjectId);
-  const isPro = activeProject?.plan === "pro" || activeProject?.plan === "enterprise";
+  const isPro =
+    activeProject?.effectivePlan === "pro" ||
+    activeProject?.effectivePlan === "enterprise" ||
+    activeProject?.plan === "pro" ||
+    activeProject?.plan === "enterprise" ||
+    currentUser?.effectivePlan === "pro" ||
+    currentUser?.effectivePlan === "enterprise" ||
+    currentUser?.plan === "pro" ||
+    currentUser?.plan === "enterprise" ||
+    currentUser?.role === "super_admin";
 
   const copyProjectId = () => {
     if (!activeProjectId) return;
@@ -228,6 +237,7 @@ export default function AppShell({
     {
       group: "Growth & Radar",
       items: [
+        { href: "/strategies", label: "Growth Strategies", icon: Sparkles, pro: true },
         { href: "/geo", label: "Audience Geography", icon: Globe },
         { href: "/acquisition", label: "Acquisition & Sources", icon: Compass },
         { href: "/seo", label: "SEO & Search", icon: Search },

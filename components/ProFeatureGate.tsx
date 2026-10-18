@@ -18,7 +18,15 @@ import { usePlatform } from "@/components/PlatformContext";
 
 interface ProFeatureGateProps {
   featureName: string;
-  featureKey: "rum" | "ai_radar" | "behavioral" | "errors" | "custom_domain" | "custom_events";
+  featureKey:
+    | "rum"
+    | "ai_radar"
+    | "behavioral"
+    | "errors"
+    | "custom_domain"
+    | "custom_events"
+    | "gsc"
+    | "growth_strategies";
   icon: LucideIcon;
   description: string;
   highlights: string[];
@@ -37,12 +45,17 @@ export default function ProFeatureGate({
   const [upgrading, setUpgrading] = useState(false);
   const [upgradeSuccess, setUpgradeSuccess] = useState(false);
 
-  // Check if active project has inherited Pro or Enterprise plan from owner
+  // Check if active project or current user has Pro or Enterprise plan
   const isPro =
     activeProject?.effectivePlan === "pro" ||
     activeProject?.effectivePlan === "enterprise" ||
     activeProject?.plan === "pro" ||
-    activeProject?.plan === "enterprise";
+    activeProject?.plan === "enterprise" ||
+    currentUser?.effectivePlan === "pro" ||
+    currentUser?.effectivePlan === "enterprise" ||
+    currentUser?.plan === "pro" ||
+    currentUser?.plan === "enterprise" ||
+    currentUser?.role === "super_admin";
 
   // Quick 1-click upgrade handler upgrades user's subscription
   const handleQuickUpgrade = async () => {

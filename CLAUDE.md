@@ -156,4 +156,6 @@ yarn purge:retention # Run 1-year data retention MongoDB purge (node scripts/pur
 4. **Performance**: Always limit unbounded MongoDB queries and use indexed fields (`projectId`, `createdAt`, `pathname`, `visitorId`, `sessionId`).
 5. **Project Tracking & Documentation Integrity**: Whenever significant architectural, infrastructure, or operational features are introduced, update `CHANGELOG.md`, `ROADMAP.md`, `README.md`, `REQUIREMENTS.md`, and `GEMINI.md` to ensure complete documentation alignment.
 6. **Central SEO Route Registry & Schema System**: Register all public marketing, docs, and comparison routes in `lib/seo/routes.ts` (`ROUTE_REGISTRY`), construct metadata with `constructPageMetadata` from `lib/seo/metadata.ts`, and derive sitemaps dynamically in `app/sitemap.ts`.
+7. **Google Search Console & Autonomous Growth Strategies**: Production GSC OAuth integration with `https://www.googleapis.com/auth/webmasters.readonly` scope, offline refresh token sync, and cross-telemetry intelligence engine (`lib/strategyEngine.ts`, `models/GrowthStrategy.ts`) gated under Cloud Pro and Enterprise plans.
+8. **Localhost Single-Domain Development**: Local development runs on standard `http://localhost:3005` without subdomain prefixing (`dashboard.localhost` or `api.localhost`), while 3-tier domain isolation remains strictly enforced in production.
 

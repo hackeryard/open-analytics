@@ -13,16 +13,16 @@
 - Use tactile high-contrast white CTAs (`bg-white text-zinc-950 hover:bg-zinc-200`) and decluttered navigation.
 
 ### 2. 3-Tier Domain Architecture & Subdomain Isolation
-Open Analytics is strictly segregated into three domains. Never mix routes or CTAs between them:
-1. **Main Domain (`openanalytics.org.in` / `localhost:3005`)**:
+Open Analytics is strictly segregated into three domains in production (in local development, normal `http://localhost:3005` handles all paths directly without subdomain prefixing like `dashboard.localhost` or `api.localhost`):
+1. **Main Domain (`openanalytics.org.in`)**:
    - Strictly reserved for SEO, landing pages, marketing, comparison tables, pricing, and public docs.
    - **NO login, registration, or workspace UI**.
    - Primary action is unified **"Launch Dashboard"** button linking to `https://dashboard.openanalytics.org.in`.
    - Direct requests to `/login`, `/register`, or internal workspace routes (`/events`, `/vitals`, etc.) redirect to dashboard subdomain.
-2. **Dashboard Subdomain (`dashboard.openanalytics.org.in` / `dashboard.localhost:3005`)**:
+2. **Dashboard Subdomain (`dashboard.openanalytics.org.in`)**:
    - Authenticated analytics workspace, live telemetry feeds, project management, and auth (`/login`, `/register`).
    - Marketing routes (`/features`, `/pricing`, `/vs-google-analytics`, etc.) redirect back to the main domain.
-3. **API Telemetry Subdomain (`api.openanalytics.org.in` / `api.localhost:3005`)**:
+3. **API Telemetry Subdomain (`api.openanalytics.org.in`)**:
    - High-throughput tracking script delivery and versioned telemetry ingestion:
      - `https://api.openanalytics.org.in/open.js` (served with global CORS and CDN cache headers)
      - `POST /v1/collect`: Pageviews, custom events, Core Web Vitals, heartbeats
@@ -79,4 +79,19 @@ Whenever significant architectural or functional changes are made, update:
 - Always register public routes in `lib/seo/routes.ts` (`ROUTE_REGISTRY`).
 - Sitemaps (`app/sitemap.ts`) automatically derive indexable URLs from `ROUTE_REGISTRY`.
 - Construct page metadata using `constructPageMetadata` from `lib/seo/metadata.ts`.
+
+### 9. Google Search Console & Autonomous Growth Strategies Architecture
+- **GSC Integration (`models/GscIntegration.ts`)**:
+  - Direct OAuth 2.0 integration with scope `https://www.googleapis.com/auth/webmasters.readonly`.
+  - Offline refresh tokens for autonomous background 28-day telemetry sync.
+  - Granular metrics: clicks, impressions, CTR, position, search queries, landing pages, devices, and countries.
+  - Striking Distance Keyword Spotlight for queries ranking 4–20 with high impressions.
+- **Cross-Telemetry Strategy Engine (`models/GrowthStrategy.ts`, `lib/strategyEngine.ts`)**:
+  - Heuristic intelligence engine synthesizing 6 telemetry streams: GSC keywords, Core Web Vitals RUM, behavioral UX drop-offs, device breakdowns, geo radar, and runtime exceptions.
+  - Prioritized action blueprints with copyable code snippets across 5 categories (`seo_search`, `cro_ux`, `web_vitals`, `technical_errors`, `geo_expansion`).
+  - Interactive status lifecycle (`recommended`, `in_progress`, `implemented`, `dismissed`).
+- **Monetization & Plan Gating**:
+  - Gated under `pro` and `enterprise` subscriptions (`lib/planLimits.ts`).
+  - Free users are presented with sleek Obsidian Pro feature gate.
+
 

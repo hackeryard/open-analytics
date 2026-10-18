@@ -44,7 +44,7 @@ async function run() {
     failures++;
   }
 
-  // 2. Main domain /login redirects to dashboard subdomain
+  // 2. Localhost Development: /login renders directly without dashboard subdomain redirect
   try {
     const res = await testRequest({
       hostname: "127.0.0.1",
@@ -53,16 +53,15 @@ async function run() {
       method: "GET",
       headers: { Host: `localhost:${port}` },
     });
-    const location = res.headers.location || "";
-    const ok = (res.statusCode === 307 || res.statusCode === 308) && location.includes(`dashboard.localhost:${port}/login`);
-    console.log(`[2/6] Main Domain (GET /login -> redirect): status=${res.statusCode}, location=${location} => ${ok ? "PASS" : "FAIL"}`);
+    const ok = res.statusCode === 200 && !res.headers.location;
+    console.log(`[2/10] Localhost Dev (GET /login directly): status=${res.statusCode} => ${ok ? "PASS" : "FAIL"}`);
     if (!ok) failures++;
   } catch (e) {
-    console.error("[2/6] Error:", e.message);
+    console.error("[2/10] Error:", e.message);
     failures++;
   }
 
-  // 3. Main domain internal route (/events) redirects to dashboard subdomain
+  // 3. Localhost Development: unauthenticated internal route (/events) redirects to local /login
   try {
     const res = await testRequest({
       hostname: "127.0.0.1",
@@ -72,11 +71,11 @@ async function run() {
       headers: { Host: `localhost:${port}` },
     });
     const location = res.headers.location || "";
-    const ok = (res.statusCode === 307 || res.statusCode === 308) && location.includes(`dashboard.localhost:${port}/events`);
-    console.log(`[3/6] Main Domain (GET /events -> redirect): status=${res.statusCode}, location=${location} => ${ok ? "PASS" : "FAIL"}`);
+    const ok = (res.statusCode === 307 || res.statusCode === 308) && !location.includes("dashboard.localhost") && location.includes("/login");
+    console.log(`[3/10] Localhost Dev (GET /events -> local /login): status=${res.statusCode}, location=${location} => ${ok ? "PASS" : "FAIL"}`);
     if (!ok) failures++;
   } catch (e) {
-    console.error("[3/6] Error:", e.message);
+    console.error("[3/10] Error:", e.message);
     failures++;
   }
 

@@ -55,6 +55,12 @@ Open Analytics unifies web analytics and frontend observability into a single pl
 - Classifies requests from OpenAI (`GPTBot`, `OAI-SearchBot`), Anthropic (`ClaudeBot`), Perplexity (`PerplexityBot`), and Apple (`Applebot`).
 - Generative Engine Optimization (GEO) and Answer Engine Optimization (AEO) readiness tracking.
 
+### 6. Google Search Console & Autonomous Growth Strategies
+- **Direct GSC Integration**: Connect verified Google Search Console properties via OAuth 2.0 to sync organic keyword rankings, click-through rates, and landing page impressions.
+- **Striking Distance Keyword Spotlight**: Highlights queries ranking positions 4–20 with high search impression volume for high-impact CTR gains.
+- **Cross-Telemetry Improvement Engine**: Synthesizes search console rankings, Web Vitals RUM, behavioral drop-offs, device breakdowns, geo radar, and runtime exceptions into prioritized step-by-step optimization blueprints.
+- **Actionable Code Blueprints**: Copyable HTML titles, Next.js asset preloading, React Error Boundaries, touch target CSS, and JSON-LD schema graphs.
+
 ---
 
 ## Quick Start: One-Line Installation

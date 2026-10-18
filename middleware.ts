@@ -46,6 +46,7 @@ const DASHBOARD_PATHS = [
   "/geo",
   "/acquisition",
   "/seo",
+  "/strategies",
   "/ai-visibility",
   "/ai-aeo",
   "/projects",
@@ -158,6 +159,135 @@ export function middleware(req: NextRequest) {
     return res;
   }
 
+  // Helper to extract session token
+  let token = req.cookies.get(SESSION_COOKIE_NAME)?.value;
+  if (!token) {
+    const authHeader = req.headers.get("authorization");
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      token = authHeader.substring(7).trim();
+    }
+  }
+
+  // Check if token is valid
+  let isValidSession = false;
+  if (token) {
+    try {
+      const parts = token.split(".");
+      if (parts.length === 3) {
+        const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+        const jsonPayload = decodeURIComponent(
+          atob(base64)
+            .split("")
+            .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+            .join("")
+        );
+        const parsed = JSON.parse(jsonPayload);
+        if (parsed.exp && parsed.exp * 1000 >= Date.now() && parsed.userId) {
+          isValidSession = true;
+        }
+      }
+    } catch {
+      isValidSession = false;
+    }
+  }
+
+  const isLocal = host.includes("localhost") || host.includes("127.0.0.1");
+  const isExplicitSubdomain = host.startsWith("api.") || host.startsWith("dashboard.");
+
+  // =========================================================================
+  // BRANCH LOCAL: NORMAL LOCALHOST DEVELOPMENT (Single domain, no subdomains)
+  // =========================================================================
+  if (isLocal && !isExplicitSubdomain) {
+    // 1. Auth routes (/login, /register, OAuth)
+    const isAuthPath =
+      pathname === "/login" ||
+      pathname === "/register" ||
+      pathname.startsWith("/api/auth/") ||
+      pathname.startsWith("/api/cron");
+
+    if (isAuthPath) {
+      if (isValidSession && (pathname === "/login" || pathname === "/register")) {
+        return NextResponse.redirect(new URL("/", req.url));
+      }
+      const requestHeaders = new Headers(req.headers);
+      requestHeaders.set("x-is-dashboard", "1");
+      return NextResponse.next({
+        request: {
+          headers: requestHeaders,
+        },
+      });
+    }
+
+    // 2. Marketing routes
+    if (MARKETING_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
+      const requestHeaders = new Headers(req.headers);
+      requestHeaders.set("x-is-dashboard", "0");
+      return NextResponse.next({
+        request: {
+          headers: requestHeaders,
+        },
+      });
+    }
+
+    // 3. Developer documentation
+    if (pathname === "/docs" || pathname.startsWith("/docs/")) {
+      const requestHeaders = new Headers(req.headers);
+      requestHeaders.set("x-is-dashboard", "0");
+      return NextResponse.next({
+        request: {
+          headers: requestHeaders,
+        },
+      });
+    }
+
+    // 4. Internal dashboard workspace routes
+    const isDashboardWorkspacePath =
+      pathname.startsWith("/projects/") ||
+      DASHBOARD_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"));
+
+    if (isDashboardWorkspacePath) {
+      if (!isValidSession) {
+        if (pathname.startsWith("/api/")) {
+          return NextResponse.json(
+            { error: "Authentication required. Please log in." },
+            { status: 401 }
+          );
+        }
+
+        const loginUrl = new URL("/login", req.url);
+        if (pathname !== "/") {
+          loginUrl.searchParams.set("redirect", pathname);
+        }
+        const response = NextResponse.redirect(loginUrl);
+        if (token) {
+          response.cookies.delete(SESSION_COOKIE_NAME);
+        }
+        return response;
+      }
+
+      const requestHeaders = new Headers(req.headers);
+      requestHeaders.set("x-is-dashboard", "1");
+      return NextResponse.next({
+        request: {
+          headers: requestHeaders,
+        },
+      });
+    }
+
+    // 5. Root path ("/")
+    if (pathname === "/") {
+      const requestHeaders = new Headers(req.headers);
+      requestHeaders.set("x-is-dashboard", isValidSession ? "1" : "0");
+      return NextResponse.next({
+        request: {
+          headers: requestHeaders,
+        },
+      });
+    }
+
+    return NextResponse.next();
+  }
+
   // =========================================================================
   // BRANCH 0: API & TELEMETRY SUBDOMAIN (isApi)
   // e.g. api.openanalytics.org.in or api.localhost:3005
@@ -262,38 +392,6 @@ export function middleware(req: NextRequest) {
         Location: targetUrl,
       },
     });
-  }
-
-  // Helper to extract session token
-  let token = req.cookies.get(SESSION_COOKIE_NAME)?.value;
-  if (!token) {
-    const authHeader = req.headers.get("authorization");
-    if (authHeader && authHeader.startsWith("Bearer ")) {
-      token = authHeader.substring(7).trim();
-    }
-  }
-
-  // Check if token is valid
-  let isValidSession = false;
-  if (token) {
-    try {
-      const parts = token.split(".");
-      if (parts.length === 3) {
-        const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
-        const jsonPayload = decodeURIComponent(
-          atob(base64)
-            .split("")
-            .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-            .join("")
-        );
-        const parsed = JSON.parse(jsonPayload);
-        if (parsed.exp && parsed.exp * 1000 >= Date.now() && parsed.userId) {
-          isValidSession = true;
-        }
-      }
-    } catch {
-      isValidSession = false;
-    }
   }
 
   // 2. Public auth routes on dashboard subdomain (/login, /register, OAuth, cron)

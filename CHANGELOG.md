@@ -2,6 +2,37 @@
 
 All notable changes to the Open Analytics platform are documented in this file.
 
+## [3.12.0] - 2026-10-17
+
+### Added
+- **Full Google Search Console (GSC) Integration (`models/GscIntegration.ts`, `components/seo/GscDashboardView.tsx`, `/api/projects/[projectId]/integrations/gsc/*`)**:
+  - Google OAuth 2.0 authorization with read-only search console scope (`https://www.googleapis.com/auth/webmasters.readonly`).
+  - Automated 28-day performance data sync: organic clicks, impressions, average CTR %, and average search position.
+  - Granular breakdown tables for Search Queries, Top Landing Pages, Devices (Desktop, Mobile, Tablet), and Geographic Countries.
+  - Automated Striking Distance Keyword Spotlight identifying queries ranking positions 4-20 with high impression volume and low CTR for instant organic traffic expansion.
+  - Interactive property selector and simulated telemetry mode for rapid verification.
+- **Autonomous Cross-Telemetry Growth & Improvement Strategies Engine (`models/GrowthStrategy.ts`, `lib/strategyEngine.ts`, `components/strategies/GrowthStrategiesView.tsx`, `app/strategies/page.tsx`)**:
+  - Autonomous heuristic intelligence engine cross-analyzing 6 active telemetry streams:
+    1. GSC Search Queries & SERP Rankings
+    2. Core Web Vitals RUM (LCP, CLS, INP)
+    3. Behavioral UX (bounce rates, scroll depth, rage clicks)
+    4. Audience Geography & Geo Radar clusters
+    5. Device Types & Responsive gaps
+    6. Runtime JavaScript Crashes & Exceptions
+  - Generates prioritized, structured optimization blueprints across 5 categories (`seo_search`, `cro_ux`, `web_vitals`, `technical_errors`, `geo_expansion`).
+  - Built-in Impact vs Effort matrix with 1-click Quick Win isolation and overall Strategy Health Score.
+  - Step-by-step actionable code blueprints with copyable snippets (HTML title tags, Next.js font/image preloading, Error Boundaries, CSS touch targets, JSON-LD schema graphs).
+  - Interactive strategy status lifecycle tracking (`recommended`, `in_progress`, `implemented`, `dismissed`).
+- **Paid Tier Feature Gating**:
+  - Gated Google Search Console Integration and Growth Strategies under Cloud Pro and Enterprise subscriptions (`lib/planLimits.ts`).
+  - Obsidian-styled Pro paywall with feature highlights and 1-click subscription management.
+
+### Fixed
+- **Tracker & Telemetry Collection Socket Resilience (`public/open.js`, `lib/mongodb.ts`, `app/api/v1/collect/route.ts`, `app/api/v1/error/route.ts`)**:
+  - Resolved stale MongoDB connection socket bug causing 500 errors after idle periods.
+  - Enhanced `connectDB()` with active `ping` check and automatic reconnection on dead TCP sockets.
+  - Converted tracker transport to `fetch` with exponential backoff retries on 500/503 responses.
+
 ## [3.11.1] - 2026-10-12
 
 ### Fixed

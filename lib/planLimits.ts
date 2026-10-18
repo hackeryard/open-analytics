@@ -45,6 +45,8 @@ export const PLAN_LIMITS: Record<SubscriptionPlan, PlanConfig> = {
       "virtual_labs",
       "seo",
       "ai_aeo",
+      "gsc",
+      "growth_strategies",
     ],
   },
   enterprise: {
@@ -62,6 +64,8 @@ export const PLAN_LIMITS: Record<SubscriptionPlan, PlanConfig> = {
       "virtual_labs",
       "seo",
       "ai_aeo",
+      "gsc",
+      "growth_strategies",
     ],
   },
 };

@@ -38,14 +38,24 @@ export async function GET(req: NextRequest) {
       .sort({ createdAt: -1 })
       .lean();
 
-    const { getProjectEffectivePlan } = await import("@/lib/planLimits");
+    const { getProjectEffectivePlan, getUserEffectivePlan } = await import("@/lib/planLimits");
+    const userPlan = getUserEffectivePlan(user);
 
     return NextResponse.json({
       authenticated: true,
       user,
       projects: projects.map((p: any) => {
-        const isOwner = p.ownerId ? (p.ownerId._id ? p.ownerId._id.toString() : p.ownerId.toString()) === user._id.toString() : false;
-        const effectivePlan = getProjectEffectivePlan(p, p.ownerId);
+        const isOwner = p.ownerId
+          ? (p.ownerId._id ? p.ownerId._id.toString() : p.ownerId.toString()) === user._id.toString()
+          : (user.role === "super_admin" || !p.ownerId);
+        
+        let effectivePlan = getProjectEffectivePlan(p, p.ownerId);
+
+        if ((userPlan === "pro" || userPlan === "enterprise") && (isOwner || user.role === "super_admin")) {
+          effectivePlan = userPlan;
+        } else if (user.role === "super_admin") {
+          effectivePlan = "enterprise";
+        }
 
         return {
           id: p._id.toString(),
